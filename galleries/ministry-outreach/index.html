@@ -7,9 +7,12 @@
     <meta name="theme-color" content="#1e3a8a">
     <link rel="icon" type="image/svg+xml" href="../../assets/logo.svg">
     <title>Outreach Gallery | Amazing Grace Home Living</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../assets/vendor/tailwindcss.js"></script>
+    <script src="../../assets/vendor/hosted-only.js"></script>
+    <script>
+        window.AmazingGraceHostedOnly?.loadStylesheet("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap");
+    </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap');
         :root { --navy: #1e3a8a; }
         body { font-family:'Inter',sans-serif; background:#f3f4f6; color:#333; margin:0; padding:0; display:flex; flex-direction:column; min-height:100vh; }
         *:focus-visible { outline:3px solid #3b82f6; outline-offset:2px; }

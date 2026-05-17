@@ -12,9 +12,13 @@
     <link rel="icon" type="image/png" href="/assets/logo.png" />
     <title>Quick Click | Nexus Arcade</title>
 
+    <script src="../../assets/vendor/hosted-only.js"></script>
+    <script>
+      window.AmazingGraceHostedOnly?.loadStylesheet(
+        "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap"
+      );
+    </script>
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap');
-
       :root {
         --bg: #0f172a;
         --surface: rgba(30, 41, 59, 0.7);
@@ -116,4 +120,3 @@
     <script type="module" src="../../src/arcade/quick-click/main.tsx"></script>
   </body>
 </html>
-

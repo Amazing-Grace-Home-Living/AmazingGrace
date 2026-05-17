@@ -9,10 +9,12 @@
     <link rel="icon" type="image/png" href="/assets/logo.png">
     <title>The Lamp in the Window | Stories | Amazing Grace Home Living</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../assets/vendor/tailwindcss.js"></script>
+    <script src="../../assets/vendor/hosted-only.js"></script>
+    <script>
+        window.AmazingGraceHostedOnly?.loadStylesheet("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap");
+    </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
-
         :root { --navy: #1e3a8a; --blue: #2563eb; --purple: #7c3aed; }
 
         body {
