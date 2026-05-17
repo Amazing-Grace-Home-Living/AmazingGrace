@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-HKZ2G2VN78"></script>
+<script src="../assets/js/hosted-only.js"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-HKZ2G2VN78');
+  if (window.AmazingGraceHostedOnly?.isHosted()) {
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', 'G-HKZ2G2VN78');
+    window.AmazingGraceHostedOnly.loadScript('https://www.googletagmanager.com/gtag/js?id=G-HKZ2G2VN78', { async: true });
+  }
 </script>
 
     <meta charset="UTF-8">
@@ -17,9 +19,10 @@
     <link rel="icon" type="image/png" href="../assets/logo.png">
     <title>Storybook Library | Amazing Grace Home Living</title>
 
-    <s.nav-logo-link {
-    display: none !important;
-}
+    <style>
+        .nav-logo-link {
+            display: none !important;
+        }
 
         body {
             background: #000;

@@ -16,10 +16,14 @@
     <link rel="stylesheet" href="../style2.css">
     <title>Nexus Arcade | Amazing Grace Home Living</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../assets/js/hosted-only.js"></script>
+    <script>
+        if (window.AmazingGraceHostedOnly?.isHosted()) {
+            window.AmazingGraceHostedOnly.loadScript("https://cdn.tailwindcss.com");
+            window.AmazingGraceHostedOnly.loadStyle("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap");
+        }
+    </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap');
-
         :root {
             --bg:        #0f172a;
             --surface:   #1e293b;
