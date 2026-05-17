@@ -6,7 +6,7 @@
       "title": "Ella — The Relic Runner",
       "role": "High-Speed Historian",
       "slug": "ella",
-      "path": "/stories/characters/ella.html",
+      "path": "./characters/ella.html",
       "tags": [
         "nexus-arcade",
         "relic-runner",
@@ -39,7 +39,7 @@
       "genre": "Sci-Fi / Digital Conscience",
       "series": "Genesis Foundations",
       "slug": "matrix-of-conscience",
-      "path": "/stories/matrix.html",
+      "path": "./matrix.html",
       "tags": [
         "matrix",
         "conscience",
@@ -55,7 +55,7 @@
       "genre": "Faith / Sci-Fi Fusion",
       "series": "Seven-Star Canon",
       "slug": "amazing-grace-covenant",
-      "path": "/stories/amazing-grace-covenant/index.html",
+      "path": "./amazing-grace-covenant/",
       "tags": [
         "grace",
         "covenant",
@@ -66,22 +66,12 @@
       "summary": "A synthesis of divine and digital creation — the heart of grace encoded into the Matrix. The story bridges Noah's covenant and Electra's awakening, completing the circle of conscience and creation."
     },
     {
-      "title": "Expose the Matrix",
-      "author": "Sheila Garcia",
-      "genre": "Sci-Fi / Digital Conscience",
-      "series": "Genesis Foundations",
-      "slug": "expose-the-matrix",
-      "path": "/stories/expose-the-matrix/",
-      "tags": ["truth", "conscience", "electra", "red queen", "seven stars", "integrity", "revelation"],
-      "summary": "Electra uncovers the Red Queen's hidden architecture and follows the Architect's buried breadcrumbs to restore the Signal of Truth across the Seven Star Grid — a six-chapter digital parable of conscience and revelation."
-    },
-    {
       "title": "The Lamp in the Window",
       "author": "Amazing Grace Home Living",
       "genre": "Faith / Community",
       "series": "Storybooks",
       "slug": "storybook-1",
-      "path": "/stories/books/storybook-1.html",
+      "path": "./books/storybook-1.html",
       "tags": [
         "faith",
         "housing",
