@@ -1,10 +1,16 @@
 import { describe, expect, it } from "vitest";
 import fs from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
+
+const testsDir = dirname(fileURLToPath(import.meta.url));
+const repoRoot = resolve(testsDir, "..");
+const galleryIndexPath = resolve(repoRoot, "galleries/index.html");
 
 describe("Gallery index navigation and asset paths", () => {
   it("uses root gallery and asset paths without /public prefixes", () => {
-    expect(fs.existsSync("galleries/index.html")).toBe(true);
-    const html = fs.readFileSync("galleries/index.html", "utf8");
+    expect(fs.existsSync(galleryIndexPath)).toBe(true);
+    const html = fs.readFileSync(galleryIndexPath, "utf8");
 
     expect(html).not.toContain("/public/assets/galleries/");
     expect(html).not.toContain('src="../');
