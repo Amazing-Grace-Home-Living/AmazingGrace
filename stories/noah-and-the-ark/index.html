@@ -262,44 +262,15 @@
             .lore-sidebar { order: -1; }
         }
 
-        /* ── Chapter navigation ── */
-        .chapter-nav {
-            display: flex;
-            gap: 0.4rem;
-            flex-wrap: wrap;
-            margin-bottom: 1.5rem;
-        }
-        .chap-btn {
-            background: var(--night-card);
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            padding: 0.4rem 0.85rem;
-            border-radius: 6px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s, border-color 0.2s;
-        }
-        .chap-btn:hover {
-            background: var(--faith-dim);
-            color: var(--faith);
-            border-color: var(--faith-border);
-        }
-        .chap-btn.active {
-            background: var(--faith-dim);
-            color: var(--faith);
-            border-color: var(--faith-border);
-        }
-
         /* ── Chapter content ── */
         .chapter-panel {
             background: var(--night-card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             overflow: hidden;
-            display: none;
+            display: block;
+            margin-bottom: 2rem;
         }
-        .chapter-panel.active { display: block; }
 
         .chapter-header {
             background: linear-gradient(90deg, var(--faith-dim), transparent);
@@ -373,33 +344,6 @@
             color: var(--faith);
             font-weight: 700;
             letter-spacing: 0.06em;
-        }
-
-        /* ── Chapter nav arrows ── */
-        .chapter-footer {
-            padding: 1rem 1.5rem;
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        .chap-nav-btn {
-            background: transparent;
-            border: 1px solid var(--faith-border);
-            color: var(--faith);
-            padding: 0.5rem 1.1rem;
-            border-radius: 6px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .chap-nav-btn:hover:not(:disabled) { background: var(--faith-dim); }
-        .chap-nav-btn:disabled { opacity: 0.3; cursor: default; }
-        .chap-progress {
-            font-size: 0.75rem;
-            color: var(--text-muted);
         }
 
         /* ── Lore Sidebar ── */
@@ -560,9 +504,6 @@
         <!-- Main content: chapter reader -->
         <div class="story-main" aria-label="Story reader">
 
-            <!-- Chapter navigation tabs -->
-            <nav class="chapter-nav" aria-label="Chapter navigation" id="chap-tabs"></nav>
-
             <!-- Chapter panels (injected by JS) -->
             <div id="chapter-panels"></div>
 
@@ -642,6 +583,13 @@
         toggle.addEventListener('click', function () {
             var open = nav.classList.toggle('show');
             toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && nav.classList.contains('show')) {
+                nav.classList.remove('show');
+                toggle.setAttribute('aria-expanded', 'false');
+                toggle.focus();
+            }
         });
     }
 
@@ -728,24 +676,14 @@
         }
     ];
 
-    var tabsEl   = document.getElementById('chap-tabs');
     var panelsEl = document.getElementById('chapter-panels');
-    var current  = 0;
 
     function renderChapter(idx) {
         var c = chapters[idx];
 
-        // ── Tab button ──
-        var btn = document.createElement('button');
-        btn.className = 'chap-btn' + (idx === 0 ? ' active' : '');
-        btn.textContent = c.label;
-        btn.setAttribute('aria-selected', idx === 0 ? 'true' : 'false');
-        btn.addEventListener('click', function () { showChapter(idx); });
-        tabsEl.appendChild(btn);
-
-        // ── Panel ──
-        var panel = document.createElement('div');
-        panel.className = 'chapter-panel' + (idx === 0 ? ' active' : '');
+        // ── Panel (article for accessibility) ──
+        var panel = document.createElement('article');
+        panel.className = 'chapter-panel';
         panel.id = 'panel-' + idx;
 
         // header
@@ -811,52 +749,7 @@
         body.appendChild(textWrap);
         panel.appendChild(body);
 
-        // footer nav
-        var footer = document.createElement('div');
-        footer.className = 'chapter-footer';
-
-        var prevBtn = document.createElement('button');
-        prevBtn.className = 'chap-nav-btn';
-        prevBtn.textContent = '← Previous';
-        prevBtn.disabled = idx === 0;
-        prevBtn.addEventListener('click', function () { if (current > 0) showChapter(current - 1); });
-
-        var prog = document.createElement('span');
-        prog.className = 'chap-progress';
-        prog.textContent = (idx + 1) + ' / ' + chapters.length;
-
-        var nextBtn = document.createElement('button');
-        nextBtn.className = 'chap-nav-btn';
-        nextBtn.textContent = 'Next →';
-        nextBtn.disabled = idx === chapters.length - 1;
-        nextBtn.addEventListener('click', function () { if (current < chapters.length - 1) showChapter(current + 1); });
-
-        footer.appendChild(prevBtn);
-        footer.appendChild(prog);
-        footer.appendChild(nextBtn);
-        panel.appendChild(footer);
-
         panelsEl.appendChild(panel);
-    }
-
-    function showChapter(idx) {
-        current = idx;
-        var tabs   = tabsEl.querySelectorAll('.chap-btn');
-        var panels = panelsEl.querySelectorAll('.chapter-panel');
-        tabs.forEach(function (t, i) {
-            t.classList.toggle('active', i === idx);
-            t.setAttribute('aria-selected', i === idx ? 'true' : 'false');
-        });
-        panels.forEach(function (p, i) {
-            p.classList.toggle('active', i === idx);
-        });
-        // Update prev/next button disabled state
-        var footers = panelsEl.querySelectorAll('.chapter-footer');
-        if (footers[idx]) {
-            var btns = footers[idx].querySelectorAll('.chap-nav-btn');
-            if (btns[0]) btns[0].disabled = idx === 0;
-            if (btns[1]) btns[1].disabled = idx === chapters.length - 1;
-        }
     }
 
     chapters.forEach(function (_, i) { renderChapter(i); });

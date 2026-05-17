@@ -277,44 +277,15 @@
             .lore-sidebar { order: -1; }
         }
 
-        /* ── Chapter navigation ── */
-        .chapter-nav {
-            display: flex;
-            gap: 0.4rem;
-            flex-wrap: wrap;
-            margin-bottom: 1.5rem;
-        }
-        .chap-btn {
-            background: var(--night-card);
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            padding: 0.4rem 0.85rem;
-            border-radius: 6px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s, border-color 0.2s;
-        }
-        .chap-btn:hover {
-            background: var(--truth-dim);
-            color: var(--truth);
-            border-color: var(--truth-border);
-        }
-        .chap-btn.active {
-            background: var(--truth-dim);
-            color: var(--truth);
-            border-color: var(--truth-border);
-        }
-
         /* ── Chapter content ── */
         .chapter-panel {
             background: var(--night-card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             overflow: hidden;
-            display: none;
+            display: block;
+            margin-bottom: 2rem;
         }
-        .chapter-panel.active { display: block; }
 
         .chapter-header {
             padding: 1.5rem 1.75rem 1.25rem;
@@ -387,40 +358,6 @@
             margin-bottom: 1.1rem;
         }
         .chapter-text p:last-child { margin-bottom: 0; }
-
-        .chapter-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem 1.75rem;
-            border-top: 1px solid var(--border);
-            background: var(--night-deep);
-        }
-        .chap-nav-btn {
-            background: var(--truth-dim);
-            border: 1px solid var(--truth-border);
-            color: var(--truth);
-            padding: 0.45rem 1.1rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: background 0.2s;
-        }
-        .chap-nav-btn:hover:not([aria-disabled="true"]) { background: rgba(61, 232, 160, 0.18); }
-        .chap-nav-btn[aria-disabled="true"] {
-            opacity: 0.3;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-        .chap-progress {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            letter-spacing: 0.1em;
-        }
 
         /* ── Sidebar ── */
         .lore-sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
@@ -539,11 +476,10 @@
     </a>
     <nav id="main-nav" aria-label="Main navigation">
         <a href="../../" class="nav-btn">🏠 Home</a>
-        <a href="../" class="nav-btn">📚 Library</a>
+        <a href="../" class="nav-btn active">📚 Library</a>
         <a href="../../arcade/" class="nav-btn">🎮 Arcade</a>
         <a href="../../ministry/" class="nav-btn">🕊️ Ministry</a>
         <a href="../../ministries/" class="nav-btn">✨ Seven Stars</a>
-        <a href="../" class="nav-btn active">📚 Library</a>
     </nav>
     <button class="menu-toggle" aria-label="Toggle navigation" aria-controls="main-nav" aria-expanded="false">☰</button>
 </header>
@@ -580,9 +516,6 @@
 
         <!-- Main content: chapter reader -->
         <div class="story-main" aria-label="Story reader">
-
-            <!-- Chapter navigation tabs -->
-            <nav class="chapter-nav" aria-label="Chapter navigation" id="chap-tabs"></nav>
 
             <!-- Chapter panels (injected by JS) -->
             <div id="chapter-panels"></div>
@@ -673,6 +606,13 @@
             var open = nav.classList.toggle('show');
             toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
         });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && nav.classList.contains('show')) {
+                nav.classList.remove('show');
+                toggle.setAttribute('aria-expanded', 'false');
+                toggle.focus();
+            }
+        });
     }
 
     // ── Story chapters ──
@@ -750,24 +690,14 @@
         }
     ];
 
-    var tabsEl   = document.getElementById('chap-tabs');
     var panelsEl = document.getElementById('chapter-panels');
-    var current  = 0;
 
     function renderChapter(idx) {
         var c = chapters[idx];
 
-        // ── Tab button ──
-        var btn = document.createElement('button');
-        btn.className = 'chap-btn' + (idx === 0 ? ' active' : '');
-        btn.textContent = c.label;
-        btn.setAttribute('aria-selected', idx === 0 ? 'true' : 'false');
-        btn.addEventListener('click', function () { showChapter(idx); });
-        tabsEl.appendChild(btn);
-
-        // ── Panel ──
-        var panel = document.createElement('div');
-        panel.className = 'chapter-panel' + (idx === 0 ? ' active' : '');
+        // ── Panel (article for accessibility) ──
+        var panel = document.createElement('article');
+        panel.className = 'chapter-panel';
         panel.id = 'panel-' + idx;
 
         // header
@@ -833,60 +763,7 @@
         body.appendChild(textWrap);
         panel.appendChild(body);
 
-        // footer nav
-        var footer = document.createElement('div');
-        footer.className = 'chapter-footer';
-
-        var prevBtn = document.createElement('a');
-        prevBtn.className = 'chap-nav-btn';
-        prevBtn.textContent = '← Previous';
-        prevBtn.href = idx > 0 ? '#panel-' + (idx - 1) : '#';
-        prevBtn.setAttribute('aria-disabled', idx === 0 ? 'true' : 'false');
-        prevBtn.addEventListener('click', function (e) { e.preventDefault(); if (current > 0) showChapter(current - 1); });
-
-        var prog = document.createElement('span');
-        prog.className = 'chap-progress';
-        prog.textContent = (idx + 1) + ' / ' + chapters.length;
-
-        var nextBtn = document.createElement('a');
-        nextBtn.className = 'chap-nav-btn';
-        nextBtn.textContent = 'Next →';
-        nextBtn.href = idx < chapters.length - 1 ? '#panel-' + (idx + 1) : '#';
-        nextBtn.setAttribute('aria-disabled', idx === chapters.length - 1 ? 'true' : 'false');
-        nextBtn.addEventListener('click', function (e) { e.preventDefault(); if (current < chapters.length - 1) showChapter(current + 1); });
-
-        footer.appendChild(prevBtn);
-        footer.appendChild(prog);
-        footer.appendChild(nextBtn);
-        panel.appendChild(footer);
-
         panelsEl.appendChild(panel);
-    }
-
-    function showChapter(idx) {
-        current = idx;
-        var tabs   = tabsEl.querySelectorAll('.chap-btn');
-        var panels = panelsEl.querySelectorAll('.chapter-panel');
-        tabs.forEach(function (t, i) {
-            t.classList.toggle('active', i === idx);
-            t.setAttribute('aria-selected', i === idx ? 'true' : 'false');
-        });
-        panels.forEach(function (p, i) {
-            p.classList.toggle('active', i === idx);
-        });
-        // Update prev/next link aria-disabled state and hrefs
-        var footers = panelsEl.querySelectorAll('.chapter-footer');
-        if (footers[idx]) {
-            var btns = footers[idx].querySelectorAll('.chap-nav-btn');
-            if (btns[0]) {
-                btns[0].setAttribute('aria-disabled', idx === 0 ? 'true' : 'false');
-                btns[0].href = idx > 0 ? '#panel-' + (idx - 1) : '#';
-            }
-            if (btns[1]) {
-                btns[1].setAttribute('aria-disabled', idx === chapters.length - 1 ? 'true' : 'false');
-                btns[1].href = idx < chapters.length - 1 ? '#panel-' + (idx + 1) : '#';
-            }
-        }
     }
 
     chapters.forEach(function (_, i) { renderChapter(i); });
