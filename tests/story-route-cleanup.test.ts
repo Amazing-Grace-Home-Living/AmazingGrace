@@ -27,6 +27,8 @@ describe('story and arcade cleanup', () => {
     expect(library).not.toContain('storybook-2');
     expect(libraryJson.entries.every((entry) => entry.path.startsWith('./'))).toBe(true);
     expect(libraryJson.characters.every((character) => character.path.startsWith('./'))).toBe(true);
+    expect(new Set(libraryJson.entries.map((entry) => entry.slug)).size).toBe(libraryJson.entries.length);
+    expect(new Set(libraryJson.entries.map((entry) => entry.path)).size).toBe(libraryJson.entries.length);
     expect(library).toContain('./books/the-lamp-in-the-window.html');
     expect(library).toContain('./noah-and-the-ark/');
     expect(matrixApp).toContain('../../stories/books/the-lamp-in-the-window.html');
