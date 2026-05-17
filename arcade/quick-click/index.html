@@ -9,12 +9,16 @@
     />
     <meta name="theme-color" content="#0f172a" />
 
-    <link rel="icon" type="image/png" href="/assets/logo.png" />
+    <link rel="icon" type="image/png" href="../../assets/logo.png" />
     <title>Quick Click | Nexus Arcade</title>
 
+    <script src="../../assets/vendor/hosted-only.js"></script>
+    <script>
+      window.AmazingGraceHostedOnly?.loadStylesheet(
+        "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap"
+      );
+    </script>
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap');
-
       :root {
         --bg: #0f172a;
         --surface: rgba(30, 41, 59, 0.7);
@@ -98,14 +102,14 @@
   </head>
   <body>
     <header class="topbar" aria-label="Quick Click top navigation">
-      <a class="brand" href="/arcade/" aria-label="Back to Nexus Arcade">
-        <img src="/assets/logo.png" alt="Amazing Grace Home Living" />
+      <a class="brand" href="../" aria-label="Back to Nexus Arcade">
+        <img src="../../assets/logo.png" alt="Amazing Grace Home Living" />
         <span>Quick Click</span>
       </a>
       <nav class="crumbs" aria-label="Breadcrumb">
-        <a href="/">Home</a>
+        <a href="../../">Home</a>
         <span aria-hidden="true"> · </span>
-        <a href="/arcade/">Arcade</a>
+        <a href="../">Arcade</a>
         <span aria-hidden="true"> · </span>
         <span>Quick Click</span>
       </nav>
@@ -116,4 +120,3 @@
     <script type="module" src="../../src/arcade/quick-click/main.tsx"></script>
   </body>
 </html>
-

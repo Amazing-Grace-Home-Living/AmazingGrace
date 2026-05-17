@@ -1,14 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-HKZ2G2VN78"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  (function () {
+    const allowedHosts = new Set([
+      "amazinggracehl.org",
+      "www.amazinggracehl.org",
+      "nicholaimadias.github.io",
+    ]);
+    const isHosted =
+      window.location.protocol === "https:" && allowedHosts.has(window.location.hostname);
+    if (!isHosted) return;
 
-  gtag('config', 'G-HKZ2G2VN78');
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://www.googletagmanager.com/gtag/js?id=G-HKZ2G2VN78";
+    document.head.appendChild(script);
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () {
+      window.dataLayer.push(arguments);
+    };
+    window.gtag("js", new Date());
+    window.gtag("config", "G-HKZ2G2VN78");
+  })();
 </script>
 
     <meta charset="UTF-8">
@@ -19,10 +34,12 @@
     <link rel="icon" type="image/png" href="../assets/logo.png">
     <title>The Mystery of the Seven Stars | Voice of Jesus Ministry</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../assets/vendor/tailwindcss.js"></script>
+    <script src="../assets/vendor/hosted-only.js"></script>
+    <script>
+        window.AmazingGraceHostedOnly?.loadStylesheet("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap");
+    </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap');
-
         /* ── Design tokens ───────────────────────────────── */
         :root {
             --gold:    #ffd700;
@@ -500,16 +517,16 @@
 
     <!-- Header -->
     <header class="site-header">
-        <a href="/" class="logo" aria-label="Amazing Grace Home Living — Home">
+        <a href="../" class="logo" aria-label="Amazing Grace Home Living — Home">
             <img src="../assets/logo.png" alt="Amazing Grace Home Living Logo">
             <span>Amazing Grace</span>
         </a>
         <nav id="main-nav" class="main-nav" aria-label="Main navigation">
-            <a href="/" class="nav-btn">🏠 Home</a>
-            <a href="/stories/" class="nav-btn">📚 Library</a>
-            <a href="/arcade" class="nav-btn">🎮 Arcade</a>
-            <a href="/ministry" class="nav-btn">🕊️ Ministry</a>
-            <a href="/ministries/" class="nav-btn active" aria-current="page">✨ Seven Stars</a>
+            <a href="../" class="nav-btn">🏠 Home</a>
+            <a href="../stories/" class="nav-btn">📚 Library</a>
+            <a href="../arcade" class="nav-btn">🎮 Arcade</a>
+            <a href="../ministry" class="nav-btn">🕊️ Ministry</a>
+            <a href="./" class="nav-btn active" aria-current="page">✨ Seven Stars</a>
         </nav>
         <button class="menu-toggle" aria-label="Toggle navigation" aria-controls="main-nav" aria-expanded="false">☰</button>
     </header>
@@ -573,7 +590,7 @@
                     <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1.5rem">
                         Each star is a church. Each church is a lesson. Each lesson is a step closer to the One who holds them.
                     </p>
-                    <a href="/ministry" class="story-btn" style="text-decoration:none">🕊️ Return to Ministry</a>
+                    <a href="../ministry" class="story-btn" style="text-decoration:none">🕊️ Return to Ministry</a>
                 </div>
             </div>
 
@@ -581,7 +598,7 @@
     </main>
 
     <footer class="site-footer">
-        <p>&copy; 2026 Amazing Grace Home Living &mdash; Voice of Jesus Ministry &mdash; <a href="/">amazinggracehl.org</a></p>
+        <p>&copy; 2026 Amazing Grace Home Living &mdash; Voice of Jesus Ministry &mdash; <a href="../">amazinggracehl.org</a></p>
     </footer>
 
     <script src="story-nodes.js"></script>

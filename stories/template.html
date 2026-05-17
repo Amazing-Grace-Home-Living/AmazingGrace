@@ -36,13 +36,29 @@
 -->
 <html lang="en">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-HKZ2G2VN78"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-HKZ2G2VN78');
+  (function () {
+    const allowedHosts = new Set([
+      "amazinggracehl.org",
+      "www.amazinggracehl.org",
+      "nicholaimadias.github.io",
+    ]);
+    const isHosted =
+      window.location.protocol === "https:" && allowedHosts.has(window.location.hostname);
+    if (!isHosted) return;
+
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://www.googletagmanager.com/gtag/js?id=G-HKZ2G2VN78";
+    document.head.appendChild(script);
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () {
+      window.dataLayer.push(arguments);
+    };
+    window.gtag("js", new Date());
+    window.gtag("config", "G-HKZ2G2VN78");
+  })();
 </script>
 
     <meta charset="UTF-8">
@@ -50,7 +66,7 @@
     <meta name="description" content="{{description}}">
     <meta name="keywords" content="{{tags}}">
     <meta name="theme-color" content="#000000">
-    <link rel="icon" type="image/png" href="/assets/logo.png">
+    <link rel="icon" type="image/png" href="../assets/logo.png">
     <title>{{title}} | Amazing Grace Story Library</title>
 
     <!-- Open Graph -->
@@ -141,10 +157,10 @@
 <body>
 
 <nav class="topnav" aria-label="Site navigation">
-    <a href="/">Home</a>
-    <a href="/stories/">Library</a>
-    <a href="/ministry/">Ministry</a>
-    <a href="/arcade/">Arcade</a>
+    <a href="../">Home</a>
+    <a href="./">Library</a>
+    <a href="../ministry/">Ministry</a>
+    <a href="../arcade/">Arcade</a>
 </nav>
 
 <article>
@@ -164,10 +180,10 @@
     </div>
 </article>
 
-<p class="back-link"><a href="/stories/">← Back to Storybook Library</a></p>
+<p class="back-link"><a href="./">← Back to Storybook Library</a></p>
 
 <footer>
-    <p>&copy; 2026 Amazing Grace Home Living &mdash; <a href="/">amazinggracehl.org</a></p>
+    <p>&copy; 2026 Amazing Grace Home Living &mdash; <a href="../">amazinggracehl.org</a></p>
 </footer>
 
 </body>

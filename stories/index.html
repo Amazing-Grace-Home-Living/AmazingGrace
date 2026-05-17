@@ -1,15 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src="../assets/js/hosted-only.js"></script>
 <script>
-  if (window.AmazingGraceHostedOnly?.isHosted()) {
+  (function () {
+    const allowedHosts = new Set([
+      "amazinggracehl.org",
+      "www.amazinggracehl.org",
+      "nicholaimadias.github.io",
+    ]);
+    const isHosted =
+      window.location.protocol === "https:" && allowedHosts.has(window.location.hostname);
+    if (!isHosted) return;
+
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://www.googletagmanager.com/gtag/js?id=G-HKZ2G2VN78";
+    document.head.appendChild(script);
+
     window.dataLayer = window.dataLayer || [];
-    window.gtag = function () { window.dataLayer.push(arguments); };
-    window.gtag('js', new Date());
-    window.gtag('config', 'G-HKZ2G2VN78');
-    window.AmazingGraceHostedOnly.loadScript('https://www.googletagmanager.com/gtag/js?id=G-HKZ2G2VN78', { async: true });
-  }
+    window.gtag = function () {
+      window.dataLayer.push(arguments);
+    };
+    window.gtag("js", new Date());
+    window.gtag("config", "G-HKZ2G2VN78");
+  })();
 </script>
 
     <meta charset="UTF-8">
@@ -20,10 +34,6 @@
     <title>Storybook Library | Amazing Grace Home Living</title>
 
     <style>
-        .nav-logo-link {
-            display: none !important;
-        }
-
         body {
             background: #000;
             color: #ccc;
@@ -154,10 +164,10 @@
 <body>
 
 <nav class="topnav" aria-label="Site navigation">
-    <a href="/">Home</a>
-    <a href="/stories/">Library</a>
-    <a href="/ministry/">Ministry</a>
-    <a href="/arcade/">Arcade</a>
+    <a href="../">Home</a>
+    <a href="./">Library</a>
+    <a href="../ministry/">Ministry</a>
+    <a href="../arcade/">Arcade</a>
 </nav>
 
 <header>
@@ -166,7 +176,7 @@
 </header>
 
 <p class="arcade-banner">
-    🎮 <strong>Nexus Arcade</strong> — experience these stories as interactive games and narrative missions at <a href="/arcade/">/arcade</a>
+    🎮 <strong>Nexus Arcade</strong> — experience these stories as interactive games and narrative missions at <a href="../arcade/">/arcade</a>
 </p>
 
 <hr>
@@ -181,7 +191,7 @@
 <div id="error" class="error" role="status" aria-live="polite"></div>
 
 <footer>
-    <p>&copy; 2026 Amazing Grace Home Living &mdash; <a href="/">amazinggracehl.org</a></p>
+    <p>&copy; 2026 Amazing Grace Home Living &mdash; <a href="../">amazinggracehl.org</a></p>
 </footer>
 
 <script>

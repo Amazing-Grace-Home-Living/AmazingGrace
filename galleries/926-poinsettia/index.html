@@ -1,14 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-HKZ2G2VN78"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  (function () {
+    const allowedHosts = new Set([
+      "amazinggracehl.org",
+      "www.amazinggracehl.org",
+      "nicholaimadias.github.io",
+    ]);
+    const isHosted =
+      window.location.protocol === "https:" && allowedHosts.has(window.location.hostname);
+    if (!isHosted) return;
 
-  gtag('config', 'G-HKZ2G2VN78');
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://www.googletagmanager.com/gtag/js?id=G-HKZ2G2VN78";
+    document.head.appendChild(script);
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () {
+      window.dataLayer.push(arguments);
+    };
+    window.gtag("js", new Date());
+    window.gtag("config", "G-HKZ2G2VN78");
+  })();
 </script>
 
     <meta charset="UTF-8">
@@ -17,8 +32,11 @@
     <meta name="theme-color" content="#1e3a8a">
     <link rel="icon" type="image/png" href="../../assets/logo.png">
     <title>Gallery — 926 E Poinsettia Ave | Amazing Grace Home Living</title>
+    <script src="../../assets/vendor/hosted-only.js"></script>
+    <script>
+        window.AmazingGraceHostedOnly?.loadStylesheet("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;700&display=swap");
+    </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;700&display=swap');
         :root {
             --deep-purple:#000000; --deep-purple-dark:#000000; --gold:#00ff66;
             --text:#00ff66; --text-muted:#7dffb3; --surface:rgba(0,0,0,0.85);
@@ -85,16 +103,16 @@
 </head>
 <body>
     <header class="site-header">
-        <a href="/" class="logo" aria-label="Amazing Grace Home Living — Home">
+        <a href="../../" class="logo" aria-label="Amazing Grace Home Living — Home">
             <img src="../../assets/logo.png" alt="Amazing Grace Home Living Logo">
             <span>Amazing Grace</span>
         </a>
         <nav id="main-nav" class="nav-links" aria-label="Main navigation">
-            <a href="/" class="nav-btn">🏠 Home</a>
-            <a href="/arcade" class="nav-btn">🎮 Arcade</a>
-            <a href="/stories/" class="nav-btn">📚 Library</a>
-            <a href="/ministry" class="nav-btn">🕊️ Ministry</a>
-            <a href="/contact" class="nav-btn">✉️ Contact</a>
+            <a href="../../" class="nav-btn">🏠 Home</a>
+            <a href="../../arcade" class="nav-btn">🎮 Arcade</a>
+            <a href="../../stories/" class="nav-btn">📚 Library</a>
+            <a href="../../ministry" class="nav-btn">🕊️ Ministry</a>
+            <a href="../../contact" class="nav-btn">✉️ Contact</a>
         </nav>
     </header>
     <main>
@@ -104,7 +122,7 @@
         </div>
         <div class="container">
             <nav class="breadcrumb" aria-label="Breadcrumb">
-                <a href="/">Home</a> › <a href="/#properties">Listings</a> › 926 Poinsettia
+                <a href="../../">Home</a> › <a href="../../#properties">Listings</a> › 926 Poinsettia
             </nav>
             <div class="gallery-grid" aria-label="Property photos">
                 <a href="https://github.com/user-attachments/assets/adaea8b8-b6ef-4efd-b54a-f3967c31c3ae" class="gallery-item" target="_blank" rel="noopener noreferrer" aria-label="Property photo 1">
@@ -189,7 +207,7 @@
         </div>
     </main>
     <footer class="site-footer">
-        <p>&copy; 2026 Amazing Grace Home Living &mdash; <a href="/">amazinggracehl.org</a></p>
+        <p>&copy; 2026 Amazing Grace Home Living &mdash; <a href="../../">amazinggracehl.org</a></p>
         <p class="site-footer-contact">
             📞 <a href="tel:7274202873">(727) 420-2873</a> &nbsp;|&nbsp;
             ✉️ <a href="mailto:admin@amazinggracehl.org">admin@amazinggracehl.org</a>

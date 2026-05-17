@@ -9,10 +9,12 @@
     <link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
     <title>Contact Us | Amazing Grace Home Living</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../assets/vendor/tailwindcss.js"></script>
+    <script src="../assets/vendor/hosted-only.js"></script>
+    <script>
+        window.AmazingGraceHostedOnly?.loadStylesheet("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap");
+    </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap');
-
         :root { --navy: #1e3a8a; --blue: #2563eb; --green: #059669; }
 
         /*
@@ -254,17 +256,17 @@
 <body>
 
     <header class="site-header">
-        <a href="/" class="logo" aria-label="Amazing Grace Home Living — Home">
+        <a href="../" class="logo" aria-label="Amazing Grace Home Living — Home">
             <img src="../assets/logo.svg" alt="Amazing Grace Home Living Logo">
             <span>Amazing Grace</span>
         </a>
         <nav id="main-nav" class="nav-links" aria-label="Main navigation">
-            <a href="/" class="nav-btn">🏠 Home</a>
-            <a href="/stories/" class="nav-btn">📚 Library</a>
-            <a href="/arcade" class="nav-btn">🎮 Arcade</a>
-            <a href="/listings" class="nav-btn">🏡 Listings</a>
-            <a href="/ministry" class="nav-btn">🕊️ Ministry</a>
-            <a href="/contact" class="nav-btn active">✉️ Contact</a>
+            <a href="../" class="nav-btn">🏠 Home</a>
+            <a href="../stories/" class="nav-btn">📚 Library</a>
+            <a href="../arcade" class="nav-btn">🎮 Arcade</a>
+            <a href="../galleries/" class="nav-btn">🏡 Listings</a>
+            <a href="../ministry" class="nav-btn">🕊️ Ministry</a>
+            <a href="./" class="nav-btn active">✉️ Contact</a>
         </nav>
         <button class="menu-toggle" aria-label="Toggle navigation" aria-controls="main-nav" aria-expanded="false">☰</button>
     </header>
@@ -279,7 +281,7 @@
         <div class="container">
 
             <nav class="breadcrumb" aria-label="Breadcrumb">
-                <a href="/">Home</a> › Contact
+                <a href="../">Home</a> › Contact
             </nav>
 
             <!-- Quick contact options -->
@@ -295,14 +297,14 @@
                     <span class="quick-item-icon">🏡</span>
                     <div class="quick-item-text">
                         <h4>Housing Inquiries</h4>
-                        <p><a href="/listings">View available listings</a></p>
+                        <p><a href="../galleries/">View available listings</a></p>
                     </div>
                 </div>
                 <div class="quick-item">
                     <span class="quick-item-icon">🕊️</span>
                     <div class="quick-item-text">
                         <h4>Ministry Support</h4>
-                        <p><a href="/support">Partner with the mission</a></p>
+                        <p><a href="../support">Partner with the mission</a></p>
                     </div>
                 </div>
             </div>
@@ -347,7 +349,7 @@
     </main>
 
     <footer class="site-footer">
-        <p>&copy; 2026 Amazing Grace Home Living &mdash; <a href="/">amazinggracehl.org</a></p>
+        <p>&copy; 2026 Amazing Grace Home Living &mdash; <a href="../">amazinggracehl.org</a></p>
     </footer>
 
     <script>

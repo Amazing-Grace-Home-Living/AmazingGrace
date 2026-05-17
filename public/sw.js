@@ -13,7 +13,6 @@ const ASSETS_TO_CACHE = [
     './arcade/matrix-of-conscience/index.html',
     './arcade/bible-study/index.html',
     './arcade/certificates/index.html',
-    './arcade/downloads/island-hope-quiz.html',
     './ministry/index.html',
     './manifest.json',
     './star-map.js',

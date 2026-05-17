@@ -1,23 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-HKZ2G2VN78"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  (function () {
+    const allowedHosts = new Set([
+      "amazinggracehl.org",
+      "www.amazinggracehl.org",
+      "nicholaimadias.github.io",
+    ]);
+    const isHosted =
+      window.location.protocol === "https:" && allowedHosts.has(window.location.hostname);
+    if (!isHosted) return;
 
-  gtag('config', 'G-HKZ2G2VN78');
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://www.googletagmanager.com/gtag/js?id=G-HKZ2G2VN78";
+    document.head.appendChild(script);
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () {
+      window.dataLayer.push(arguments);
+    };
+    window.gtag("js", new Date());
+    window.gtag("config", "G-HKZ2G2VN78");
+  })();
 </script>
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Sovereign Matrix — unlock Vision Forge, Sovereign Nations, and Diagnostics Console tools.">
+  <meta name="description" content="Matrix of Conscience — reflective portal for the Matrix of Conscience experience.">
   <meta name="theme-color" content="#0a0a0a">
-  <link rel="icon" type="image/png" href="/assets/logo.png">
-  <title>Amazing Grace: Star Matrix</title>
-  <link rel="stylesheet" href="/admin/css/matrix.css">
+  <link rel="icon" type="image/png" href="./assets/logo.png">
+  <title>Matrix of Conscience | Amazing Grace Home Living</title>
+  <link rel="stylesheet" href="./admin/css/matrix.css">
   <style>
     /* ── Page layout ──────────────────────────────────────────── */
     .page-wrap {
@@ -212,12 +227,12 @@
 
 <!-- ═══════════════════════ NAV ═══════════════════════════════ -->
 <nav class="matrix-nav">
-  <a href="/" class="nav-brand">⬡ AMAZING GRACE</a>
+  <a href="./" class="nav-brand">⬡ AMAZING GRACE</a>
   <ul class="nav-links">
-    <li><a href="/">Home</a></li>
-    <li><a href="/arcade/">Arcade</a></li>
-    <li><a href="/ministry/">Ministry</a></li>
-    <li><a href="/admin/">Admin</a></li>
+    <li><a href="./">Home</a></li>
+    <li><a href="./arcade/">Arcade</a></li>
+    <li><a href="./ministry/">Ministry</a></li>
+    <li><a href="./admin/">Admin</a></li>
   </ul>
   <span class="nav-user" id="nav-user"></span>
   <button class="btn" id="login-btn" style="font-size:0.72rem;padding:0.3rem 0.75rem;">Login</button>
@@ -247,8 +262,8 @@
 <div class="page-wrap">
 
   <div class="hero">
-    <h1 class="glitch">SOVEREIGN MATRIX</h1>
-    <p>Unlock advanced tools as you progress through the Nexus Arcade.</p>
+    <h1 class="glitch">MATRIX OF CONSCIENCE</h1>
+    <p>Enter the Matrix of Conscience and continue your journey through the Nexus Arcade.</p>
   </div>
 
   <!-- ── Tool cards ───────────────────────────────────────────── -->

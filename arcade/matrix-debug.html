@@ -1,37 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-HKZ2G2VN78"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-HKZ2G2VN78');
+  (function () {
+    const allowedHosts = new Set([
+      "amazinggracehl.org",
+      "www.amazinggracehl.org",
+      "nicholaimadias.github.io",
+    ]);
+    const isHosted =
+      window.location.protocol === "https:" && allowedHosts.has(window.location.hostname);
+    if (!isHosted) return;
+
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://www.googletagmanager.com/gtag/js?id=G-HKZ2G2VN78";
+    document.head.appendChild(script);
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () {
+      window.dataLayer.push(arguments);
+    };
+    window.gtag("js", new Date());
+    window.gtag("config", "G-HKZ2G2VN78");
+  })();
 </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="The Matrix of Conscience — Debug build. Engine introspection, FPS, state, and rolling log.">
   <meta name="theme-color" content="#000000">
-  <link rel="icon" type="image/png" href="/assets/logo.png">
+  <link rel="icon" type="image/png" href="../assets/logo.png">
   <title>Matrix of Conscience — Debug | Amazing Grace Arcade</title>
-  <link rel="stylesheet" href="/css/matrix-classic.css">
+  <link rel="stylesheet" href="../css/matrix-classic.css">
 </head>
 <body>
 
   <!-- Header -->
   <header class="mc-header">
-    <a href="/" class="mc-brand" aria-label="Amazing Grace Home Living — Home">
-      <img src="/assets/logo.png" alt="Amazing Grace">
+    <a href="../" class="mc-brand" aria-label="Amazing Grace Home Living — Home">
+      <img src="../assets/logo.png" alt="Amazing Grace">
       <span>Amazing Grace</span>
     </a>
     <nav class="mc-nav" aria-label="Main navigation">
-      <a href="/">Home</a>
-      <a href="/arcade">Arcade</a>
-      <a href="/arcade/matrix-classic.html">Classic</a>
-      <a href="/stories/">Library</a>
-      <a href="/ministry">Ministry</a>
-      <a href="/contact">Contact</a>
+      <a href="../">Home</a>
+      <a href="./">Arcade</a>
+      <a href="./matrix-classic.html">Classic</a>
+      <a href="../stories/">Library</a>
+      <a href="../ministry">Ministry</a>
+      <a href="../contact">Contact</a>
     </nav>
   </header>
 
@@ -59,7 +75,7 @@
   </div>
 
   <!-- Classic engine boot script -->
-  <script src="/js/matrix-classic.js"></script>
+  <script src="../js/matrix-classic.js"></script>
 
   <!-- Debug controller -->
   <script>

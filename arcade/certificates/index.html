@@ -1,21 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-HKZ2G2VN78"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  (function () {
+    const allowedHosts = new Set([
+      "amazinggracehl.org",
+      "www.amazinggracehl.org",
+      "nicholaimadias.github.io",
+    ]);
+    const isHosted =
+      window.location.protocol === "https:" && allowedHosts.has(window.location.hostname);
+    if (!isHosted) return;
 
-  gtag('config', 'G-HKZ2G2VN78');
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://www.googletagmanager.com/gtag/js?id=G-HKZ2G2VN78";
+    document.head.appendChild(script);
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () {
+      window.dataLayer.push(arguments);
+    };
+    window.gtag("js", new Date());
+    window.gtag("config", "G-HKZ2G2VN78");
+  })();
 </script>
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Certificates | Nexus Arcade — Amazing Grace</title>
+  <script src="../../assets/vendor/hosted-only.js"></script>
+  <script>
+    window.AmazingGraceHostedOnly?.loadStylesheet("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;800&display=swap");
+  </script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;800&display=swap');
     :root {
       --neon-blue:   #00f2ff;
       --neon-purple: #bc13fe;
@@ -94,7 +112,7 @@
       <h1>CERTIFICATES</h1>
       <p>Nexus Arcade — Completion Records</p>
     </div>
-    <a class="back-link" href="/arcade/">← Back to Arcade</a>
+    <a class="back-link" href="../">← Back to Arcade</a>
   </div>
 
   <!-- Certificate list (populated by JS) -->
@@ -106,7 +124,7 @@
     <div class="icon" aria-hidden="true">🎮</div>
     <h2>No Certificates Yet</h2>
     <p>Complete a game to earn your first certificate.</p>
-    <a class="play-btn" href="/arcade/">▶ Play Now</a>
+    <a class="play-btn" href="../">▶ Play Now</a>
   </div>
 
   <script>

@@ -5,12 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Contact Amazing Grace Home Living — call, text, or email about available rooms in Largo &amp; Tampa, FL.">
     <meta name="theme-color" content="#0a0a14">
-    <link rel="icon" type="image/png" href="/assets/logo.png">
+    <link rel="icon" type="image/png" href="./assets/logo.png">
     <link rel="manifest" href="./manifest.json">
     <title>Contact Us — Amazing Grace Home Living</title>
+    <script src="./assets/vendor/hosted-only.js"></script>
+    <script>
+        window.AmazingGraceHostedOnly?.loadStylesheet("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600;800&display=swap");
+    </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600;800&display=swap');
-
         :root {
             --night: #0a0a14;
             --night-surface: #111122;
@@ -73,15 +75,15 @@
 </head>
 <body>
     <header class="site-header">
-        <a href="/" class="logo" aria-label="Amazing Grace Home Living — Home">
-            <img src="/assets/logo.png" alt="Amazing Grace Home Living Logo">
+        <a href="./" class="logo" aria-label="Amazing Grace Home Living — Home">
+            <img src="./assets/logo.png" alt="Amazing Grace Home Living Logo">
             <span>Amazing Grace</span>
         </a>
         <nav class="nav-links" aria-label="Main navigation">
-            <a href="/" class="nav-btn">🏠 Home</a>
-            <a href="/stories/" class="nav-btn">📚 Library</a>
-            <a href="/arcade/" class="nav-btn">🎮 Arcade</a>
-            <a href="/ministry/" class="nav-btn">🕊️ Ministry</a>
+            <a href="./" class="nav-btn">🏠 Home</a>
+            <a href="./stories/" class="nav-btn">📚 Library</a>
+            <a href="./arcade/" class="nav-btn">🎮 Arcade</a>
+            <a href="./ministry/" class="nav-btn">🕊️ Ministry</a>
         </nav>
     </header>
 
@@ -136,7 +138,7 @@
                     <textarea id="c-message" name="message" placeholder="Move-in date, any questions…"></textarea>
                 </div>
                 <button type="submit" class="btn-primary" id="contact-btn">
-                    <img src="/assets/star_crystal_gold.svg" alt="" width="18" height="18">
+                    <img src="./assets/star_crystal_gold.svg" alt="" width="18" height="18">
                     Send Message
                 </button>
                 <p id="contact-msg" role="status" aria-live="polite"></p>
@@ -200,7 +202,7 @@
                 })
                 .finally(function () {
                     btn.disabled = false;
-                    btn.innerHTML = '<img src="/assets/star_crystal_gold.svg" alt="" width="18" height="18"> Send Message';
+                    btn.innerHTML = '<img src="./assets/star_crystal_gold.svg" alt="" width="18" height="18"> Send Message';
                 });
             });
         })();
