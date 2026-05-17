@@ -110,7 +110,7 @@
 
         function initGame() {
             document.getElementById('start-screen').classList.add('hidden');
-            try { document.documentElement.requestFullscreen(); } catch (e) {}
+            try { document.documentElement.requestFullscreen(); } catch (e) { /* Fullscreen may be blocked by browser/user settings; continue normally. */ }
             createBoard();
         }
 
