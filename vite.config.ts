@@ -30,7 +30,7 @@ export default defineConfig({
         stories:           resolve(__dirname, "stories/index.html"),
         storiesExposeMatrix: resolve(__dirname, "stories/expose-the-matrix/index.html"),
         storiesMatrix:      resolve(__dirname, "stories/matrix.html"),
-        storiesNoahAndArk:  resolve(__dirname, "stories/noah-and-the-ark/index.html"),
+        storiesNoahAndTheArk: resolve(__dirname, "stories/noah-and-the-ark/index.html"),
         storiesOurCovenant: resolve(__dirname, "stories/our-covenant-of-new-beginnings/index.html"),
         storiesLampInWindow: resolve(__dirname, "stories/books/the-lamp-in-the-window.html"),
         storiesElla:       resolve(__dirname, "stories/characters/ella.html"),
