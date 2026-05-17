@@ -25,7 +25,7 @@ const GAMES = [
     icon: '🏮',
     title: 'The Lamp in the Window',
     desc: 'A story of hope, community, and the light that never goes out — following Ruth\'s journey from instability to a stable home at Amazing Grace.',
-    href: '/stories/books/storybook-1.html',
+    href: '/stories/books/the-lamp-in-the-window.html',
     badge: 'Storybook · Faith',
     badgeClass: 'badge-amber',
     btnLabel: '▶ Read the Story',

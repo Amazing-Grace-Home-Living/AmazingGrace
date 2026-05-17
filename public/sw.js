@@ -1,4 +1,4 @@
-const CACHE_NAME = 'amazing-grace-v6';
+const CACHE_NAME = 'amazing-grace-v7';
 
 // Core pages and game modules deployed at stable paths.
 // Use scope-relative URLs (./…) so the service worker works correctly
@@ -11,8 +11,6 @@ const ASSETS_TO_CACHE = [
     './arcade/index.html',
     './arcade/star-matrix/index.html',
     './arcade/matrix-of-conscience/index.html',
-    './arcade/matrix-act-1/index.html',
-    './arcade/matrix-act-2/index.html',
     './arcade/bible-study/index.html',
     './arcade/certificates/index.html',
     './arcade/downloads/island-hope-quiz.html',
@@ -39,10 +37,6 @@ const OFFLINE_PAGE_FALLBACKS = new Map([
     ['/arcade/star-matrix/index.html', './arcade/star-matrix/index.html'],
     ['/arcade/matrix-of-conscience/', './arcade/matrix-of-conscience/index.html'],
     ['/arcade/matrix-of-conscience/index.html', './arcade/matrix-of-conscience/index.html'],
-    ['/arcade/matrix-act-1/', './arcade/matrix-act-1/index.html'],
-    ['/arcade/matrix-act-1/index.html', './arcade/matrix-act-1/index.html'],
-    ['/arcade/matrix-act-2/', './arcade/matrix-act-2/index.html'],
-    ['/arcade/matrix-act-2/index.html', './arcade/matrix-act-2/index.html'],
     ['/arcade/bible-study/', './arcade/bible-study/index.html'],
     ['/arcade/bible-study/index.html', './arcade/bible-study/index.html'],
     ['/ministry/', './ministry/index.html'],

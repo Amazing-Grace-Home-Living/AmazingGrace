@@ -15,7 +15,7 @@ const firebaseConfig = JSON.parse(__firebase_config);
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'matrix-act-1';
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'matrix-story-engine';
 const apiKey = ""; 
 const QUICK_CLICK_ROUND_SECONDS = 20;
 const QUICK_CLICK_RESPAWN_CHANCE = 0.65;

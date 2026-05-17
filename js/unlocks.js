@@ -42,8 +42,8 @@ const FEATURES = [
     condition: (p) => (p.combo ?? 0) >= 5,
   },
   {
-    id: 'matrixAct2',
-    label: 'Matrix Act 2',
+    id: 'conscienceArchive',
+    label: 'Conscience Archive',
     hint: 'Trigger 10 explosion specials.',
     condition: (p) => (p.explosions ?? 0) >= 10,
   },
