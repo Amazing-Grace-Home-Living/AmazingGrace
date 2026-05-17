@@ -9,6 +9,7 @@
     return (
       typeof window !== "undefined" &&
       window.location.protocol === "https:" &&
+      (window.location.port === "" || window.location.port === "443") &&
       allowedHosts.has(window.location.hostname)
     );
   }
@@ -54,4 +55,3 @@
     loadStylesheet,
   };
 })();
-
