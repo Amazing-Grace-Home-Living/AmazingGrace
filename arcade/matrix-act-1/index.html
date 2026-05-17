@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Matrix Act 1 — Conscience Protocol. A story-driven chapter in the Amazing Grace Nexus Arcade."
+    />
+    <meta name="theme-color" content="#0f172a" />
+
+    <link rel="icon" type="image/png" href="../../assets/logo.png" />
+    <title>Matrix Act 1 | Nexus Arcade — Amazing Grace</title>
+
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;800&display=swap');
+
+      :root {
+        --bg: #020617;
+        --surface: rgba(30, 41, 59, 0.55);
+        --border: rgba(148, 163, 184, 0.25);
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+        --accent: #7c3aed;
+        --radius: 16px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        color: var(--text);
+        background: radial-gradient(circle at 25% 20%, rgba(124, 58, 237, 0.18), transparent 55%),
+          radial-gradient(circle at 75% 70%, rgba(126, 255, 216, 0.12), transparent 55%),
+          var(--bg);
+        display: flex;
+        flex-direction: column;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--border);
+        backdrop-filter: blur(10px);
+        background: rgba(2, 6, 23, 0.6);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        text-decoration: none;
+        font-family: Orbitron, sans-serif;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .brand img {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+      }
+
+      .crumbs {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+
+      .wrap {
+        flex: 1;
+        width: 100%;
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 2.25rem 1.25rem 2.5rem;
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.75rem;
+      }
+
+      h1 {
+        margin: 0 0 0.35rem;
+        font-family: Orbitron, sans-serif;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        font-size: clamp(1.35rem, 3.4vw, 2.2rem);
+      }
+
+      p {
+        margin: 0.75rem 0 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .cta-row {
+        margin-top: 1.5rem;
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        text-decoration: none;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+      }
+
+      .btn-primary {
+        border-color: rgba(124, 58, 237, 0.55);
+        background: rgba(124, 58, 237, 0.15);
+      }
+
+      .btn:hover {
+        border-color: rgba(226, 232, 240, 0.45);
+      }
+
+      .footer {
+        padding: 1.25rem;
+        text-align: center;
+        color: rgba(148, 163, 184, 0.85);
+        font-size: 0.9rem;
+        border-top: 1px solid rgba(148, 163, 184, 0.18);
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+          monospace;
+        font-size: 0.95em;
+        color: rgba(226, 232, 240, 0.92);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="../" aria-label="Nexus Arcade — back to lobby">
+        <img src="../../assets/logo.png" alt="Amazing Grace Home Living logo" />
+        <span>Nexus Arcade</span>
+      </a>
+      <div class="crumbs">Matrix Act 1</div>
+    </header>
+
+    <main class="wrap">
+      <section class="card" aria-label="Matrix Act 1 status">
+        <h1>Matrix Act 1 — Conscience Protocol</h1>
+        <p>
+          This chapter is being prepared for release. For now, head back to the arcade lobby to play Seven Stars,
+          Match Maker, or Star Matrix.
+        </p>
+        <p>Direct link support: <code>./arcade/index.html?game=sevenstars</code></p>
+
+        <div class="cta-row">
+          <a class="btn btn-primary" href="../">← Back to Arcade</a>
+          <a class="btn" href="../../">🏠 Home</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>&copy; 2026 Amazing Grace Home Living</p>
+    </footer>
+  </body>
+</html>

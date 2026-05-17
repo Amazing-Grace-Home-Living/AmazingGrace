@@ -11,6 +11,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main:              resolve(__dirname, "index.html"),
+        contact:           resolve(__dirname, "contact/index.html"),
         matrix:            resolve(__dirname, "matrix.html"),
         arcade:            resolve(__dirname, "arcade/index.html"),
         arcadeStarMatrix:   resolve(__dirname, "arcade/star-matrix/index.html"),

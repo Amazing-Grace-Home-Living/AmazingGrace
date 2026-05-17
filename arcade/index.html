@@ -989,6 +989,9 @@
                                 '<p style="color:var(--text-muted);padding:2rem;text-align:center">⚠️ Match Maker V2 could not be loaded. Please refresh the page.</p>';
                         });
                 }
+            } else {
+                console.warn('[arcade] Unknown game id:', id);
+                backToLobby();
             }
         }
 
@@ -998,6 +1001,15 @@
             stageMatch2.classList.remove('active');
             lobby.style.display = '';
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const gameId = urlParams.get('game');
+
+            if (gameId) {
+                launchGame(gameId);
+            }
+        });
 
         // ── Match Maker completion certificate ─────────────────────────
         document.addEventListener('matchmakerComplete', (e) => {
