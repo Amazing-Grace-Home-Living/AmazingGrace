@@ -130,9 +130,26 @@
                 let row = [];
                 for (let c = 0; c < GRID_SIZE; c++) {
                     let type;
+                    let attempts = 0;
                     do {
                         type = Math.floor(Math.random() * 7) + 1;
-                    } while ((c >= 2 && type === row[c-1] && type === row[c-2]) || (r >= 2 && type === board[r-1][c] && type === board[r-2][c]));
+                        attempts++;
+                    } while (
+                        attempts < 20 &&
+                        ((c >= 2 && type === row[c-1] && type === row[c-2]) || (r >= 2 && type === board[r-1][c] && type === board[r-2][c]))
+                    );
+                    const createsRowMatch = c >= 2 && type === row[c-1] && type === row[c-2];
+                    const createsColumnMatch = r >= 2 && type === board[r-1][c] && type === board[r-2][c];
+                    if (createsRowMatch || createsColumnMatch) {
+                        for (let fallback = 1; fallback <= 7; fallback++) {
+                            const fallbackRowMatch = c >= 2 && fallback === row[c-1] && fallback === row[c-2];
+                            const fallbackColumnMatch = r >= 2 && fallback === board[r-1][c] && fallback === board[r-2][c];
+                            if (!fallbackRowMatch && !fallbackColumnMatch) {
+                                type = fallback;
+                                break;
+                            }
+                        }
+                    }
                     
                     row.push(type);
                     
