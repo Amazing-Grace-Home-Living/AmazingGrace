@@ -3,106 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Arcade Command System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+    <title>Nexus Arcade | Amazing Grace</title>
+    <link rel="stylesheet" href="../theme.css">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #020106;
-            color: #e2e8f0;
+        /* Specific layout for the arcade list */
+        .arcade-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 2rem;
         }
-        .font-orbitron { font-family: 'Orbitron', sans-serif; }
-        .glass-panel {
-            background: rgba(15, 10, 32, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(139, 92, 246, 0.15);
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        .arcade-item {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #1e293b;
         }
-        .glass-panel:hover {
-            transform: translateY(-4px);
-            border-color: rgba(168, 85, 247, 0.4);
-            box-shadow: 0 12px 30px rgba(147, 51, 234, 0.15);
+        .arcade-item h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.5rem;
+        }
+        .arcade-item p {
+            margin: 0;
+            color: #94a3b8; /* Subtle grey for descriptions to keep focus on white/blue */
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between items-center p-6 md:p-12 selection:bg-purple-500 selection:text-white">
+<body>
 
-    <header class="w-full max-w-6xl flex justify-between items-center border-b border-purple-500/10 pb-6 mb-12">
-        <div>
-            <h1 class="font-orbitron text-xl font-black tracking-[0.25em] text-white uppercase">Nexus_Arcade</h1>
-            <p class="text-[9px] uppercase tracking-[0.4em] text-purple-400 mt-1 font-bold">Calibration & Architecture Interface</p>
-        </div>
-        <div class="text-right text-[10px] font-mono opacity-40">
-            SYS_STATUS // SECURE
-        </div>
+    <header style="background-color: #000000; padding: 1rem; border-bottom: 1px solid #1e293b;">
+        <nav style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto;">
+            <a href="https://amazinggracehl.org/" style="display: flex; align-items: center; text-decoration: none;">
+                <img src="../assets/logo.png" alt="Amazing Grace Logo" style="height: 40px; width: auto; display: block;">
+            </a>
+            <div style="display: flex; gap: 2rem; font-weight: 600;">
+                <a href="https://amazinggracehl.org/">Home</a>
+                <a href="https://amazinggracehl.org/stories/">Stories</a>
+                <a href="https://arcade.amazinggracehl.org/" class="nav-active-page">Arcade</a>
+                <a href="https://ministry.amazinggracehl.org/">Ministry</a>
+            </div>
+        </nav>
     </header>
 
-    <main class="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+    <main style="max-width: 800px; margin: 4rem auto; padding: 0 1rem; background: transparent;">
         
-        <div onclick="window.location.href='/arcade/matrix-of-conscience/'" class="glass-panel p-8 rounded-[2.5rem] cursor-pointer group flex flex-col justify-between min-h-[320px]">
-            <div>
-                <div class="flex justify-between items-center mb-6">
-                    <span class="text-[8px] font-black tracking-widest text-pink-400 bg-pink-400/10 px-3 py-1 rounded-full border border-pink-400/20 uppercase">Core_Module</span>
-                    <span class="text-xs font-mono opacity-30">01</span>
-                </div>
-                <h3 class="font-orbitron text-xl font-black text-white tracking-wider mb-2 uppercase group-hover:text-pink-400 transition-colors">Matrix of Conscience</h3>
-                <p class="text-xs text-slate-400 leading-relaxed font-light opacity-80">
-                    Align the 7 core virtues on the centralized grid matrix to clear the calibration threshold and resolve processing drift errors.
-                </p>
-            </div>
-            <div class="flex items-center justify-between pt-6 border-t border-purple-500/5">
-                <span class="text-[9px] font-black tracking-widest uppercase border border-pink-500/30 px-4 py-2 rounded-xl group-hover:bg-pink-500 group-hover:text-black transition-all">Initialize</span>
-                <span class="text-[9px] font-mono opacity-40">v2.1_Stabilized</span>
-            </div>
-        </div>
+        <h1 style="color: #ffffff; font-size: 2.5rem; margin-bottom: 1rem;">Nexus Arcade</h1>
+        <p style="color: #ffffff; font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 1rem;">
+            Experience narrative journeys as interactive missions.
+        </p>
 
-        <div onclick="window.location.href='/arcade/match-maker/'" class="glass-panel p-8 rounded-[2.5rem] cursor-pointer group flex flex-col justify-between min-h-[320px]">
-            <div>
-                <div class="flex justify-between items-center mb-6">
-                    <span class="text-[8px] font-black tracking-widest text-purple-400 bg-purple-400/10 px-3 py-1 rounded-full border border-purple-400/20 uppercase">Sub_Routine</span>
-                    <span class="text-xs font-mono opacity-30">02</span>
-                </div>
-                <h3 class="font-orbitron text-xl font-black text-white tracking-wider mb-2 uppercase group-hover:text-purple-400 transition-colors">Match Maker</h3>
-                <p class="text-xs text-slate-400 leading-relaxed font-light opacity-80">
-                    High-frequency gesture-based framework optimization engine. Execute structured alignment loops to synthesize system memory blocks.
-                </p>
-            </div>
-            <div class="flex items-center justify-between pt-6 border-t border-purple-500/5">
-                <span class="text-[9px] font-black tracking-widest uppercase border border-purple-500/30 px-4 py-2 rounded-xl group-hover:bg-purple-500 group-hover:text-white transition-all">Execute</span>
-                <span class="text-[9px] font-mono opacity-40">Offline_First</span>
-            </div>
-        </div>
-
-        <div class="glass-panel p-8 rounded-[2.5rem] opacity-40 flex flex-col justify-between min-h-[320px] select-none border-dashed">
-            <div>
-                <div class="flex justify-between items-center mb-6">
-                    <span class="text-[8px] font-black tracking-widest text-slate-400 bg-slate-400/10 px-3 py-1 rounded-full border border-slate-400/20 uppercase">Network_Lock</span>
-                    <span class="text-xs font-mono opacity-20">03</span>
-                </div>
-                <h3 class="font-orbitron text-xl font-black text-slate-400 tracking-wider mb-2 uppercase">Integrity Gallery</h3>
-                <p class="text-xs text-slate-500 leading-relaxed font-light">
-                    Review historical milestones, verified system integrations, and multi-chain progress parameters. Currently offline during infrastructure updates.
-                </p>
-            </div>
-            <div class="flex items-center justify-between pt-6 border-t border-white/5">
-                <span class="text-[8px] font-mono tracking-widest uppercase text-slate-600">Awaiting_Data</span>
-                <span class="text-[9px] font-mono opacity-20">Secure_Lock</span>
-            </div>
-        </div>
+        <ul class="arcade-list">
+            <li class="arcade-item">
+                <h3><a href="https://matrix.amazinggracehl.org/">Matrix of Conscience</a></h3>
+                <p>Align the 7 core virtues on the centralized grid matrix to clear the calibration threshold and resolve processing drift errors.</p>
+            </li>
+            
+            <li class="arcade-item">
+                <h3><a href="https://arcade.amazinggracehl.org/match-maker/">Match Maker</a></h3>
+                <p>High-frequency gesture-based framework optimization engine. Execute structured alignment loops to synthesize system memory blocks.</p>
+            </li>
+        </ul>
 
     </main>
-
-    <footer class="w-full max-w-6xl flex flex-col sm:flex-row justify-between items-center border-t border-purple-500/10 pt-6 text-[10px] text-slate-500 font-mono gap-4">
-        <div>
-            Operator // <span class="text-purple-400 font-bold">NICHOLAI_MARO_MADIAS</span>
-        </div>
-        <div class="flex gap-6">
-            <a href="/" class="hover:text-purple-400 transition-colors">Overworld Node</a>
-            <a href="https://amazinggracehl.org" target="_blank" class="hover:text-purple-400 transition-colors">AG Gateway</a>
-        </div>
-    </footer>
 
 </body>
 </html>
