@@ -57,7 +57,7 @@ demo/dev use and is designed to be upgraded to Firebase Auth in production.
 ## 📁 Asset Folder Structure
 
 ```
-public/assets/
+assets/
 ├── logo.png                     ← Site nav logo (8.7 KB, 120×80 px)
 ├── icon-192.png                 ← PWA icon
 ├── icon-512.png                 ← PWA icon
@@ -77,10 +77,12 @@ public/assets/
 │   ├── star_crystal_red.svg
 │   └── <name>_frame_N.png      ← Star Matrix animation sprites (add when ready)
 │
-└── audio/                       ← MP3 music & SFX (drop files here)
-    └── (e.g. storm.mp3, badge.mp3, exploration.mp3 …)
-        served at /assets/audio/<filename>.mp3
+├── audio/                       ← MP3 music & SFX served through shared asset paths
+│   ├── ethiopian-bible/         ← Ethiopian Bible audio archive for ministry playback/download
+│   └── <filename>.mp3           ← served at /assets/audio/<filename>.mp3
+│
+└── music/                       ← Downloadable MIDI music archive
+    └── <filename>.mid
 ```
 
 Gallery photo sets live under `public/galleries/<slug>/` and are indexed by `images.json` in each folder.
-

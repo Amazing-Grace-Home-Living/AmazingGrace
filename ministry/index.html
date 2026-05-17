@@ -271,6 +271,108 @@
         .ministry-btn.btn-gallery  { border-top: 3px solid #60a5fa; }
         .ministry-btn.btn-sevenstars { border-top: 3px solid #c084fc; }
 
+        .media-library {
+            max-width: 1040px;
+            margin: 0 auto 4rem;
+            padding: 0 1.5rem;
+        }
+
+        .media-library h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.2rem, 3vw, 1.7rem);
+            color: var(--gold);
+            margin-bottom: 0.75rem;
+            text-align: center;
+            letter-spacing: 0.04em;
+        }
+
+        .media-library-intro {
+            max-width: 720px;
+            margin: 0 auto 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .media-section {
+            background: rgba(74,35,90,0.32);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(8px);
+        }
+
+        .media-section h3 {
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+            font-size: 1.05rem;
+        }
+
+        .media-section p {
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .audio-library-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .audio-card {
+            background: rgba(13,1,21,0.72);
+            border: 1px solid rgba(255,215,0,0.16);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .audio-card h4 {
+            color: var(--text);
+            margin-bottom: 0.25rem;
+            font-size: 0.98rem;
+        }
+
+        .audio-card p {
+            font-size: 0.85rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .audio-card audio {
+            width: 100%;
+            margin-bottom: 0.75rem;
+        }
+
+        .media-download {
+            display: inline-block;
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .media-download:hover { text-decoration: underline; }
+
+        .media-file-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.75rem 1.5rem;
+            margin-top: 1rem;
+            padding: 0;
+        }
+
+        .media-file-list a {
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .media-file-list a:hover {
+            color: var(--gold);
+            text-decoration: underline;
+        }
+
         main { flex: 1; }
 
         /* ── Footer ── */
@@ -351,6 +453,105 @@
             </a>
 
         </div>
+
+        <section class="media-library" aria-labelledby="ministry-media-library">
+            <h2 id="ministry-media-library">Media Library</h2>
+            <p class="media-library-intro">
+                Shared ministry audio and music now live under the main assets folders so they stay discoverable,
+                reusable, and protected during repository cleanup.
+            </p>
+
+            <div class="media-section">
+                <h3>Ethiopian Bible Audio</h3>
+                <p>
+                    Ethiopian Bible recordings can be added to
+                    <code>assets/audio/ethiopian-bible/</code>. No Ethiopian Bible audio files are currently committed in this repository,
+                    so this section is ready for the archive as soon as those recordings are added.
+                </p>
+            </div>
+
+            <div class="media-section">
+                <h3>Music &amp; Audio Archive</h3>
+                <p>These tracks are now explicitly linked here so they remain part of the ministry and site media library.</p>
+
+                <div class="audio-library-grid">
+                    <article class="audio-card">
+                        <h4>Storm</h4>
+                        <p>Atmospheric arcade score for dramatic ministry and game moments.</p>
+                        <audio controls preload="none">
+                            <source src="../assets/audio/storm.mp3" type="audio/mpeg">
+                        </audio>
+                        <a class="media-download" href="../assets/audio/storm.mp3" download>Download MP3</a>
+                    </article>
+
+                    <article class="audio-card">
+                        <h4>Victory</h4>
+                        <p>Celebration cue used for success and completion moments.</p>
+                        <audio controls preload="none">
+                            <source src="../assets/audio/victory.mp3" type="audio/mpeg">
+                        </audio>
+                        <a class="media-download" href="../assets/audio/victory.mp3" download>Download MP3</a>
+                    </article>
+
+                    <article class="audio-card">
+                        <h4>Ending</h4>
+                        <p>Long-form ambient track preserved for story and ministry playback.</p>
+                        <audio controls preload="none">
+                            <source src="../assets/audio/ending.mp3" type="audio/mpeg">
+                        </audio>
+                        <a class="media-download" href="../assets/audio/ending.mp3" download>Download MP3</a>
+                    </article>
+
+                    <article class="audio-card">
+                        <h4>Badge</h4>
+                        <p>Short reward stinger used across the arcade experience.</p>
+                        <audio controls preload="none">
+                            <source src="../assets/audio/badge.mp3" type="audio/mpeg">
+                        </audio>
+                        <a class="media-download" href="../assets/audio/badge.mp3" download>Download MP3</a>
+                    </article>
+
+                    <article class="audio-card">
+                        <h4>Course Clear Fanfare</h4>
+                        <p>Arcade completion fanfare preserved under the shared audio library.</p>
+                        <audio controls preload="none">
+                            <source src="../assets/audio/course-clear-fanfare.mp3" type="audio/mpeg">
+                        </audio>
+                        <a class="media-download" href="../assets/audio/course-clear-fanfare.mp3" download>Download MP3</a>
+                    </article>
+
+                    <article class="audio-card">
+                        <h4>Player Down</h4>
+                        <p>Game-over and warning cue retained as part of the ministry audio archive.</p>
+                        <audio controls preload="none">
+                            <source src="../assets/audio/player-down.mp3" type="audio/mpeg">
+                        </audio>
+                        <a class="media-download" href="../assets/audio/player-down.mp3" download>Download MP3</a>
+                    </article>
+                </div>
+            </div>
+
+            <div class="media-section">
+                <h3>Downloadable MIDI Music</h3>
+                <p>Legacy MIDI tracks are now organized under <code>assets/music/</code> and linked here so they remain part of the repository library.</p>
+                <ul class="media-file-list">
+                    <li><a href="../assets/music/m64bomb.mid" download>m64bomb.mid</a></li>
+                    <li><a href="../assets/music/m64bowsr.mid" download>m64bowsr.mid</a></li>
+                    <li><a href="../assets/music/m64crs1.mid" download>m64crs1.mid</a></li>
+                    <li><a href="../assets/music/m64crse1.mid" download>m64crse1.mid</a></li>
+                    <li><a href="../assets/music/m64docks.mid" download>m64docks.mid</a></li>
+                    <li><a href="../assets/music/m64endin.mid" download>m64endin.mid</a></li>
+                    <li><a href="../assets/music/m64file.mid" download>m64file.mid</a></li>
+                    <li><a href="../assets/music/m64metal.mid" download>m64metal.mid</a></li>
+                    <li><a href="../assets/music/m64metlm.mid" download>m64metlm.mid</a></li>
+                    <li><a href="../assets/music/m64slide.mid" download>m64slide.mid</a></li>
+                    <li><a href="../assets/music/m64snow.mid" download>m64snow.mid</a></li>
+                    <li><a href="../assets/music/m64vansh.mid" download>m64vansh.mid</a></li>
+                    <li><a href="../assets/music/m64water.mid" download>m64water.mid</a></li>
+                    <li><a href="../assets/music/m64wings.mid" download>m64wings.mid</a></li>
+                </ul>
+            </div>
+        </section>
     </main>
 
     <footer class="site-footer">
