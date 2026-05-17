@@ -110,7 +110,9 @@
 
         function initGame() {
             document.getElementById('start-screen').classList.add('hidden');
-            try { document.documentElement.requestFullscreen(); } catch (e) {}
+            try { document.documentElement.requestFullscreen(); } catch (e) {
+                console.warn('Fullscreen request was not granted.', e);
+            }
             createBoard();
         }
 
@@ -130,9 +132,14 @@
                 let row = [];
                 for (let c = 0; c < GRID_SIZE; c++) {
                     let type;
+                    let attempts = 0;
                     do {
                         type = Math.floor(Math.random() * 7) + 1;
-                    } while ((c >= 2 && type === row[c-1] && type === row[c-2]) || (r >= 2 && type === board[r-1][c] && type === board[r-2][c]));
+                        attempts++;
+                    } while (
+                        attempts < 20 &&
+                        ((c >= 2 && type === row[c-1] && type === row[c-2]) || (r >= 2 && type === board[r-1][c] && type === board[r-2][c]))
+                    );
                     
                     row.push(type);
                     
