@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Matrix of Conscience Protocol</title>
-    <script src="../../assets/vendor/hosted-only.js"></script>
-    <script>
-        window.AmazingGraceHostedOnly?.loadStylesheet("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap");
-    </script>
-    <script src="../../assets/vendor/tailwindcss.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -56,9 +55,6 @@
             <button onclick="initGame()" class="w-full py-4 rounded-xl font-orbitron font-bold text-sm tracking-widest uppercase text-black bg-gradient-to-r from-purple-400 to-pink-500 hover:scale-105 transition-all shadow-[0_0_20px_rgba(168,85,247,0.4)]">
                 Begin Calibration
             </button>
-            <p class="text-[11px] text-purple-300/80 mt-4">
-                Read the story: <a href="../../stories/matrix.html" class="underline hover:text-white" aria-label="Read Matrix of Conscience story in the Library">Matrix of Conscience (Library)</a>
-            </p>
         </div>
     </div>
 
@@ -114,7 +110,7 @@
 
         function initGame() {
             document.getElementById('start-screen').classList.add('hidden');
-            try { document.documentElement.requestFullscreen(); } catch (e) { console.warn('Fullscreen request failed', e); }
+            try { document.documentElement.requestFullscreen(); } catch (e) {}
             createBoard();
         }
 
@@ -134,29 +130,9 @@
                 let row = [];
                 for (let c = 0; c < GRID_SIZE; c++) {
                     let type;
-                    let attempts = 0;
                     do {
                         type = Math.floor(Math.random() * 7) + 1;
-                        attempts++;
-                    } while (
-                        attempts < 20 &&
-                        (
-                            (c >= 2 && type === row[c-1] && type === row[c-2]) ||
-                            (r >= 2 && type === board[r-1][c] && type === board[r-2][c])
-                        )
-                    );
-                    const createsRowMatch = c >= 2 && type === row[c-1] && type === row[c-2];
-                    const createsColumnMatch = r >= 2 && type === board[r-1][c] && type === board[r-2][c];
-                    if (createsRowMatch || createsColumnMatch) {
-                        for (let fallback = 1; fallback <= 7; fallback++) {
-                            const fallbackRowMatch = c >= 2 && fallback === row[c-1] && fallback === row[c-2];
-                            const fallbackColumnMatch = r >= 2 && fallback === board[r-1][c] && fallback === board[r-2][c];
-                            if (!fallbackRowMatch && !fallbackColumnMatch) {
-                                type = fallback;
-                                break;
-                            }
-                        }
-                    }
+                    } while ((c >= 2 && type === row[c-1] && type === row[c-2]) || (r >= 2 && type === board[r-1][c] && type === board[r-2][c]));
                     
                     row.push(type);
                     
@@ -277,20 +253,17 @@
                 return;
             }
 
-            const uniqueMatches = new Map();
-            matches.forEach(({ r, c }) => {
-                uniqueMatches.set(`${r}-${c}`, { r, c });
-            });
-
-            uniqueMatches.forEach(({ r, c }) => {
-                if (board[r][c] !== 0) {
-                    board[r][c] = 0;
-                    const el = document.getElementById(`tile-${r}-${c}`);
+            let uniquePoints = 0;
+            matches.forEach(m => {
+                if (board[m.r][m.c] !== 0) {
+                    board[m.r][m.c] = 0;
+                    uniquePoints += 10;
+                    const el = document.getElementById(`tile-${m.r}-${m.c}`);
                     if (el) el.innerHTML = '';
                 }
             });
 
-            score += uniqueMatches.size * 10;
+            score += uniquePoints;
             updateHUD();
 
             setTimeout(() => {
