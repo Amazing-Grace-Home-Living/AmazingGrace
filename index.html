@@ -709,7 +709,7 @@
 
     <header class="site-header">
         <div class="nav-container">
-            <a href="/" class="brand" aria-label="Amazing Grace Home Living — Home">
+            <a href="./" class="brand" aria-label="Amazing Grace Home Living — Home">
                 <img src="./assets/logo.png" alt="Amazing Grace Home Living Logo" class="brand-logo">
                 <div class="brand-text">
                     <span class="brand-name">Amazing Grace</span>
@@ -720,7 +720,7 @@
             <button class="menu-toggle" aria-label="Toggle navigation" aria-controls="main-nav" aria-expanded="false">☰</button>
 
             <nav id="main-nav" aria-label="Main navigation">
-                <a href="/" class="nav-btn nav-gold" aria-label="Home — Knowledge">
+                <a href="./" class="nav-btn nav-gold" aria-label="Home — Knowledge">
                     <svg class="nav-icon" viewBox="0 0 50 50"><use href="./assets/svg/gems/gem-alcyone.svg#shape"></use></svg>
                     Home
                 </a>
@@ -735,12 +735,12 @@
                     Arcade
                 </a>
 
-                <a href="/stories" class="nav-btn nav-sapphire" aria-label="Library — Wisdom">
+                <a href="./stories" class="nav-btn nav-sapphire" aria-label="Library — Wisdom">
                     <svg class="nav-icon" viewBox="0 0 50 50"><use href="./assets/svg/gems/gem-celaeno.svg#shape"></use></svg>
                     Library
                 </a>
 
-                <a href="/ministry" class="nav-btn nav-gold" aria-label="Ministry — Faith">
+                <a href="./ministry" class="nav-btn nav-gold" aria-label="Ministry — Faith">
                     <svg class="nav-icon" viewBox="0 0 50 50"><use href="./assets/svg/gems/gem-sterope.svg#shape"></use></svg>
                     Ministry
                 </a>
@@ -982,13 +982,13 @@
     <footer class="site-footer">
         <div class="footer-inner">
             <nav class="footer-links" aria-label="Footer navigation">
-                <a href="/">Home</a>
+                <a href="./">Home</a>
                 <a href="#listings">Listings</a>
                 <a href="#pricing">Pricing</a>
                 <a href="#apply">Apply</a>
-                <a href="/arcade">Arcade</a>
-                <a href="/ministry">Ministry</a>
-                <a href="/support">Support</a>
+                <a href="./arcade">Arcade</a>
+                <a href="./ministry">Ministry</a>
+                <a href="./support">Support</a>
             </nav>
             <p class="footer-copy">© 2026 Amazing Grace Home Living — Voice of Jesus Ministry — amazinggracehl.org</p>
         </div>
@@ -999,23 +999,29 @@
         const toggle = document.querySelector('.menu-toggle');
         const nav    = document.getElementById('main-nav');
         if (toggle && nav) {
+            const openMainNav = () => {
+                nav.classList.add('open');
+                toggle.setAttribute('aria-expanded', 'true');
+            };
+
+            const closeMainNav = () => {
+                if (!nav.classList.contains('open')) return;
+                const hadFocusInNav = nav.contains(document.activeElement);
+                nav.classList.remove('open');
+                toggle.setAttribute('aria-expanded', 'false');
+                if (hadFocusInNav) toggle.focus();
+            };
+
             toggle.addEventListener('click', () => {
                 if (nav.classList.contains('open')) {
-                    nav.classList.remove('open');
-                    toggle.setAttribute('aria-expanded', 'false');
+                    closeMainNav();
                 } else {
-                    nav.classList.add('open');
-                    toggle.setAttribute('aria-expanded', 'true');
+                    openMainNav();
                 }
             });
+
             document.addEventListener('keydown', (event) => {
-                if (event.key === 'Escape' && nav.classList.contains('open')) {
-                    nav.classList.remove('open');
-                    toggle.setAttribute('aria-expanded', 'false');
-                    if (document.activeElement && nav.contains(document.activeElement)) {
-                        toggle.focus();
-                    }
-                }
+                if (event.key === 'Escape' && nav.classList.contains('open')) closeMainNav();
             });
         }
     </script>

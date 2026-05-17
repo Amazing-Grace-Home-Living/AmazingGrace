@@ -658,17 +658,17 @@
     <!-- Header -->
     <header class="site-header">
         <a href="../" class="logo" aria-label="Amazing Grace Home Living — Home">
-            <img src="/assets/logo.png" alt="Amazing Grace Home Living Logo">
+            <img src="../assets/logo.png" alt="Amazing Grace Home Living Logo">
             <span>Amazing Grace</span>
         </a>
 
         <nav id="main-nav" class="main-nav" aria-label="Main navigation">
             <a href="../" class="nav-btn">🏠 Home</a>
-            <a href="/stories/" class="nav-btn">📚 Library</a>
+            <a href="../stories/" class="nav-btn">📚 Library</a>
             <a href="./" class="nav-btn active" aria-current="page">🎮 Arcade</a>
-            <a href="../#properties" class="nav-btn">🏘️ Listings</a>
+            <a href="../galleries/" class="nav-btn">🏘️ Listings</a>
             <a href="../ministries/" class="nav-btn" style="background:rgba(124,58,237,0.4);">✨ Seven Stars</a>
-            <a href="../#contact" class="nav-btn">✉️ Contact</a>
+            <a href="../#apply" class="nav-btn">✉️ Contact</a>
         </nav>
 
         <button class="menu-toggle" aria-label="Toggle navigation" aria-controls="main-nav" aria-expanded="false">☰</button>
@@ -676,7 +676,7 @@
 
     <!-- Portal Selector -->
     <div class="portal-bar" role="navigation" aria-label="Portal navigation">
-        <a href="../#properties" class="portal-link">🏠 Listings</a>
+        <a href="../galleries/" class="portal-link">🏠 Listings</a>
         <a href="./" class="portal-link active" aria-current="page">🎮 Arcade</a>
         <a href="../ministry/" class="portal-link">🕊️ Ministry</a>
         <a href="../ministries/" class="portal-link">✨ Seven Stars</a>
@@ -734,15 +734,6 @@
                     <button class="play-btn play-btn-teal" tabindex="-1">▶ Play Now</button>
                 </div>
 
-                <!-- Match Maker V2 Card -->
-                <div class="game-card card-match-v2" role="button" tabindex="0" aria-label="Play Match Maker V2 — Seven Element Edition" onclick="launchGame('matchmaker2')" onkeydown="if(event.key==='Enter'||event.key===' ')launchGame('matchmaker2')">
-                    <div class="game-card-icon">💎</div>
-                    <div class="game-card-title">Match Maker V2</div>
-                    <div class="game-card-desc">Seven elemental gems, ley-line multipliers, canvas particle FX, conscience engine, and narrative beats. Align the lattice.</div>
-                    <span class="game-card-badge badge-teal">New · V2 Engine</span>
-                    <button class="play-btn play-btn-teal" tabindex="-1">▶ Play V2</button>
-                </div>
-
                 <!-- Quick Click Card -->
                 <a href="./quick-click/" class="game-card card-match-v2" style="text-decoration:none;" aria-label="Play Quick Click">
                     <div class="game-card-icon">⚡</div>
@@ -768,15 +759,6 @@
                     <div class="game-card-desc">Explore the Seven Pillars of faith in this interactive journey. Reflect, decide, and build your conscience matrix.</div>
                     <span class="game-card-badge badge-purple">Journey · 7 Pillars</span>
                     <button class="play-btn play-btn-violet" tabindex="-1">▶ Enter the Matrix</button>
-                </a>
-
-                <!-- Matrix Act 1 Card -->
-                <a href="./matrix-act-1/" class="game-card card-matrix-act1" style="text-decoration:none;" aria-label="Play Matrix Act 1 — Conscience Protocol">
-                    <div class="game-card-icon">🔮</div>
-                    <div class="game-card-title">Matrix Act 1</div>
-                    <div class="game-card-desc">Journey through 7 chapters of the Conscience Protocol. Encrypted signals, locked nodes, and the architecture of forgiveness await.</div>
-                    <span class="game-card-badge badge-purple">New · Story</span>
-                    <button class="play-btn" style="background:#7c3aed;color:#fff;" tabindex="-1">▶ Begin Act 1</button>
                 </a>
 
                 <!-- Property Listings Card -->
@@ -864,55 +846,6 @@
             </div>
         </div>
 
-        <!-- ======================================================
-             Match Maker V2 Game Stage
-             ====================================================== -->
-        <div id="stage-matchmaker2" class="game-stage">
-            <button class="stage-back-btn" onclick="backToLobby()">← Back to Arcade</button>
-
-            <!-- V2 HUD -->
-            <div class="mm-hud">
-                <div class="mm-stat"><div class="mm-stat-label">Score</div><div id="v2-score" class="mm-stat-value">0</div></div>
-                <div class="mm-stat"><div class="mm-stat-label">Level</div><div id="v2-level" class="mm-stat-value">1</div></div>
-                <div class="mm-stat"><div class="mm-stat-label">Moves</div><div id="v2-moves" class="mm-stat-value">0</div></div>
-            </div>
-
-            <div id="v2-msg" class="text-sm text-center min-h-[1.4em] mb-1" style="color:#7effd8"></div>
-            <div id="v2-narrative" class="hidden" aria-live="polite" aria-atomic="true"></div>
-            <div id="v2-badge-banner" class="hidden" role="status" aria-live="polite"></div>
-
-            <!-- V2 Board + canvas overlay -->
-            <div class="v2-game-wrapper mx-auto">
-                <div id="v2-board" role="grid" aria-label="Match Maker V2 game board"></div>
-                <canvas id="fx-overlay" aria-hidden="true"></canvas>
-            </div>
-
-            <!-- V2 Conscience Bars -->
-            <div class="v2-conscience-panel mx-auto mt-4">
-                <h3>Conscience Matrix</h3>
-                <div class="v2-bar-row">
-                    <span class="v2-bar-label">Karma</span>
-                    <div class="v2-bar-track"><div id="v2-bar-karma"     class="v2-bar-fill v2-bar-karma"></div></div>
-                    <span id="v2-pct-karma"     class="v2-bar-pct">0%</span>
-                </div>
-                <div class="v2-bar-row">
-                    <span class="v2-bar-label">Wisdom</span>
-                    <div class="v2-bar-track"><div id="v2-bar-wisdom"    class="v2-bar-fill v2-bar-wisdom"></div></div>
-                    <span id="v2-pct-wisdom"    class="v2-bar-pct">0%</span>
-                </div>
-                <div class="v2-bar-row">
-                    <span class="v2-bar-label">Integrity</span>
-                    <div class="v2-bar-track"><div id="v2-bar-integrity" class="v2-bar-fill v2-bar-integrity"></div></div>
-                    <span id="v2-pct-integrity" class="v2-bar-pct">0%</span>
-                </div>
-                <div class="v2-bar-row">
-                    <span class="v2-bar-label">Community</span>
-                    <div class="v2-bar-track"><div id="v2-bar-community" class="v2-bar-fill v2-bar-community"></div></div>
-                    <span id="v2-pct-community" class="v2-bar-pct">0%</span>
-                </div>
-            </div>
-        </div>
-
     </main>
 
     <!-- Footer -->
@@ -949,15 +882,12 @@
         const lobby          = document.getElementById('game-lobby');
         const stageSeven     = document.getElementById('stage-sevenstars');
         const stageMatch     = document.getElementById('stage-matchmaker');
-        const stageMatch2    = document.getElementById('stage-matchmaker2');
         let matchInitialized  = false;
-        let match2Initialized = false;
 
         function launchGame(id) {
             lobby.style.display = 'none';
             stageSeven.classList.remove('active');
             stageMatch.classList.remove('active');
-            stageMatch2.classList.remove('active');
 
             if (id === 'sevenstars') {
                 stageSeven.classList.add('active');
@@ -977,25 +907,12 @@
                                 '<p style="color:var(--text-muted);padding:2rem;text-align:center">⚠️ Match Maker could not be loaded. Please refresh the page.</p>';
                         });
                 }
-            } else if (id === 'matchmaker2') {
-                stageMatch2.classList.add('active');
-                if (!match2Initialized) {
-                    match2Initialized = true;
-                    import('/match-maker-ui2.js')
-                        .then(m => m.initMatchMakerV2(null, null))
-                        .catch(err => {
-                            console.error('Match Maker V2 failed to load:', err);
-                            document.getElementById('v2-board').innerHTML =
-                                '<p style="color:var(--text-muted);padding:2rem;text-align:center">⚠️ Match Maker V2 could not be loaded. Please refresh the page.</p>';
-                        });
-                }
             }
         }
 
         function backToLobby() {
             stageSeven.classList.remove('active');
             stageMatch.classList.remove('active');
-            stageMatch2.classList.remove('active');
             lobby.style.display = '';
         }
 
