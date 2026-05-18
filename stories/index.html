@@ -90,6 +90,15 @@
         #story-list li {
             margin-bottom: 1.4rem;
         }
+
+        /* ── Article list ── */
+        #article-list {
+            list-style: none;
+            padding: 0;
+        }
+        #article-list li {
+            margin-bottom: 1.4rem;
+        }
         .row {
             display: flex;
             align-items: baseline;
@@ -190,6 +199,11 @@
 
 <hr>
 
+<h2 class="section-heading" id="articles">📰 Blog &amp; Articles</h2>
+<ul id="article-list" aria-label="Article list"></ul>
+
+<hr>
+
 <h2 id="characters" class="section-heading">🏃‍♀️ Characters</h2>
 <ul id="character-list" aria-label="Character dossiers"></ul>
 
@@ -202,6 +216,8 @@
 <script>
     /* Pick a simple glyph icon based on entry metadata */
     function pickIcon(entry) {
+        var type = String(entry.type || '').toLowerCase();
+        if (type === 'blog' || type === 'article') return '📰';
         var tags = Array.isArray(entry.tags) ? entry.tags.map(function(t) { return String(t).toLowerCase(); }) : [];
         var genre = String(entry.genre || '').toLowerCase();
         if (tags.indexOf('faith') !== -1 || genre.indexOf('faith') !== -1) return '✝';
@@ -210,12 +226,20 @@
         return '📖';
     }
 
+    function isArticleEntry(entry) {
+        var type = String(entry.type || '').toLowerCase();
+        if (type === 'blog' || type === 'article') return true;
+        var tags = Array.isArray(entry.tags) ? entry.tags.map(function(t) { return String(t).toLowerCase(); }) : [];
+        return tags.indexOf('news') !== -1;
+    }
+
     /* Build the muted metadata string shown below each link */
     function formatMeta(entry) {
         var parts = [];
         if (entry.author) parts.push(entry.author);
         if (entry.series) parts.push(entry.series);
         if (entry.genre)  parts.push(entry.genre);
+        if (entry.published) parts.push(entry.published);
         if (Array.isArray(entry.tags) && entry.tags.length) {
             parts.push('tags: ' + entry.tags.join(', '));
         }
@@ -233,6 +257,7 @@
 
     async function loadStories() {
         var list      = document.getElementById('story-list');
+        var articleList = document.getElementById('article-list');
         var charList  = document.getElementById('character-list');
         var error     = document.getElementById('error');
 
@@ -249,7 +274,10 @@
                 return;
             }
 
-            entries.forEach(function(entry) {
+            var storyEntries = entries.filter(function(entry) { return !isArticleEntry(entry); });
+            var articleEntries = entries.filter(function(entry) { return isArticleEntry(entry); });
+
+            storyEntries.forEach(function(entry) {
                 /* Prefer explicit path; fall back to slug-based folder */
                 var href = entry.path || (entry.slug ? './' + entry.slug + '/' : '#');
 
@@ -263,6 +291,26 @@
 
                 list.appendChild(li);
             });
+
+            if (articleEntries.length) {
+                articleEntries.forEach(function(entry) {
+                    var href = entry.path || '#';
+
+                    var li = document.createElement('li');
+                    li.innerHTML =
+                        '<div class="row">' +
+                            '<span class="icon" aria-hidden="true">' + esc(pickIcon(entry)) + '</span>' +
+                            '<a class="story-link" href="' + esc(href) + '">' + esc(entry.title || 'Untitled') + '</a>' +
+                        '</div>' +
+                        '<div class="meta">' + esc(formatMeta(entry)) + '</div>';
+
+                    articleList.appendChild(li);
+                });
+            } else {
+                var articleHeading = document.getElementById('articles');
+                if (articleHeading) articleHeading.style.display = 'none';
+                if (articleList) articleList.style.display = 'none';
+            }
 
             /* Render characters section */
             if (chars.length) {

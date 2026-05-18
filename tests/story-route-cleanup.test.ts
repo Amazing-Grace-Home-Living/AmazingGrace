@@ -30,7 +30,7 @@ describe('story route cleanup', () => {
     const characters = Array.isArray(libraryJson.characters) ? libraryJson.characters : [];
 
     for (const entry of entries) {
-      expect(entry.path, `entry "${entry.slug}" has non-relative path`).toMatch(/^\.\//);
+      expect(entry.path, `entry "${entry.slug}" has non-relative path`).toMatch(/^\.\.?\//);
     }
     for (const character of characters) {
       expect(character.path, `character "${character.slug}" has non-relative path`).toMatch(/^\.\//);
