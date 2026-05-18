@@ -803,6 +803,7 @@
         function awardTrinityTelemetry(run, chain) {
             const size = run.length;
             const firstTile = TRINITY_TILES[trinity.board[run[0]]];
+            if (!firstTile) return;
             const rewardKey = size >= 4 ? firstTile.match4Reward : firstTile.match3Reward;
             const baseAmount = size >= 4
                 ? (rewardKey === 'e' ? 1 : 2)
