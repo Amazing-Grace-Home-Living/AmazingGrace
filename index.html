@@ -4,150 +4,138 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Amazing Grace Home Living — Secure, all-inclusive housing in Tampa and Largo, Voice of Jesus Ministry, and The Seven Stars Educational Arcade.">
-    <meta name="theme-color" content="#0f172a">
-
-    <link rel="icon" type="image/png" href="./assets/logo.png">
-    <link rel="manifest" href="./manifest.json">
     <title>Amazing Grace Home Living</title>
-
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600&display=swap');
-
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        :root {
-            --night:         #000000;
-            --night-surface: #000000;
-            --night-card:    #000000;
-            --gold:          #ffd700;
-            --gold-dim:      rgba(255,215,0,0.18);
-            --accent:        #00ff66;
-            --accent-dim:    rgba(0,255,102,0.1);
-            --accent-link:   #00aaff;
-            --accent-link-h: #33ccff;
-            --border:        #003344;
-            --text:          #00ff66;
-            --text-muted:    rgba(0,255,102,0.65);
-            --radius:        12px;
-
-            /* nav gem colours */
-            --col-gold:      #ffd700;
-            --col-sapphire:  #00aaff;
-            --col-silver:    #b0bec5;
-            --col-ruby:      #e57373;
-            --col-amethyst:  #00ff66;
-            --col-emerald:   #33ccff;
-        }
-
-        @media (prefers-reduced-motion: no-preference) {
-            html { scroll-behavior: smooth; }
-        }
-
+        /* Base Theme - 7 Sisters Dark */
         body {
-            font-family: 'Orbitron', 'Exo 2', 'Inter', sans-serif;
-            background: #000000;
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
         }
-
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background: #000000;
-            z-index: -1;
-            pointer-events: none;
+        
+        /* Strict Blue Link Rules */
+        a {
+            color: #3b82f6;
+            text-decoration: underline;
         }
-
-        *:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-
-        /* ── Header ── */
+        a:hover {
+            color: #60a5fa;
+        }
+        
+        /* Navigation */
         .site-header {
-            background: #000000;
-            backdrop-filter: none;
-            border-bottom: 1px solid var(--border);
-            padding: 0.8rem 1.5rem;
-            position: sticky;
-            top: 0;
-            z-index: 300;
+            background-color: #000000;
+            border-bottom: 1px solid #1e293b;
+            padding: 1rem 1.5rem;
         }
-
         .nav-container {
             max-width: 1200px;
             margin: 0 auto;
             display: flex;
+            justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
             gap: 1rem;
-            flex-wrap: wrap;
         }
-
-        .brand {
+        .nav-links {
             display: flex;
-            align-items: center;
-            gap: 0.65rem;
-            text-decoration: none;
-            margin-right: auto;
-        }
-
-        .brand-logo {
-            height: 38px;
-            width: auto;
-            border-radius: 6px;
-        }
-
-        .brand-text {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .brand-name {
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            font-size: 0.95rem;
-            color: var(--accent);
-            line-height: 1.1;
-        }
-
-        .brand-sub {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            letter-spacing: 0.03em;
-        }
-
-        /* ── Nav ── */
-        #main-nav {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.35rem;
-            align-items: center;
-        }
-
-        .nav-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-            padding: 0.4rem 0.85rem;
-            border-radius: 7px;
-            border: 1px solid transparent;
-            text-decoration: none;
-            font-size: 0.82rem;
+            gap: 2rem;
             font-weight: 600;
-            color: var(--accent-link);
-            background: transparent;
-            transition: color 0.2s, text-shadow 0.2s;
+        }
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+        }
+        .nav-links a.nav-active-page {
+            color: #eab308 !important; /* Yellow active state */
         }
 
-        .nav-icon { width: 18px; height: 18px; flex-shrink: 0; }
+        /* Main Content Layout */
+        main {
+            max-width: 800px;
+            margin: 4rem auto;
+            padding: 0 1rem;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+        h2 {
+            font-size: 1.75rem;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 0.5rem;
+        }
+        p {
+            margin-bottom: 1.5rem;
+            color: #cbd5e1; /* Soft grey to keep focus on white headers and blue links */
+        }
+        
+        /* Zero Cards / Clean List Layout */
+        .property-list {
+            list-style: none;
+            padding: 0;
+        }
+        .property-item {
+            margin-bottom: 2.5rem;
+        }
+        .property-item h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
 
-        .nav-btn.nav-gold     { border-color: rgba(255,215,0,0.25); }
-        .nav-btn.nav-sapphire { border-color: rgba(0,170,255,0.25); }
-        .nav-btn.nav-silver   { border-color: rgba(176,190,197,0.25); }
-        .nav-btn.nav-ruby     { border-color: rgba(229,115,115,0.25); }
-        .nav-btn.nav-amethyst { border-color: rgba(0,255,102,0.25); }
+    <header class="site-header">
+        <div class="nav-container">
+            
+            <a href="https://amazinggracehl.org/" style="display: flex; align-items: center; text-decoration: none;">
+                <img src="https://drive.google.com/uc?export=view&id=19BLW58GPLBvgjQ_WtCqAtaL8nrn9Zh-g" alt="Amazing Grace Home Living Logo" style="height: 40px; width: auto; display: block;">
+            </a>
 
-        .nav-btn.nav-gold:hover     { color: var(--gold);         text-shadow: 0 0 6px var(--gold); border-color: var(--gold); }
-        .nav-btn.nav-sapphire:hover { color: var(--accent-link-h); text-shadow: 0 0 6px var(--accent-link-h); border-color: var(--accent-link); }
-        .nav-btn.nav-silver:hover   { color
+            <nav class="nav-links">
+                <a href="https://amazinggracehl.org/" class="nav-active-page">Home</a>
+                <a href="https://amazinggracehl.org/stories/">Stories</a>
+                <a href="https://arcade.amazinggracehl.org/">Arcade</a>
+                <a href="https://ministry.amazinggracehl.org/">Ministry</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <h1>Amazing Grace Home Living</h1>
+        <p>Providing secure, all-inclusive housing, spiritual community through the Voice of Jesus Ministry, and narrative journeys via the Nexus Arcade.</p>
+
+        <h2>Our Properties</h2>
+        <ul class="property-list">
+            <li class="property-item">
+                <h3>926 East Poinsettia, Tampa FL</h3>
+                <p>All-inclusive housing node located in the heart of Tampa.</p>
+                <a href="https://drive.google.com/open?id=1hg8DVecMjQThcHQ3CSHuoE8PfcfjmvnH" target="_blank" rel="noopener noreferrer">View Gallery</a>
+            </li>
+            
+            <li class="property-item">
+                <h3>1142 7th Street NW, Largo FL</h3>
+                <p>Secure residential node offering quiet, structured living in Largo.</p>
+                <a href="https://drive.google.com/open?id=1FncGI155Ol4e6PzxUVyhFr0WOfmZWc15" target="_blank" rel="noopener noreferrer">View Gallery</a>
+            </li>
+            
+            <li class="property-item">
+                <h3>1144 7th Street NW, Largo FL</h3>
+                <p>Extended residential node located adjacent to our primary Largo housing.</p>
+                <a href="https://drive.google.com/open?id=1KeYRiTSzkr5YWcAdiUYU-fGFCR-lbCh3" target="_blank" rel="noopener noreferrer">View Gallery</a>
+            </li>
+        </ul>
+    </main>
+
+</body>
+</html>
