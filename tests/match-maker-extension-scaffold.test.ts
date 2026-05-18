@@ -2,11 +2,13 @@ import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 
 describe('arcade replacement route cleanup', () => {
-  it('routes the arcade replacement card to the self-contained Trinity page', () => {
+  it('keeps legacy match-maker routes removed and no longer advertises removed arcade cards', () => {
     const arcade = fs.readFileSync('arcade/index.html', 'utf8');
 
-    expect(arcade).toContain('href="./trinity/"');
-    expect(arcade).toContain('Trinity Match');
+    expect(arcade).not.toContain('href="./trinity/"');
+    expect(arcade).not.toContain('Trinity Match');
+    expect(arcade).not.toContain('href="./quick-click/"');
+    expect(arcade).not.toContain('Quick Click');
     expect(arcade).not.toContain("launchGame('matchmaker')");
     expect(arcade).not.toContain('nexus-match-maker.zip');
   });
