@@ -1,301 +1,780 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>
-  (function () {
-    const allowedHosts = new Set([
-      "amazinggracehl.org",
-      "www.amazinggracehl.org",
-      "nicholaimadias.github.io",
-    ]);
-    const isHosted =
-      window.location.protocol === "https:" && allowedHosts.has(window.location.hostname);
-    if (!isHosted) return;
-
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = "https://www.googletagmanager.com/gtag/js?id=G-HKZ2G2VN78";
-    document.head.appendChild(script);
-
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function () {
-      window.dataLayer.push(arguments);
-    };
-    window.gtag("js", new Date());
-    window.gtag("config", "G-HKZ2G2VN78");
-  })();
-</script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Storybook Library — ministry testimonies, branching narratives, and fictional adventures from Amazing Grace Home Living.">
-    <meta name="theme-color" content="#000000">
+    <meta name="description" content="Stories, featured writing, and character dossiers from Amazing Grace Home Living.">
+    <meta name="theme-color" content="#020617">
     <link rel="icon" type="image/png" href="../assets/logo.png">
-    <title>Storybook Library | Amazing Grace Home Living</title>
-
+    <title>Stories | Amazing Grace Home Living</title>
     <style>
-        .nav-logo-link {
-            display: none !important;
+        :root {
+            --bg: #020617;
+            --surface: rgba(15, 23, 42, 0.92);
+            --surface-strong: #111827;
+            --border: #1e293b;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-soft: rgba(56, 189, 248, 0.14);
+            --accent-gold: #facc15;
+            --blog-border: rgba(250, 204, 21, 0.25);
         }
+
+        * { box-sizing: border-box; }
+
+        html { color-scheme: dark; }
 
         body {
-            background: #000;
-            color: #ccc;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 1rem;
+            margin: 0;
+            font-family: Inter, Arial, sans-serif;
+            background:
+                radial-gradient(circle at top, rgba(56, 189, 248, 0.16), transparent 28%),
+                linear-gradient(180deg, #020617 0%, #0f172a 100%);
+            color: var(--text);
             line-height: 1.7;
-            padding: 2rem 1.5rem;
-            max-width: 720px;
-            margin: 0 auto;
         }
 
-        a { color: #4af; text-decoration: underline; }
-        a:hover, a:focus { color: #7cf; }
-        a:focus-visible { outline: 2px solid #4af; outline-offset: 2px; }
+        a { color: var(--accent); }
+        a:hover { color: #7dd3fc; }
+        *:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 
-        /* ── Top nav ── */
-        .topnav {
-            font-size: 0.85rem;
-            margin-bottom: 2.5rem;
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: rgba(2, 6, 23, 0.94);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+        }
+
+        .nav-container {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .logo img {
+            height: 42px;
+            width: auto;
+            border-radius: 6px;
+            display: block;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 0.8rem;
+            border-radius: 999px;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.nav-active-page {
+            background: var(--accent-soft);
+            color: #fff;
+        }
+
+        main {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.9fr);
+            gap: 1.5rem;
+            align-items: stretch;
+            padding: 1rem 0 2.5rem;
+        }
+
+        .hero-copy,
+        .hero-panel,
+        .section-panel,
+        .blog-post,
+        .library-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 1.25rem;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.22);
+        }
+
+        .hero-copy {
+            padding: 2rem;
+        }
+
+        .hero-copy h1 {
+            margin: 0 0 1rem;
+            font-size: clamp(2.25rem, 5vw, 3.5rem);
+            line-height: 1.05;
+        }
+
+        .hero-copy p {
+            margin: 0 0 1rem;
+            color: var(--muted);
+            max-width: 60ch;
+        }
+
+        .hero-actions {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.25rem 1rem;
-        }
-        .topnav a { white-space: nowrap; }
-
-        /* ── Header ── */
-        header h1 {
-            font-size: 1.6rem;
-            font-weight: bold;
-            color: #fff;
-            margin-bottom: 0.25rem;
-            letter-spacing: 0.02em;
-        }
-        header p.sub {
-            color: #777;
-            font-size: 0.85rem;
-            margin-bottom: 2rem;
-        }
-        hr {
-            border: none;
-            border-top: 1px solid #333;
-            margin: 1.5rem 0;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
         }
 
-        /* ── Story list ── */
-        #story-list {
+        .hero-actions a,
+        .panel-link,
+        .blog-jump {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: 0.9rem;
+            padding: 0.8rem 1rem;
+        }
+
+        .hero-actions a:first-child,
+        .blog-jump {
+            background: var(--accent);
+            color: #082f49;
+        }
+
+        .hero-actions a:last-child,
+        .panel-link {
+            background: rgba(15, 23, 42, 0.96);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .hero-panel {
+            padding: 1.5rem;
+        }
+
+        .hero-panel h2,
+        .section-panel h2 {
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+            font-size: 1.35rem;
+        }
+
+        .hero-panel p,
+        .section-intro,
+        .blog-post p,
+        .blog-post li,
+        .article-caption {
+            color: var(--muted);
+        }
+
+        .hero-panel ul {
+            margin: 1rem 0 0;
+            padding-left: 1.2rem;
+            color: var(--muted);
+        }
+
+        .hero-panel li + li { margin-top: 0.6rem; }
+
+        .page-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .section-panel {
+            padding: 1.5rem;
+        }
+
+        .section-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: end;
+            margin-bottom: 1.25rem;
+        }
+
+        .section-eyebrow,
+        .blog-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.78rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent-gold);
+            font-weight: 700;
+        }
+
+        .library-list {
             list-style: none;
             padding: 0;
-        }
-        #story-list li {
-            margin-bottom: 1.4rem;
-        }
-        .row {
-            display: flex;
-            align-items: baseline;
-            gap: 0.5rem;
-        }
-        .icon {
-            font-style: normal;
-            font-size: 1rem;
-            flex-shrink: 0;
-            width: 1.5rem;
-            text-align: center;
-        }
-        .story-link {
-            font-size: 1rem;
-            font-weight: bold;
-        }
-        .meta {
-            font-size: 0.8rem;
-            color: #666;
-            padding-left: 2rem;
+            margin: 0;
+            display: grid;
+            gap: 1rem;
         }
 
-        /* ── Error ── */
+        .library-card {
+            padding: 1.1rem 1.15rem;
+        }
+
+        .card-row {
+            display: flex;
+            gap: 0.8rem;
+            align-items: start;
+        }
+
+        .icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 999px;
+            background: rgba(56, 189, 248, 0.12);
+            flex-shrink: 0;
+        }
+
+        .story-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .story-link:hover { color: #fff; }
+
+        .meta {
+            margin: 0.45rem 0 0;
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .summary {
+            margin: 0.7rem 0 0;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
         .error {
-            color: #f66;
-            background: #200;
-            border: 1px solid #600;
-            padding: 0.75rem 1rem;
-            border-radius: 4px;
-            font-size: 0.9rem;
+            color: #fecaca;
+            background: rgba(127, 29, 29, 0.35);
+            border: 1px solid rgba(248, 113, 113, 0.45);
+            padding: 0.85rem 1rem;
+            border-radius: 0.9rem;
+            font-size: 0.95rem;
             white-space: pre-wrap;
         }
         .error:empty { display: none; }
 
-        /* ── Arcade banner ── */
-        .arcade-banner {
-            font-size: 0.85rem;
-            color: #888;
-            margin-bottom: 1.5rem;
-            padding: 0.6rem 0.85rem;
-            background: #050e1d;
-            border-left: 3px solid #4af;
-            border-radius: 0 4px 4px 0;
-            line-height: 1.5;
-        }
-        .arcade-banner a { color: #4af; }
-
-        /* ── Section headings ── */
-        .section-heading {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            color: #4af;
-            margin: 2rem 0 0.75rem;
+        .blog-post {
+            padding: 1.75rem;
+            border-color: var(--blog-border);
         }
 
-        /* ── Character list ── */
-        #character-list {
-            list-style: none;
-            padding: 0;
-        }
-        #character-list li {
-            margin-bottom: 1.4rem;
+        .blog-post h3 {
+            margin: 1.75rem 0 0.7rem;
+            font-size: 1.3rem;
+            color: #fff;
         }
 
-        /* ── Footer ── */
-        footer {
-            margin-top: 3rem;
-            border-top: 1px solid #333;
-            padding-top: 1rem;
-            font-size: 0.8rem;
-            color: #555;
+        .blog-post h4 {
+            margin: 1.35rem 0 0.6rem;
+            font-size: 1.05rem;
+            color: var(--accent);
+        }
+
+        .blog-title {
+            margin: 0.4rem 0 0.8rem;
+            font-size: clamp(1.6rem, 3vw, 2.35rem);
+            line-height: 1.2;
+        }
+
+        .blog-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem 1rem;
+            color: var(--muted);
+            font-size: 0.92rem;
+            margin-bottom: 1rem;
+        }
+
+        .blog-callout {
+            margin: 1.2rem 0;
+            padding: 1rem 1.1rem;
+            border-left: 4px solid var(--accent);
+            background: rgba(8, 47, 73, 0.32);
+            border-radius: 0 0.9rem 0.9rem 0;
+            color: var(--text);
+        }
+
+        .blog-table-wrap {
+            overflow-x: auto;
+            margin: 1rem 0 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 640px;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--border);
+            padding: 0.8rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: rgba(15, 23, 42, 0.98);
+            color: #fff;
+        }
+
+        td { color: var(--muted); }
+
+        .site-footer {
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            text-align: center;
+            padding: 1.5rem 1rem 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-copy,
+            .hero-panel,
+            .section-panel,
+            .blog-post {
+                padding: 1.25rem;
+            }
         }
     </style>
 </head>
 <body>
+    <header class="site-header">
+        <div class="nav-container">
+            <a href="../" class="logo" aria-label="Amazing Grace Home Living — Home">
+                <img src="../assets/logo.png" alt="Amazing Grace Home Living Logo">
+            </a>
 
-<nav class="topnav" aria-label="Site navigation">
-    <a href="../">Home</a>
-    <a href="./">Library</a>
-    <a href="../ministry/">Ministry</a>
-    <a href="../arcade/">Arcade</a>
-</nav>
+            <nav class="nav-links" aria-label="Main navigation">
+                <a href="../">Home</a>
+                <a href="./" class="nav-active-page" aria-current="page">Stories</a>
+                <a href="../arcade/">Arcade</a>
+                <a href="../ministry/">Ministry</a>
+                <a href="../contact/">Contact</a>
+            </nav>
+        </div>
+    </header>
 
-<header>
-    <h1>📚 Storybook Library</h1>
-    <p class="sub">Stories from the Amazing Grace universe.</p>
-</header>
+    <main>
+        <section class="hero" aria-labelledby="stories-heading">
+            <div class="hero-copy">
+                <span class="section-eyebrow">📚 Stories &amp; blog</span>
+                <h1 id="stories-heading">A unified library for stories, testimony, and long-form reflection.</h1>
+                <p>
+                    The stories page now carries the same direct HTML navigation used across the main site,
+                    while keeping room for the Amazing Grace canon, ministry testimonies, and featured writing.
+                </p>
+                <p>
+                    Browse the library, meet recurring characters, and read the first long-form blog entry added to the archive.
+                </p>
+                <div class="hero-actions">
+                    <a href="#story-experiences">Browse stories</a>
+                    <a href="#featured-blog">Read the featured article</a>
+                </div>
+            </div>
 
-<p class="arcade-banner">
-    🎮 <strong>Nexus Arcade</strong> — experience these stories as interactive games and narrative missions at <a href="../arcade/">/arcade</a>
-</p>
+            <aside class="hero-panel" aria-label="Stories quick links">
+                <h2>Quick links</h2>
+                <p>Seven Stars moved out of the top navigation and into the page content so the main nav stays consistent.</p>
+                <a class="panel-link" href="../ministries/">✨ Open Seven Stars Journey</a>
+                <ul>
+                    <li>Visit the ministry hub for media, outreach, and Bible Journey resources.</li>
+                    <li>Jump into the arcade to experience the interactive side of the Amazing Grace universe.</li>
+                    <li>Use this page as the front door for both stories and blog-style writing.</li>
+                </ul>
+            </aside>
+        </section>
 
-<hr>
+        <div class="page-grid">
+            <section class="section-panel" aria-labelledby="story-experiences">
+                <div class="section-header">
+                    <div>
+                        <span class="section-eyebrow">📖 Library</span>
+                        <h2 id="story-experiences">Story Experiences</h2>
+                    </div>
+                    <a class="blog-jump" href="#featured-blog">Featured blog ↓</a>
+                </div>
+                <p class="section-intro">Stories from the Amazing Grace universe, loaded from the repository story catalog.</p>
+                <ul id="story-list" class="library-list" aria-label="Story list"></ul>
+            </section>
 
-<h2 class="section-heading" id="stories">📖 Story Experiences</h2>
-<ul id="story-list" aria-label="Story list"></ul>
+            <section class="section-panel" aria-labelledby="featured-blog">
+                <div class="section-header">
+                    <div>
+                        <span class="section-eyebrow">📝 Featured writing</span>
+                        <h2 id="featured-blog">Blog</h2>
+                    </div>
+                </div>
 
-<hr>
+                <article class="blog-post" aria-labelledby="blog-post-title">
+                    <span class="blog-tag">First article</span>
+                    <h3 id="blog-post-title" class="blog-title">Architectural JS Synthesis of the Matrix of Conscience: Unifying the Sequence Stabilizer, Binary Rain, and Point-Based Economy in High-Fidelity Simulation Environments</h3>
+                    <div class="blog-meta">
+                        <span>Amazing Grace Story Archive</span>
+                        <span>Featured systems essay</span>
+                        <span>Stories blog</span>
+                    </div>
 
-<h2 id="characters" class="section-heading">🏃‍♀️ Characters</h2>
-<ul id="character-list" aria-label="Character dossiers"></ul>
+                    <h4>Introduction: The Architecture of Unified Realities</h4>
+                    <p>The structural unification of fragmented narrative simulations, disparate physical hardware protocols, and gamified digital economies requires an uncompromising, highly centralized architectural framework. Historically, decentralized narrative environments and distributed computational clusters have suffered from asynchronous state degradation, a phenomenon identified within localized systemic lore as “Resonance Decay.” To counteract this structural entropy and unify disjointed narrative elements into a single, cohesive, high-quality system, developers must rely on a foundational architecture known as the “Matrix of Conscience.”</p>
+                    <p>This complex property matrix fundamentally governs reason-determined action, political structure, worldview generation, and technological progression within the simulated environment. Within legacy archival queries, users often seek localized files that reference vernacular nomenclatures such as the “Sequence Stabilizer” (a computational mechanic ensuring temporal coherence) and the “Binary Rain” (the visual representation of cascading systemic data). However, advanced systemic analysis reveals that these concepts are not mere narrative tropes; they represent highly specific physical hardware protocols and advanced quantum visualization techniques.</p>
+                    <p>The aesthetic phenomenon of “Binary Rain” is functionally identical to real-time visualizations of the neutrino mixing matrix, which maps state probabilities and mass splits through dynamic, fluctuating visual variables. Conversely, the “Sequence Stabilizer” represents the deployment of the sub-nanosecond White Rabbit Precision Time Protocol across kilometer-long optical fiber networks, ensuring the simulation remains immune to temporal desynchronization.</p>
+                    <p>By binding these advanced physical infrastructures to a heavily incentivized, highly scalable point-based economy, system architects can extract massive computational and analytical labor from a highly engaged user base. This user base, operating under the guise of an interconnected narrative, unknowingly provides the exact cognitive labor required to maintain the hardware and software integrity of the very simulation they inhabit. This comprehensive report provides an exhaustive synthesis of the ontological logic, precision timing hardware, economic gamification models, and narrative overlay required to actualize the Matrix of Conscience.</p>
 
-<div id="error" class="error" role="status" aria-live="polite"></div>
+                    <h3>Ontological Foundations: The Matrix of Conscience</h3>
+                    <p>The underlying computational logic driving all behaviors, rulesets, economic distributions, and narrative progressions within the unified architecture is derived strictly from the Matrix of Conscience. This is not merely a philosophical construct but a rigorously defined property matrix that defines dimensions of reason-determined action and establishes criteria for relative rationality. To prevent simulated actors—and the human users piloting them—from introducing illogical actions that could corrupt the simulation’s reality metric, all behavior is mathematically evaluated against this matrix.</p>
 
-<footer>
-    <p>&copy; 2026 Amazing Grace Home Living &mdash; <a href="../">amazinggracehl.org</a></p>
-</footer>
+                    <h4>Dimensions of Reason-Determined Action</h4>
+                    <p>Within this systemic architecture, every state change and entity decision is parsed through a multidimensional evaluative grid. This matrix tests for specific criteria, establishing whether an action exhibits marked relevance or doubtfulness when subjected to algorithmic comparison. The core evaluative dimensions, and their application within the simulation logic, are delineated as follows:</p>
+                    <ul>
+                        <li><strong>Objectivity in Communication and Representation:</strong> The system continuously assesses whether data exchanged between network nodes, or dialogue generated between player entities, maintains objective reality within the simulation’s physical bounds. If a localized event is triggered, its representation to global observers must perfectly align with the verified server state. Any divergence between the represented state and the objective algorithmic truth triggers a severe system warning, immediately calling upon the sequence stabilization protocols to rectify the error.</li>
+                        <li><strong>Legality in Decision and Personal Benefit:</strong> A robust simulation requires an economy, and an economy requires strict regulation. The Matrix of Conscience constantly balances an entity’s “perception of personal benefits” against the broader “social reference.” In practical terms, this dictates the anti-exploitation mechanisms of the game engine. When a user extracts value from the point-based economy, the action is weighed against its legality within the systemic ruleset, ensuring that individual accumulation does not destabilize the simulated social contract.</li>
+                        <li><strong>Ontological Structures and Action Spheres:</strong> Beyond simple decision-making, the Matrix of Conscience maps the entirety of human existence into discrete, computable categories. These include the economic system (laboring for an existential basis), technological development (including structural engineering and virtual house construction), and the acquisition of knowledge regarding both internal states and the external world view. The system even mathematically maps concepts such as religion, defined herein as the interpretation of the meaning of life processes and the restitution of health, effectively translating curing and healing into biological state transformations.</li>
+                    </ul>
 
-<script>
-    /* Pick a simple glyph icon based on entry metadata */
-    function pickIcon(entry) {
-        var tags = Array.isArray(entry.tags) ? entry.tags.map(function(t) { return String(t).toLowerCase(); }) : [];
-        var genre = String(entry.genre || '').toLowerCase();
-        if (tags.indexOf('faith') !== -1 || genre.indexOf('faith') !== -1) return '✝';
-        if (tags.indexOf('matrix') !== -1 || tags.indexOf('sci-fi') !== -1 || genre.indexOf('sci') !== -1) return '⌬';
-        if (tags.indexOf('covenant') !== -1) return '✧';
-        return '📖';
-    }
+                    <h4>Structural Priming and Ontological Chains</h4>
+                    <p>The operational rules of the Matrix of Conscience rely heavily on advanced logic structures, specifically utilizing implications and unbroken chains of implications. The simulation engine tracks these ontological chains through highly precise mathematical properties:</p>
+                    <ul>
+                        <li><strong>Transitivity, Similarity, and Equivalence:</strong> If state variable A logically necessitates state variable B, and B necessitates C, the system’s transitivity algorithms automatically render the causal link connecting A directly to C without requiring manual computational oversight. Actions that share ontological weight are grouped via similarity and equivalence matrices, allowing the engine to assign standardized economic point values to seemingly diverse narrative tasks.</li>
+                        <li><strong>Transformational Mechanics:</strong> The system meticulously records absolute state changes, mapping the complex cause-and-effect relations that dictate the trajectory from an initial goal, through an executed action, to the final rendered result.</li>
+                    </ul>
+                    <p>Furthermore, the simulation relies exclusively on “priming” to generate its internal structure. Priming acts as the algorithmic key giving direction to structure formation, valid both for the active creation of the simulated world (the procedural generation process) and its descriptive interpretation by the embedded users. By selectively priming users with specific environmental and narrative cues, the architecture directs the organic formation of complex socio-economic structures, mitigating the need for resource-intensive, hardcoded top-down interventions.</p>
 
-    /* Build the muted metadata string shown below each link */
-    function formatMeta(entry) {
-        var parts = [];
-        if (entry.author) parts.push(entry.author);
-        if (entry.series) parts.push(entry.series);
-        if (entry.genre)  parts.push(entry.genre);
-        if (Array.isArray(entry.tags) && entry.tags.length) {
-            parts.push('tags: ' + entry.tags.join(', '));
+                    <h4>Conscientious Politics and the Social Contract</h4>
+                    <p>Extending beyond individual entity mechanics, the Matrix of Conscience defines macroscopic interactions through the implementation of conscientious politics. In multi-user simulated environments, factions, guilds, and corporate alliances operate strictly within this larger political matrix. The architecture defines conscientious politics as actions informed by moral deliberations regarding systemic legitimacy.</p>
+                    <p>To maintain the balance between player passion and algorithmic persuasion, the simulation provides designated temporal cycles and spatial venues exclusively for deliberation on the social contract. This political mechanic inherently challenges the convenience of the governing logic and the established conventions of the simulated society, ensuring a dynamic, evolving environment. Furthermore, while the individual user’s freedom of conscience draws upon positive liberty from within their own cognitive state, conscientious politics within the simulation demands emancipation from without—meaning the system must occasionally allow players to rewrite localized governing laws.</p>
+                    <p>The integration of phenomena like the “religious lawyering movement” into the simulation tests the compatibility of these evolving player structures against the liberal presumptions on which the legal and operational systems are originally based. This creates a “constitutional conscience,” a self-regulating legal framework that prevents the simulation from devolving into anarchic logic states.</p>
+
+                    <h3>Hardware Infrastructure: The Sequence Stabilizer</h3>
+                    <p>To successfully run a simulation unified under the Matrix of Conscience, the architecture demands absolute, flawless temporal coherence. Any desynchronization between disparate computational nodes leads to severe reality fragmentation, rendering the complex ontological chains of the Matrix invalid. To prevent the phenomenon categorized within narrative parameters as “Resonance Decay,” the theoretical concept of a “Sequence Stabilizer” must be actualized via the large-scale physical deployment of the White Rabbit Precision Time Protocol.</p>
+
+                    <h4>Sub-Nanosecond Synchronization and the Idrogen System</h4>
+                    <p>The White Rabbit Protocol is an ultra-precise technology historically developed to ensure perfect time calibration in massive, multinational scientific infrastructures such as KM3NeT, CERN, the Square Kilometre Array (SKA), and the Cherenkov Telescope Array (CTA). These facilities require high time-accuracy needs operating entirely in the sub-nanosecond domain. By adapting this exact protocol for the simulation’s global server architecture, the sequence stabilizer achieves uniform time representation across massive geographical distances.</p>
+                    <p>The core of this stabilization is an implementation of an Idrogen frequency generation system. This system demonstrates the proof-of-concept for the perfect synchronization of a pulsed laser. By utilizing a laser with a repetition rate of a few hundred megahertz, the network establishes picosecond jitter precision transmitted continuously through kilometer-long optical fiber arrays. While minor drifts of a few picoseconds may occasionally be observed—typically related to environmental changes affecting the physical fiber infrastructure—prospects for continuous algorithmic improvements ensure the logical progression of the simulated world remains entirely stable.</p>
+
+                    <h4>Frequency Filtering and Phase Manipulation Hardware</h4>
+                    <p>To guarantee that the Sequence Stabilizer operates without signal degradation, the hardware architecture requires meticulous frequency isolation. The system utilizes a highly specialized microwave source apparatus. Within this apparatus, the baseline 2.8035-GHz carrier signal, along with any lower-frequency mixing products, is rigorously filtered out. This isolation is achieved using a dedicated cavity band-pass filter, specifically the Mini-Circuits ZVBP-3100A-S+ module.</p>
+                    <p>Once filtered, both the primary outputs and the quantum modulation outputs are directly referenced to a master 10-MHz oscillator. This oscillator signal is continuously disseminated by centralized timekeeping authorities—such as the Dutch National Metrological Institute (VSL)—exclusively via the White Rabbit protocol. For less complex operational tasks, such as initial quantum state preparation, the hardware integrates an RF switch that allows the operation mode of the microwave source to be dynamically changed, utilizing only the Sinara Phaser operating at 3.035 GHz. This layered hardware approach ensures that the fundamental timeline of the simulation remains mathematically pristine.</p>
+
+                    <h4>TDM-PON Networks and Terahertz Wireless Transmission</h4>
+                    <p>The sheer volume of data required to simulate the Matrix of Conscience across millions of users requires transmission speeds that border on the theoretical limits of modern physics. The Sequence Stabilizer architecture utilizes a White Rabbit Protocol Enhanced Time-Division Multiplexing Passive Optical Network (TDM-PON).</p>
+                    <p>This specific TDM-PON infrastructure provides the simulation with nanosecond clock and data recovery capabilities alongside the baseline picosecond time synchronization accuracy. By utilizing such rapid data recovery mechanisms, the system can instantly intercept and restore dropped packets before they manifest as glitches or visual artifacts within the user’s interface, completely masking the digital nature of the environment.</p>
+                    <p>Furthermore, the integration of 100/200-Gb/s downstream transmission is achieved using highly simplified coherent receivers. When physical optical fiber routing becomes geographically impossible, the system relies on extreme high-frequency wireless bridging. Experimental demonstrations confirm that the system can deliver 60 Gbit/s Terahertz signals operating at the massive 340 GHz band. These signals are delivered flawlessly over 50-meter wireless distances while integrating a highly precise 1.58 cm resolution radar system to track the physical environment and maintain signal lock.</p>
+
+                    <h4>Bistatic Noise Radar for Anti-Tampering and Stealth</h4>
+                    <p>A simulated world unified at this unprecedented scale represents an extraordinarily lucrative target for malicious exploitation, state alteration, and advanced cyber-warfare. To safeguard the centralized sequence stabilizer networks and provide additional electronic stealth for the core computational centers, the architecture integrates advanced defense principles derived from bistatic noise radars.</p>
+                    <p>This defensive framework introduces two novel approaches for systemic protection. The first approach utilizes a quantum-generated random number sequence directly for phase manipulation control. Because this quantum sequence is practically infinite in duration, the phase manipulation control code never repeats, regardless of the operational duration of the servers. This ensures absolute electronic protection against pattern-recognition attacks.</p>
+                    <p>The second defensive approach involves the introduction of synchronized emissions from dual, non-directional antennas. These emissions are mathematically engineered to ensure exact equality or a strictly controlled difference of their signals upon arrival at a predetermined point in physical space. This mechanism enables the formation of a heavily controlled electromagnetic field. As a result, the received-signal processing capabilities of the core servers are drastically improved, while simultaneously achieving unparalleled electronic “stealth”. The system accomplishes this stealth by creating a fictitious electromagnetic center—an effective RF phase center of the resultant resultant radiation—which overwhelmingly complicates the determination of the actual hardware locations by hostile actors.</p>
+
+                    <div class="blog-table-wrap">
+                        <table>
+                            <caption class="article-caption">Table 1: Sequence Stabilizer Hardware Implementation Matrix</caption>
+                            <thead>
+                                <tr>
+                                    <th>Component / Protocol</th>
+                                    <th>Operational Frequency / Metric</th>
+                                    <th>Systemic Function within Architecture</th>
+                                    <th>Hardware Specification / Source</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>White Rabbit Protocol</td>
+                                    <td>Sub-nanosecond</td>
+                                    <td>Global time calibration across kilometer fiber.</td>
+                                    <td>Disseminated by VSL.</td>
+                                </tr>
+                                <tr>
+                                    <td>Pulsed Laser Emitter</td>
+                                    <td>Few hundred megahertz</td>
+                                    <td>Core temporal heartbeat of the simulation.</td>
+                                    <td>Idrogen frequency generation system.</td>
+                                </tr>
+                                <tr>
+                                    <td>Cavity Band-Pass Filter</td>
+                                    <td>Filters 2.8035-GHz carrier</td>
+                                    <td>Removes mixing products to maintain signal purity.</td>
+                                    <td>Mini-Circuits ZVBP-3100A-S+.</td>
+                                </tr>
+                                <tr>
+                                    <td>Master Oscillator</td>
+                                    <td>10-MHz</td>
+                                    <td>Baseline reference for quantum modulation.</td>
+                                    <td>VSL synchronized standard.</td>
+                                </tr>
+                                <tr>
+                                    <td>Phase Controller</td>
+                                    <td>3.035 GHz</td>
+                                    <td>Simple task operations and state preparation via RF switch.</td>
+                                    <td>Sinara Phaser module.</td>
+                                </tr>
+                                <tr>
+                                    <td>High-Band Wireless Bridge</td>
+                                    <td>340 GHz band (60 Gbit/s)</td>
+                                    <td>High-speed data recovery and localized data bridging.</td>
+                                    <td>Integrated 1.58 cm resolution radar.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>Data Visualization: The “Binary Rain” as Neutrino Mixing</h3>
+                    <p>The aesthetic requirement for a real-time visual representation of raw systemic data—traditionally and vernacularly conceptualized by early users as “Binary Rain”—is fulfilled not through the rendering of arbitrary alphanumeric strings, but through the rigorous visualization of complex particle mixing matrices. In a high-quality simulation, the overarching reality state is projected using the visual parameters of the neutrino mixing matrix, transforming highly abstract quantum mechanics into a readable, cascading user interface.</p>
+
+                    <h4>Visualization Mechanics and Reality Parameters</h4>
+                    <p>The neutrino mixing matrix serves as the ultimate dashboard for the simulation’s architectural health, providing a visual representation of the current best fit values for the system’s foundational physics. In this high-fidelity visualization, the cascading data streams are divided into distinct color bars. The length of each color bar directly represents the specific “flavor content” of each rendered mass state within the simulation.</p>
+                    <p>Furthermore, the spatial distance rendered between each mass state on the visualization matrix accurately represents the mathematical mass splitting occurring within the simulation’s underlying physics engine. This provides system administrators with a continuous, mathematically precise readout of reality-stability. The cascading visual streams constantly display the 90% confidence level (CL) contour mapping for critical variance angles, denoted as θ23, as well as the energy variance parameters represented by Δm².</p>
+
+                    <h4>Environmental Calibration and Output Thresholds</h4>
+                    <p>The visualization layer also acts as the primary diagnostic tool for identifying external interference. Just as physical sea currents cause movement and necessitate calibration in underwater scientific arrays, the macroscopic environmental changes in user behavior introduce “currents” of data that cause the simulation’s state to drift. The Binary Rain visualization highlights these drifts in real time.</p>
+                    <p>To prevent the visualization from becoming overwhelmingly chaotic during peak user interaction, the interface relies on a thresholding mechanic governed by the White Rabbit protocol. The system is designed such that a single localized output hit represented on the visualization matrix can actually be the consolidated result of multiple requested hits. As long as these multiple data requests occur close enough in time, they collectively keep the visual pulse above the rendering threshold, collapsing millions of localized player actions into a single, elegant stream of cascading color. This perfectly marries the aesthetic desire for continuous digital rainfall with the absolute necessity of rigorous, sub-nanosecond data compression.</p>
+
+                    <h3>The Macroeconomic Engine: Digital Labor and Point-Based Gamification</h3>
+                    <p>To ensure that human interaction with the unified system remains relentless, productive, and structurally beneficial to the hardware architecture, the simulation relies on a highly sophisticated point-based economy. This economic model translates the philosophical imperatives of the Matrix of Conscience—specifically the drive to labor for an existential basis—into actionable, gamified metrics that harness human cognitive power.</p>
+
+                    <h4>Labor Transformation and Sociological Integration</h4>
+                    <p>The necessity of this system is deeply rooted in real-world macroeconomic trends regarding the digital transformation of labor. Over decades, advanced economies have witnessed severe fluctuations, highlighted by shifts in Gini coefficients from 1985 to 2013 and polarizing changes in the percentage point share of total employment between 1995 and 2015. By analyzing nominal wage growth compared to baseline levels in 2007, it becomes evident that a massive demographic of disillusioned, low-skilled workers are increasingly vulnerable to automation and market polarization.</p>
+                    <p>The simulation architecture weaponizes this socioeconomic reality. By deploying a comprehensive point-based economy, the system caters directly to these disillusioned populations who are unable to reskill for physical industries or find traction in traditional online outsourcing platforms. The architecture introduces the gamification of hobbies, disguising complex computational labor—such as AI behavioral training, image classification, and cryptographic processing—as engaging virtual tasks.</p>
+                    <p>Through this integration, users gain highly desirable “trade-in” benefits. This ensures that vast demographics of people are not kept entirely passive by global automation, while simultaneously enabling the governing corporate entities to earn massive revenue through the raw cognitive labor executed by this captive user base.</p>
+
+                    <h4>Corporate Scaling and Multi-Billion Point Ecosystems</h4>
+                    <p>The viability and required scale of this gamified economic engine are not theoretical; they are mapped precisely against leading corporate sustainability and digital payment frameworks. To successfully operate the simulation, the point-based economy must expand aggressively into the physical world, seamlessly connecting the customers’ everyday lives with their virtual avatars.</p>
+                    <p>Historical implementation of similar systems demonstrates phenomenal scaling capabilities. By systematically recruiting retail partners, point-based economies have successfully integrated over 100,132 merchants into their primary operational channels. Such expansive networks trigger cumulative member increases exceeding 24% year-over-year, alongside staggering transaction volume growth surpassing 405%. In some documented fiscal quarters, the value of centralized digital points surged, driving the scale of the localized point-based economy to exceed NT$2.7 billion in total volume, fueled by over 6 million cumulative application downloads.</p>
+                    <p>The success of such immersive, customer-centric point ecosystems frequently results in massive industry recognition, such as securing the Future of Customer Experience Award at premier events like the IDC Future Enterprise Awards. This accolade specifically validates the system’s capacity for innovation in enhancing user experience, deepening perpetual engagement, and establishing unbreakable brand trust through obfuscated technology.</p>
+
+                    <h4>Financial Inclusion and Corporate Governance</h4>
+                    <p>To maintain legitimacy within the socio-political dimension of the Matrix of Conscience, the point-based economy is structured around robust environmental, social, and governance (ESG) protocols. The system is designed to realize total financial inclusion, deliberately facilitating the access of disadvantaged or physically isolated groups to high-level financial services. A key technical manifestation of this is the integration of 24/7 ATM International Remittance services directly into the simulation’s banking interface, allowing virtual labor points to be frictionlessly transformed into cross-border physical capital at any hour.</p>
+                    <p>Furthermore, the simulation operates strictly under the oversight of internal Risk and Sustainability Committees. These committees define the overall policy framework and establish the risk appetite and tolerance levels of the virtual economy. They actively review major risk issues, audit information security, and validate the effectiveness of privacy protection strategies, holding mandatory reviews at least twice a year.</p>
+                    <p>The financial logic is inextricably linked to corporate sustainability goals. The economy utilizes a detailed Diversity Matrix and implements climate-sensitive analysis for all major investment and financing targets within the simulation. The governing boards actively plan mechanisms for reporting potential risks and mandate the setting of Science Based Targets (SBT) for carbon reduction in all associated physical server farms.</p>
+                    <p>Additionally, the ecosystem functions as a massive talent pipeline. Through initiatives analogous to the Early Win workplace experience program, the system absorbs hundreds of highly skilled players (e.g., tracking historical metrics of 476 participants resulting in 97 direct transfers to full-time engineering positions) to continually maintain the physical infrastructure of the simulation.</p>
+
+                    <div class="blog-table-wrap">
+                        <table>
+                            <caption class="article-caption">Table 2: Macroeconomic Scaling and Systemic Governance Metrics</caption>
+                            <thead>
+                                <tr>
+                                    <th>Economic Component</th>
+                                    <th>Documented Scale / Metric</th>
+                                    <th>Systemic Function within Architecture</th>
+                                    <th>Corresponding Framework</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Merchant Integration</td>
+                                    <td>100,132 active merchants</td>
+                                    <td>Bridges virtual points to physical existential basis.</td>
+                                    <td>Retail Payment Channels.</td>
+                                </tr>
+                                <tr>
+                                    <td>Economic Scale</td>
+                                    <td>Exceeds NT$2.7 billion</td>
+                                    <td>Demonstrates self-sustaining macroeconomic velocity.</td>
+                                    <td>Point-based Economy Valuation.</td>
+                                </tr>
+                                <tr>
+                                    <td>User Penetration</td>
+                                    <td>6 million cumulative downloads</td>
+                                    <td>Establishes critical mass for continuous digital labor.</td>
+                                    <td>Customer Experience Infrastructure.</td>
+                                </tr>
+                                <tr>
+                                    <td>Transactional Velocity</td>
+                                    <td>405% volume growth</td>
+                                    <td>Validates the gamification of hobbies for labor extraction.</td>
+                                    <td>Digital Transformation Metrics.</td>
+                                </tr>
+                                <tr>
+                                    <td>Sociological Strategy</td>
+                                    <td>Mitigates automation risks</td>
+                                    <td>Prevents user passivity; secures continuous revenue generation.</td>
+                                    <td>Labor Polarization Response.</td>
+                                </tr>
+                                <tr>
+                                    <td>Governance Overlay</td>
+                                    <td>SBT targets, Diversity Matrix</td>
+                                    <td>Maintains legal compliance and moral legitimacy.</td>
+                                    <td>Corporate Sustainability Committees.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>Unifying Fragmented Narratives: The Isekai Interface Layer</h3>
+                    <p>The intricate physics of neutrino mixing, the sub-nanosecond hardware stabilization, and the brutal macroeconomic realities of automated labor displacement are fundamentally opaque—and generally unappealing—to the standard user. To unify these disparate, highly technical systems into an addictive, consumable product, the underlying mechanics are completely enveloped within a rich, heavily stylized narrative layer. This overarching narrative synthesizes fragmented lore from various disconnected repositories, game systems, and fictional constructs into a single, seamless user interface.</p>
+
+                    <h4>The Covenant and Version Control Structuring</h4>
+                    <p>The initial stage of narrative unification relies on structuring player labor into manageable organizational units. Legacy codebases and version control environments—historically documented through repository architectures—reveal the establishment of specific grouping mechanics, such as the “Amazing Grace” covenant.</p>
+                    <p>Operating natively within the broader “matrix-of-conscience” framework, these covenants serve as the primary task management systems for the player base. By centralizing the distribution of computational tasks under the banner of a factional covenant, the system organically organizes player hierarchies and tracks labor outputs via detailed issue tracking and task completion metrics. When the physical White Rabbit hardware detects an impending temporal drift, the server algorithm automatically generates mitigation tasks and pushes them directly to the covenant’s task matrix. Players eagerly accept these tasks, entirely unaware that their localized cooperative gameplay is providing the computational bandwidth required to patch a physical server desynchronization.</p>
+
+                    <h4>Translating Mechanics via Esoteric Assignments</h4>
+                    <p>To effectively disguise the technical nature of the system’s maintenance requirements, the interface layer adopts the vernacular and aesthetic of popular tabletop roleplaying mechanics and dimensional-travel fiction. The overarching framework is presented to the user base as an intricate 5e “Isekai” narrative—a world ruled by bizarre internal logic where players wield crystal weapons and engage in arena combat.</p>
+                    <p>Within this narrative, the concept of data corruption and server desynchronization is personified as the ominous threat of “Resonance Decay.” To combat this decay, players acting as students or operatives within virtual academies are issued “Esoteric Assignments.” While these assignments appear as abstract, highly stylized narrative quests, they are mathematically mapped with absolute precision to the simulation’s core maintenance functions:</p>
+                    <ul>
+                        <li><strong>“Chart the emotional resonance of prime numbers”:</strong> In the narrative, this is an arcane mathematical study. In the physical architecture, this task actively harnesses the player’s local hardware to process the complex cryptographic algorithms required to generate the quantum random number sequences used for the bistatic noise radar’s phase manipulation defense system.</li>
+                        <li><strong>“Map the migratory patterns of sentient shadows”:</strong> Narratively, players track supernatural entities. Systemically, players are acting as visual anomaly detectors, scanning localized environments to identify areas where the neutrino mixing matrix data (the Binary Rain) indicates a spatial or mass-splitting rendering error.</li>
+                        <li><strong>“Calculate the velocity of forgotten dreams”:</strong> This assignment tasks the player with predicting esoteric phenomena. In reality, it forces the user’s client to calculate the exact rate of packet loss and temporal drift occurring between their local machine and the distributed server nodes, aiding the White Rabbit protocol in recalibrating the picosecond jitter before a noticeable lag spike occurs.</li>
+                    </ul>
+                    <p>By synthesizing these mechanics, character archetypes defined by intense analytical observation—such as the hacker “Kaito” detailed in the system’s lore—shift away from direct confrontation and instead focus on decoding the true purpose behind the academy’s assignments. The player’s desire to crack a system built not on standard code, but on esoteric rules and dimensional secrets, perfectly aligns with the system’s need for high-level analytical labor.</p>
+
+                    <div class="blog-callout">This article is presented as the first featured blog entry on the stories page, preserving the long-form text provided for the issue while keeping the surrounding site navigation consistent.</div>
+                </article>
+            </section>
+
+            <section class="section-panel" aria-labelledby="characters">
+                <div class="section-header">
+                    <div>
+                        <span class="section-eyebrow">🏃 Character dossiers</span>
+                        <h2 id="characters">Characters</h2>
+                    </div>
+                </div>
+                <p class="section-intro">Companions, runners, and recurring figures referenced throughout the library.</p>
+                <ul id="character-list" class="library-list" aria-label="Character dossiers"></ul>
+            </section>
+
+            <div id="error" class="error" role="status" aria-live="polite"></div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Amazing Grace Home Living &mdash; <a href="../">amazinggracehl.org</a></p>
+    </footer>
+
+    <script>
+        function pickIcon(entry) {
+            var tags = Array.isArray(entry.tags) ? entry.tags.map(function (t) { return String(t).toLowerCase(); }) : [];
+            var genre = String(entry.genre || '').toLowerCase();
+            if (tags.indexOf('faith') !== -1 || genre.indexOf('faith') !== -1) return '✝';
+            if (tags.indexOf('matrix') !== -1 || tags.indexOf('sci-fi') !== -1 || genre.indexOf('sci') !== -1) return '⌬';
+            if (tags.indexOf('covenant') !== -1) return '✧';
+            return '📖';
         }
-        return parts.join(' — ');
-    }
 
-    /* Escape a string for safe insertion into HTML */
-    function esc(str) {
-        return String(str || '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
-    }
-
-    async function loadStories() {
-        var list      = document.getElementById('story-list');
-        var charList  = document.getElementById('character-list');
-        var error     = document.getElementById('error');
-
-        try {
-            var res = await fetch('./library.json');
-            if (!res.ok) throw new Error('HTTP ' + res.status + ' loading ./library.json');
-
-            var data    = await res.json();
-            var entries = Array.isArray(data.entries) ? data.entries : [];
-            var chars   = Array.isArray(data.characters) ? data.characters : [];
-
-            if (!entries.length) {
-                error.textContent = 'No entries found in stories/library.json (expected { entries: [...] }).';
-                return;
+        function formatMeta(entry) {
+            var parts = [];
+            if (entry.author) parts.push(entry.author);
+            if (entry.series) parts.push(entry.series);
+            if (entry.genre) parts.push(entry.genre);
+            if (Array.isArray(entry.tags) && entry.tags.length) {
+                parts.push('tags: ' + entry.tags.join(', '));
             }
+            return parts.join(' — ');
+        }
 
-            entries.forEach(function(entry) {
-                /* Prefer explicit path; fall back to slug-based folder */
-                var href = entry.path || (entry.slug ? './' + entry.slug + '/' : '#');
+        function esc(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
 
-                var li = document.createElement('li');
-                li.innerHTML =
-                    '<div class="row">' +
-                        '<span class="icon" aria-hidden="true">' + esc(pickIcon(entry)) + '</span>' +
-                        '<a class="story-link" href="' + esc(href) + '">' + esc(entry.title || 'Untitled') + '</a>' +
-                    '</div>' +
-                    '<div class="meta">' + esc(formatMeta(entry)) + '</div>';
+        async function loadStories() {
+            var list = document.getElementById('story-list');
+            var charList = document.getElementById('character-list');
+            var error = document.getElementById('error');
 
-                list.appendChild(li);
-            });
+            try {
+                var res = await fetch('./library.json');
+                if (!res.ok) throw new Error('HTTP ' + res.status + ' loading ./library.json');
 
-            /* Render characters section */
-            if (chars.length) {
-                chars.forEach(function(char) {
-                    var href = char.path || (char.slug ? './characters/' + char.slug + '.html' : '#');
-                    var meta = [char.role, char.tags ? 'tags: ' + char.tags.join(', ') : ''].filter(Boolean).join(' — ');
+                var data = await res.json();
+                var entries = Array.isArray(data.entries) ? data.entries : [];
+                var chars = Array.isArray(data.characters) ? data.characters : [];
 
+                if (!entries.length) {
+                    error.textContent = 'No entries found in stories/library.json (expected { entries: [...] }).';
+                    return;
+                }
+
+                entries.forEach(function (entry) {
+                    var href = entry.path || (entry.slug ? './' + entry.slug + '/' : '#');
                     var li = document.createElement('li');
                     li.innerHTML =
-                        '<div class="row">' +
-                            '<span class="icon" aria-hidden="true">🏃</span>' +
-                            '<a class="story-link" href="' + esc(href) + '">' + esc(char.title || 'Untitled') + '</a>' +
-                        '</div>' +
-                        '<div class="meta">' + esc(meta) + '</div>';
-
-                    charList.appendChild(li);
+                        '<article class="library-card">' +
+                            '<div class="card-row">' +
+                                '<span class="icon" aria-hidden="true">' + esc(pickIcon(entry)) + '</span>' +
+                                '<div>' +
+                                    '<a class="story-link" href="' + esc(href) + '">' + esc(entry.title || 'Untitled') + '</a>' +
+                                    '<p class="meta">' + esc(formatMeta(entry)) + '</p>' +
+                                    '<p class="summary">' + esc(entry.summary || 'Open the story to read more.') + '</p>' +
+                                '</div>' +
+                            '</div>' +
+                        '</article>';
+                    list.appendChild(li);
                 });
-            } else {
-                /* Hide the characters section if empty */
-                var h = document.getElementById('characters');
-                if (h) h.style.display = 'none';
-                if (charList) charList.style.display = 'none';
+
+                if (chars.length) {
+                    chars.forEach(function (char) {
+                        var href = char.path || (char.slug ? './characters/' + char.slug + '.html' : '#');
+                        var meta = [char.role, char.tags ? 'tags: ' + char.tags.join(', ') : ''].filter(Boolean).join(' — ');
+                        var li = document.createElement('li');
+                        li.innerHTML =
+                            '<article class="library-card">' +
+                                '<div class="card-row">' +
+                                    '<span class="icon" aria-hidden="true">🏃</span>' +
+                                    '<div>' +
+                                        '<a class="story-link" href="' + esc(href) + '">' + esc(char.title || 'Untitled') + '</a>' +
+                                        '<p class="meta">' + esc(meta) + '</p>' +
+                                        '<p class="summary">' + esc(char.summary || 'Open the dossier to learn more.') + '</p>' +
+                                    '</div>' +
+                                '</div>' +
+                            '</article>';
+                        charList.appendChild(li);
+                    });
+                } else {
+                    var heading = document.getElementById('characters');
+                    if (heading) heading.style.display = 'none';
+                    if (charList) charList.style.display = 'none';
+                }
+            } catch (err) {
+                console.error('Failed to load ./library.json', err);
+                error.textContent = 'Failed to load stories. ' + String(err);
             }
-
-        } catch (err) {
-            console.error('Failed to load ./library.json', err);
-            error.textContent = 'Failed to load stories. ' + String(err);
         }
-    }
 
-    loadStories();
-</script>
-<div id="constellation-nav"></div>
-<script type="module" src="../constellation-nav.js"></script>
+        loadStories();
+    </script>
+    <div id="constellation-nav"></div>
+    <script type="module" src="../constellation-nav.js"></script>
 </body>
 </html>
