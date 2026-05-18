@@ -20,7 +20,6 @@ export default defineConfig({
         arcadeCertificates: resolve(__dirname, "arcade/certificates/index.html"),
         arcadeBibleStudy:  resolve(__dirname, "arcade/bible-study/index.html"),
         arcadeMatrixClassic: resolve(__dirname, "arcade/matrix-classic.html"),
-        arcadeMatrixLegacy:  resolve(__dirname, "arcade/matrix-legacy/index.html"),
         arcadeMatrixDebug:   resolve(__dirname, "arcade/matrix-debug.html"),
         arcadeQuickClick:    resolve(__dirname, "arcade/quick-click/index.html"),
         arcadeTrinity:      resolve(__dirname, "arcade/trinity/index.html"),
