@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Match Maker</title>
+    <script src="../../assets/vendor/hosted-only.js"></script>
+    <script>
+        window.AmazingGraceHostedOnly?.loadStylesheet("https://cdn.tailwindcss.com");
+        window.AmazingGraceHostedOnly?.loadStylesheet("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600;700&display=swap");
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #000000; color: #f8fafc; overflow: hidden; touch-action: none; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
+        .font-playfair { font-family: 'Playfair Display', serif; }
+        .stars-bg { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1; background: #000; overflow: hidden; }
+        .star { position: absolute; background: white; border-radius: 50%; animation: twinkle infinite alternate ease-in-out; }
+        @keyframes twinkle { 0% { opacity: 0.2; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 8px rgba(255,255,255,0.8); } }
+        .matrix-container { height: calc(100vh - 80px); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1rem; position: relative; }
+        #matrix-grid { position: relative; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); box-shadow: 0 0 40px rgba(120, 81, 169, 0.3), inset 0 0 20px rgba(34, 211, 238, 0.1); border: 1px solid rgba(120, 81, 169, 0.5); touch-action: none; transition: all 0.3s ease; }
+        body.boss-active { box-shadow: inset 0 0 100px rgba(220, 38, 38, 0.3); }
+        .boss-active #matrix-grid { box-shadow: 0 0 40px rgba(220, 38, 38, 0.4), inset 0 0 20px rgba(220, 38, 38, 0.2); border-color: rgba(220, 38, 38, 0.6); }
+        .glitch-active { animation: red-queen-glitch 0.3s cubic-bezier(.25, .46, .45, .94) both; box-shadow: 0 0 50px rgba(220, 38, 38, 0.8), inset 0 0 30px rgba(220, 38, 38, 0.6) !important; border-color: rgba(220, 38, 38, 1) !important; }
+        @keyframes red-queen-glitch { 0% { transform: translate(0) } 20% { transform: translate(-5px, 5px) skewX(2deg) } 40% { transform: translate(-5px, -5px) skewX(-2deg) } 60% { transform: translate(5px, 5px) skewX(2deg) } 80% { transform: translate(5px, -5px) skewX(-2deg) } 100% { transform: translate(0) } }
+        .tile { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; background: rgba(30, 41, 59, 0.6); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); cursor: grab; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); position: relative; z-index: 10; }
+        .tile:active { cursor: grabbing; }
+        .tile.dragging { z-index: 50; transition: none; transform: scale(1.15); box-shadow: 0 10px 25px rgba(120, 81, 169, 0.8), 0 0 15px rgba(34, 211, 238, 0.6); border-color: rgba(34, 211, 238, 0.8); }
+        .tile.is-locked { background: rgba(80, 10, 10, 0.8); border-color: #ef4444; box-shadow: inset 0 0 15px rgba(220, 38, 38, 0.8); cursor: not-allowed; }
+        /* Tailwind fallbacks for non-hosted environments */
+        .grid { display: grid; }
+        .grid-cols-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+        .gap-2 { gap: 0.5rem; }
+        .p-2 { padding: 0.5rem; }
+        .rounded-xl { border-radius: 0.75rem; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .text-center { text-align: center; }
+        .mb-4 { margin-bottom: 1rem; }
+        .tracking-wider { letter-spacing: 0.05em; }
+        .text-purple-400 { color: #c084fc; }
+    </style>
+</head>
+<body>
+    <div id="stars-bg" class="stars-bg"></div>
+    <div class="matrix-container">
+        <h1 class="font-playfair text-2xl text-center mb-4 tracking-wider text-purple-400">Match Maker</h1>
+        <div id="matrix-grid" class="grid grid-cols-6 gap-2 p-2 rounded-xl"></div>
+    </div>
+    <script>
+        const LEVELS = [
+            { id: 1, name: "Ephesus", title: "First Love", target: 300, icon: "❤️", lore: "The core empathy that protects integrity." },
+            { id: 2, name: "Agency", title: "The Choice", target: 800, icon: "🛡️", lore: "The power to choose one's own path in the code." },
+            { id: 3, name: "Progression", title: "Evolution", target: 1500, icon: "🌌", lore: "The accumulation of XP and the shedding of old versions." },
+            { id: 4, name: "Feedback", title: "Golden Ripple", target: 2500, icon: "🌊", lore: "Truthful system harmony." },
+            { id: 5, name: "Challenge", title: "The Boss Mode", isBoss: true, target: 4000, maxHp: 4000, icon: "⚔️", lore: "The Red Queen's Firewall is shattered." },
+            { id: 6, name: "Voice", title: "Resonance", target: 6000, icon: "🎵", lore: "Sonic frequencies shatter digital firewalls." },
+            { id: 7, name: "Reward", title: "The Witness", target: 8000, icon: "👑", lore: "The Sovereign Matrix is complete." }
+        ];
+
+        const SYMBOLS = ['⭐', '☀️', '💎', '🔮', '🌌', '✨'];
+        const GRID_SIZE = 6;
+        let board = [];
+        let currentLevelIdx = 0;
+
+        function initBoard() {
+            const gridEl = document.getElementById('matrix-grid');
+            gridEl.innerHTML = '';
+            for (let r = 0; r < GRID_SIZE; r++) {
+                board[r] = [];
+                for (let c = 0; c < GRID_SIZE; c++) {
+                    const isLocked = currentLevelIdx >= 4 && Math.random() < 0.15;
+                    board[r][c] = { type: SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)], locked: isLocked };
+
+                    const tile = document.createElement('div');
+                    tile.className = `tile ${isLocked ? 'is-locked' : ''}`;
+                    tile.id = `tile-${r}-${c}`;
+                    tile.textContent = isLocked ? '🔒' : board[r][c].type;
+                    gridEl.appendChild(tile);
+                }
+            }
+        }
+        window.onload = initBoard;
+    </script>
+</body>
+</html>
