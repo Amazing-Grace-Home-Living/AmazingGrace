@@ -178,7 +178,7 @@ async function listInstallations({ owner, repo, token }) {
   const json = await ghFetchJson(url, { token });
   const installations = Array.isArray(json)
     ? json
-    : Array.isArray(json && json.installations)
+    : Array.isArray(json?.installations)
       ? json.installations
       : [];
 
