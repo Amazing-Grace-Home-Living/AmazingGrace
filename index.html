@@ -68,6 +68,8 @@
         .nav-links {
             display: flex;
             align-items: center;
+            justify-content: flex-end;
+            flex-wrap: wrap;
             gap: 0.75rem;
         }
 
@@ -83,17 +85,6 @@
         .nav-links a.nav-active-page {
             background: rgba(56, 189, 248, 0.14);
             color: #fff;
-        }
-
-        .menu-toggle {
-            display: none;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            color: #fff;
-            border-radius: 0.75rem;
-            padding: 0.45rem 0.75rem;
-            font-size: 1.2rem;
-            cursor: pointer;
         }
 
         main {
@@ -254,29 +245,13 @@
                 grid-template-columns: 1fr;
             }
 
-            .menu-toggle {
-                display: inline-flex;
+            .nav-container {
+                flex-wrap: wrap;
             }
 
             .nav-links {
-                display: none;
                 width: 100%;
-                flex-direction: column;
-                align-items: stretch;
-                padding-top: 0.5rem;
-            }
-
-            .nav-links.open {
-                display: flex;
-            }
-
-            .nav-links a {
-                border: 1px solid var(--border);
-                background: rgba(15, 23, 42, 0.92);
-            }
-
-            .nav-container {
-                flex-wrap: wrap;
+                justify-content: flex-start;
             }
         }
     </style>
@@ -286,8 +261,7 @@
         <div class="nav-container">
             <a href="./" class="logo" aria-label="Amazing Grace Home Living — Home">
                 <img src="./assets/logo.png" alt="Amazing Grace Home Living Logo">
-                <span>Amazing Grace Home Living</span>
-            </a>
+                            </a>
 
             <nav id="main-nav" class="nav-links" aria-label="Main navigation">
                 <a href="./" class="nav-active-page" aria-current="page">Home</a>
@@ -297,7 +271,6 @@
                 <a href="./contact/">Contact</a>
             </nav>
 
-            <button class="menu-toggle" aria-label="Toggle navigation" aria-controls="main-nav" aria-expanded="false">☰</button>
         </div>
     </header>
 
@@ -393,40 +366,5 @@
         <p>&copy; 2026 Amazing Grace Home Living &mdash; Tampa and Largo, Florida</p>
     </footer>
 
-    <script>
-        // Mobile nav toggle
-        const menuToggle = document.querySelector('.menu-toggle');
-        const mainNav = document.getElementById('main-nav');
-
-        if (menuToggle && mainNav) {
-            function closeMobileNav() {
-                mainNav.classList.remove('open');
-                menuToggle.setAttribute('aria-expanded', 'false');
-
-                if (document.activeElement && typeof mainNav.contains === 'function' && mainNav.contains(document.activeElement)) {
-                    menuToggle.focus();
-                }
-            }
-
-            function openMobileNav() {
-                mainNav.classList.add('open');
-                menuToggle.setAttribute('aria-expanded', 'true');
-            }
-
-            menuToggle.addEventListener('click', () => {
-                if (mainNav.classList.contains('open')) {
-                    closeMobileNav();
-                } else {
-                    openMobileNav();
-                }
-            });
-
-            document.addEventListener('keydown', (event) => {
-                if (event.key === 'Escape' && mainNav.classList.contains('open')) {
-                    closeMobileNav();
-                }
-            });
-        }
-    </script>
 </body>
 </html>

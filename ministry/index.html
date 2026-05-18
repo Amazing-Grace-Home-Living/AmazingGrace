@@ -112,6 +112,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
             position: sticky;
             top: 0;
             z-index: 200;
@@ -130,7 +132,7 @@
 
         .logo img { height: 36px; width: auto; border-radius: 4px; }
 
-        .nav-links { display: flex; gap: 0.5rem; }
+        .nav-links { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 
         .nav-btn {
             background: rgba(255,215,0,0.07);
@@ -147,33 +149,10 @@
         .nav-btn:hover { background: rgba(255,215,0,0.18); border-color: var(--gold); color: var(--gold); }
         .nav-btn.active { background: rgba(192,132,252,0.2); border-color: var(--accent); color: var(--accent); }
 
-        .menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.75rem;
-            color: var(--gold);
-            cursor: pointer;
-            padding: 0.25rem;
-        }
-
         @media (max-width: 640px) {
-            .nav-links {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: rgba(13,1,21,0.98);
-                padding: 1rem;
-                z-index: 200;
-                border-bottom: 1px solid var(--border);
-                gap: 0.5rem;
-            }
-            .nav-links.show { display: flex; }
-            .menu-toggle { display: block; }
-            .nav-btn { width: 100%; padding: 0.75rem 1rem; }
+            .site-header { padding-inline: 1rem; }
+            .nav-links { width: 100%; }
+            .nav-btn { flex: 1 1 140px; text-align: center; }
         }
 
         /* ── Hero ── */
@@ -395,16 +374,14 @@
     <header class="site-header">
         <a href="../" class="logo" aria-label="Amazing Grace Home Living — Home">
             <img src="../assets/logo.png" alt="Amazing Grace Home Living Logo">
-            <span>Amazing Grace</span>
-        </a>
+                    </a>
         <nav id="main-nav" class="nav-links" aria-label="Main navigation">
             <a href="../" class="nav-btn">🏠 Home</a>
-            <a href="../stories/" class="nav-btn">📚 Library</a>
+            <a href="../stories/" class="nav-btn">📚 Stories</a>
             <a href="../arcade" class="nav-btn">🎮 Arcade</a>
             <a href="./" class="nav-btn active" aria-current="page">🕊️ Ministry</a>
-            <a href="../ministries/" class="nav-btn">✨ Seven Stars</a>
+            <a href="../contact/" class="nav-btn">✉️ Contact</a>
         </nav>
-        <button class="menu-toggle" aria-label="Toggle navigation" aria-controls="main-nav" aria-expanded="false">☰</button>
     </header>
 
     <main>
@@ -557,18 +534,6 @@
     <footer class="site-footer">
         <p>&copy; 2026 Amazing Grace Home Living &mdash; <a href="../">amazinggracehl.org</a></p>
     </footer>
-    <script>
-        (function () {
-            var toggle = document.querySelector('.menu-toggle');
-            var nav = document.getElementById('main-nav');
-            if (toggle && nav) {
-                toggle.addEventListener('click', function () {
-                    var isExpanded = nav.classList.toggle('show');
-                    toggle.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
-                });
-            }
-        })();
-    </script>
     <script src="../sw-register.js" defer></script>
     <div id="constellation-nav"></div>
     <script type="module" src="../constellation-nav.js"></script>
