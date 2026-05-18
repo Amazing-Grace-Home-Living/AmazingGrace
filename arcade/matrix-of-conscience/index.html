@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Matrix of Conscience: Legacy Protocol — manage Integrity, Lumen, Empathy, and Relief through Grace Protocols and cognitive training simulations.">
+    <meta property="og:title" content="Matrix of Conscience: Legacy Protocol | Amazing Grace Arcade">
+    <meta property="og:description" content="Manage Integrity, Lumen, Empathy, and Relief through Grace Protocols and Trinity Alignment telemetry.">
+    <meta property="og:url" content="https://amazinggracehl.org/arcade/matrix-of-conscience/">
+    <meta name="theme-color" content="#050505">
+    <title>Matrix of Conscience: Legacy Protocol | Amazing Grace Arcade</title>
     <script>
       (function () {
         const allowedHosts = new Set([
@@ -25,11 +33,6 @@
         window.gtag("config", "G-HKZ2G2VN78");
       })();
     </script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Matrix of Conscience: Legacy Protocol — manage Integrity, Lumen, Empathy, and Relief through Grace Protocols and cognitive training simulations.">
-    <meta name="theme-color" content="#050505">
-    <title>Matrix of Conscience: Legacy Protocol | Amazing Grace Arcade</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=VT323&display=swap" rel="stylesheet">
@@ -94,6 +97,162 @@
         #modal-overlay { display: none; }
         #modal-overlay.open { display: flex; }
         #modal-content { position: relative; }
+
+        #trinity-view {
+            position: absolute;
+            inset: 0;
+            z-index: 60;
+            display: none;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at top, rgba(59, 130, 246, 0.12), transparent 35%),
+                linear-gradient(180deg, rgba(2, 6, 23, 0.96), rgba(0, 0, 0, 0.98));
+            font-family: 'Orbitron', sans-serif;
+            color: #dbeafe;
+        }
+        #trinity-view.open { display: flex; }
+        .trinity-shell {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            gap: 1rem;
+        }
+        .trinity-header,
+        .trinity-hud {
+            border: 1px solid rgba(96, 165, 250, 0.28);
+            background: rgba(2, 6, 23, 0.82);
+            box-shadow: 0 0 24px rgba(59, 130, 246, 0.12);
+            backdrop-filter: blur(8px);
+        }
+        .trinity-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1rem;
+        }
+        .trinity-grid-wrap {
+            position: relative;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 0;
+        }
+        .trinity-board-shell {
+            width: min(96vw, 560px);
+            padding: 0.75rem;
+            border: 1px solid rgba(34, 211, 238, 0.25);
+            background:
+                linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.92)),
+                repeating-linear-gradient(180deg, rgba(148, 163, 184, 0.06) 0, rgba(148, 163, 184, 0.06) 2px, transparent 2px, transparent 6px);
+            box-shadow: 0 0 40px rgba(34, 211, 238, 0.12);
+        }
+        #trinity-board {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 0.5rem;
+        }
+        .trinity-tile {
+            position: relative;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            background:
+                linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(3, 7, 18, 0.96));
+            color: #e2e8f0;
+            user-select: none;
+            touch-action: none;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+            box-shadow: inset 0 0 18px rgba(15, 23, 42, 0.8);
+        }
+        .trinity-tile::after {
+            content: "";
+            position: absolute;
+            inset: 2px;
+            border: 1px solid var(--tile-accent, #7dd3fc);
+            opacity: 0.35;
+            pointer-events: none;
+        }
+        .trinity-tile svg {
+            width: clamp(1.2rem, 5vw, 1.7rem);
+            height: clamp(1.2rem, 5vw, 1.7rem);
+            color: var(--tile-accent, #7dd3fc);
+        }
+        .trinity-tile-label {
+            font-size: clamp(0.56rem, 1.5vw, 0.62rem);
+            letter-spacing: 0.08em;
+            opacity: 0.8;
+            text-align: center;
+        }
+        .trinity-tile.dragging {
+            transform: scale(1.08);
+            box-shadow: 0 0 28px rgba(125, 211, 252, 0.35);
+            border-color: var(--tile-accent, #7dd3fc);
+        }
+        .trinity-tile.drop-target {
+            transform: translateY(-2px);
+            border-color: #f8fafc;
+            box-shadow: 0 0 24px rgba(248, 250, 252, 0.28);
+        }
+        .trinity-tile.matched {
+            animation: trinityPulse 0.25s ease-in-out 2;
+        }
+        @keyframes trinityPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(0.88); opacity: 0.6; }
+        }
+        .trinity-float-layer {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 80;
+        }
+        .trinity-float {
+            position: fixed;
+            transform: translate(-50%, -50%);
+            color: #7dd3fc;
+            text-shadow: 0 0 12px currentColor;
+            font-family: 'VT323', monospace;
+            font-size: 1.4rem;
+            opacity: 0;
+            animation: trinityFloat 0.9s ease-out forwards;
+        }
+        @keyframes trinityFloat {
+            0% { opacity: 0; transform: translate(-50%, -30%); }
+            15% { opacity: 1; }
+            100% { opacity: 0; transform: translate(-50%, -180%); }
+        }
+        .trinity-status {
+            min-height: 1.5rem;
+            font-family: 'VT323', monospace;
+            font-size: 1.1rem;
+            color: #93c5fd;
+            letter-spacing: 0.08em;
+        }
+        .trinity-mini-stat {
+            min-width: 3.8rem;
+            border: 1px solid rgba(34, 211, 238, 0.18);
+            background: rgba(15, 23, 42, 0.68);
+            padding: 0.5rem 0.65rem;
+            text-align: center;
+        }
+        .trinity-mini-stat strong {
+            display: block;
+            margin-top: 0.2rem;
+            font-size: 1.1rem;
+            color: #f8fafc;
+        }
+        @media (max-width: 640px) {
+            .trinity-header { flex-direction: column; align-items: stretch; }
+            .trinity-shell { padding: 0.75rem; }
+            #trinity-board { gap: 0.35rem; }
+        }
     </style>
 </head>
 <body>
@@ -172,6 +331,7 @@
                         <button id="btn-reflex" class="btn-matrix w-full text-left" onclick="startReflex()">[S] REFLEX_SIMULATION</button>
                         <button id="btn-memory" class="btn-matrix w-full text-left" onclick="startMemory()">[L] MEMORY_SIMULATION (REQ: 100L)</button>
                         <button id="btn-creativity" class="btn-matrix w-full text-left" onclick="startCreativity()">[E] CREATIVITY_SIMULATION (REQ: 15S)</button>
+                        <button id="btn-trinity" class="btn-matrix w-full text-left !border-blue-500 !text-blue-300" onclick="openTrinity()">[ALL] TRINITY_ALIGNMENT (MATCH-3)</button>
                     </div>
 
                     <div id="game-log" class="h-48 overflow-y-auto border border-green-900 p-2 text-xs opacity-80 bg-black/80 font-mono">
@@ -186,6 +346,41 @@
                 </div>
             </div>
         </div>
+
+        <div id="trinity-view" aria-label="Trinity Alignment fullscreen view">
+            <div class="trinity-header">
+                <div>
+                    <div class="text-xs tracking-[0.35em] text-cyan-300/80">COGNITIVE_TRAINING // LIVE LINK</div>
+                    <h2 class="text-xl md:text-2xl font-bold tracking-[0.25em] text-white">TRINITY_ALIGNMENT</h2>
+                    <div class="trinity-status" id="trinity-status">Drag adjacent virtues to align the Matrix Core.</div>
+                </div>
+                <button class="btn-matrix !border-red-500 !text-red-300" onclick="closeTrinity()">TERMINATE ALIGNMENT</button>
+            </div>
+
+            <div class="trinity-shell">
+                <div class="trinity-hud p-4 flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex gap-2 flex-wrap">
+                        <div class="trinity-mini-stat"><span class="text-[0.55rem] tracking-[0.22em] text-cyan-200/80">LEVEL</span><strong id="trinity-level">1</strong></div>
+                        <div class="trinity-mini-stat"><span class="text-[0.55rem] tracking-[0.22em] text-cyan-200/80">SCORE</span><strong id="trinity-score">0</strong></div>
+                    </div>
+                    <div class="flex gap-2 flex-wrap">
+                        <div class="trinity-mini-stat"><span class="text-[0.55rem] tracking-[0.22em] text-cyan-200/80">S</span><strong id="trinity-core-s">10</strong></div>
+                        <div class="trinity-mini-stat"><span class="text-[0.55rem] tracking-[0.22em] text-cyan-200/80">L</span><strong id="trinity-core-l">0</strong></div>
+                        <div class="trinity-mini-stat"><span class="text-[0.55rem] tracking-[0.22em] text-cyan-200/80">E</span><strong id="trinity-core-e">3</strong></div>
+                        <div class="trinity-mini-stat"><span class="text-[0.55rem] tracking-[0.22em] text-cyan-200/80">R</span><strong id="trinity-core-r">100</strong></div>
+                    </div>
+                </div>
+
+                <div class="trinity-grid-wrap">
+                    <div class="trinity-board-shell">
+                        <div id="trinity-board" role="grid" aria-label="Trinity Alignment board"></div>
+                    </div>
+                </div>
+
+                <p class="text-center text-xs tracking-[0.22em] text-slate-400">MATCH 3 → L/R TELEMETRY // MATCH 4+ → E/S TELEMETRY</p>
+            </div>
+        </div>
+        <div id="trinity-float-layer" class="trinity-float-layer" aria-hidden="true"></div>
     </div>
 
     <script>
@@ -325,6 +520,10 @@
             document.getElementById('stat-l').innerText = state.l;
             document.getElementById('stat-e').innerText = state.e;
             document.getElementById('stat-r').innerText = state.r;
+            ['s', 'l', 'e', 'r'].forEach((resourceKey) => {
+                const trinityCore = document.getElementById(`trinity-core-${resourceKey}`);
+                if (trinityCore) trinityCore.innerText = state[resourceKey];
+            });
             document.getElementById('cycle-display').innerText = `CYCLE: ${String(state.cycle).padStart(3, '0')}`;
 
             if (state.s <= 0 && !state.isFailed) { triggerFailure(); return; }
@@ -336,6 +535,7 @@
 
             document.getElementById('btn-memory').disabled = state.l < 100 || state.isFailed;
             document.getElementById('btn-creativity').disabled = state.s < 15 || state.isFailed;
+            document.getElementById('btn-trinity').disabled = state.isFailed;
         }
 
         function log(msg, isError = false) {
@@ -406,6 +606,366 @@
             log("CREATIVITY VERIFIED. EMPATHY CORE GENERATED. GAIN: +1E."); 
             closeModal(); 
             updateUI(); 
+        };
+
+        const TRINITY_GRID_SIZE = 6;
+        const TRINITY_TILES = [
+            { icon: 'heart', label: 'EMPATHY', shortLabel: 'EMP', accent: '#fb7185', match3Reward: 'r', match4Reward: 'e' },
+            { icon: 'zap', label: 'COURAGE', shortLabel: 'COU', accent: '#facc15', match3Reward: 'l', match4Reward: 's' },
+            { icon: 'sun', label: 'LUMEN', shortLabel: 'LUM', accent: '#f59e0b', match3Reward: 'l', match4Reward: 'e' },
+            { icon: 'shield', label: 'INTEGRITY', shortLabel: 'INT', accent: '#60a5fa', match3Reward: 'r', match4Reward: 's' },
+            { icon: 'sparkles', label: 'SERENITY', shortLabel: 'SER', accent: '#c084fc', match3Reward: 'l', match4Reward: 'e' },
+            { icon: 'leaf', label: 'RELIEF', shortLabel: 'REL', accent: '#34d399', match3Reward: 'r', match4Reward: 's' }
+        ];
+        const trinity = {
+            board: [],
+            score: 0,
+            level: 1,
+            initialized: false,
+            resolving: false,
+            dragIndex: null,
+            hoverIndex: null
+        };
+        const TRINITY_REWARD_COLORS = { l: '#fbbf24', r: '#34d399', e: '#f472b6', s: '#93c5fd' };
+        let trinityPointerFrame = null;
+        let trinityPointerCoords = null;
+
+        function getTrinityBoardEl() {
+            return document.getElementById('trinity-board');
+        }
+
+        function getTrinityTile(index) {
+            return document.querySelector(`.trinity-tile[data-index="${index}"]`);
+        }
+
+        function randomTrinityTile() {
+            return Math.floor(Math.random() * TRINITY_TILES.length);
+        }
+
+        function isMatchCandidate(board, row, col, type) {
+            const leftA = board[row * TRINITY_GRID_SIZE + (col - 1)];
+            const leftB = board[row * TRINITY_GRID_SIZE + (col - 2)];
+            const upA = board[(row - 1) * TRINITY_GRID_SIZE + col];
+            const upB = board[(row - 2) * TRINITY_GRID_SIZE + col];
+            return (col >= 2 && leftA === type && leftB === type) || (row >= 2 && upA === type && upB === type);
+        }
+
+        function buildTrinityBoard() {
+            const board = [];
+            for (let row = 0; row < TRINITY_GRID_SIZE; row += 1) {
+                for (let col = 0; col < TRINITY_GRID_SIZE; col += 1) {
+                    let type = randomTrinityTile();
+                    while (isMatchCandidate(board, row, col, type)) {
+                        type = randomTrinityTile();
+                    }
+                    board.push(type);
+                }
+            }
+            return board;
+        }
+
+        function renderTrinityHud() {
+            document.getElementById('trinity-score').innerText = trinity.score;
+            document.getElementById('trinity-level').innerText = trinity.level;
+        }
+
+        function clearTrinityHighlights() {
+            document.querySelectorAll('.trinity-tile.dragging, .trinity-tile.drop-target, .trinity-tile.matched')
+                .forEach((tile) => tile.classList.remove('dragging', 'drop-target', 'matched'));
+        }
+
+        function renderTrinityBoard() {
+            const boardEl = getTrinityBoardEl();
+            boardEl.innerHTML = '';
+            trinity.board.forEach((tileType, index) => {
+                const tile = TRINITY_TILES[tileType];
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'trinity-tile';
+                button.dataset.index = String(index);
+                button.setAttribute('role', 'gridcell');
+                button.setAttribute('aria-label', `${tile.label} fragment`);
+                button.draggable = true;
+                button.style.setProperty('--tile-accent', tile.accent);
+                button.innerHTML = `<i data-lucide="${tile.icon}"></i><span class="trinity-tile-label">${tile.shortLabel}</span>`;
+                button.addEventListener('pointerdown', beginTrinityPointerDrag);
+                button.addEventListener('dragstart', beginTrinityHtmlDrag);
+                button.addEventListener('dragover', (event) => event.preventDefault());
+                button.addEventListener('drop', finishTrinityHtmlDrop);
+                boardEl.appendChild(button);
+            });
+            renderTrinityHud();
+            if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                window.lucide.createIcons();
+            }
+        }
+
+        function indicesAreAdjacent(fromIndex, toIndex) {
+            if (fromIndex === null || toIndex === null || fromIndex === toIndex) return false;
+            const fromRow = Math.floor(fromIndex / TRINITY_GRID_SIZE);
+            const fromCol = fromIndex % TRINITY_GRID_SIZE;
+            const toRow = Math.floor(toIndex / TRINITY_GRID_SIZE);
+            const toCol = toIndex % TRINITY_GRID_SIZE;
+            return Math.abs(fromRow - toRow) + Math.abs(fromCol - toCol) === 1;
+        }
+
+        function swapTrinityTiles(firstIndex, secondIndex) {
+            const temp = trinity.board[firstIndex];
+            trinity.board[firstIndex] = trinity.board[secondIndex];
+            trinity.board[secondIndex] = temp;
+        }
+
+        function findTrinityMatches(board) {
+            const runs = [];
+
+            for (let row = 0; row < TRINITY_GRID_SIZE; row += 1) {
+                let runStart = 0;
+                for (let col = 1; col <= TRINITY_GRID_SIZE; col += 1) {
+                    const prevIndex = row * TRINITY_GRID_SIZE + (col - 1);
+                    const currentIndex = row * TRINITY_GRID_SIZE + col;
+                    if (col < TRINITY_GRID_SIZE && board[currentIndex] === board[prevIndex]) continue;
+                    if (col - runStart >= 3) {
+                        runs.push(Array.from({ length: col - runStart }, (_, offset) => row * TRINITY_GRID_SIZE + runStart + offset));
+                    }
+                    runStart = col;
+                }
+            }
+
+            for (let col = 0; col < TRINITY_GRID_SIZE; col += 1) {
+                let runStart = 0;
+                for (let row = 1; row <= TRINITY_GRID_SIZE; row += 1) {
+                    const prevIndex = (row - 1) * TRINITY_GRID_SIZE + col;
+                    const currentIndex = row * TRINITY_GRID_SIZE + col;
+                    if (row < TRINITY_GRID_SIZE && board[currentIndex] === board[prevIndex]) continue;
+                    if (row - runStart >= 3) {
+                        runs.push(Array.from({ length: row - runStart }, (_, offset) => (runStart + offset) * TRINITY_GRID_SIZE + col));
+                    }
+                    runStart = row;
+                }
+            }
+
+            return {
+                runs,
+                removal: Array.from(new Set(runs.flat()))
+            };
+        }
+
+        function collapseTrinityBoard(removal) {
+            const removed = new Set(removal);
+            removal.forEach((index) => {
+                trinity.board[index] = null;
+            });
+
+            for (let col = 0; col < TRINITY_GRID_SIZE; col += 1) {
+                let insertRow = TRINITY_GRID_SIZE - 1;
+                for (let row = TRINITY_GRID_SIZE - 1; row >= 0; row -= 1) {
+                    const index = row * TRINITY_GRID_SIZE + col;
+                    if (removed.has(index)) continue;
+                    const value = trinity.board[index];
+                    trinity.board[insertRow * TRINITY_GRID_SIZE + col] = value;
+                    insertRow -= 1;
+                }
+                while (insertRow >= 0) {
+                    trinity.board[insertRow * TRINITY_GRID_SIZE + col] = randomTrinityTile();
+                    insertRow -= 1;
+                }
+            }
+        }
+
+        function setTrinityStatus(message) {
+            document.getElementById('trinity-status').innerText = message;
+        }
+
+        function spawnTrinityFloat(run, message, color) {
+            const layer = document.getElementById('trinity-float-layer');
+            const rects = run
+                .map((index) => getTrinityTile(index))
+                .filter(Boolean)
+                .map((tile) => tile.getBoundingClientRect());
+
+            const x = rects.length
+                ? rects.reduce((sum, rect) => sum + rect.left + rect.width / 2, 0) / rects.length
+                : window.innerWidth / 2;
+            const y = rects.length
+                ? rects.reduce((sum, rect) => sum + rect.top + rect.height / 2, 0) / rects.length
+                : window.innerHeight / 2;
+
+            const floaty = document.createElement('div');
+            floaty.className = 'trinity-float';
+            floaty.style.left = `${x}px`;
+            floaty.style.top = `${y}px`;
+            floaty.style.color = color;
+            floaty.innerText = message;
+            layer.appendChild(floaty);
+            setTimeout(() => floaty.remove(), 950);
+        }
+
+        function awardTrinityTelemetry(run, chain) {
+            const size = run.length;
+            const firstTile = TRINITY_TILES[trinity.board[run[0]]];
+            if (!firstTile) return;
+            const rewardKey = size >= 4 ? firstTile.match4Reward : firstTile.match3Reward;
+            const baseAmount = size >= 4
+                ? (rewardKey === 'e' ? 1 : 2)
+                : (rewardKey === 'l' ? 18 : 12);
+            const amount = baseAmount + Math.max(0, chain - 1);
+            state[rewardKey] += amount;
+            const color = TRINITY_REWARD_COLORS[rewardKey];
+            const message = `+${amount}${rewardKey.toUpperCase()}`;
+            spawnTrinityFloat(run, message, color);
+            log(`TRINITY_ALIGNMENT: MATCH-${size} ${firstTile.label}. TELEMETRY ${message}.`);
+            setTrinityStatus(`Alignment locked: ${firstTile.label} // ${message} to Matrix Core`);
+            updateUI();
+        }
+
+        function markMatchedTiles(removal) {
+            removal.forEach((index) => {
+                const tile = getTrinityTile(index);
+                if (tile) tile.classList.add('matched');
+            });
+        }
+
+        function wait(ms) {
+            return new Promise((resolve) => setTimeout(resolve, ms));
+        }
+
+        async function resolveTrinityBoard() {
+            trinity.resolving = true;
+            let chain = 1;
+            let matches = findTrinityMatches(trinity.board);
+            while (matches.runs.length) {
+                matches.runs.forEach((run) => awardTrinityTelemetry(run, chain));
+                trinity.score += matches.removal.length * 45 * chain;
+                trinity.level = 1 + Math.floor(trinity.score / 500);
+                renderTrinityHud();
+                markMatchedTiles(matches.removal);
+                await wait(220);
+                collapseTrinityBoard(matches.removal);
+                renderTrinityBoard();
+                await wait(160);
+                matches = findTrinityMatches(trinity.board);
+                chain += 1;
+            }
+            trinity.resolving = false;
+            setTrinityStatus('Drag adjacent virtues to align the Matrix Core.');
+        }
+
+        async function attemptTrinitySwap(firstIndex, secondIndex) {
+            if (!indicesAreAdjacent(firstIndex, secondIndex) || trinity.resolving) return;
+            swapTrinityTiles(firstIndex, secondIndex);
+            renderTrinityBoard();
+            const matches = findTrinityMatches(trinity.board);
+            if (!matches.runs.length) {
+                setTrinityStatus('Alignment rejected. No harmonic match detected.');
+                log('TRINITY_ALIGNMENT: SWAP REJECTED. NO HARMONIC MATCH.');
+                await wait(140);
+                swapTrinityTiles(firstIndex, secondIndex);
+                renderTrinityBoard();
+                return;
+            }
+            await resolveTrinityBoard();
+        }
+
+        function finishTrinityGesture(targetIndex) {
+            const originIndex = trinity.dragIndex;
+            trinity.dragIndex = null;
+            trinity.hoverIndex = null;
+            trinityPointerCoords = null;
+            clearTrinityHighlights();
+            if (indicesAreAdjacent(originIndex, targetIndex)) {
+                attemptTrinitySwap(originIndex, targetIndex);
+            }
+        }
+
+        function beginTrinityPointerDrag(event) {
+            if (trinity.resolving) return;
+            const tile = event.currentTarget;
+            trinity.dragIndex = Number(tile.dataset.index);
+            tile.classList.add('dragging');
+            event.preventDefault();
+        }
+
+        function beginTrinityHtmlDrag(event) {
+            if (trinity.resolving) {
+                event.preventDefault();
+                return;
+            }
+            trinity.dragIndex = Number(event.currentTarget.dataset.index);
+            event.dataTransfer.effectAllowed = 'move';
+            event.dataTransfer.setData('text/plain', String(trinity.dragIndex));
+        }
+
+        function finishTrinityHtmlDrop(event) {
+            event.preventDefault();
+            const targetIndex = Number(event.currentTarget.dataset.index);
+            const sourceIndex = Number(event.dataTransfer.getData('text/plain'));
+            trinity.dragIndex = null;
+            trinityPointerCoords = null;
+            clearTrinityHighlights();
+            if (indicesAreAdjacent(sourceIndex, targetIndex)) {
+                attemptTrinitySwap(sourceIndex, targetIndex);
+            }
+        }
+
+        function updateTrinityDropTarget(clientX, clientY) {
+            document.querySelectorAll('.trinity-tile.drop-target').forEach((tile) => tile.classList.remove('drop-target'));
+            const hoveredTile = document.elementFromPoint(clientX, clientY)?.closest('.trinity-tile');
+            if (!hoveredTile) return;
+            const hoveredIndex = Number(hoveredTile.dataset.index);
+            trinity.hoverIndex = hoveredIndex;
+            if (indicesAreAdjacent(trinity.dragIndex, hoveredIndex)) {
+                hoveredTile.classList.add('drop-target');
+            }
+        }
+
+        document.addEventListener('pointermove', (event) => {
+            if (trinity.dragIndex === null || trinity.resolving) return;
+            trinityPointerCoords = { clientX: event.clientX, clientY: event.clientY };
+            if (trinityPointerFrame !== null) return;
+            trinityPointerFrame = requestAnimationFrame(() => {
+                trinityPointerFrame = null;
+                if (!trinityPointerCoords) return;
+                updateTrinityDropTarget(trinityPointerCoords.clientX, trinityPointerCoords.clientY);
+            });
+        });
+
+        document.addEventListener('pointerup', (event) => {
+            if (trinity.dragIndex === null) return;
+            trinityPointerCoords = null;
+            const hoveredTile = document.elementFromPoint(event.clientX, event.clientY)?.closest('.trinity-tile');
+            finishTrinityGesture(hoveredTile ? Number(hoveredTile.dataset.index) : null);
+        });
+
+        function initializeTrinity() {
+            trinity.board = buildTrinityBoard();
+            trinity.score = 0;
+            trinity.level = 1;
+            trinity.initialized = true;
+            renderTrinityBoard();
+            setTrinityStatus('Drag adjacent virtues to align the Matrix Core.');
+            updateUI();
+        }
+
+        window.openTrinity = function() {
+            if (state.isFailed) return;
+            document.getElementById('legacy-protocol-ui').classList.add('hidden');
+            document.getElementById('trinity-view').classList.add('open');
+            if (!trinity.initialized) {
+                initializeTrinity();
+            } else {
+                renderTrinityBoard();
+                setTrinityStatus('Matrix Core link restored. Continue alignment.');
+            }
+            log('TRINITY_ALIGNMENT LINK ESTABLISHED. TELEMETRY CHANNEL OPEN.');
+        };
+
+        window.closeTrinity = function() {
+            document.getElementById('trinity-view').classList.remove('open');
+            document.getElementById('legacy-protocol-ui').classList.remove('hidden');
+            clearTrinityHighlights();
+            trinity.dragIndex = null;
+            trinity.hoverIndex = null;
+            log('TRINITY_ALIGNMENT TERMINATED. RETURNING TO MAIN TERMINAL.');
         };
     </script>
 </body>
