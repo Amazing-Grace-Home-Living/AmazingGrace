@@ -7,9 +7,6 @@
   <link rel="icon" type="image/png" href="../../assets/logo.png">
   <title>Star Matrix | Nexus Arcade — Amazing Grace</title>
   <script src="../../assets/vendor/hosted-only.js"></script>
-  <script>
-    window.AmazingGraceHostedOnly?.loadStylesheet("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;800&display=swap");
-  </script>
   <style>
     :root {
       --neon-blue: #00f2ff;
@@ -409,11 +406,11 @@
 
   <script>
     const STAR_TYPES = [
-      { id: 'supernova', emoji: '🌟' },
-      { id: 'shooting', emoji: '💫' },
-      { id: 'gem', emoji: '💎' },
-      { id: 'rank', emoji: '⭐' },
-      { id: 'cosmic', emoji: '✨' }
+      { id: 'supernova', symbol: '★' },
+      { id: 'shooting', symbol: '✦' },
+      { id: 'gem', symbol: '◆' },
+      { id: 'rank', symbol: '✪' },
+      { id: 'cosmic', symbol: '✵' }
     ];
     const GRID_SIZE = 7;
     const TARGET = 1000;
@@ -497,7 +494,7 @@
           cell.setAttribute('data-type', star ? star.id : '');
           cell.setAttribute('role', 'gridcell');
           cell.setAttribute('aria-label', (star ? star.id : 'empty') + ' star');
-          cell.textContent = star ? star.emoji : '';
+          cell.textContent = star ? star.symbol : '';
           cell.addEventListener('pointerdown', onPointerDown);
           cell.addEventListener('pointerup', onPointerUp);
           grid.appendChild(cell);

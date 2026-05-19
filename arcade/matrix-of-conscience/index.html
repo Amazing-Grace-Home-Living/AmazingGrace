@@ -9,6 +9,7 @@
     <meta property="og:url" content="https://amazinggracehl.org/arcade/matrix-of-conscience/">
     <meta name="theme-color" content="#050505">
     <title>Matrix of Conscience: Legacy Protocol | Amazing Grace Arcade</title>
+    <link rel="stylesheet" href="../../assets/css/theme.css">
     <script>
       (function () {
         const allowedHosts = new Set([
@@ -33,9 +34,6 @@
         window.gtag("config", "G-HKZ2G2VN78");
       })();
     </script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=VT323&display=swap" rel="stylesheet">
     <style>
         :root {
             --neon-green: #00ff41;
@@ -43,8 +41,8 @@
             --error-red: #ff3131;
         }
 
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--dark-bg); color: white; overflow: hidden; }
-        #matrix-of-conscience-root { position: relative; width: 100vw; height: 100vh; background: #000; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--dark-bg); color: white; overflow-x: hidden; }
+        #matrix-of-conscience-root { position: relative; width: 100vw; min-height: 100vh; background: #000; padding-top: 0; }
         canvas { display: block; position: fixed; inset: 0; z-index: 0; }
         
         /* Intro UI Styles */
@@ -266,6 +264,22 @@
     </style>
 </head>
 <body>
+    <header class="site-header">
+        <div class="nav-container">
+            <a href="../../" class="logo" aria-label="Amazing Grace Home Living — Home">
+                <img src="../../assets/logo.png" alt="Amazing Grace Home Living">
+            </a>
+
+            <nav id="main-nav" class="nav-links" aria-label="Main navigation">
+                <a href="../../#properties">Listings</a>
+                <a href="../../stories/">Stories</a>
+                <a href="../../arcade/" class="active" aria-current="page">Arcade</a>
+                <a href="../../ministry/">Ministry</a>
+                <a href="../../contact/">Contact</a>
+            </nav>
+        </div>
+    </header>
+
     <div id="matrix-of-conscience-root">
         <!-- Persistent Cosmic Canvas Background -->
         <canvas id="cosmic-canvas"></canvas>
