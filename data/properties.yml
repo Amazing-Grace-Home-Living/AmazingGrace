@@ -34,6 +34,6 @@ properties:
     city: "Largo"
     state: "FL"
     zip: "33770"
-    price_per_month: 900
+    price_per_month: 850
     currency: "USD"
     gallery_slug: "1144-7th-street"
