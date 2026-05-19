@@ -33,6 +33,7 @@ export default defineConfig({
         storiesExposeMatrix: resolve(__dirname, "stories/expose-the-matrix/index.html"),
         storiesMatrix:      resolve(__dirname, "stories/matrix.html"),
         storiesNoahAndTheArk: resolve(__dirname, "stories/noah-and-the-ark/index.html"),
+        storiesNexusPrime2087: resolve(__dirname, "stories/nexus-prime-2087/index.html"),
         storiesOurCovenant: resolve(__dirname, "stories/our-covenant-of-new-beginnings/index.html"),
         storiesFixingCopilotRulesetBypass: resolve(__dirname, "stories/fixing-copilot-ruleset-bypass-errors/index.html"),
         storiesGithubBypassSetupApp: resolve(__dirname, "stories/github-bypass-setup-app/index.html"),
