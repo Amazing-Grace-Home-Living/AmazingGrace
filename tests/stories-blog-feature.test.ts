@@ -17,4 +17,10 @@ describe("stories page blog feature", () => {
     expect(html).toContain('id="story-list"');
     expect(html).toContain('id="character-list"');
   });
+
+  it("defines the shared dark-theme color tokens used by the stories page", () => {
+    expect(html).toContain("--text: #e2e8f0;");
+    expect(html).toContain("--surface: rgba(15, 23, 42, 0.92);");
+    expect(html).toContain("--accent-soft: rgba(56, 189, 248, 0.14);");
+  });
 });
