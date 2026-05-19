@@ -17,6 +17,11 @@ The Nexus Arcade hub — play faith-based games including **Mystery of the Seven
 ### ✝️ Ministry (`/ministry/`)
 Faith-based content and ministry resources.
 
+### 📚 Storybook Library (`/stories/`)
+Story pages and character dossiers powered by `stories/library.json`.
+
+- To sync `news/articles/*.html` into the Storybook Library, run: `node scripts/sync-story-library-from-news.js`
+
 ## ⚠️ Admin Dashboard (`/admin/`) — Experimental
 
 > **Not linked in primary navigation.** This section is intentionally off-nav and isolated

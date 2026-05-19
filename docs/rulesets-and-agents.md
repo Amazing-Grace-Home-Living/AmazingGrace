@@ -57,3 +57,18 @@ attempting an operation that the repository ruleset forbids (branch update,
 ref deletion, or direct push). Since rulesets are configured in the GitHub UI,
 the fix is primarily **settings**, but the repository workflows are written to
 assume certain write permissions.
+
+## Downloadable Helper Tool
+
+This repo includes a small script you can run locally to generate bypass-actor
+snippets (and, if you have a token with the right permissions, apply them to a
+ruleset via the REST API):
+
+- `node scripts/github-ruleset-bypass.js snippet --app github-actions`
+- `GITHUB_TOKEN=... node scripts/github-ruleset-bypass.js list-rulesets --owner <owner> --repo <repo>`
+- `GITHUB_TOKEN=... node scripts/github-ruleset-bypass.js add-bypass --ruleset <id> --app github-actions`
+
+If you are unsure what app slug/id to use for a GitHub App installed on the
+repo, you can list installations (requires a token):
+
+- `GITHUB_TOKEN=... node scripts/github-ruleset-bypass.js list-installations --owner <owner> --repo <repo>`
