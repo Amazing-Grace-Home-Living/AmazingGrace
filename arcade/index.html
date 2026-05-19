@@ -12,38 +12,10 @@
     <meta property="og:url" content="https://amazinggracehl.org/arcade">
 
     <link rel="icon" type="image/png" href="../assets/logo.png">
-    <link rel="stylesheet" href="../style2.css">
-    <link rel="stylesheet" href="../assets/css/unified-nav.css">
+    <link rel="stylesheet" href="../assets/css/theme.css">
     <title>Nexus Arcade | Amazing Grace Home Living</title>
-
-    <script src="../assets/vendor/tailwindcss.js"></script>
-    <script src="../assets/vendor/hosted-only.js"></script>
-    <script>
-        window.AmazingGraceHostedOnly?.loadStylesheet("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap");
-    </script>
     <style>
-        :root {
-            --bg: #0f172a;
-            --surface: #1e293b;
-            --surface2: #0f172a;
-            --border: #334155;
-            --accent: #7effd8;
-            --accent2: #ffd700;
-            --text: #e2e8f0;
-            --text-muted: #94a3b8;
-            --header-bg: #0f172a;
-            --nav-btn: #1e3a8a;
-            --nav-btn-h: #2563eb;
-        }
-
-        * { box-sizing: border-box; }
-
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -54,101 +26,20 @@
         }
 
         *:focus-visible {
-            outline: 3px solid var(--accent);
+            outline: 3px solid #3b82f6;
             outline-offset: 2px;
-        }
-
-        .site-header {
-            background-color: var(--header-bg);
-            color: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-family: 'Playfair Display', serif;
-            font-size: 1.25rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-decoration: none;
-            color: white;
-        }
-        .logo img { height: 36px; width: auto; border-radius: 4px; }
-
-        .main-nav {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-            transition: all 0.3s ease;
-        }
-
-        .nav-btn {
-            background-color: var(--nav-btn);
-            border: 1px solid transparent;
-            padding: 0.45rem 1.1rem;
-            border-radius: 6px;
-            text-decoration: none;
-            color: #bfdbfe;
-            transition: background-color 0.2s, color 0.2s;
-            cursor: pointer;
-            font-weight: 600;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.875rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-        .nav-btn:hover { background-color: var(--nav-btn-h); color: white; }
-        .nav-btn.active { background-color: var(--accent); color: #0f172a; }
-
-        .menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.75rem;
-            color: white;
-            cursor: pointer;
-        }
-
-        @media (max-width: 768px) {
-            .main-nav {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: 100%;
-                left: 0; right: 0;
-                background-color: var(--header-bg);
-                padding: 1rem;
-                z-index: 100;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.4);
-                gap: 0.5rem;
-                border-bottom: 1px solid var(--border);
-            }
-            .main-nav.show { display: flex; }
-            .menu-toggle { display: block; }
-            .nav-btn { width: 100%; justify-content: flex-start; padding: 0.75rem 1rem; }
         }
 
         main { flex-grow: 1; padding: 2rem 1rem; }
 
         .arcade-header { text-align: center; margin-bottom: 2.5rem; }
         .arcade-header h1 {
-            font-family: 'Playfair Display', serif;
             font-size: clamp(1.75rem, 5vw, 3rem);
             font-weight: 700;
-            color: var(--accent2);
-            text-shadow: 0 0 20px rgba(255,215,0,0.3);
+            color: #eab308;
             margin-bottom: 0.5rem;
         }
-        .arcade-header p { color: var(--text-muted); font-size: 1rem; }
+        .arcade-header p { font-size: 1rem; }
 
         .game-grid {
             display: grid;
@@ -159,8 +50,8 @@
         }
 
         .game-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px;
             padding: 1.75rem;
             cursor: pointer;
@@ -171,29 +62,14 @@
             position: relative;
             overflow: hidden;
         }
-        .game-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 16px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-        .game-card.card-stars::before { background: radial-gradient(circle at 30% 20%, rgba(255,215,0,0.12), transparent 60%); }
-        .game-card.card-matrix::before { background: radial-gradient(circle at 30% 20%, rgba(167,139,250,0.12), transparent 60%); }
-        .play-btn-violet { background: #a78bfa; color: #1a1035; }
-        .game-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.4); border-color: var(--accent); }
-        .game-card:hover::before { opacity: 1; }
+        .game-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4); border-color: #3b82f6; }
 
         .game-card-icon { font-size: 2.5rem; }
         .game-card-title {
-            font-family: 'Playfair Display', serif;
             font-size: 1.25rem;
             font-weight: 700;
-            color: white;
         }
-        .game-card-desc { font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; }
+        .game-card-desc { font-size: 0.875rem; line-height: 1.6; }
         .game-card-badge {
             display: inline-block;
             font-size: 0.7rem;
@@ -205,7 +81,7 @@
             margin-top: auto;
             align-self: flex-start;
         }
-        .badge-gold { background: rgba(255,215,0,0.15); color: var(--accent2); border: 1px solid rgba(255,215,0,0.3); }
+        .badge-gold { background: rgba(234, 179, 8, 0.15); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.3); }
         .badge-purple { background: rgba(139,92,246,0.12); color: #c084fc; border: 1px solid rgba(139,92,246,0.3); }
 
         .play-btn {
@@ -219,7 +95,8 @@
             transition: background 0.2s, transform 0.15s;
             align-self: flex-start;
         }
-        .play-btn-gold { background: var(--accent2); color: #1a1a2e; }
+        .play-btn-gold { background: #eab308; color: #000000; }
+        .play-btn-violet { background: #a78bfa; color: #000000; }
         .play-btn:hover { filter: brightness(1.1); transform: scale(1.04); }
 
         .game-stage {
@@ -237,8 +114,7 @@
 
         .stage-back-btn {
             background: none;
-            border: 1px solid var(--border);
-            color: var(--text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 0.4rem 1rem;
             border-radius: 6px;
             cursor: pointer;
@@ -246,13 +122,13 @@
             margin-bottom: 1.25rem;
             transition: color 0.2s, border-color 0.2s;
         }
-        .stage-back-btn:hover { color: white; border-color: var(--accent); }
+        .stage-back-btn:hover { border-color: #3b82f6; }
 
         .game-wrapper {
             width: 100%;
             max-width: 700px;
             min-height: 65vh;
-            background: #1a1a2e;
+            background: #000000;
             border-radius: 1.5rem;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             display: flex;
@@ -262,12 +138,12 @@
             margin: 0 auto;
         }
         .game-header-bar {
-            background-color: #0f0f1e;
-            color: var(--accent2);
+            background-color: #000000;
+            color: #eab308;
             padding: 1.25rem;
             text-align: center;
             font-size: 1.4rem;
-            font-family: 'Playfair Display', serif;
+            font-weight: 700;
             letter-spacing: 2px;
             border-bottom: 2px solid #4e4e6a;
         }
@@ -280,8 +156,7 @@
             align-items: center;
             text-align: center;
             overflow-y: auto;
-            background: #1a1a2e;
-            color: white;
+            background: #000000;
         }
         .game-message-overlay {
             position: absolute;
@@ -293,26 +168,25 @@
             z-index: 50;
         }
         .game-message-box {
-            background: #1a1a2e;
+            background: #000000;
             padding: 2rem;
             border-radius: 1rem;
             text-align: center;
             max-width: 80%;
-            color: white;
-            border: 2px solid var(--accent2);
-            box-shadow: 0 0 20px rgba(255,215,0,0.3);
+            border: 2px solid #eab308;
+            box-shadow: 0 0 20px rgba(234, 179, 8, 0.3);
         }
         .game-btn {
             padding: 0.75rem 1.5rem;
-            background-color: var(--accent2);
-            color: #1a1a2e;
+            background-color: #eab308;
+            color: #000000;
             border-radius: 0.75rem;
             font-weight: 700;
             border: none;
             cursor: pointer;
             transition: background-color 0.2s;
         }
-        .game-btn:hover { background-color: #e6c200; }
+        .game-btn:hover { background-color: #fbbf24; }
 
         .map-grid {
             display: grid;
@@ -327,26 +201,24 @@
             align-items: center;
             padding: 1rem;
             background: rgba(255,255,255,0.08);
-            border: 2px solid #4e4e6a;
+            border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 1rem;
             cursor: pointer;
-            color: white;
             transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
         }
-        .map-item:hover { transform: translateY(-3px); box-shadow: 0 0 10px var(--accent2); border-color: var(--accent2); }
-        .map-item.completed { background: rgba(255,215,0,0.15); border-color: var(--accent2); }
-        .star-svg { width: 28px; height: 28px; margin-bottom: 0.4rem; stroke: var(--accent2); }
-        .map-item.completed .star-svg polygon { fill: var(--accent2); }
+        .map-item:hover { transform: translateY(-3px); box-shadow: 0 0 10px #eab308; border-color: #eab308; }
+        .map-item.completed { background: rgba(234, 179, 8, 0.15); border-color: #eab308; }
+        .star-svg { width: 28px; height: 28px; margin-bottom: 0.4rem; stroke: #eab308; }
+        .map-item.completed .star-svg polygon { fill: #eab308; }
 
         .site-footer {
-            background: var(--surface);
-            border-top: 1px solid var(--border);
-            color: var(--text-muted);
+            background: rgba(0, 0, 0, 0.5);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             padding: 1.5rem 2rem;
             text-align: center;
             font-size: 0.8rem;
         }
-        .site-footer a { color: var(--accent); text-decoration: none; }
+        .site-footer a { text-decoration: none; }
         .site-footer a:hover { text-decoration: underline; }
     </style>
 </head>
