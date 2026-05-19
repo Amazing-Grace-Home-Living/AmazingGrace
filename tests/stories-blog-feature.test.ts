@@ -19,8 +19,13 @@ describe("stories page blog feature", () => {
   });
 
   it("defines the shared dark-theme color tokens used by the stories page", () => {
+    expect(html).toContain("--border: #1e293b;");
     expect(html).toContain("--text: #e2e8f0;");
+    expect(html).toContain("--muted: #94a3b8;");
+    expect(html).toContain("--accent: #38bdf8;");
     expect(html).toContain("--surface: rgba(15, 23, 42, 0.92);");
     expect(html).toContain("--accent-soft: rgba(56, 189, 248, 0.14);");
+    expect(html).toContain("--accent-gold: #facc15;");
+    expect(html).toContain("--blog-border: rgba(56, 189, 248, 0.28);");
   });
 });
