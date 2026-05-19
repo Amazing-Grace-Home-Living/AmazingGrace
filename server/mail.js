@@ -22,6 +22,8 @@
 import express from "express";
 import nodemailer from "nodemailer";
 import { rateLimit } from "express-rate-limit";
+import { requireAdminApiKey } from "./admin-auth.js";
+import { addStoreItemHandler, listStoreItemsHandler } from "./admin-store.js";
 
 // ── Startup validation ─────────────────────────────────────────────────────────
 function requireEnv(name) {
@@ -60,8 +62,8 @@ const transporter = nodemailer.createTransport({
 app.use((req, res, next) => {
   const origin = process.env.ALLOWED_ORIGIN ?? "https://amazinggracehl.org";
   res.setHeader("Access-Control-Allow-Origin", origin);
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Admin-Api-Key");
   if (req.method === "OPTIONS") return res.sendStatus(204);
   next();
 });
@@ -73,6 +75,14 @@ const contactLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many submissions — please try again in 15 minutes." },
+});
+
+const adminLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many admin requests. Please try again shortly." },
 });
 
 // ── HTML entity escaping (prevents XSS in email HTML body) ───────────────────
@@ -145,6 +155,10 @@ app.post("/contact", contactLimiter, async (req, res) => {
     return res.status(500).json({ error: "Failed to send email" });
   }
 });
+
+// ── Admin inventory endpoints (protected by ADMIN_API_KEY) ────────────────────
+app.get("/admin/store-items", adminLimiter, requireAdminApiKey, listStoreItemsHandler);
+app.post("/admin/add-item", adminLimiter, requireAdminApiKey, addStoreItemHandler);
 
 // ── Test-email endpoint (smoke-test — requires secret token, dev-only in production) ──
 app.get("/test-email", async (req, res) => {
