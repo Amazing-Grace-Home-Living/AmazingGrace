@@ -6,88 +6,8 @@
     <meta name="description" content="Amazing Grace Home Living — secure, all-inclusive housing in Tampa and Largo, plus ministry and arcade resources.">
     <title>Amazing Grace Home Living</title>
     <link rel="icon" type="image/png" href="./assets/logo.png">
-    <link rel="stylesheet" href="./assets/css/unified-nav.css">
+    <link rel="stylesheet" href="./assets/css/theme.css">
     <style>
-        :root {
-            --bg: #020617;
-            --surface: #0f172a;
-            --surface-2: #111827;
-            --border: #1e293b;
-            --text: #e2e8f0;
-            --muted: #94a3b8;
-            --accent: #38bdf8;
-            --accent-2: #facc15;
-        }
-
-        * { box-sizing: border-box; }
-
-        body {
-            margin: 0;
-            font-family: Inter, Arial, sans-serif;
-            background: linear-gradient(180deg, #020617 0%, #0f172a 100%);
-            color: var(--text);
-            line-height: 1.6;
-        }
-
-        a { color: var(--accent); }
-        a:hover { color: #7dd3fc; }
-
-        .site-header {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            background: rgba(2, 6, 23, 0.96);
-            border-bottom: 1px solid var(--border);
-            backdrop-filter: blur(12px);
-        }
-
-        .nav-container {
-            max-width: 1120px;
-            margin: 0 auto;
-            padding: 1rem 1.25rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .logo {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            color: #fff;
-            text-decoration: none;
-            font-weight: 700;
-        }
-
-        .logo img {
-            height: 42px;
-            width: auto;
-            border-radius: 6px;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-        }
-
-        .nav-links a {
-            color: var(--text);
-            text-decoration: none;
-            font-weight: 600;
-            padding: 0.5rem 0.8rem;
-            border-radius: 999px;
-        }
-
-        .nav-links a:hover,
-        .nav-links a.nav-active-page {
-            background: rgba(56, 189, 248, 0.14);
-            color: #fff;
-        }
-
         main {
             max-width: 1120px;
             margin: 0 auto;
@@ -109,7 +29,6 @@
         }
 
         .hero-copy p {
-            color: var(--muted);
             font-size: 1.05rem;
             margin: 0 0 1.5rem;
         }
@@ -131,19 +50,19 @@
         }
 
         .btn-primary {
-            background: var(--accent);
-            color: #082f49;
+            background: #3b82f6;
+            color: #ffffff;
         }
 
         .btn-secondary {
-            border: 1px solid var(--border);
-            color: var(--text);
-            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.3);
         }
 
         .hero-panel {
-            background: rgba(15, 23, 42, 0.92);
-            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 1.25rem;
             padding: 1.25rem;
             box-shadow: 0 20px 45px rgba(0, 0, 0, 0.32);
@@ -151,13 +70,12 @@
 
         .hero-panel h2 {
             margin-top: 0;
-            color: var(--accent-2);
+            color: #eab308;
         }
 
         .hero-panel ul {
             margin: 0;
             padding-left: 1rem;
-            color: var(--muted);
         }
 
         .section-header {
@@ -176,7 +94,6 @@
 
         .section-header p {
             margin: 0;
-            color: var(--muted);
             max-width: 700px;
         }
 
@@ -187,8 +104,8 @@
         }
 
         .property-card {
-            background: rgba(15, 23, 42, 0.94);
-            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 1.25rem;
             overflow: hidden;
             box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
@@ -199,7 +116,7 @@
             width: 100%;
             height: 220px;
             object-fit: cover;
-            background: #020617;
+            background: #000000;
         }
 
         .property-card-content {
@@ -213,14 +130,12 @@
 
         .property-meta,
         .property-copy {
-            color: var(--muted);
             margin: 0 0 0.85rem;
         }
 
         .property-amenities {
             margin: 0 0 1rem;
             padding-left: 1.1rem;
-            color: var(--muted);
         }
 
         .property-cta {
@@ -235,8 +150,7 @@
         }
 
         .footer {
-            border-top: 1px solid var(--border);
-            color: var(--muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
             padding: 1.5rem 1rem 2rem;
         }
@@ -244,10 +158,6 @@
         @media (max-width: 768px) {
             .hero {
                 grid-template-columns: 1fr;
-            }
-
-            .nav-container {
-                flex-wrap: wrap;
             }
         }
     </style>
