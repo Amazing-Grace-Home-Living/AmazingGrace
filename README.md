@@ -27,6 +27,11 @@ Use this **safe comparison flow** when you need to publish a specific historical
 5. Add DNS `CNAME` record for `matrix` to the Pages target.
 6. Keep this repository’s main Pages deployment unchanged for apex production traffic.
 
+### 📚 Storybook Library (`/stories/`)
+Story pages and character dossiers powered by `stories/library.json`.
+
+- To sync `news/articles/*.html` into the Storybook Library, run: `node scripts/sync-story-library-from-news.js`
+
 ## ⚠️ Admin Dashboard (`/admin/`) — Experimental
 
 > **Not linked in primary navigation.** This section is intentionally off-nav and isolated
