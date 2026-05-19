@@ -267,6 +267,17 @@
   justify-content: center;
 }
 
+/* ── Gem drop animation (used by domPulse2.js animateDrop) ───────────────── */
+
+.gem-dropping {
+  animation: gemDropping 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes gemDropping {
+  from { transform: translateY(-120%); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
 /* ── Responsive adjustments ────────────────────────────────────────────────── */
 
 @media (min-width: 480px) {
@@ -281,7 +292,8 @@
   .v2-bar-fill,
   .pulse-match,
   .pulse-special,
-  .pulse-ley {
+  .pulse-ley,
+  .gem-dropping {
     animation: none !important;
     transition: none !important;
   }
