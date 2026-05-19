@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Stories archive from Amazing Grace Home Living.">
+    <meta name="description" content="Library of stories, resources, and biblical content from Amazing Grace Home Living.">
     <meta name="theme-color" content="#020617">
     <link rel="icon" type="image/png" href="../assets/logo.png">
     <link rel="stylesheet" href="../assets/css/unified-nav.css">
-    <title>Stories Archive | Amazing Grace Home Living</title>
+    <title>Library | Amazing Grace Home Living</title>
 
     <style>
         :root {
@@ -100,33 +100,13 @@
 
         .subtitle {
             color: var(--muted);
-            margin: 0 0 2rem;
+            margin: 0 0 3rem;
             font-size: 1.1rem;
-        }
-
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--accent);
-            text-decoration: none;
-            font-weight: 600;
-            margin-bottom: 2rem;
-            padding: 0.75rem 1rem;
-            background: rgba(15, 23, 42, 0.92);
-            border: 1px solid var(--border);
-            border-radius: 0.75rem;
-            transition: all 0.2s;
-        }
-
-        .back-link:hover {
-            background: rgba(15, 23, 42, 1);
-            border-color: var(--accent);
         }
 
         .section-heading {
             font-size: 1.5rem;
-            margin: 2rem 0 1rem;
+            margin: 2.5rem 0 1rem;
             color: var(--accent);
             border-bottom: 2px solid var(--border);
             padding-bottom: 0.5rem;
@@ -135,7 +115,7 @@
         .story-list {
             list-style: none;
             padding: 0;
-            margin: 0;
+            margin: 0 0 2rem;
         }
 
         .story-list li {
@@ -153,6 +133,35 @@
 
         .story-link:hover {
             color: #7dd3fc;
+        }
+
+        .resource-link {
+            display: block;
+            padding: 1.25rem;
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            margin: 1rem 0;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.2s;
+        }
+
+        .resource-link:hover {
+            background: rgba(15, 23, 42, 1);
+            border-color: var(--accent);
+        }
+
+        .resource-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 0 0 0.5rem;
+        }
+
+        .resource-desc {
+            color: var(--muted);
+            margin: 0;
         }
 
         .footer {
@@ -178,7 +187,7 @@
 
             <nav id="main-nav" class="nav-links" aria-label="Main navigation">
                 <a href="../#properties">Listings</a>
-                <a href="../library/">Library</a>
+                <a href="./" class="nav-active-page" aria-current="page">Library</a>
                 <a href="../arcade/">Arcade</a>
                 <a href="../ministry/">Ministry</a>
                 <a href="../contact/">Contact</a>
@@ -187,18 +196,30 @@
     </header>
 
     <main>
-        <a href="../library/" class="back-link">
-            <span>←</span>
-            <span>Back to Library</span>
-        </a>
+        <h1>📚 Library</h1>
+        <p class="subtitle">Stories, biblical resources, and faith-based content from Amazing Grace Home Living.</p>
 
-        <h1>📚 Stories Archive</h1>
-        <p class="subtitle">Complete archive of all stories and articles from Amazing Grace Home Living.</p>
-
-        <h2 class="section-heading">All Stories</h2>
+        <h2 class="section-heading">Stories</h2>
         <ul id="story-list" class="story-list" aria-label="Story list">
             <!-- Stories will be loaded dynamically -->
         </ul>
+
+        <h2 class="section-heading">Resources</h2>
+
+        <a href="https://drive.google.com/file/d/1OVEEA0f9oXdfy62ZBEAKMU75-Ly99o7c/view?usp=drive_link" class="resource-link" target="_blank" rel="noopener noreferrer">
+            <div class="resource-title">📖 Ethiopian Bible</div>
+            <p class="resource-desc">Access the complete Ethiopian Bible translation.</p>
+        </a>
+
+        <a href="../audio-library/" class="resource-link">
+            <div class="resource-title">🎵 Audio Library</div>
+            <p class="resource-desc">Listen to audio recordings, sermons, and faith-based teachings.</p>
+        </a>
+
+        <a href="../stories/" class="resource-link">
+            <div class="resource-title">📑 Stories Archive</div>
+            <p class="resource-desc">Browse the complete archive of all stories and articles.</p>
+        </a>
     </main>
 
     <footer class="footer">
@@ -220,7 +241,7 @@
             errorDiv.style.color = '#fecaca';
 
             try {
-                var res = await fetch('./library.json');
+                var res = await fetch('../stories/library.json');
                 if (!res.ok) throw new Error('HTTP ' + res.status + ' loading library.json');
 
                 var data = await res.json();
@@ -233,7 +254,7 @@
                 }
 
                 entries.forEach(function (entry) {
-                    var href = entry.path || (entry.slug ? './' + entry.slug + '/' : '#');
+                    var href = entry.path || (entry.slug ? '../stories/' + entry.slug + '/' : '#');
                     var li = document.createElement('li');
                     var link = document.createElement('a');
                     link.className = 'story-link';

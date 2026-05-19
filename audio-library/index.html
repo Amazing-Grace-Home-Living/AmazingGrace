@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Stories archive from Amazing Grace Home Living.">
+    <meta name="description" content="Audio Library - Sermons, teachings, and faith-based content from Amazing Grace Home Living.">
     <meta name="theme-color" content="#020617">
     <link rel="icon" type="image/png" href="../assets/logo.png">
     <link rel="stylesheet" href="../assets/css/unified-nav.css">
-    <title>Stories Archive | Amazing Grace Home Living</title>
+    <title>Audio Library | Amazing Grace Home Living</title>
 
     <style>
         :root {
@@ -17,7 +17,6 @@
             --text: #e2e8f0;
             --muted: #94a3b8;
             --accent: #38bdf8;
-            --neon-blue: #0ea5e9;
         }
 
         * { box-sizing: border-box; }
@@ -124,35 +123,13 @@
             border-color: var(--accent);
         }
 
-        .section-heading {
-            font-size: 1.5rem;
-            margin: 2rem 0 1rem;
-            color: var(--accent);
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 0.5rem;
-        }
-
-        .story-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .story-list li {
-            margin: 0.75rem 0;
-        }
-
-        .story-link {
-            color: var(--neon-blue);
-            text-decoration: none;
-            font-size: 1.1rem;
-            font-weight: 600;
-            display: inline-block;
-            transition: color 0.2s;
-        }
-
-        .story-link:hover {
-            color: #7dd3fc;
+        .placeholder {
+            padding: 2rem;
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            text-align: center;
+            color: var(--muted);
         }
 
         .footer {
@@ -192,64 +169,17 @@
             <span>Back to Library</span>
         </a>
 
-        <h1>📚 Stories Archive</h1>
-        <p class="subtitle">Complete archive of all stories and articles from Amazing Grace Home Living.</p>
+        <h1>🎵 Audio Library</h1>
+        <p class="subtitle">Audio recordings, sermons, and faith-based teachings from Amazing Grace Home Living.</p>
 
-        <h2 class="section-heading">All Stories</h2>
-        <ul id="story-list" class="story-list" aria-label="Story list">
-            <!-- Stories will be loaded dynamically -->
-        </ul>
+        <div class="placeholder">
+            <p>Audio content coming soon.</p>
+            <p>Check back later for sermons, teachings, and other audio resources.</p>
+        </div>
     </main>
 
     <footer class="footer">
         <p>&copy; 2026 Amazing Grace Home Living &mdash; Tampa and Largo, Florida</p>
     </footer>
-
-    <script>
-        function esc(str) {
-            return String(str || '')
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;');
-        }
-
-        async function loadStories() {
-            var list = document.getElementById('story-list');
-            var errorDiv = document.createElement('p');
-            errorDiv.style.color = '#fecaca';
-
-            try {
-                var res = await fetch('./library.json');
-                if (!res.ok) throw new Error('HTTP ' + res.status + ' loading library.json');
-
-                var data = await res.json();
-                var entries = Array.isArray(data.entries) ? data.entries : [];
-
-                if (!entries.length) {
-                    errorDiv.textContent = 'No stories found in the library.';
-                    list.appendChild(errorDiv);
-                    return;
-                }
-
-                entries.forEach(function (entry) {
-                    var href = entry.path || (entry.slug ? './' + entry.slug + '/' : '#');
-                    var li = document.createElement('li');
-                    var link = document.createElement('a');
-                    link.className = 'story-link';
-                    link.href = href;
-                    link.textContent = entry.title || 'Untitled';
-                    li.appendChild(link);
-                    list.appendChild(li);
-                });
-            } catch (err) {
-                console.error('Failed to load stories', err);
-                errorDiv.textContent = 'Failed to load stories: ' + String(err);
-                list.appendChild(errorDiv);
-            }
-        }
-
-        loadStories();
-    </script>
 </body>
 </html>
