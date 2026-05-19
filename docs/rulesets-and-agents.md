@@ -41,6 +41,8 @@ If you protect `gh-pages` with a ruleset, you must either:
 
 In GitHub rulesets, add bypass for the exact automation you want to function:
 - **GitHub Actions** (`github-actions[bot]`) for Pages deploy/preview and cleanup
+- **GitHub Copilot** (`Copilot coding agent`) if you want Copilot to open PRs or
+  update branches under protected rules
 - **OpenAI Codex** (the `openai-code-agent` GitHub App) if you want issue-driven
   coding agents to open PRs automatically
 - Any other repo apps that create commits/branches on your behalf
