@@ -17,6 +17,21 @@ The Nexus Arcade hub — play faith-based games including **Mystery of the Seven
 ### ✝️ Ministry (`/ministry/`)
 Faith-based content and ministry resources.
 
+### 🔎 Matrix subdomain comparison workflow (`matrix.amazinggracehl.org`)
+Use this **safe comparison flow** when you need to publish a specific historical commit (for example `5a2704c2cc4aaeac9a40ac0d532bbd9bbb5958a4`) without changing production `amazinggracehl.org`:
+
+1. Create a separate GitHub Pages site (recommended: separate repository dedicated to matrix comparisons).
+2. Check out the exact comparison commit in that separate deployment workflow.
+3. Build and deploy that snapshot to the separate Pages site.
+4. Configure the comparison site `CNAME` as `matrix.amazinggracehl.org`.
+5. Add DNS `CNAME` record for `matrix` to the Pages target.
+6. Keep this repository’s main Pages deployment unchanged for apex production traffic.
+
+### 📚 Storybook Library (`/stories/`)
+Story pages and character dossiers powered by `stories/library.json`.
+
+- To sync `news/articles/*.html` into the Storybook Library, run: `node scripts/sync-story-library-from-news.js`
+
 ## ⚠️ Admin Dashboard (`/admin/`) — Experimental
 
 > **Not linked in primary navigation.** This section is intentionally off-nav and isolated

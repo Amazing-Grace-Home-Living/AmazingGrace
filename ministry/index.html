@@ -113,6 +113,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
             position: sticky;
             top: 0;
             z-index: 200;
@@ -131,7 +133,7 @@
 
         .logo img { height: 36px; width: auto; border-radius: 4px; }
 
-        .nav-links { display: flex; gap: 0.5rem; }
+        .nav-links { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 
         .nav-btn {
             background: rgba(255,215,0,0.07);
@@ -148,33 +150,10 @@
         .nav-btn:hover { background: rgba(255,215,0,0.18); border-color: var(--gold); color: var(--gold); }
         .nav-btn.active { background: rgba(192,132,252,0.2); border-color: var(--accent); color: var(--accent); }
 
-        .menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.75rem;
-            color: var(--gold);
-            cursor: pointer;
-            padding: 0.25rem;
-        }
-
         @media (max-width: 640px) {
-            .nav-links {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: rgba(13,1,21,0.98);
-                padding: 1rem;
-                z-index: 200;
-                border-bottom: 1px solid var(--border);
-                gap: 0.5rem;
-            }
-            .nav-links.show { display: flex; }
-            .menu-toggle { display: block; }
-            .nav-btn { width: 100%; padding: 0.75rem 1rem; }
+            .site-header { padding-inline: 1rem; }
+            .nav-links { width: 100%; }
+            .nav-btn { flex: 1 1 140px; text-align: center; }
         }
 
         /* ── Hero ── */
@@ -417,19 +396,19 @@
 
         <div class="ministry-grid" role="navigation" aria-label="Ministry sections">
 
-            <a href="../stories" class="ministry-btn btn-stories" aria-label="Read Ministry Stories">
+            <a href="../stories/" class="ministry-btn btn-stories" aria-label="Read Ministry Stories">
                 <span class="ministry-btn-icon">📖</span>
                 <span class="ministry-btn-label">Stories</span>
                 <span class="ministry-btn-desc">Testimonies of faith, hope, and transformation</span>
             </a>
 
-            <a href="../support" class="ministry-btn btn-support" aria-label="Mission Support">
+            <a href="../support/" class="ministry-btn btn-support" aria-label="Mission Support">
                 <span class="ministry-btn-icon">🤝</span>
                 <span class="ministry-btn-label">Mission Support</span>
                 <span class="ministry-btn-desc">Partner with us to expand our reach</span>
             </a>
 
-            <a href="../arcade" class="ministry-btn btn-games" aria-label="Play Faith-Based Games">
+            <a href="../arcade/" class="ministry-btn btn-games" aria-label="Play Faith-Based Games">
                 <span class="ministry-btn-icon">🎮</span>
                 <span class="ministry-btn-label">Games</span>
                 <span class="ministry-btn-desc">Interactive faith-based learning through play</span>

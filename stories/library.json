@@ -72,7 +72,15 @@
       "series": "Genesis Foundations",
       "slug": "expose-the-matrix",
       "path": "./expose-the-matrix/",
-      "tags": ["truth", "conscience", "electra", "red queen", "seven stars", "integrity", "revelation"],
+      "tags": [
+        "truth",
+        "conscience",
+        "electra",
+        "red queen",
+        "seven stars",
+        "integrity",
+        "revelation"
+      ],
       "summary": "Electra uncovers the Red Queen's hidden architecture and follows the Architect's buried breadcrumbs to restore the Signal of Truth across the Seven Star Grid — a six-chapter digital awakening."
     },
     {
@@ -106,6 +114,69 @@
         "seven stars"
       ],
       "summary": "Ella rejects the ladder of greed and executes the System Break, transforming individual ascent into collective resonance and opening the Eighth Sanctuary as a covenant of restoration."
+    },
+    {
+      "title": "Fixing Copilot Ruleset Bypass Errors",
+      "author": "Amazing Grace Engineering",
+      "genre": "DevOps / GitHub Governance",
+      "series": "Operational Stories",
+      "slug": "fixing-copilot-ruleset-bypass-errors",
+      "path": "./fixing-copilot-ruleset-bypass-errors/",
+      "tags": [
+        "github",
+        "rulesets",
+        "copilot",
+        "automation",
+        "bypass"
+      ],
+      "summary": "A practical guide for resolving \"agent couldn't start\" errors by granting narrowly scoped GitHub ruleset bypass permissions for trusted automation."
+    },
+    {
+      "title": "GitHub Bypass Setup App (Download)",
+      "author": "Amazing Grace Engineering",
+      "genre": "DevOps / Tooling",
+      "series": "Operational Stories",
+      "slug": "github-bypass-setup-app",
+      "path": "./github-bypass-setup-app/",
+      "tags": [
+        "download",
+        "powershell",
+        "github",
+        "rulesets",
+        "tooling"
+      ],
+      "summary": "Download a reusable PowerShell setup helper that prints a branch-ruleset bypass checklist and direct GitHub settings links for this repository."
+    },
+    {
+      "title": "More Articles Are on the Way",
+      "author": "Amazing Grace Home Living",
+      "genre": "News / Article",
+      "series": "News",
+      "type": "blog",
+      "source": "news",
+      "slug": "news-future-articles",
+      "path": "../news/articles/future-articles.html",
+      "tags": [
+        "news",
+        "coming-soon"
+      ],
+      "summary": "More news and articles coming soon from Amazing Grace Home Living and the Voice of Jesus Ministry."
+    },
+    {
+      "title": "Zyko Learn: Faith-Based Learning for the Next Generation",
+      "author": "Amazing Grace Home Living",
+      "genre": "News / Article",
+      "series": "News",
+      "type": "blog",
+      "source": "news",
+      "slug": "news-zyko-learn",
+      "path": "../news/articles/zyko-learn.html",
+      "tags": [
+        "news",
+        "education"
+      ],
+      "summary": "Zyko Learn — Faith-based interactive learning through the Seven Stars Arcade, Amazing Grace Home Living.",
+      "published": "May 2026"
     }
   ],
   "searchIndex": {

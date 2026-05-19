@@ -22,7 +22,7 @@ $850/month - All-Inclusive
 
 ## Listing 2 - 1144 7th St NW, Largo, FL 33770
 
-$1,000/month - All-Inclusive
+$850/month - All-Inclusive
 
 - Street: 1144 7th St NW
 - City: Largo
@@ -57,7 +57,7 @@ $1,000/month - All-Inclusive
 | Property | Address | City | ZIP | Price |
 |----------|---------|------|-----|-------|
 | 926 Poinsettia | 926 E Poinsettia Ave | Tampa | 33612 | $850/mo |
-| 1144 7th St | 1144 7th St NW | Largo | 33770 | $1,000/mo |
+| 1144 7th St | 1144 7th St NW | Largo | 33770 | $850/mo |
 | 1142 7th St | 1142 7th St NW | Largo | 33770 | $1,000/mo |
 
 ---
@@ -69,7 +69,7 @@ $1,000/month - All-Inclusive
 | 926 city changed to Largo or Holiday | City is Tampa, FL 33612 |
 | Street changed to Poinsettia Drive | Street is E Poinsettia Ave |
 | Phantom 4th Tampa Property card added | There are only 3 listings |
-| Prices removed or zeroed out | $850 Tampa, $1,000 Largo x2 |
+| Prices removed or zeroed out | $850 Tampa, $850 (1144), $1,000 (1142) |
 | ZIP 33770 used for Tampa property | Tampa = 33612, Largo = 33770 |
 
 ---
