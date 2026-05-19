@@ -29,6 +29,7 @@ export default defineConfig({
         ministries:             resolve(__dirname, "ministries/index.html"),
         ministriesSevenStarCanon: resolve(__dirname, "ministries/seven-star-canon.html"),
         stories:           resolve(__dirname, "stories/index.html"),
+        storiesBlogArchitecturalSynthesis: resolve(__dirname, "stories/blog/architectural-js-synthesis.html"),
         storiesExposeMatrix: resolve(__dirname, "stories/expose-the-matrix/index.html"),
         storiesMatrix:      resolve(__dirname, "stories/matrix.html"),
         storiesNoahAndTheArk: resolve(__dirname, "stories/noah-and-the-ark/index.html"),

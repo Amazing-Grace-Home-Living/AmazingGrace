@@ -16,6 +16,7 @@
     <meta property="og:url"         content="https://amazinggracehl.org/stories/expose-the-matrix/">
 
     <script src="../../assets/vendor/hosted-only.js"></script>
+    <link rel="stylesheet" href="../../assets/css/unified-nav.css">
     <script>
         window.AmazingGraceHostedOnly?.loadStylesheet("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap");
     </script>
@@ -470,18 +471,18 @@
 <body>
 
 <header class="site-header">
-    <a href="../../" class="logo" aria-label="Amazing Grace Home Living — Home">
-        <img src="../../assets/logo.png" alt="Amazing Grace Home Living Logo">
-        Amazing Grace
-    </a>
-    <nav id="main-nav" aria-label="Main navigation">
-        <a href="../../" class="nav-btn">🏠 Home</a>
-        <a href="../" class="nav-btn active">📚 Library</a>
-        <a href="../../arcade/" class="nav-btn">🎮 Arcade</a>
-        <a href="../../ministry/" class="nav-btn">🕊️ Ministry</a>
-        <a href="../../ministries/" class="nav-btn">✨ Seven Stars</a>
-    </nav>
-    <button class="menu-toggle" aria-label="Toggle navigation" aria-controls="main-nav" aria-expanded="false">☰</button>
+    <div class="nav-container">
+        <a href="../../" class="logo" aria-label="Amazing Grace Home Living — Home">
+            <img src="../../assets/logo.png" alt="Amazing Grace Home Living">
+        </a>
+        <nav id="main-nav" class="nav-links" aria-label="Main navigation">
+            <a href="../../#properties">Listings</a>
+            <a href="../" class="active" aria-current="page">Stories</a>
+            <a href="../../arcade/">Arcade</a>
+            <a href="../../ministry/">Ministry</a>
+            <a href="../../contact/">Contact</a>
+        </nav>
+    </div>
 </header>
 
 <main>
@@ -598,23 +599,6 @@
 
 <script>
 (function () {
-    // ── Mobile nav toggle ──
-    var toggle = document.querySelector('.menu-toggle');
-    var nav = document.getElementById('main-nav');
-    if (toggle && nav) {
-        toggle.addEventListener('click', function () {
-            var open = nav.classList.toggle('show');
-            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-        });
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && nav.classList.contains('show')) {
-                nav.classList.remove('show');
-                toggle.setAttribute('aria-expanded', 'false');
-                toggle.focus();
-            }
-        });
-    }
-
     // ── Story chapters ──
     var chapters = [
         {

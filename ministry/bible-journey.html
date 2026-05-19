@@ -32,6 +32,7 @@
     <meta name="theme-color" content="#0f0c1a" />
     <link rel="icon" type="image/png" href="../assets/logo.png" />
     <title>Bible Journey | Voice of Jesus Ministry</title>
+    <link rel="stylesheet" href="../assets/css/unified-nav.css" />
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -437,19 +438,18 @@
 <body>
 
     <header class="site-header">
-        <a href="../" class="logo" aria-label="Amazing Grace Home Living — Home">
-            <img src="../assets/logo.png" alt="Amazing Grace Home Living Logo" />
-            <span>Amazing Grace</span>
-        </a>
-        <nav id="main-nav" class="nav-links" aria-label="Main navigation">
-            <a href="../" class="nav-btn">🏠 Home</a>
-            <a href="../stories/" class="nav-btn">📚 Stories</a>
-            <a href="../arcade/" class="nav-btn">🎮 Arcade</a>
-            <a href="./" class="nav-btn active" aria-current="page">🕊️ Ministry</a>
-            <a href="../ministries/" class="nav-btn" style="background:rgba(155,89,182,0.35);">✨ Seven Stars</a>
-            <a href="../contact/" class="nav-btn">✉️ Contact</a>
-        </nav>
-        <button class="menu-toggle" aria-label="Toggle navigation" aria-controls="main-nav" aria-expanded="false">☰</button>
+        <div class="nav-container">
+            <a href="../" class="logo" aria-label="Amazing Grace Home Living — Home">
+                <img src="../assets/logo.png" alt="Amazing Grace Home Living" />
+            </a>
+            <nav id="main-nav" class="nav-links" aria-label="Main navigation">
+                <a href="../#properties">Listings</a>
+                <a href="../stories/">Stories</a>
+                <a href="../arcade/">Arcade</a>
+                <a href="./" class="active" aria-current="page">Ministry</a>
+                <a href="../contact/">Contact</a>
+            </nav>
+        </div>
     </header>
 
     <div class="page-body">
@@ -534,18 +534,6 @@
 
     <script src="bible-journey-data.js"></script>
     <script>
-        // ── Mobile nav toggle ──────────────────────────────────────────
-        (function () {
-            var toggle = document.querySelector('.menu-toggle');
-            var nav = document.getElementById('main-nav');
-            if (toggle && nav) {
-                toggle.addEventListener('click', function () {
-                    var isExpanded = nav.classList.toggle('show');
-                    toggle.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
-                });
-            }
-        })();
-
         // ── Tab switching — Fix 3: getTabConfig / handleTabKeydown / setupTabs ──
         function getTabConfig() {
             return {

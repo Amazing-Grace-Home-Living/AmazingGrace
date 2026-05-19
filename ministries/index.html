@@ -36,6 +36,7 @@
 
     <script src="../assets/vendor/tailwindcss.js"></script>
     <script src="../assets/vendor/hosted-only.js"></script>
+    <link rel="stylesheet" href="../assets/css/unified-nav.css">
     <script>
         window.AmazingGraceHostedOnly?.loadStylesheet("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap");
     </script>
@@ -517,19 +518,18 @@
 
     <!-- Header -->
     <header class="site-header">
-        <a href="../" class="logo" aria-label="Amazing Grace Home Living — Home">
-            <img src="../assets/logo.png" alt="Amazing Grace Home Living Logo">
-            <span>Amazing Grace</span>
-        </a>
-        <nav id="main-nav" class="main-nav" aria-label="Main navigation">
-            <a href="../" class="nav-btn">🏠 Home</a>
-            <a href="../stories/" class="nav-btn">📚 Stories</a>
-            <a href="../arcade/" class="nav-btn">🎮 Arcade</a>
-            <a href="../ministry/" class="nav-btn">🕊️ Ministry</a>
-            <a href="./" class="nav-btn active" aria-current="page">✨ Seven Stars</a>
-            <a href="../contact/" class="nav-btn">✉️ Contact</a>
-        </nav>
-        <button class="menu-toggle" aria-label="Toggle navigation" aria-controls="main-nav" aria-expanded="false">☰</button>
+        <div class="nav-container">
+            <a href="../" class="logo" aria-label="Amazing Grace Home Living — Home">
+                <img src="../assets/logo.png" alt="Amazing Grace Home Living">
+            </a>
+        <nav id="main-nav" class="nav-links" aria-label="Main navigation">
+                <a href="../home">Homes</a>
+                <a href="../stories/">Stories</a>
+                <a href="../arcade/">Arcade</a>
+                <a href="../ministry/">Ministry</a>
+                <a href="../contact/">Contact</a>
+            </nav>
+        </div>
     </header>
 
     <!-- Main -->
@@ -979,15 +979,6 @@
         // Scroll story card into view smoothly
         document.getElementById('story-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-
-    // ═══════════════════════════════════════════════════════════════
-    //  MOBILE MENU
-    // ═══════════════════════════════════════════════════════════════
-    document.querySelector('.menu-toggle').addEventListener('click', function() {
-        const nav = document.getElementById('main-nav');
-        const expanded = nav.classList.toggle('show');
-        this.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-    });
 
     // ═══════════════════════════════════════════════════════════════
     //  INIT

@@ -11,6 +11,7 @@
 
     <script src="../assets/vendor/tailwindcss.js"></script>
     <script src="../assets/vendor/hosted-only.js"></script>
+    <link rel="stylesheet" href="../assets/css/unified-nav.css">
     <script>
         window.AmazingGraceHostedOnly?.loadStylesheet("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap");
     </script>
@@ -256,20 +257,18 @@
 <body>
 
     <header class="site-header">
-        <a href="../" class="logo" aria-label="Amazing Grace Home Living — Home">
-            <img src="../assets/logo.png" alt="Amazing Grace Home Living Logo">
-            <span>Amazing Grace</span>
-        </a>
-        <nav id="main-nav" class="nav-links" aria-label="Main navigation">
-            <a href="../" class="nav-btn">🏠 Home</a>
-            <a href="../stories/" class="nav-btn">📚 Stories</a>
-            <a href="../arcade/" class="nav-btn">🎮 Arcade</a>
-            <a href="../#properties" class="nav-btn">🏡 Listings</a>
-            <a href="../ministry/" class="nav-btn">🕊️ Ministry</a>
-            <a href="../ministries/" class="nav-btn">✨ Seven Stars</a>
-            <a href="./" class="nav-btn active">✉️ Contact</a>
-        </nav>
-        <button class="menu-toggle" aria-label="Toggle navigation" aria-controls="main-nav" aria-expanded="false">☰</button>
+        <div class="nav-container">
+            <a href="../" class="logo" aria-label="Amazing Grace Home Living — Home">
+                <img src="../assets/logo.png" alt="Amazing Grace Home Living">
+            </a>
+            <nav id="main-nav" class="nav-links" aria-label="Main navigation">
+                <a href="../#properties">Listings</a>
+                <a href="../stories/">Stories</a>
+                <a href="../arcade/">Arcade</a>
+                <a href="../ministry/">Ministry</a>
+                <a href="./" class="active" aria-current="page">Contact</a>
+            </nav>
+        </div>
     </header>
 
     <main>
@@ -355,16 +354,6 @@
 
     <script>
         (function () {
-            // Mobile navigation toggle
-            var toggle = document.querySelector('.menu-toggle');
-            var nav = document.getElementById('main-nav');
-            if (toggle && nav) {
-                toggle.addEventListener('click', function () {
-                    var isExpanded = nav.classList.toggle('show');
-                    toggle.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
-                });
-            }
-
             // Contact form — build a mailto: link on submit so the
             // subject/body are properly URL-encoded regardless of
             // browser quirks.

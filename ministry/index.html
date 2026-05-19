@@ -35,6 +35,7 @@
     <title>Ministry | Amazing Grace Home Living</title>
 
     <script src="../assets/vendor/hosted-only.js"></script>
+    <link rel="stylesheet" href="../assets/css/unified-nav.css">
     <script>
         window.AmazingGraceHostedOnly?.loadStylesheet("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap");
     </script>
@@ -372,16 +373,18 @@
     <div class="ministry-stars" aria-hidden="true"></div>
 
     <header class="site-header">
-        <a href="../" class="logo" aria-label="Amazing Grace Home Living — Home">
-            <img src="../assets/logo.png" alt="Amazing Grace Home Living Logo">
-                    </a>
-        <nav id="main-nav" class="nav-links" aria-label="Main navigation">
-            <a href="../" class="nav-btn">🏠 Home</a>
-            <a href="../stories/" class="nav-btn">📚 Stories</a>
-            <a href="../arcade/" class="nav-btn">🎮 Arcade</a>
-            <a href="./" class="nav-btn active" aria-current="page">🕊️ Ministry</a>
-            <a href="../contact/" class="nav-btn">✉️ Contact</a>
-        </nav>
+        <div class="nav-container">
+            <a href="../" class="logo" aria-label="Amazing Grace Home Living — Home">
+                <img src="../assets/logo.png" alt="Amazing Grace Home Living">
+            </a>
+            <nav id="main-nav" class="nav-links" aria-label="Main navigation">
+                <a href="../#properties">Listings</a>
+                <a href="../stories/">Stories</a>
+                <a href="../arcade/">Arcade</a>
+                <a href="./" class="active" aria-current="page">Ministry</a>
+                <a href="../contact/">Contact</a>
+            </nav>
+        </div>
     </header>
 
     <main>
@@ -535,7 +538,5 @@
         <p>&copy; 2026 Amazing Grace Home Living &mdash; <a href="../">amazinggracehl.org</a></p>
     </footer>
     <script src="../sw-register.js" defer></script>
-    <div id="constellation-nav"></div>
-    <script type="module" src="../constellation-nav.js"></script>
 </body>
 </html>
