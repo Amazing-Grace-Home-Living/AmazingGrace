@@ -92,8 +92,8 @@ describe('Color Contrast Validation', () => {
 
       const content = fs.readFileSync(filePath, 'utf-8');
 
-      // Check for black text
-      const hasBlackText = /color:\s*(black|#000000|#000|rgb\(0,\s*0,\s*0\))/i.test(content);
+      // Check for black text (exclude background-color, border-color, etc.)
+      const hasBlackText = /(?<!background-)(?<!border-)color:\s*(black|#000000|#000|rgb\(0,\s*0,\s*0\))/i.test(content);
       const hasDarkBg = /background[^:]*:\s*#[0-2][0-9a-f]{5}/i.test(content);
 
       if (hasBlackText && hasDarkBg) {
