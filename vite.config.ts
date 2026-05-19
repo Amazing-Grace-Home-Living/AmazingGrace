@@ -43,6 +43,7 @@ export default defineConfig({
         libraryOurCovenant:          resolve(__dirname, "library/our-covenant-of-new-beginnings/index.html"),
         libraryFixingCopilot:        resolve(__dirname, "library/fixing-copilot-ruleset-bypass-errors/index.html"),
         libraryGithubBypass:         resolve(__dirname, "library/github-bypass-setup-app/index.html"),
+        audioLibrary:        resolve(__dirname, "audio-library/index.html"),
         storiesLampInWindow: resolve(__dirname, "stories/books/the-lamp-in-the-window.html"),
         storiesElla:       resolve(__dirname, "stories/characters/ella.html"),
         matrixApp:         resolve(__dirname, "arcade/matrix-app/index.html"),
