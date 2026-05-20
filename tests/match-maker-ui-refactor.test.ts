@@ -3,6 +3,7 @@ import fs from 'node:fs';
 
 describe('arcade match-maker UI refactor', () => {
   it('shares move resolution between click and drag/drop flows with guarded cleanup', () => {
+    expect(fs.existsSync('arcade/match-maker-ui.js')).toBe(true);
     const source = fs.readFileSync('arcade/match-maker-ui.js', 'utf8');
 
     expect(source).toContain('async function tryResolveMove(r1, c1, r2, c2)');

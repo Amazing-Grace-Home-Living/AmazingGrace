@@ -146,11 +146,9 @@ function renderBoard() {
 function handleDragStart(e) {
   if (isAnimating) { e.preventDefault(); return; }
   const cell = e.currentTarget;
-  draggedGem = {
-    r: Number(cell.dataset.r),
-    c: Number(cell.dataset.c),
-    el: cell,
-  };
+  const coords = getCellCoords(cell);
+  if (!coords) return;
+  draggedGem = { ...coords, el: cell };
   if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
   cell.classList.add('dragging');
 }
@@ -170,6 +168,16 @@ function handleDragEnter(e) {
 
 function handleDragLeave(e) {
   e.currentTarget.classList.remove('drag-over-target');
+}
+
+function getCellCoords(cell) {
+  const rowRaw = cell.dataset.r;
+  const colRaw = cell.dataset.c;
+  if (rowRaw == null || colRaw == null) return null;
+  const row = Number.parseInt(rowRaw, 10);
+  const col = Number.parseInt(colRaw, 10);
+  if (Number.isNaN(row) || Number.isNaN(col)) return null;
+  return { r: row, c: col };
 }
 
 async function tryResolveMove(r1, c1, r2, c2) {
@@ -204,14 +212,27 @@ async function handleDrop(e) {
   const target = e.currentTarget;
   target.classList.remove('drag-over-target');
 
-  if (!draggedGem || target === draggedGem.el || isAnimating) {
+  if (!draggedGem) {
+    clearDragState();
+    return;
+  }
+  if (target === draggedGem.el) {
+    clearDragState();
+    return;
+  }
+  if (isAnimating) {
+    clearDragState();
+    return;
+  }
+
+  const targetCoords = getCellCoords(target);
+  if (!targetCoords) {
     clearDragState();
     return;
   }
 
   const { r: r1, c: c1 } = draggedGem;
-  const r2 = Number(target.dataset.r);
-  const c2 = Number(target.dataset.c);
+  const { r: r2, c: c2 } = targetCoords;
 
   try {
     await tryResolveMove(r1, c1, r2, c2);
