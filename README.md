@@ -46,6 +46,9 @@ are protected by an `ADMIN_API_KEY` secret. Send either:
 - `Authorization: Bearer <ADMIN_API_KEY>` or
 - `X-Admin-Api-Key: <ADMIN_API_KEY>`
 
+For Firebase Web SDK setup, copy `.env.example` to `.env` and provide `VITE_FIREBASE_*`
+values before using `src/firebase/app.ts`.
+
 - URL: `https://amazinggracehl.org/admin/`
 - Login: `https://amazinggracehl.org/admin/login.html`
 - **Demo accounts** (active on `localhost` / `*.github.io` only):
