@@ -29,4 +29,18 @@ describe('arcade replacement route cleanup', () => {
     expect(arcade).not.toContain('id="property-listings"');
     expect(arcade).not.toContain('href="../#properties" class="nav-btn"');
   });
+
+  it('keeps canonical arcade match-maker entry wiring and avoids surfaced placeholder routes', () => {
+    const arcadeMain = fs.readFileSync('arcade/main.js', 'utf8');
+    const home = fs.readFileSync('index.html', 'utf8');
+    const arcade = fs.readFileSync('arcade/index.html', 'utf8');
+    const ministry = fs.readFileSync('ministry/index.html', 'utf8');
+    const stories = fs.readFileSync('stories/index.html', 'utf8');
+
+    expect(arcadeMain).toContain('from "./match-maker-ui.js"');
+    expect(home).not.toContain('/audio-library/');
+    expect(arcade).not.toContain('/audio-library/');
+    expect(ministry).not.toContain('/audio-library/');
+    expect(stories).not.toContain('/audio-library/');
+  });
 });

@@ -30,6 +30,17 @@ let boardEl, scoreEl;
 // ── Drag state ───────────────────────────────────────────────────
 let draggedGem = null; // { r, c, el }
 
+function clearDragState() {
+  if (!boardEl) {
+    draggedGem = null;
+    return;
+  }
+  boardEl.querySelectorAll('.mm-gem').forEach((gem) => {
+    gem.classList.remove('dragging', 'drag-over-target');
+  });
+  draggedGem = null;
+}
+
 function injectDragCSS() {
   if (document.getElementById('mm-drag-styles')) return;
   const style = document.createElement('style');
@@ -92,7 +103,7 @@ export function initMatchMakerUI(containerEl) {
 }
 
 function restart() {
-  score = 0; selected = null; isAnimating = false; draggedGem = null;
+  score = 0; selected = null; isAnimating = false; clearDragState();
   scoreEl.textContent = '0';
   grid = createInitialGrid(ROWS, COLS);
   while (findMatches(grid).length > 0) { grid = createInitialGrid(ROWS, COLS); }
@@ -134,65 +145,83 @@ function renderBoard() {
 
 function handleDragStart(e) {
   if (isAnimating) { e.preventDefault(); return; }
-  draggedGem = { r: +this.dataset.r, c: +this.dataset.c, el: this };
-  e.dataTransfer.effectAllowed = 'move';
-  this.classList.add('dragging');
+  const cell = e.currentTarget;
+  draggedGem = {
+    r: Number(cell.dataset.r),
+    c: Number(cell.dataset.c),
+    el: cell,
+  };
+  if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
+  cell.classList.add('dragging');
 }
 
 function handleDragOver(e) {
   e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
+  if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
 }
 
 function handleDragEnter(e) {
   e.preventDefault();
-  if (draggedGem && this !== draggedGem.el) {
-    this.classList.add('drag-over-target');
+  const cell = e.currentTarget;
+  if (draggedGem && cell !== draggedGem.el) {
+    cell.classList.add('drag-over-target');
   }
 }
 
-function handleDragLeave() {
-  this.classList.remove('drag-over-target');
+function handleDragLeave(e) {
+  e.currentTarget.classList.remove('drag-over-target');
 }
 
-async function handleDrop(e) {
-  e.stopPropagation();
-  this.classList.remove('drag-over-target');
-
-  if (!draggedGem || this === draggedGem.el || isAnimating) return;
-
-  const r1 = draggedGem.r, c1 = draggedGem.c;
-  const r2 = +this.dataset.r,  c2 = +this.dataset.c;
-
-  if (!canSwap(r1, c1, r2, c2)) return; // not adjacent — silently ignore
+async function tryResolveMove(r1, c1, r2, c2) {
+  if (isAnimating || !canSwap(r1, c1, r2, c2)) return false;
 
   selected = null;
   isAnimating = true;
   renderBoard();
 
-  await animateSwap(r1, c1, r2, c2);
-  swapGems(grid, r1, c1, r2, c2);
+  try {
+    await animateSwap(r1, c1, r2, c2);
+    swapGems(grid, r1, c1, r2, c2);
 
-  const matches = findMatches(grid);
-  if (matches.length === 0) {
-    // Invalid swap — swap back
-    await animateSwap(r2, c2, r1, c1);
-    swapGems(grid, r2, c2, r1, c1);
+    const matches = findMatches(grid);
+    if (matches.length === 0) {
+      await animateSwap(r2, c2, r1, c1);
+      swapGems(grid, r2, c2, r1, c1);
+      return false;
+    }
+
+    await processMatches();
+    return true;
+  } finally {
     isAnimating = false;
     renderBoard();
+  }
+}
+
+async function handleDrop(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  const target = e.currentTarget;
+  target.classList.remove('drag-over-target');
+
+  if (!draggedGem || target === draggedGem.el || isAnimating) {
+    clearDragState();
     return;
   }
 
-  await processMatches();
-  isAnimating = false;
-  renderBoard();
+  const { r: r1, c: c1 } = draggedGem;
+  const r2 = Number(target.dataset.r);
+  const c2 = Number(target.dataset.c);
+
+  try {
+    await tryResolveMove(r1, c1, r2, c2);
+  } finally {
+    clearDragState();
+  }
 }
 
 function handleDragEnd() {
-  document.querySelectorAll('.mm-gem').forEach(g => {
-    g.classList.remove('dragging', 'drag-over-target');
-  });
-  draggedGem = null;
+  clearDragState();
 }
 
 // ── Existing engine (unchanged) ──────────────────────────────────
@@ -215,25 +244,7 @@ async function onGemClick(r, c) {
   if (r1 === r && c1 === c) { selected = null; renderBoard(); return; }
   if (!canSwap(r1, c1, r, c)) { selected = { r, c }; renderBoard(); return; }
 
-  selected = null;
-  isAnimating = true;
-  renderBoard();
-
-  await animateSwap(r1, c1, r, c);
-  swapGems(grid, r1, c1, r, c);
-
-  const matches = findMatches(grid);
-  if (matches.length === 0) {
-    await animateSwap(r, c, r1, c1);
-    swapGems(grid, r, c, r1, c1);
-    isAnimating = false;
-    renderBoard();
-    return;
-  }
-
-  await processMatches();
-  isAnimating = false;
-  renderBoard();
+  await tryResolveMove(r1, c1, r, c);
 }
 
 async function processMatches() {
