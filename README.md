@@ -41,6 +41,11 @@ The Sovereign Matrix Admin Dashboard provides browser-based tooling for user man
 audit logging, diagnostics, and admin key generation. It uses a localStorage shim for
 demo/dev use and is designed to be upgraded to Firebase Auth in production.
 
+If you deploy the Node backend (`server/mail.js`), inventory-management admin API routes
+are protected by an `ADMIN_API_KEY` secret. Send either:
+- `Authorization: Bearer <ADMIN_API_KEY>` or
+- `X-Admin-Api-Key: <ADMIN_API_KEY>`
+
 - URL: `https://amazinggracehl.org/admin/`
 - Login: `https://amazinggracehl.org/admin/login.html`
 - **Demo accounts** (active on `localhost` / `*.github.io` only):
