@@ -7,7 +7,7 @@
  *
  * Architecture:
  *   MatchMaker          — entry point; routes to Ladder or Break logic
- *   LadderEngine        — rank-symmetric pairing, weighted permanence
+ *   LadderEngine        — rank-symmetric pairing, weighted permanence 
  *   BreakEngine         — amplified-stakes pairing, singular rupture
  *   HybridProtocol      — cross-philosophy collision resolution
  *   RankStore           — shared rank state (injectable for testing)
@@ -105,6 +105,20 @@ class LadderEngine {
   findMatch(seeker, pool, opts = {}) {
     const maxDelta = opts.widenedDelta ?? LADDER_CONFIG.MAX_PAIR_DELTA;
     const candidates = pool
+      .filter(p =>
+        p.id !== seeker.id &&
+        p.blueprint === BLUEPRINT.LADDER &&
+        Math.abs(p.score - seeker.score) <= maxDelta
+      )
+      .sort((a, b) =>
+        Math.abs(a.score - seeker.score) - Math.abs(b.score - seeker.score)
+      );
+    return candidates[0] ?? null;
+  }
+
+  resolveMatch(winner, loser, matchId) {
+    const expected = eloExpected(winner.score, loser.score);
+    const delta = Math.round(LADDER_CONFIG.K_FACTOR * (1 - expected));
     const now = new Date();
     const updatedWinner = {
       ...winner,
@@ -138,7 +152,7 @@ class BreakEngine {
     if (player.blueprint !== BLUEPRINT.BREAK)
       return { eligible: false, reason: 'Player is registered as a Climber (Ladder blueprint).' };
     if (player.breakCooldown > 0)
-      return { eligible: false, reason: `Break on cooldown — ${player.breakCooldown} match(es) remaining.` };
+      return { eligible: false, reason: 'Break on cooldown - ' + player.breakCooldown + ' match(es) remaining.' };
     return { eligible: true };
   }
 
@@ -182,7 +196,13 @@ class BreakEngine {
   progressCooldown(player) {
     if (player.breakCooldown <= 0) return player;
     const newCooldown = player.breakCooldown - 1;
-    return { ...player, breakCooldown: newCooldown, floorLocked: newCooldown > 0 ? player.floorLocked : false, floorLockMin: newCooldown > 0 ? player.floorLockMin : 0 };
+    const isLifting = newCooldown === 0;
+    return { 
+      ...player, 
+      breakCooldown: newCooldown, 
+      floorLocked:   isLifting ? false : player.floorLocked, 
+      floorLockMin:  isLifting ? 0     : player.floorLockMin 
+    };
   }
 
   commit(winner, loser) {
@@ -192,9 +212,6 @@ class BreakEngine {
 }
 
 // ---- HybridProtocol ----
-// Resolves matches where blueprints collide (Climber vs Shatterer).
-// If BOTH declare Break before final round -> Break multiplier applies.
-// Otherwise Ladder scoring stands.
 
 class HybridProtocol {
   constructor(ladderEngine, breakEngine) {
@@ -216,8 +233,18 @@ class HybridProtocol {
       const result = this.ladder.resolveMatch(winner, loser, matchId);
       return { ...result, scoringMode, amplifiedDelta: null, breakActivated };
     }
+  }
+
+  commit(winner, loser, scoringMode) {
+    if (scoringMode === BLUEPRINT.BREAK) {
+      this.break.commit(winner, loser);
+    } else {
+      this.ladder.commit(winner, loser);
+    }
+  }
+}
+
 // ---- MatchMaker ----
-// Top-level orchestrator. Routes to Ladder, Break, or Hybrid.
 
 class MatchMaker {
   constructor(store) {
@@ -231,7 +258,7 @@ class MatchMaker {
 
   enqueue(playerId) {
     const record = this.store.get(playerId);
-    if (!record) throw new Error(`Player ${playerId} not found in RankStore.`);
+    if (!record) throw new Error('Player ' + playerId + ' not found in RankStore.');
     if (record.blueprint === BLUEPRINT.LADDER) {
       const decayed = this.ladder.applyDecay(record);
       this.store.set(playerId, decayed);
@@ -275,7 +302,7 @@ class MatchMaker {
       }
 
       if (opponent) {
-        const matchId = `match-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+        const matchId = 'match-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
         pairings.push({ matchId, playerA: seekerId, playerB: opponent.id, mode });
         this._pending.set(matchId, { matchId, playerAId: seekerId, playerBId: opponent.id, mode, startedAt: new Date() });
         matched.add(seekerId);
@@ -289,12 +316,12 @@ class MatchMaker {
 
   commitResult({ matchId, winnerId, loserId, winnerDeclaredBreak = false, loserDeclaredBreak = false }) {
     const pending = this._pending.get(matchId);
-    if (!pending) throw new Error(`No pending match with id ${matchId}.`);
+    if (!pending) throw new Error('No pending match with id ' + matchId + '.');
 
     const winner = this.store.get(winnerId);
     const loser  = this.store.get(loserId);
-    if (!winner) throw new Error(`Winner ${winnerId} not found.`);
-    if (!loser)  throw new Error(`Loser ${loserId} not found.`);
+    if (!winner) throw new Error('Winner ' + winnerId + ' not found.');
+    if (!loser)  throw new Error('Loser ' + loserId + ' not found.');
 
     let result;
     if (pending.mode === 'HYBRID' || winnerDeclaredBreak || loserDeclaredBreak) {
@@ -357,28 +384,3 @@ module.exports = {
   getTierIndex,
   eloExpected,
 };
-
-  }
-
-  commit(winner, loser, scoringMode) {
-    if (scoringMode === BLUEPRINT.BREAK) {
-      this.break.commit(winner, loser);
-    } else {
-      this.ladder.commit(winner, loser);
-    }
-  }
-}
-      .filter(p =>
-        p.id !== seeker.id &&
-        p.blueprint === BLUEPRINT.LADDER &&
-        Math.abs(p.score - seeker.score) <= maxDelta
-      )
-      .sort((a, b) =>
-        Math.abs(a.score - seeker.score) - Math.abs(b.score - seeker.score)
-      );
-    return candidates[0] ?? null;
-  }
-
-  resolveMatch(winner, loser, matchId) {
-    const expected = eloExpected(winner.score, loser.score);
-    const delta = Math.round(LADDER_CONFIG.K_FACTOR * (1 - expected));

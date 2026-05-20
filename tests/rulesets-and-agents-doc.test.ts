@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+﻿import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 
-const fs = require('fs');
+
 
 describe('Rulesets and agents documentation', () => {
   it('documents the Copilot coding agent bypass actor', () => {

@@ -9,7 +9,7 @@ import {
   applyGravity,
 } from "../matchMakerState.js";
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+// —— Helpers ——————————————————————————————————————————————————————————————
 
 /** Build an empty GRID_SIZE × GRID_SIZE grid filled with the given gem kind. */
 function uniformGrid(kind: string) {
@@ -19,11 +19,11 @@ function uniformGrid(kind: string) {
 /** Build a grid from a 2-D array of strings (pads missing rows/cells with 'x'). */
 function fromRows(rows: string[][]): (string | null)[][] {
   return Array.from({ length: GRID_SIZE }, (_, r) =>
-    Array.from({ length: GRID_SIZE }, (_, c) => rows[r]?.[c] ?? "x"),
+    Array.from({ length: GRID_SIZE }, (__ , c) => rows[r]?.[c] ?? "x"),
   );
 }
 
-// ── GRID_SIZE ─────────────────────────────────────────────────────────────────
+// —— GRID_SIZE ————————————————————————————————————————————————————————————
 
 describe("GRID_SIZE", () => {
   it("is 7", () => {
@@ -31,7 +31,7 @@ describe("GRID_SIZE", () => {
   });
 });
 
-// ── createInitialGrid ─────────────────────────────────────────────────────────
+// —— createInitialGrid ——————————————————————————————————————————————————————
 
 describe("createInitialGrid", () => {
   it("returns a 7×7 grid", () => {
@@ -71,7 +71,7 @@ describe("createInitialGrid", () => {
   });
 });
 
-// ── canSwap ───────────────────────────────────────────────────────────────────
+// —— canSwap ————————————————————————————————————————————————————————————————
 
 describe("canSwap", () => {
   const g = createInitialGrid();
@@ -101,7 +101,7 @@ describe("canSwap", () => {
   });
 });
 
-// ── applySwap ─────────────────────────────────────────────────────────────────
+// —— applySwap —————————————————————————————————————————————————————————————
 
 describe("applySwap", () => {
   it("returns a new grid (immutability)", () => {
@@ -138,7 +138,7 @@ describe("applySwap", () => {
   });
 });
 
-// ── findMatches ───────────────────────────────────────────────────────────────
+// —— findMatches —————————————————————————————————————————————————————————————
 
 describe("findMatches", () => {
   it("returns empty array for a grid with no matches", () => {
@@ -151,7 +151,7 @@ describe("findMatches", () => {
     const grid = fromRows([
       ["heart", "heart", "heart", "star", "cross", "flame", "drop"],
     ]);
-    const matches = findMatches(grid as any);
+    const matches = findMatches(grid as unknown as (string | null)[][]);
     expect(matches.length).toBeGreaterThanOrEqual(1);
     const cells = matches.flat();
     expect(cells.some(({ r, c }) => r === 0 && c === 0)).toBe(true);
@@ -162,7 +162,7 @@ describe("findMatches", () => {
   it("detects a vertical match of 3", () => {
     // Build a 7-row grid where column 0 has 'star' in rows 0-2
     const rows = Array.from({ length: GRID_SIZE }, (_, r) =>
-      Array.from({ length: GRID_SIZE }, (_, c) => {
+      Array.from({ length: GRID_SIZE }, (__ , c) => {
         if (c === 0 && r < 3) return "star";
         return "heart";
       }),
@@ -173,7 +173,7 @@ describe("findMatches", () => {
     rows[0][1] = "cross";
     rows[1][1] = "cross";
     rows[2][1] = "cross";
-    const matches = findMatches(rows as any);
+    const matches = findMatches(rows as unknown as (string | null)[][]);
     const cells = matches.flat();
     const vertStarCells = cells.filter(({ r, c }) => c === 0 && r < 3);
     expect(vertStarCells.length).toBe(3);
@@ -184,7 +184,7 @@ describe("findMatches", () => {
     const grid = Array.from({ length: GRID_SIZE }, (_, r) =>
       r === 0 ? [...row] : ["star", "cross", "drop", "flame", "heart", "star", "cross"],
     );
-    const matches = findMatches(grid as any);
+    const matches = findMatches(grid as unknown as (string | null)[][]);
     const cells = matches.flat();
     // All four heart positions should be found
     [0, 1, 2, 3].forEach((c) =>
@@ -200,18 +200,18 @@ describe("findMatches", () => {
       return kinds[(r * 3 + c * 2) % kinds.length];
     };
     const grid = Array.from({ length: GRID_SIZE }, (_, r) =>
-      Array.from({ length: GRID_SIZE }, (_, c) => gem(r, c)),
+      Array.from({ length: GRID_SIZE }, (__ , c) => gem(r, c)),
     );
-    const matches = findMatches(grid as any);
+    const matches = findMatches(grid as unknown as (string | null)[][]);
     expect(matches).toHaveLength(0);
   });
 });
 
-// ── clearMatches ──────────────────────────────────────────────────────────────
+// —— clearMatches ————————————————————————————————————————————————————————————
 
 describe("clearMatches", () => {
   it("nulls out the specified cells", () => {
-    const grid = uniformGrid("heart") as any;
+    const grid = uniformGrid("heart") as unknown as (string | null)[][];
     const cells = [
       { r: 0, c: 0 },
       { r: 1, c: 1 },
@@ -222,7 +222,7 @@ describe("clearMatches", () => {
   });
 
   it("leaves unmentioned cells unchanged", () => {
-    const grid = uniformGrid("heart") as any;
+    const grid = uniformGrid("heart") as unknown as (string | null)[][];
     const cells = [{ r: 0, c: 0 }];
     const next = clearMatches(grid, cells);
     expect(next[0][1]).toBe("heart");
@@ -230,13 +230,13 @@ describe("clearMatches", () => {
   });
 
   it("does not mutate the original grid", () => {
-    const grid = uniformGrid("heart") as any;
+    const grid = uniformGrid("heart") as unknown as (string | null)[][];
     clearMatches(grid, [{ r: 0, c: 0 }]);
     expect(grid[0][0]).toBe("heart");
   });
 
   it("places replacement gems at the specified positions", () => {
-    const grid = uniformGrid("heart") as any;
+    const grid = uniformGrid("heart") as unknown as (string | null)[][];
     const cells = [{ r: 0, c: 0 }];
     const replacements = [{ r: 0, c: 0, kind: "star", special: null as null }];
     const next = clearMatches(grid, cells, replacements);
@@ -245,7 +245,7 @@ describe("clearMatches", () => {
   });
 
   it("creates a special-gem object when special is provided", () => {
-    const grid = uniformGrid("heart") as any;
+    const grid = uniformGrid("heart") as unknown as (string | null)[][];
     const cells = [{ r: 2, c: 3 }];
     const replacements = [{ r: 2, c: 3, kind: "flame", special: "row" }];
     const next = clearMatches(grid, cells, replacements);
@@ -253,25 +253,25 @@ describe("clearMatches", () => {
   });
 });
 
-// ── applyGravity ──────────────────────────────────────────────────────────────
+// —— applyGravity ————————————————————————————————————————————————————————————
 
 describe("applyGravity", () => {
   it("returns a new grid (immutability)", () => {
-    const grid = createInitialGrid() as any;
+    const grid = createInitialGrid() as unknown as (string | null)[][];
     expect(applyGravity(grid)).not.toBe(grid);
   });
 
   it("shifts non-null gems downward after a null gap", () => {
     // Column 0: [null, 'heart', 'star', 'cross', 'flame', 'drop', 'heart']
     const grid = Array.from({ length: GRID_SIZE }, (_, r) =>
-      Array.from({ length: GRID_SIZE }, (_, c) => {
+      Array.from({ length: GRID_SIZE }, (__ , c) => {
         if (c === 0) {
           const col = [null, "heart", "star", "cross", "flame", "drop", "heart"];
           return col[r];
         }
         return "star";
       }),
-    ) as any;
+    ) as unknown as (string | null)[][];
 
     const next = applyGravity(grid);
     // After gravity the null fills at the top; the 6 non-null gems occupy rows 1..6
@@ -283,11 +283,11 @@ describe("applyGravity", () => {
   it("fills the top row with a new gem when there is a null at the bottom", () => {
     // Start with a column that has a null at the bottom
     const grid = Array.from({ length: GRID_SIZE }, (_, r) =>
-      Array.from({ length: GRID_SIZE }, (_, c) => {
+      Array.from({ length: GRID_SIZE }, (__ , c) => {
         if (c === 0 && r === GRID_SIZE - 1) return null;
         return "heart";
       }),
-    ) as any;
+    ) as unknown as (string | null)[][];
 
     const next = applyGravity(grid);
     // All cells in column 0 should be non-null after gravity
@@ -297,9 +297,9 @@ describe("applyGravity", () => {
   });
 
   it("produces a fully non-null grid when given a fully null column", () => {
-    const grid = Array.from({ length: GRID_SIZE }, (_, r) =>
-      Array.from({ length: GRID_SIZE }, (_, c) => (c === 3 ? null : "star")),
-    ) as any;
+    const grid = Array.from({ length: GRID_SIZE }, () =>
+      Array.from({ length: GRID_SIZE }, (__ , c) => (c === 3 ? null : "star")),
+    ) as unknown as (string | null)[][];
 
     const next = applyGravity(grid);
     for (let r = 0; r < GRID_SIZE; r++) {

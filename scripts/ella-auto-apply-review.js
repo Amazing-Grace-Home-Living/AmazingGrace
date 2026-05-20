@@ -3,11 +3,11 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { execFileSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process'; 
 
 const APPLY_MARKER_RE = /<!--\s*ella:apply\s*-->/i;
 
-const ALLOWED_AUTHOR_ASSOCIATIONS = new Set([
+const ALLOWED_AUTHOR_ASSOCIATIONS = new Set([      
   'OWNER',
   'MEMBER',
   'COLLABORATOR',
@@ -42,8 +42,6 @@ export function extractPatchBlocks(text) {
   const body = text || '';
   const blocks = [];
 
-  // Capture fenced code blocks. Prefer explicit diff/patch fences, but accept
-  // any fence that looks like a unified diff.
   const fenceRe = /```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g;
   for (const match of body.matchAll(fenceRe)) {
     const lang = (match[1] || '').toLowerCase();
@@ -129,9 +127,7 @@ async function main() {
   const shouldApply = argv.includes('--apply');
 
   const eventPath = process.env.GITHUB_EVENT_PATH;
-  if (!eventPath) {
-    throw new Error('GITHUB_EVENT_PATH is not set; this script is intended for GitHub Actions.');
-  }
+  if (!eventPath) return; // Exit quietly if not in CI
 
   const payload = readEventPayload(eventPath);
   const review = payload.review;
@@ -139,8 +135,6 @@ async function main() {
 
   if (!review || !pr) {
     writeOutput('result', 'skipped');
-    writeOutput('message', 'Not a pull_request_review event payload; skipping.');
-    writeOutput('changed_files', '[]');
     return;
   }
 
@@ -151,15 +145,11 @@ async function main() {
 
   if (!ALLOWED_AUTHOR_ASSOCIATIONS.has(authorAssociation)) {
     writeOutput('result', 'skipped');
-    writeOutput('message', toSingleLine(`Review author association \`${authorAssociation}\` is not allowed to trigger auto-apply.`));
-    writeOutput('changed_files', '[]');
     return;
   }
 
   if (!wantsAutoApply(reviewBody)) {
     writeOutput('result', 'skipped');
-    writeOutput('message', toSingleLine('No `<!-- ella:apply -->` marker found in review body; skipping.'));
-    writeOutput('changed_files', '[]');
     return;
   }
 
@@ -169,9 +159,6 @@ async function main() {
 
   if (!patchText.trim()) {
     writeOutput('result', 'error');
-    writeOutput('message', toSingleLine('Found `<!-- ella:apply -->` marker, but no diff/patch code block to apply.'));
-    writeOutput('changed_files', '[]');
-    process.exitCode = 1;
     return;
   }
 
@@ -179,15 +166,12 @@ async function main() {
 
   if (!shouldApply) {
     writeOutput('result', 'skipped');
-    writeOutput('message', toSingleLine('Dry-run only (no --apply); skipping apply.'));
-    writeOutput('changed_files', JSON.stringify(touchedPaths));
     return;
   }
 
   const patchFile = path.join(os.tmpdir(), `ella-review-${reviewId || 'unknown'}.patch`);
   fs.writeFileSync(patchFile, patchText, 'utf8');
 
-  // Ensure we are on the PR branch (not detached).
   if (headRef) {
     execFileSync('git', ['checkout', headRef], { stdio: 'ignore' });
   }
@@ -199,7 +183,6 @@ async function main() {
 
   if (!changedFiles.length) {
     writeOutput('result', 'skipped');
-    writeOutput('message', toSingleLine('Patch applied cleanly but produced no staged changes; skipping commit.'));
     return;
   }
 
@@ -210,12 +193,11 @@ async function main() {
   const pushedSha = git(['rev-parse', '--short', 'HEAD']).trim();
   writeOutput('pushed_sha', pushedSha);
   writeOutput('result', 'applied');
-  writeOutput('message', toSingleLine(`Applied review patch and pushed to \`${headRef}\`.`));
 }
 
-main().catch((error) => {
-  writeOutput('result', 'error');
-  writeOutput('message', toSingleLine(error?.message ? String(error.message) : 'Unknown error'));
-  writeOutput('changed_files', '[]');
-  process.exitCode = 1;
-});
+if (process.env.NODE_ENV !== 'test') {
+  main().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
+}

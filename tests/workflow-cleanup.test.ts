@@ -12,7 +12,7 @@ describe('workflow cleanup', () => {
     expect(deploy).toContain('branches: [main]');
     expect(deploy).toContain('npm ci');
     expect(deploy).toContain('npm run build');
-    expect(deploy).toContain('actions/deploy-pages@v4');
+    expect(deploy).toContain('actions/deploy-pages@v5');
     expect(deploy).not.toContain('npm test');
   });
 });

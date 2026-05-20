@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+﻿import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   doc,
   getDoc,
@@ -51,20 +51,22 @@ function tryParseLeaderboard(data: DocumentData | undefined): LeaderboardEntry[]
   const entries: LeaderboardEntry[] = [];
   for (const item of raw) {
     if (!item || typeof item !== 'object') continue;
+    
+    const record = item as Record<string, unknown>;
     const userId =
-      typeof (item as any).userId === 'string'
-        ? (item as any).userId
-        : typeof (item as any).uid === 'string'
-          ? (item as any).uid
+      typeof record.userId === 'string'
+        ? record.userId
+        : typeof record.uid === 'string'
+          ? record.uid
           : '';
-    const score = typeof (item as any).score === 'number' ? (item as any).score : NaN;
+    const score = typeof record.score === 'number' ? record.score : NaN;
     if (!userId || !Number.isFinite(score)) continue;
     entries.push({
       userId,
       score,
       updatedAt:
-        typeof (item as any).updatedAt === 'string'
-          ? (item as any).updatedAt
+        typeof record.updatedAt === 'string'
+          ? record.updatedAt
           : undefined,
     });
   }
@@ -82,16 +84,19 @@ export default function QuickClickApp() {
   const [timeLeftMs, setTimeLeftMs] = useState(GAME_DURATION_MS);
   const [persistStatus, setPersistStatus] = useState<PersistStatus>({ state: 'idle' });
 
+  const appId = useMemo(() => getAppId('arcade'), []);
+  const db = useMemo(() => getFirestoreDb(), []);
+
   const [leaderboardState, setLeaderboardState] = useState<
     | { state: 'idle' }
     | { state: 'loading' }
     | { state: 'ready'; entries: LeaderboardEntry[] | null; raw: unknown }
     | { state: 'unavailable' }
     | { state: 'error'; message: string }
-  >({ state: 'idle' });
-
-  const appId = useMemo(() => getAppId('arcade'), []);
-  const db = useMemo(() => getFirestoreDb(), []);
+  >(() => {
+    if (!getFirestoreDb()) return { state: 'unavailable' };
+    return { state: 'idle' };
+  });
 
   const gameEndAtRef = useRef<number | null>(null);
   const targetRef = useRef<QuickClickTarget | null>(null);
@@ -110,19 +115,19 @@ export default function QuickClickApp() {
     scoreRef.current = score;
   }, [score]);
 
-  const clearTimers = () => {
+  const clearTimers = useCallback(() => {
     if (spawnTimeoutRef.current) window.clearTimeout(spawnTimeoutRef.current);
     if (expireTimeoutRef.current) window.clearTimeout(expireTimeoutRef.current);
     if (tickIntervalRef.current) window.clearInterval(tickIntervalRef.current);
     spawnTimeoutRef.current = null;
     expireTimeoutRef.current = null;
     tickIntervalRef.current = null;
-  };
+  }, []);
 
-  const stopDrawing = () => {
+  const stopDrawing = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     rafRef.current = null;
-  };
+  }, []);
 
   const computeTarget = (w: number, h: number, now: number): QuickClickTarget => {
     const minSide = Math.min(w, h);
@@ -133,7 +138,8 @@ export default function QuickClickApp() {
     return { x, y, radius, expiresAt: now + defaultTargetLifetimeMs() };
   };
 
-  const scheduleNextTarget = () => {
+  // Hoisted function allows recursive calls and access from anywhere in component
+  function scheduleNextTarget() {
     if (statusRef.current !== 'playing') return;
     if (!canvasWrapRef.current) return;
 
@@ -152,7 +158,7 @@ export default function QuickClickApp() {
         scheduleNextTarget();
       }, ttl);
     }, delay);
-  };
+  }
 
   const endGame = async () => {
     clearTimers();
@@ -191,9 +197,8 @@ export default function QuickClickApp() {
 
       const nextHighScore = await runTransaction(db, async (tx) => {
         const snap = await tx.get(statsRef);
-        const previousHighScore = snap.exists()
-          ? (snap.data() as Record<string, unknown>).highScore
-          : 0;
+        const data = snap.exists() ? (snap.data() as Record<string, unknown>) : null;
+        const previousHighScore = data?.highScore ?? 0;
         const previousHigh =
           typeof previousHighScore === 'number' && Number.isFinite(previousHighScore)
             ? previousHighScore
@@ -291,7 +296,7 @@ export default function QuickClickApp() {
       ctx.restore();
 
       const target = targetRef.current;
-      if (status === 'playing' && target) {
+      if (statusRef.current === 'playing' && target) {
         ctx.save();
         ctx.shadowBlur = 18;
         ctx.shadowColor = '#7effd8';
@@ -320,7 +325,7 @@ export default function QuickClickApp() {
       ro.disconnect();
       stopDrawing();
     };
-  }, [status]);
+  }, [stopDrawing]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -358,21 +363,18 @@ export default function QuickClickApp() {
 
     canvas.addEventListener('pointerdown', onPointerDown, { passive: true });
     return () => canvas.removeEventListener('pointerdown', onPointerDown);
-  }, [status]);
+  }, []); 
 
   useEffect(() => {
     return () => {
       clearTimers();
       stopDrawing();
     };
-  }, []);
+  }, [clearTimers, stopDrawing]);
 
   useEffect(() => {
     if (leaderboardState.state !== 'idle') return;
-    if (!db) {
-      setLeaderboardState({ state: 'unavailable' });
-      return;
-    }
+    if (!db) return; // Handled by lazy initializer
 
     let cancelled = false;
     const run = async () => {
@@ -587,7 +589,7 @@ export default function QuickClickApp() {
                 {persistStatus.state === 'unavailable'
                   ? 'Firestore not configured here — score not saved.'
                   : null}
-                {persistStatus.state === 'saving' ? 'Saving to Firestore…' : null}
+                {persistStatus.state === 'saving' ? 'Saving to Firestoreâ€¦' : null}
                 {persistStatus.state === 'saved'
                   ? `Saved. Personal best: ${persistStatus.highScore}`
                   : null}
@@ -610,7 +612,7 @@ export default function QuickClickApp() {
                     minHeight: 44,
                   }}
                 >
-                  ↻ Play Again
+                  ←º Play Again
                 </button>
                 <a
                   href="/arcade/"
@@ -628,7 +630,7 @@ export default function QuickClickApp() {
                     minHeight: 44,
                   }}
                 >
-                  ← Arcade
+                  ← Back to Arcade
                 </a>
               </div>
             </div>
@@ -636,87 +638,77 @@ export default function QuickClickApp() {
         ) : null}
       </div>
 
-      <section
+      <footer
         style={{
-          borderRadius: 16,
-          border: '1px solid rgba(148,163,184,0.25)',
           background: 'rgba(30,41,59,0.55)',
+          border: '1px solid rgba(148,163,184,0.25)',
+          borderRadius: 16,
           padding: 16,
         }}
-        aria-label="Global leaderboard"
       >
-        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-          <h2 style={{ margin: 0, fontFamily: "'Playfair Display', serif", color: '#ffd700' }}>
-            Global Leaderboard
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 12,
+          }}
+        >
+          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 800, letterSpacing: '0.05em' }}>
+            TOP SCORES
           </h2>
           <button
             onClick={() => void refreshLeaderboard()}
+            disabled={leaderboardState.state === 'loading'}
             style={{
+              background: 'none',
+              border: 'none',
+              color: '#7effd8',
               cursor: 'pointer',
-              padding: '8px 12px',
-              borderRadius: 12,
-              border: '1px solid rgba(148,163,184,0.25)',
-              background: 'rgba(15,23,42,0.55)',
-              color: '#e2e8f0',
-              fontWeight: 900,
-              minHeight: 40,
+              fontSize: 12,
+              fontWeight: 700,
+              opacity: leaderboardState.state === 'loading' ? 0.5 : 1,
             }}
           >
-            ⟳ Refresh
+            {leaderboardState.state === 'loading' ? 'Refreshing...' : 'Refresh'}
           </button>
         </div>
 
-        <p style={{ margin: '10px 0 0', color: '#94a3b8', fontWeight: 700 }}>
-          Source: <code>/artifacts/{appId}/public/data/leaderboard</code>
-        </p>
-
-        {leaderboardState.state === 'unavailable' ? (
-          <p style={{ color: '#94a3b8', fontWeight: 700, marginTop: 12 }}>
-            Firestore not configured here — leaderboard unavailable.
-          </p>
-        ) : leaderboardState.state === 'loading' ? (
-          <p style={{ color: '#cbd5e1', fontWeight: 700, marginTop: 12 }}>Loading…</p>
-        ) : leaderboardState.state === 'error' ? (
-          <p style={{ color: '#fb7185', fontWeight: 800, marginTop: 12 }}>
-            Failed to load leaderboard: {leaderboardState.message}
-          </p>
-        ) : leaderboardState.state === 'ready' ? (
-          leaderboardState.entries && leaderboardState.entries.length ? (
-            <ol style={{ marginTop: 12, paddingLeft: 18 }}>
-              {leaderboardState.entries.map((entry) => (
-                <li key={`${entry.userId}-${entry.score}`} style={{ margin: '6px 0', fontWeight: 800 }}>
-                  <span style={{ color: '#7effd8' }}>{entry.score}</span>
-                  <span style={{ color: '#94a3b8' }}> · </span>
-                  <span style={{ color: '#e2e8f0' }}>{entry.userId}</span>
-                </li>
-              ))}
-            </ol>
-          ) : (
-            <details style={{ marginTop: 12 }}>
-              <summary style={{ cursor: 'pointer', fontWeight: 900, color: '#e2e8f0' }}>
-                No parsed leaderboard entries (show raw)
-              </summary>
-              <pre
+        {leaderboardState.state === 'ready' &&
+        leaderboardState.entries &&
+        leaderboardState.entries.length > 0 ? (
+          <div style={{ display: 'grid', gap: 6 }}>
+            {leaderboardState.entries.map((entry, idx) => (
+              <div
+                key={`${entry.userId}-${idx}`}
                 style={{
-                  marginTop: 10,
-                  background: 'rgba(15,23,42,0.55)',
-                  border: '1px solid rgba(148,163,184,0.25)',
-                  borderRadius: 12,
-                  padding: 12,
-                  overflow: 'auto',
-                  color: '#cbd5e1',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  padding: '6px 10px',
+                  background: 'rgba(15,23,42,0.45)',
+                  borderRadius: 8,
+                  fontSize: 13,
                 }}
               >
-                {JSON.stringify(leaderboardState.raw, null, 2)}
-              </pre>
-            </details>
-          )
-        ) : (
-          <p style={{ marginTop: 12, color: '#94a3b8', fontWeight: 700 }}>
-            Ready when Firestore is configured.
-          </p>
+                <div style={{ color: '#cbd5e1' }}>
+                  <span style={{ color: '#94a3b8', marginRight: 8 }}>{idx + 1}.</span>
+                  {entry.userId.slice(0, 8)}...
+                </div>
+                <div style={{ fontWeight: 800, color: '#7effd8' }}>{entry.score}</div>
+              </div>
+            ))}
+          </div>
+        ) : null}
+
+        {leaderboardState.state === 'loading' && <div style={{ fontSize: 13 }}>Loading...</div>}
+        {leaderboardState.state === 'unavailable' && (
+          <div style={{ fontSize: 13, color: '#94a3b8' }}>Leaderboard unavailable</div>
         )}
-      </section>
+        {leaderboardState.state === 'error' && (
+          <div style={{ fontSize: 13, color: '#fb7185' }}>{leaderboardState.message}</div>
+        )}
+      </footer>
     </section>
   );
 }
+

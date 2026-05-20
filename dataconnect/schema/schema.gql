@@ -1,0 +1,57 @@
+type User @table {
+  githubId: String!
+  username: String!
+  createdAt: Timestamp!
+  email: String
+  avatarUrl: String
+}
+
+type Game @table {
+  name: String!
+  githubRepoUrl: String!
+  createdAt: Timestamp!
+  description: String
+  imageUrl: String
+}
+
+type HighScore @table {
+  user: User
+  game: Game
+  score: Int!
+  submittedAt: Timestamp!
+  isPublic: Boolean
+  details: String
+}
+
+type Token @table {
+  user: User
+  type: String!
+  amount: Int!
+  earnedAt: Timestamp!
+  source: String
+}
+
+type Certificate @table {
+  user: User
+  game: Game
+  name: String!
+  issuedAt: Timestamp!
+  description: String
+  imageUrl: String
+  isPublic: Boolean
+}
+
+type ArcadeMap @table {
+  name: String!
+  layoutJson: String!
+  createdAt: Timestamp!
+  description: String
+}
+
+type SecureCredential @table {
+  user: User
+  serviceName: String!
+  encryptedCredential: String!
+  createdAt: Timestamp!
+  notes: String
+}

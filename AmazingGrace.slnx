@@ -1,0 +1,10 @@
+<Solution>
+  <Project Path="../../../../Desktop/GitHub/Amazing Grace/" Type="Website" DisplayName="Amazing Grace">
+    <Properties Name="WebsiteProperties">
+      <Property Name="Debug.AspNetCompiler.Debug" Value="&quot;True&quot;" />
+      <Property Name="Release.AspNetCompiler.Debug" Value="&quot;False&quot;" />
+      <Property Name="TargetFrameworkMoniker" Value="&quot;.NETFramework,Version%3Dv4.8&quot;" />
+      <Property Name="VWDPort" Value="&quot;53495&quot;" />
+    </Properties>
+  </Project>
+</Solution>
