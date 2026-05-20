@@ -32,18 +32,25 @@ describe('arcade replacement route cleanup', () => {
 
   it('keeps canonical arcade match-maker entry wiring and avoids surfaced placeholder routes', () => {
     expect(fs.existsSync('arcade/main.js')).toBe(true);
+    expect(fs.existsSync('arcade.html')).toBe(true);
+    expect(fs.existsSync('arcade/matchMakerState.js')).toBe(true);
     expect(fs.existsSync('index.html')).toBe(true);
     expect(fs.existsSync('arcade/index.html')).toBe(true);
     expect(fs.existsSync('ministry/index.html')).toBe(true);
     expect(fs.existsSync('stories/index.html')).toBe(true);
 
+    const arcadeStandalone = fs.readFileSync('arcade.html', 'utf8');
     const arcadeMain = fs.readFileSync('arcade/main.js', 'utf8');
     const home = fs.readFileSync('index.html', 'utf8');
     const arcade = fs.readFileSync('arcade/index.html', 'utf8');
     const ministry = fs.readFileSync('ministry/index.html', 'utf8');
     const stories = fs.readFileSync('stories/index.html', 'utf8');
 
+    expect(arcadeStandalone).toContain('<div id="app"></div>');
+    expect(arcadeStandalone).toContain('src="./arcade/main.js"');
     expect(arcadeMain).toContain('from "./match-maker-ui.js"');
+    expect(arcade).toContain('href="../arcade.html"');
+    expect(arcade).toContain('Play Match Maker');
     expect(home).not.toContain('/audio-library/');
     expect(arcade).not.toContain('/audio-library/');
     expect(ministry).not.toContain('/audio-library/');
