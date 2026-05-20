@@ -3,980 +3,386 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Matrix of Conscience: Legacy Protocol — manage Integrity, Lumen, Empathy, and Relief through Grace Protocols and cognitive training simulations.">
-    <meta property="og:title" content="Matrix of Conscience: Legacy Protocol | Amazing Grace Arcade">
-    <meta property="og:description" content="Manage Integrity, Lumen, Empathy, and Relief through Grace Protocols and Trinity Alignment telemetry.">
-    <meta property="og:url" content="https://amazinggracehl.org/arcade/matrix-of-conscience/">
-    <meta name="theme-color" content="#050505">
-    <title>Matrix of Conscience: Legacy Protocol | Amazing Grace Arcade</title>
-    <script>
-      (function () {
-        const allowedHosts = new Set([
-          "amazinggracehl.org",
-          "www.amazinggracehl.org",
-          "nicholaimadias.github.io",
-        ]);
-        const isHosted =
-          window.location.protocol === "https:" && allowedHosts.has(window.location.hostname);
-        if (!isHosted) return;
-
-        const script = document.createElement("script");
-        script.async = true;
-        script.src = "https://www.googletagmanager.com/gtag/js?id=G-HKZ2G2VN78";
-        document.head.appendChild(script);
-
-        window.dataLayer = window.dataLayer || [];
-        window.gtag = function () {
-          window.dataLayer.push(arguments);
-        };
-        window.gtag("js", new Date());
-        window.gtag("config", "G-HKZ2G2VN78");
-      })();
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+    <title>Matrix of Conscience - M45 Calibration</title>
     <style>
         :root {
-            --neon-green: #00ff41;
-            --dark-bg: #050505;
-            --error-red: #ff3131;
+            /* Astronomical Color Palette */
+            --space-black: #000000;
+            --pleiades-blue: #00e5ff;
+            --pleiades-glow: rgba(0, 229, 255, 0.4);
+            --star-red: #ff3b30;
+            --star-red-glow: rgba(255, 59, 48, 0.5);
+            --amber-selected: #ffb000;
         }
 
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--dark-bg); color: white; overflow: hidden; }
-        #matrix-of-conscience-root { position: relative; width: 100vw; height: 100vh; background: #000; }
-        canvas { display: block; position: fixed; inset: 0; z-index: 0; }
-        
-        /* Intro UI Styles */
-        .ui-overlay { position: absolute; inset: 0; pointer-events: none; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; font-family: 'Orbitron', sans-serif; }
-        .interactive { pointer-events: auto; }
-        .star-fragment { transition: all 0.5s ease; cursor: pointer; }
-        .star-fragment:hover { filter: brightness(1.5); transform: scale(1.1); }
-        .dialogue-box { background: rgba(0,0,0,0.7); border: 1px solid rgba(59,130,246,0.3); padding: 1.5rem; border-radius: 1rem; max-width: 80%; text-align: center; backdrop-filter: blur(5px); animation: fadeIn 1s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .glow-text { text-shadow: 0 0 10px rgba(59,130,246,0.8); }
+        body {
+            background-color: var(--space-black);
+            color: var(--pleiades-blue);
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
 
-        /* Legacy Protocol Subroutine Styles */
-        .legacy-terminal {
-            font-family: 'VT323', monospace;
-            color: var(--neon-green);
+        /* Keyboard Accessibility Indicator */
+        *:focus-visible {
+            outline: 3px solid var(--amber-selected);
+            outline-offset: 2px;
+        }
+
+        #game-container {
+            text-align: center;
+            border: 1px solid var(--pleiades-blue);
+            padding: 24px;
+            box-shadow: 0 0 30px var(--pleiades-glow);
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10;
+            border-radius: 4px;
+        }
+
+        h1 {
             text-transform: uppercase;
-            animation: fadeIn 1.5s ease;
-        }
-        
-        .crt-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
-            z-index: 100;
-        }
-        .btn-matrix {
-            border: 1px solid var(--neon-green);
-            padding: 4px 12px; cursor: pointer; transition: all 0.2s;
-            background: rgba(0,0,0,0.6); color: var(--neon-green);
-            backdrop-filter: blur(3px);
-        }
-        .btn-matrix:hover:not(:disabled) {
-            background: var(--neon-green); color: var(--dark-bg); box-shadow: 0 0 15px var(--neon-green);
-        }
-        .btn-matrix:disabled { opacity: 0.3; cursor: not-allowed; border-color: #333; }
-        
-        .stat-box { border: 1px solid var(--neon-green); padding: 10px; background: rgba(0, 255, 65, 0.05); backdrop-filter: blur(2px); }
-        .failure { color: var(--error-red); border-color: var(--error-red) !important; animation: blink 0.5s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        
-        #game-log::-webkit-scrollbar { width: 4px; }
-        #game-log::-webkit-scrollbar-track { background: transparent; }
-        #game-log::-webkit-scrollbar-thumb { background: var(--neon-green); }
-        
-        .back-link { display: inline-block; margin-bottom: 1rem; color: var(--neon-green); text-decoration: none; font-size: 0.9rem; border: 1px solid transparent; padding: 2px 8px; border-radius: 4px; transition: border-color 0.2s; background: rgba(0,0,0,0.5); }
-        .back-link:hover { border-color: var(--neon-green); }
-
-        #modal-overlay { display: none; }
-        #modal-overlay.open { display: flex; }
-        #modal-content { position: relative; }
-
-        #trinity-view {
-            position: absolute;
-            inset: 0;
-            z-index: 60;
-            display: none;
-            flex-direction: column;
-            background:
-                radial-gradient(circle at top, rgba(59, 130, 246, 0.12), transparent 35%),
-                linear-gradient(180deg, rgba(2, 6, 23, 0.96), rgba(0, 0, 0, 0.98));
-            font-family: 'Orbitron', sans-serif;
-            color: #dbeafe;
-        }
-        #trinity-view.open { display: flex; }
-        .trinity-shell {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 1rem;
-            gap: 1rem;
-        }
-        .trinity-header,
-        .trinity-hud {
-            border: 1px solid rgba(96, 165, 250, 0.28);
-            background: rgba(2, 6, 23, 0.82);
-            box-shadow: 0 0 24px rgba(59, 130, 246, 0.12);
-            backdrop-filter: blur(8px);
-        }
-        .trinity-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            padding: 1rem;
-        }
-        .trinity-grid-wrap {
-            position: relative;
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 0;
-        }
-        .trinity-board-shell {
-            width: min(96vw, 560px);
-            padding: 0.75rem;
-            border: 1px solid rgba(34, 211, 238, 0.25);
-            background:
-                linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.92)),
-                repeating-linear-gradient(180deg, rgba(148, 163, 184, 0.06) 0, rgba(148, 163, 184, 0.06) 2px, transparent 2px, transparent 6px);
-            box-shadow: 0 0 40px rgba(34, 211, 238, 0.12);
-        }
-        #trinity-board {
-            display: grid;
-            grid-template-columns: repeat(6, minmax(0, 1fr));
-            gap: 0.5rem;
-        }
-        .trinity-tile {
-            position: relative;
-            aspect-ratio: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 0.25rem;
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            background:
-                linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(3, 7, 18, 0.96));
-            color: #e2e8f0;
-            user-select: none;
-            touch-action: none;
-            transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-            box-shadow: inset 0 0 18px rgba(15, 23, 42, 0.8);
-        }
-        .trinity-tile::after {
-            content: "";
-            position: absolute;
-            inset: 2px;
-            border: 1px solid var(--tile-accent, #7dd3fc);
-            opacity: 0.35;
-            pointer-events: none;
-        }
-        .trinity-tile svg {
-            width: clamp(1.2rem, 5vw, 1.7rem);
-            height: clamp(1.2rem, 5vw, 1.7rem);
-            color: var(--tile-accent, #7dd3fc);
-        }
-        .trinity-tile-label {
-            font-size: clamp(0.56rem, 1.5vw, 0.62rem);
-            letter-spacing: 0.08em;
-            opacity: 0.8;
-            text-align: center;
-        }
-        .trinity-tile.dragging {
-            transform: scale(1.08);
-            box-shadow: 0 0 28px rgba(125, 211, 252, 0.35);
-            border-color: var(--tile-accent, #7dd3fc);
-        }
-        .trinity-tile.drop-target {
-            transform: translateY(-2px);
-            border-color: #f8fafc;
-            box-shadow: 0 0 24px rgba(248, 250, 252, 0.28);
-        }
-        .trinity-tile.matched {
-            animation: trinityPulse 0.25s ease-in-out 2;
-        }
-        @keyframes trinityPulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(0.88); opacity: 0.6; }
-        }
-        .trinity-float-layer {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 80;
-        }
-        .trinity-float {
-            position: fixed;
-            transform: translate(-50%, -50%);
-            color: #7dd3fc;
-            text-shadow: 0 0 12px currentColor;
-            font-family: 'VT323', monospace;
+            letter-spacing: 3px;
+            margin-bottom: 5px;
             font-size: 1.4rem;
-            opacity: 0;
-            animation: trinityFloat 0.9s ease-out forwards;
+            color: #ffffff;
+            text-shadow: 0 0 10px var(--pleiades-blue);
         }
-        @keyframes trinityFloat {
-            0% { opacity: 0; transform: translate(-50%, -30%); }
-            15% { opacity: 1; }
-            100% { opacity: 0; transform: translate(-50%, -180%); }
+
+        .subtitle {
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            color: var(--pleiades-blue);
+            opacity: 0.8;
+            margin-bottom: 20px;
         }
-        .trinity-status {
-            min-height: 1.5rem;
-            font-family: 'VT323', monospace;
-            font-size: 1.1rem;
-            color: #93c5fd;
-            letter-spacing: 0.08em;
+
+        #scoreboard {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            border-bottom: 1px dashed rgba(0, 229, 255, 0.4);
+            padding-bottom: 12px;
         }
-        .trinity-mini-stat {
-            min-width: 3.8rem;
-            border: 1px solid rgba(34, 211, 238, 0.18);
-            background: rgba(15, 23, 42, 0.68);
-            padding: 0.5rem 0.65rem;
-            text-align: center;
+
+        /* Border-Only Grid: Clean Alignment without Visual Bloat */
+        #grid {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            grid-template-rows: repeat(5, 60px);
+            gap: 8px;
+            background-color: #000000;
+            padding: 12px;
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            border-radius: 4px;
+            margin: 0 auto;
+            width: max-content;
         }
-        .trinity-mini-stat strong {
-            display: block;
-            margin-top: 0.2rem;
-            font-size: 1.1rem;
-            color: #f8fafc;
+
+        /* Individual Star Node Formats */
+        .tile {
+            width: 60px;
+            height: 60px;
+            background: #000000;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.1s ease, border-color 0.2s ease;
         }
-        @media (max-width: 640px) {
-            #intro-ui { padding: 1rem; }
-            .dialogue-box {
-                max-width: 94%;
-                padding: 1rem;
-                margin-bottom: 1rem;
-            }
-            #dialogue-text {
-                font-size: 1rem;
-                line-height: 1.55;
-            }
-            .trinity-header { flex-direction: column; align-items: stretch; }
-            .trinity-shell { padding: 0.75rem; }
-            #trinity-board { gap: 0.35rem; }
+
+        /* Accurate M45 Spectral Tuning */
+        .tile[data-type="blue"] { color: var(--pleiades-blue); text-shadow: 0 0 8px var(--pleiades-blue); }
+        .tile[data-type="red"] { color: var(--star-red); text-shadow: 0 0 8px var(--star-red); }
+        
+        .tile:hover {
+            border-color: var(--pleiades-blue);
+            box-shadow: 0 0 8px var(--pleiades-glow);
+        }
+
+        .tile.selected {
+            border: 2px solid var(--amber-selected);
+            transform: scale(0.95);
+        }
+
+        #controls {
+            margin-top: 24px;
+        }
+
+        .btn {
+            background-color: transparent;
+            color: #ffffff;
+            border: 1px solid var(--pleiades-blue);
+            padding: 10px 24px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--pleiades-blue);
+            color: var(--space-black);
+            box-shadow: 0 0 15px var(--pleiades-blue);
+        }
+
+        /* Deep Ambient Star Field Canvas */
+        #bg-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
         }
     </style>
 </head>
 <body>
-    <div id="matrix-of-conscience-root">
-        <!-- Persistent Cosmic Canvas Background -->
-        <canvas id="cosmic-canvas"></canvas>
+    <canvas id="bg-canvas"></canvas>
+    
+    <div id="game-container" role="application" aria-label="Matrix of Conscience M45 Engine">
+        <h1>Matrix of Conscience</h1>
+        <div class="subtitle">M45 Seven Sisters Alignment</div>
+                
+        <div id="scoreboard">
+            <div>Stellar Points: <span id="score-display">0</span></div>
+            <div>High Score: <span id="high-score-display">0</span></div>
+        </div>    
+    
+        <div id="grid" role="grid" aria-label="Sequence Alignment Grid"></div>
         
-        <!-- CRT effect for subroutine (initially hidden) -->
-        <div id="crt-overlay" class="crt-overlay hidden"></div>
-        
-        <!-- INTRO: Fragment Alignment -->
-        <div id="intro-ui" class="ui-overlay">
-            <div id="game-dialogue" class="dialogue-box mb-8 hidden">
-                <p id="dialogue-text" class="text-blue-100 text-lg md:text-xl italic"></p>
-            </div>
-
-            <div id="star-assembly" class="relative w-64 h-64 md:w-96 md:h-96 interactive hidden">
-                <!-- Fragments rendered via JS -->
-            </div>
+        <div id="controls">
+            <button class="btn" id="reset-btn" onclick="initGrid()">Reset Calibration</button>
         </div>
-
-        <!-- SUBROUTINE: Legacy Protocol (initially hidden) -->
-        <div id="legacy-protocol-ui" class="legacy-terminal relative z-20 max-w-4xl mx-auto space-y-6 p-4 md:p-8 h-full overflow-y-auto hidden">
-            <a href="../" class="back-link" aria-label="Back to Arcade">← terminate subroutine</a>
-
-            <header class="border-b border-green-500 pb-2 flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
-                <h1 class="text-2xl md:text-3xl tracking-widest bg-black/50 px-2">MATRIX_OF_CONSCIENCE v1.0</h1>
-                <div id="cycle-display" class="bg-black/50 px-2">CYCLE: 001</div>
-            </header>
-
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="stat-box" id="box-s">
-                    <div class="text-xs">INTEGRITY [S]</div>
-                    <div id="stat-s" class="text-3xl">10</div>
-                </div>
-                <div class="stat-box" id="box-l">
-                    <div class="text-xs">LUMEN [L]</div>
-                    <div id="stat-l" class="text-3xl">0</div>
-                </div>
-                <div class="stat-box" id="box-e">
-                    <div class="text-xs">EMPATHY [E]</div>
-                    <div id="stat-e" class="text-3xl">3</div>
-                </div>
-                <div class="stat-box" id="box-r">
-                    <div class="text-xs">RELIEF [R]</div>
-                    <div id="stat-r" class="text-3xl">100</div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <section class="space-y-4 bg-black/40 p-4 border border-green-900/50">
-                    <h2 class="text-xl border-b border-green-900">GRACE_PROTOCOLS</h2>
-                    <div class="space-y-3">
-                        <div class="flex flex-col">
-                            <span class="text-xs opacity-70">GENEROSITY DUTY (COST: 10R | REWARD: +2S)</span>
-                            <button id="btn-generosity" class="btn-matrix text-left" onclick="executeProtocol('generosity')">EXECUTE: GENEROSITY_DUTY</button>
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="text-xs opacity-70">MERCY GRACE (COST: 1E | REWARD: +3S, +75L)</span>
-                            <button id="btn-mercy" class="btn-matrix text-left" onclick="executeProtocol('mercy')">EXECUTE: MERCY_GRACE</button>
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="text-xs opacity-70">COMPASSION GRACE (COST: 1E + ALL R | REWARD: +5S, +150L)</span>
-                            <button id="btn-compassion" class="btn-matrix text-left" onclick="executeProtocol('compassion')">EXECUTE: COMPASSION_GRACE</button>
-                        </div>
-                    </div>
-
-                    <div class="pt-6">
-                        <button id="btn-end-turn" class="btn-matrix w-full py-4 text-xl" onclick="endTurn()">INITIALIZE NEXT CYCLE [SYSTEM_TICK]</button>
-                    </div>
-                </section>
-
-                <section class="space-y-4 bg-black/40 p-4 border border-green-900/50">
-                    <h2 class="text-xl border-b border-green-900">COGNITIVE_TRAINING</h2>
-                    <div id="training-modules" class="space-y-2">
-                        <button id="btn-reflex" class="btn-matrix w-full text-left" onclick="startReflex()">[S] REFLEX_SIMULATION</button>
-                        <button id="btn-memory" class="btn-matrix w-full text-left" onclick="startMemory()">[L] MEMORY_SIMULATION (REQ: 100L)</button>
-                        <button id="btn-creativity" class="btn-matrix w-full text-left" onclick="startCreativity()">[E] CREATIVITY_SIMULATION (REQ: 15S)</button>
-                        <button id="btn-trinity" class="btn-matrix w-full text-left !border-blue-500 !text-blue-300" onclick="openTrinity()">[ALL] TRINITY_ALIGNMENT (MATCH-3)</button>
-                    </div>
-
-                    <div id="game-log" class="h-48 overflow-y-auto border border-green-900 p-2 text-xs opacity-80 bg-black/80 font-mono">
-                        <div>[SYSTEM] SUBROUTINE INITIALIZED. STANDBY FOR INPUT.</div>
-                        <div>[DATA] V_START: {S:10, L:0, E:3, R:100}</div>
-                    </div>
-                </section>
-            </div>
-
-            <div id="modal-overlay" class="fixed inset-0 items-center justify-center p-4 z-50" style="background:rgba(0,0,0,0.85); backdrop-filter: blur(4px);">
-                <div id="modal-content" class="border border-green-500 p-8 max-w-md w-full bg-black text-center space-y-4 shadow-[0_0_30px_rgba(0,255,65,0.2)]">
-                </div>
-            </div>
-        </div>
-
-        <div id="trinity-view" aria-label="Trinity Alignment fullscreen view">
-            <div class="trinity-header">
-                <div>
-                    <div class="text-xs tracking-[0.35em] text-cyan-300/80">COGNITIVE_TRAINING // LIVE LINK</div>
-                    <h2 class="text-xl md:text-2xl font-bold tracking-[0.25em] text-white">TRINITY_ALIGNMENT</h2>
-                    <div class="trinity-status" id="trinity-status">Drag adjacent virtues to align the Matrix Core.</div>
-                </div>
-                <button class="btn-matrix !border-red-500 !text-red-300" onclick="closeTrinity()">TERMINATE ALIGNMENT</button>
-            </div>
-
-            <div class="trinity-shell">
-                <div class="trinity-hud p-4 flex flex-wrap items-center justify-between gap-3">
-                    <div class="flex gap-2 flex-wrap">
-                        <div class="trinity-mini-stat"><span class="text-[0.55rem] tracking-[0.22em] text-cyan-200/80">LEVEL</span><strong id="trinity-level">1</strong></div>
-                        <div class="trinity-mini-stat"><span class="text-[0.55rem] tracking-[0.22em] text-cyan-200/80">SCORE</span><strong id="trinity-score">0</strong></div>
-                    </div>
-                    <div class="flex gap-2 flex-wrap">
-                        <div class="trinity-mini-stat"><span class="text-[0.55rem] tracking-[0.22em] text-cyan-200/80">S</span><strong id="trinity-core-s">10</strong></div>
-                        <div class="trinity-mini-stat"><span class="text-[0.55rem] tracking-[0.22em] text-cyan-200/80">L</span><strong id="trinity-core-l">0</strong></div>
-                        <div class="trinity-mini-stat"><span class="text-[0.55rem] tracking-[0.22em] text-cyan-200/80">E</span><strong id="trinity-core-e">3</strong></div>
-                        <div class="trinity-mini-stat"><span class="text-[0.55rem] tracking-[0.22em] text-cyan-200/80">R</span><strong id="trinity-core-r">100</strong></div>
-                    </div>
-                </div>
-
-                <div class="trinity-grid-wrap">
-                    <div class="trinity-board-shell">
-                        <div id="trinity-board" role="grid" aria-label="Trinity Alignment board"></div>
-                    </div>
-                </div>
-
-                <p class="text-center text-xs tracking-[0.22em] text-slate-400">MATCH 3 → L/R TELEMETRY // MATCH 4+ → E/S TELEMETRY</p>
-            </div>
-        </div>
-        <div id="trinity-float-layer" class="trinity-float-layer" aria-hidden="true"></div>
     </div>
 
     <script>
-        (function() {
-            // --- Cosmic Canvas Engine ---
-            const canvas = document.getElementById(`cosmic-canvas`);
-            const ctx = canvas.getContext(`2d`);
-            function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-            window.addEventListener(`resize`, resize); resize();
+        // --- 1. Ambient Background Starfield (Deep Field Physics) ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
-            const stars = [];
-            for (let i = 0; i < 250; i++) {
-                stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: Math.random() * 1.5 + 0.5, twinkle: Math.random() * 0.5 + 0.5 });
-            }
+        const starsCount = 120;
+        const starField = Array.from({ length: starsCount }).map(() => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 1.5,
+            color: Math.random() > 0.12 ? '#00e5ff' : '#ff3b30', // Accurate spectrum classification split
+            alpha: Math.random()
+        }));
 
-            let shootingStar = null;
-            function spawnShootingStar() {
-                if (!shootingStar && Math.random() < 0.005) {
-                    shootingStar = { x: Math.random() * canvas.width, y: Math.random() * canvas.height * 0.3, vx: -8 - Math.random() * 4, vy: 3 + Math.random() * 2, life: 0 };
-                }
-            }
-
-            function render() {
-                ctx.fillStyle = `#000`; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                stars.forEach(s => {
-                    const tw = (Math.sin(Date.now() * 0.002 + s.twinkle) + 1) / 2;
-                    ctx.fillStyle = `rgba(255,255,255,${0.5 + tw * 0.5})`;
-                    ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2); ctx.fill();
-                });
-
-                spawnShootingStar();
-                if (shootingStar) {
-                    ctx.strokeStyle = `rgba(255,255,255,0.8)`;
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    ctx.moveTo(shootingStar.x, shootingStar.y);
-                    ctx.lineTo(shootingStar.x + shootingStar.vx * 3, shootingStar.y + shootingStar.vy * 3);
-                    ctx.stroke();
-                    shootingStar.x += shootingStar.vx;
-                    shootingStar.y += shootingStar.vy;
-                    shootingStar.life++;
-                    if (shootingStar.life > 60) shootingStar = null;
-                }
-                requestAnimationFrame(render);
-            }
-            render();
-
-            // --- Intro Fragment Logic ---
-            const dialogue = document.getElementById(`game-dialogue`);
-            const dialogueText = document.getElementById(`dialogue-text`);
-            const assembly = document.getElementById(`star-assembly`);
-            const introUI = document.getElementById(`intro-ui`);
-            const legacyUI = document.getElementById(`legacy-protocol-ui`);
-            const crtOverlay = document.getElementById(`crt-overlay`);
-
-            const fragments = [
-                { id: `brave`, color: `#3b82f6`, label: `Brave`, angle: 0 },
-                { id: `compassionate`, color: `#10b981`, label: `Compassionate`, angle: 51.4 },
-                { id: `analytical`, color: `#8b5cf6`, label: `Analytical`, angle: 102.8 },
-                { id: `radiant`, color: `#ffffff`, label: `Radiant`, angle: 154.2 },
-                { id: `hopeful`, color: `#f59e0b`, label: `Hopeful`, angle: 205.6 },
-                { id: `wounded`, color: `#ef4444`, label: `Wounded`, angle: 257.0 },
-                { id: `fearful`, color: `#4b5563`, label: `Fearful`, angle: 308.4 }
-            ];
-
-            let alignedCount = 0;
-
-            async function type(text) {
-                dialogue.classList.remove(`hidden`);
-                dialogueText.innerText = ``;
-                for(let char of text) {
-                    dialogueText.innerText += char;
-                    await new Promise(r => setTimeout(r, 30));
-                }
-                await new Promise(r => setTimeout(r, 1800));
-            }
-
-            async function init() {
-                await type(`Welcome to the place where all choices converge.`);
-                await type(`Behold the fragments of your reflection. Align them to restore the Star Matrix.`);
+        function drawStarField() {
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            starField.forEach(star => {
+                ctx.save();
+                ctx.globalAlpha = star.alpha;
+                ctx.fillStyle = star.color;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
                 
-                assembly.classList.remove(`hidden`);
-                assembly.style.opacity = 1;
-                
-                fragments.forEach((f, i) => {
-                    const el = document.createElement(`div`);
-                    el.className = `star-fragment absolute w-16 h-16 md:w-24 md:h-24 flex items-center justify-center text-[10px] font-bold uppercase rounded-full`;
-                    el.style.backgroundColor = f.color;
-                    el.style.boxShadow = `0 0 20px ${f.color}66`;
-                    el.style.color = i === 3 ? `#000` : `#fff`;
-                    el.innerText = f.label;
-                    
-                    const radius = 120 + Math.random() * 50;
-                    const startAngle = Math.random() * Math.PI * 2;
-                    el.style.left = `calc(50% + ${Math.cos(startAngle) * radius}px - 32px)`;
-                    el.style.top = `calc(50% + ${Math.sin(startAngle) * radius}px - 32px)`;
-                    
-                    el.onclick = async () => {
-                        if (el.dataset.aligned === `true`) return;
-                        el.dataset.aligned = `true`;
-                        const targetRadius = 100;
-                        const targetAngle = (f.angle * Math.PI) / 180;
-                        el.style.left = `calc(50% + ${Math.cos(targetAngle) * targetRadius}px - 32px)`;
-                        el.style.top = `calc(50% + ${Math.sin(targetAngle) * targetRadius}px - 32px)`;
-                        el.style.transform = `scale(1.2)`;
-                        el.style.zIndex = 100;
-                        alignedCount++;
-                        
-                        if (alignedCount === fragments.length) {
-                            await type(`The Map is complete. Your conscience is refined.`);
-                            assembly.style.transition = `transform 2s ease-in-out, opacity 1s`;
-                            assembly.style.transform = `rotate(720deg) scale(0)`;
-                            assembly.style.opacity = 0;
-                            
-                            await type(`Booting Legacy Protocol subroutine...`);
-                            
-                            setTimeout(() => {
-                                introUI.classList.add(`hidden`);
-                                legacyUI.classList.remove(`hidden`);
-                                crtOverlay.classList.remove(`hidden`);
-                                updateUI();
-                            }, 1000);
-                        }
-                    };
-                    assembly.appendChild(el);
-                });
-            }
-
-            window.onload = init;
-        })();
-
-        // --- Legacy Protocol Subroutine Logic ---
-        let state = { s: 10, l: 0, e: 3, r: 100, cycle: 1, isFailed: false };
-
-        function updateUI() {
-            document.getElementById('stat-s').innerText = state.s;
-            document.getElementById('stat-l').innerText = state.l;
-            document.getElementById('stat-e').innerText = state.e;
-            document.getElementById('stat-r').innerText = state.r;
-            ['s', 'l', 'e', 'r'].forEach((resourceKey) => {
-                const trinityCore = document.getElementById(`trinity-core-${resourceKey}`);
-                if (trinityCore) trinityCore.innerText = state[resourceKey];
+                // Subtle organic shimmering loop
+                star.alpha += (Math.random() - 0.5) * 0.04;
+                if (star.alpha < 0) star.alpha = 0;
+                if (star.alpha > 1) star.alpha = 1;
             });
-            document.getElementById('cycle-display').innerText = `CYCLE: ${String(state.cycle).padStart(3, '0')}`;
-
-            if (state.s <= 0 && !state.isFailed) { triggerFailure(); return; }
-
-            document.getElementById('btn-generosity').disabled = state.r < 10 || state.isFailed;
-            document.getElementById('btn-mercy').disabled = state.e < 1 || state.isFailed;
-            document.getElementById('btn-compassion').disabled = state.e < 1 || state.isFailed;
-            document.getElementById('btn-end-turn').disabled = state.isFailed;
-
-            document.getElementById('btn-memory').disabled = state.l < 100 || state.isFailed;
-            document.getElementById('btn-creativity').disabled = state.s < 15 || state.isFailed;
-            document.getElementById('btn-trinity').disabled = state.isFailed;
         }
+        setInterval(drawStarField, 100);
 
-        function log(msg, isError = false) {
-            const logDiv = document.getElementById('game-log');
-            const entry = document.createElement('div');
-            if (isError) entry.className = 'text-red-500 font-bold';
-            entry.innerText = `[${new Date().toLocaleTimeString([], {hour12: false})}] ${msg}`;
-            logDiv.appendChild(entry);
-            logDiv.scrollTop = logDiv.scrollHeight;
-        }
-
-        window.endTurn = function() {
-            if (state.isFailed) return;
-            state.s -= 2; state.r += 20; state.cycle += 1;
-            log(`CYCLE ${state.cycle} INITIALIZED. DECAY: -2S. GENERATION: +20R.`);
-            updateUI();
-        };
-
-        function triggerFailure() {
-            state.isFailed = true; state.s = 0;
-            log("CRITICAL FAILURE: SYSTEM INTEGRITY COLLAPSED.", true);
-            document.querySelectorAll('.stat-box').forEach(el => el.classList.add('failure'));
-            document.querySelectorAll('button').forEach(el => el.disabled = true);
-            updateUI();
-        }
-
-        window.executeProtocol = function(type) {
-            if (state.isFailed) return;
-            switch(type) {
-                case 'generosity': if (state.r >= 10) { state.r -= 10; state.s += 2; log("PROTOCOL: GENEROSITY_DUTY SUCCESSFUL."); } break;
-                case 'mercy': if (state.e >= 1) { state.e -= 1; state.s += 3; state.l += 75; log("PROTOCOL: MERCY_GRACE DEPLOYED."); } break;
-                case 'compassion': if (state.e >= 1) { state.e -= 1; state.r = 0; state.s += 5; state.l += 150; log("PROTOCOL: COMPASSION_GRACE ACTIVATED."); } break;
-            }
-            updateUI();
-        };
-
-        const modal = document.getElementById('modal-overlay');
-        const modalContent = document.getElementById('modal-content');
-        window.openModal = function(content) { modalContent.innerHTML = content; modal.classList.add('open'); };
-        window.closeModal = function() { modal.classList.remove('open'); };
-
-        window.startReflex = function() {
-            openModal(`<button class="btn-matrix" style="float:right;" onclick="closeModal()">✕</button><h3 class="text-2xl">REFLEX_SIMULATION</h3><div id="reflex-box" class="h-48 flex items-center justify-center border border-green-900 mt-4"><span id="reflex-status">STANDBY...</span></div>`);
-            setTimeout(() => {
-                const startTime = performance.now();
-                document.getElementById('reflex-status').innerHTML = `<button class="btn-matrix py-8 px-12" onclick="finishReflex(${startTime})">INTERCEPT NOW!</button>`;
-            }, Math.random() * 2000 + 1500);
-        };
-        
-        window.finishReflex = function(startTime) {
-            const diff = performance.now() - startTime;
-            let gain = diff < 300 ? 3 : (diff < 500 ? 2 : 1);
-            state.s += gain; log(`REFLEX SYNC: ${Math.round(diff)}MS. REWARD: +${gain}S.`);
-            closeModal(); updateUI();
-        };
-
-        window.startMemory = function() {
-            openModal(`<button class="btn-matrix" style="float:right;" onclick="closeModal()">✕</button><h3 class="text-2xl">MEMORY_SIMULATION</h3><button class="btn-matrix w-full mt-4 py-2" onclick="finishMemory()">[AUTO-RESOLVE: +25L]</button>`);
-        };
-        window.finishMemory = function() { state.l += 25; log("MEMORY RECALL VERIFIED. GAIN: +25L."); closeModal(); updateUI(); };
-
-        window.startCreativity = function() {
-            openModal(`<button class="btn-matrix" style="float:right;" onclick="closeModal()">✕</button><h3 class="text-2xl">CREATIVITY_SIMULATION</h3><button class="btn-matrix w-full mt-4 py-2" onclick="finishCreativity()">[AUTO-RESOLVE: +1E]</button>`);
-        };
-        
-        window.finishCreativity = function() { 
-            state.e += 1; 
-            log("CREATIVITY VERIFIED. EMPATHY CORE GENERATED. GAIN: +1E."); 
-            closeModal(); 
-            updateUI(); 
-        };
-
-        const TRINITY_GRID_SIZE = 6;
-        const TRINITY_TILES = [
-            { icon: 'heart', label: 'EMPATHY', shortLabel: 'EMP', accent: '#fb7185', match3Reward: 'r', match4Reward: 'e' },
-            { icon: 'zap', label: 'COURAGE', shortLabel: 'COU', accent: '#facc15', match3Reward: 'l', match4Reward: 's' },
-            { icon: 'sun', label: 'LUMEN', shortLabel: 'LUM', accent: '#f59e0b', match3Reward: 'l', match4Reward: 'e' },
-            { icon: 'shield', label: 'INTEGRITY', shortLabel: 'INT', accent: '#60a5fa', match3Reward: 'r', match4Reward: 's' },
-            { icon: 'sparkles', label: 'SERENITY', shortLabel: 'SER', accent: '#c084fc', match3Reward: 'l', match4Reward: 'e' },
-            { icon: 'leaf', label: 'RELIEF', shortLabel: 'REL', accent: '#34d399', match3Reward: 'r', match4Reward: 's' }
+        // --- 2. Alignment Token Parameters (M45 Structural Nodes) ---
+        const starNodes = [
+            { symbol: '★', type: 'blue' }, // Alcyone
+            { symbol: '⭐', type: 'blue' }, // Maia
+            { symbol: '🔷', type: 'blue' }, // Electra
+            { symbol: '♦', type: 'blue' },  // Taygeta
+            { symbol: '⬢', type: 'red' }   // Saturated Red Spectral Focus Node
         ];
-        const trinity = {
-            board: [],
-            score: 0,
-            level: 1,
-            initialized: false,
-            resolving: false,
-            dragIndex: null,
-            hoverIndex: null
-        };
-        const TRINITY_REWARD_COLORS = { l: '#fbbf24', r: '#34d399', e: '#f472b6', s: '#93c5fd' };
-        let trinityPointerFrame = null;
-        let trinityPointerCoords = null;
+        
+        const gridSize = 5;
+        let score = 0;
+        let highScore = localStorage.getItem('matrix_high_score') || 0;
+        let gridData = [];
+        let selectedTile = null;
+        document.getElementById('high-score-display').innerText = highScore;
 
-        function getTrinityBoardEl() {
-            return document.getElementById('trinity-board');
-        }
+        function initGrid() {
+            score = 0;
+            updateScore(0);
+            const gridElement = document.getElementById('grid');
+            gridElement.innerHTML = '';
+            gridData = [];
 
-        function getTrinityTile(index) {
-            return document.querySelector(`.trinity-tile[data-index="${index}"]`);
-        }
-
-        function randomTrinityTile() {
-            return Math.floor(Math.random() * TRINITY_TILES.length);
-        }
-
-        function isMatchCandidate(board, row, col, type) {
-            const leftA = board[row * TRINITY_GRID_SIZE + (col - 1)];
-            const leftB = board[row * TRINITY_GRID_SIZE + (col - 2)];
-            const upA = board[(row - 1) * TRINITY_GRID_SIZE + col];
-            const upB = board[(row - 2) * TRINITY_GRID_SIZE + col];
-            return (col >= 2 && leftA === type && leftB === type) || (row >= 2 && upA === type && upB === type);
-        }
-
-        function buildTrinityBoard() {
-            const board = [];
-            for (let row = 0; row < TRINITY_GRID_SIZE; row += 1) {
-                for (let col = 0; col < TRINITY_GRID_SIZE; col += 1) {
-                    let type = randomTrinityTile();
-                    while (isMatchCandidate(board, row, col, type)) {
-                        type = randomTrinityTile();
-                    }
-                    board.push(type);
+            for (let r = 0; r < gridSize; r++) {
+                gridData[r] = [];
+                for (let c = 0; c < gridSize; c++) {
+                    let node;
+                    // Mathematical logic to prevent starting grid match clusters
+                    do {
+                        node = starNodes[Math.floor(Math.random() * starNodes.length)];
+                    } while (
+                        (c >= 2 && gridData[r][c-1].symbol === node.symbol && gridData[r][c-2].symbol === node.symbol) ||
+                        (r >= 2 && gridData[r-1][c].symbol === node.symbol && gridData[r-2][c].symbol === node.symbol)
+                    );
+                    gridData[r][c] = node;
+                    createTileElement(r, c, node);
                 }
             }
-            return board;
         }
 
-        function renderTrinityHud() {
-            document.getElementById('trinity-score').innerText = trinity.score;
-            document.getElementById('trinity-level').innerText = trinity.level;
-        }
+        function createTileElement(r, c, node) {
+            const gridElement = document.getElementById('grid');
+            const tile = document.createElement('div');
+            tile.classList.add('tile');
+            tile.innerText = node.symbol;
+            tile.setAttribute('data-type', node.type);
+            tile.dataset.row = r;
+            tile.dataset.col = c;
+            
+            tile.setAttribute('role', 'gridcell');
+            tile.setAttribute('tabindex', '0');
+            tile.setAttribute('aria-label', `Row ${r + 1}, Column ${c + 1}: ${node.symbol}`);
 
-        function clearTrinityHighlights() {
-            document.querySelectorAll('.trinity-tile.dragging, .trinity-tile.drop-target, .trinity-tile.matched')
-                .forEach((tile) => tile.classList.remove('dragging', 'drop-target', 'matched'));
-        }
-
-        function renderTrinityBoard() {
-            const boardEl = getTrinityBoardEl();
-            boardEl.innerHTML = '';
-            trinity.board.forEach((tileType, index) => {
-                const tile = TRINITY_TILES[tileType];
-                const button = document.createElement('button');
-                button.type = 'button';
-                button.className = 'trinity-tile';
-                button.dataset.index = String(index);
-                button.setAttribute('role', 'gridcell');
-                button.setAttribute('aria-label', `${tile.label} fragment`);
-                button.draggable = true;
-                button.style.setProperty('--tile-accent', tile.accent);
-                button.innerHTML = `<i data-lucide="${tile.icon}"></i><span class="trinity-tile-label">${tile.shortLabel}</span>`;
-                button.addEventListener('pointerdown', beginTrinityPointerDrag);
-                button.addEventListener('dragstart', beginTrinityHtmlDrag);
-                button.addEventListener('dragover', (event) => event.preventDefault());
-                button.addEventListener('drop', finishTrinityHtmlDrop);
-                boardEl.appendChild(button);
+            tile.addEventListener('click', () => handleSelection(r, c, tile));
+            tile.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleSelection(r, c, tile);
+                }
             });
-            renderTrinityHud();
-            if (window.lucide && typeof window.lucide.createIcons === 'function') {
-                window.lucide.createIcons();
-            }
+            gridElement.appendChild(tile);
         }
 
-        function indicesAreAdjacent(fromIndex, toIndex) {
-            if (fromIndex === null || toIndex === null || fromIndex === toIndex) return false;
-            const fromRow = Math.floor(fromIndex / TRINITY_GRID_SIZE);
-            const fromCol = fromIndex % TRINITY_GRID_SIZE;
-            const toRow = Math.floor(toIndex / TRINITY_GRID_SIZE);
-            const toCol = toIndex % TRINITY_GRID_SIZE;
-            return Math.abs(fromRow - toRow) + Math.abs(fromCol - toCol) === 1;
-        }
-
-        function swapTrinityTiles(firstIndex, secondIndex) {
-            const temp = trinity.board[firstIndex];
-            trinity.board[firstIndex] = trinity.board[secondIndex];
-            trinity.board[secondIndex] = temp;
-        }
-
-        function findTrinityMatches(board) {
-            const runs = [];
-
-            for (let row = 0; row < TRINITY_GRID_SIZE; row += 1) {
-                let runStart = 0;
-                for (let col = 1; col <= TRINITY_GRID_SIZE; col += 1) {
-                    const prevIndex = row * TRINITY_GRID_SIZE + (col - 1);
-                    const currentIndex = row * TRINITY_GRID_SIZE + col;
-                    if (col < TRINITY_GRID_SIZE && board[currentIndex] === board[prevIndex]) continue;
-                    if (col - runStart >= 3) {
-                        runs.push(Array.from({ length: col - runStart }, (_, offset) => row * TRINITY_GRID_SIZE + runStart + offset));
-                    }
-                    runStart = col;
-                }
-            }
-
-            for (let col = 0; col < TRINITY_GRID_SIZE; col += 1) {
-                let runStart = 0;
-                for (let row = 1; row <= TRINITY_GRID_SIZE; row += 1) {
-                    const prevIndex = (row - 1) * TRINITY_GRID_SIZE + col;
-                    const currentIndex = row * TRINITY_GRID_SIZE + col;
-                    if (row < TRINITY_GRID_SIZE && board[currentIndex] === board[prevIndex]) continue;
-                    if (row - runStart >= 3) {
-                        runs.push(Array.from({ length: row - runStart }, (_, offset) => (runStart + offset) * TRINITY_GRID_SIZE + col));
-                    }
-                    runStart = row;
-                }
-            }
-
-            return {
-                runs,
-                removal: Array.from(new Set(runs.flat()))
-            };
-        }
-
-        function collapseTrinityBoard(removal) {
-            const removed = new Set(removal);
-            removal.forEach((index) => {
-                trinity.board[index] = null;
-            });
-
-            for (let col = 0; col < TRINITY_GRID_SIZE; col += 1) {
-                let insertRow = TRINITY_GRID_SIZE - 1;
-                for (let row = TRINITY_GRID_SIZE - 1; row >= 0; row -= 1) {
-                    const index = row * TRINITY_GRID_SIZE + col;
-                    if (removed.has(index)) continue;
-                    const value = trinity.board[index];
-                    trinity.board[insertRow * TRINITY_GRID_SIZE + col] = value;
-                    insertRow -= 1;
-                }
-                while (insertRow >= 0) {
-                    trinity.board[insertRow * TRINITY_GRID_SIZE + col] = randomTrinityTile();
-                    insertRow -= 1;
-                }
-            }
-        }
-
-        function setTrinityStatus(message) {
-            document.getElementById('trinity-status').innerText = message;
-        }
-
-        function spawnTrinityFloat(run, message, color) {
-            const layer = document.getElementById('trinity-float-layer');
-            const rects = run
-                .map((index) => getTrinityTile(index))
-                .filter(Boolean)
-                .map((tile) => tile.getBoundingClientRect());
-
-            const x = rects.length
-                ? rects.reduce((sum, rect) => sum + rect.left + rect.width / 2, 0) / rects.length
-                : window.innerWidth / 2;
-            const y = rects.length
-                ? rects.reduce((sum, rect) => sum + rect.top + rect.height / 2, 0) / rects.length
-                : window.innerHeight / 2;
-
-            const floaty = document.createElement('div');
-            floaty.className = 'trinity-float';
-            floaty.style.left = `${x}px`;
-            floaty.style.top = `${y}px`;
-            floaty.style.color = color;
-            floaty.innerText = message;
-            layer.appendChild(floaty);
-            setTimeout(() => floaty.remove(), 950);
-        }
-
-        function awardTrinityTelemetry(run, chain) {
-            const size = run.length;
-            const firstTile = TRINITY_TILES[trinity.board[run[0]]];
-            if (!firstTile) return;
-            const rewardKey = size >= 4 ? firstTile.match4Reward : firstTile.match3Reward;
-            const baseAmount = size >= 4
-                ? (rewardKey === 'e' ? 1 : 2)
-                : (rewardKey === 'l' ? 18 : 12);
-            const amount = baseAmount + Math.max(0, chain - 1);
-            state[rewardKey] += amount;
-            const color = TRINITY_REWARD_COLORS[rewardKey];
-            const message = `+${amount}${rewardKey.toUpperCase()}`;
-            spawnTrinityFloat(run, message, color);
-            log(`TRINITY_ALIGNMENT: MATCH-${size} ${firstTile.label}. TELEMETRY ${message}.`);
-            setTrinityStatus(`Alignment locked: ${firstTile.label} // ${message} to Matrix Core`);
-            updateUI();
-        }
-
-        function markMatchedTiles(removal) {
-            removal.forEach((index) => {
-                const tile = getTrinityTile(index);
-                if (tile) tile.classList.add('matched');
-            });
-        }
-
-        function wait(ms) {
-            return new Promise((resolve) => setTimeout(resolve, ms));
-        }
-
-        async function resolveTrinityBoard() {
-            trinity.resolving = true;
-            let chain = 1;
-            let matches = findTrinityMatches(trinity.board);
-            while (matches.runs.length) {
-                matches.runs.forEach((run) => awardTrinityTelemetry(run, chain));
-                trinity.score += matches.removal.length * 45 * chain;
-                trinity.level = 1 + Math.floor(trinity.score / 500);
-                renderTrinityHud();
-                markMatchedTiles(matches.removal);
-                await wait(220);
-                collapseTrinityBoard(matches.removal);
-                renderTrinityBoard();
-                await wait(160);
-                matches = findTrinityMatches(trinity.board);
-                chain += 1;
-            }
-            trinity.resolving = false;
-            setTrinityStatus('Drag adjacent virtues to align the Matrix Core.');
-        }
-
-        async function attemptTrinitySwap(firstIndex, secondIndex) {
-            if (!indicesAreAdjacent(firstIndex, secondIndex) || trinity.resolving) return;
-            swapTrinityTiles(firstIndex, secondIndex);
-            renderTrinityBoard();
-            const matches = findTrinityMatches(trinity.board);
-            if (!matches.runs.length) {
-                setTrinityStatus('Alignment rejected. No harmonic match detected.');
-                log('TRINITY_ALIGNMENT: SWAP REJECTED. NO HARMONIC MATCH.');
-                await wait(140);
-                swapTrinityTiles(firstIndex, secondIndex);
-                renderTrinityBoard();
-                return;
-            }
-            await resolveTrinityBoard();
-        }
-
-        function finishTrinityGesture(targetIndex) {
-            const originIndex = trinity.dragIndex;
-            trinity.dragIndex = null;
-            trinity.hoverIndex = null;
-            trinityPointerCoords = null;
-            clearTrinityHighlights();
-            if (indicesAreAdjacent(originIndex, targetIndex)) {
-                attemptTrinitySwap(originIndex, targetIndex);
-            }
-        }
-
-        function beginTrinityPointerDrag(event) {
-            if (trinity.resolving) return;
-            const tile = event.currentTarget;
-            trinity.dragIndex = Number(tile.dataset.index);
-            tile.classList.add('dragging');
-            event.preventDefault();
-        }
-
-        function beginTrinityHtmlDrag(event) {
-            if (trinity.resolving) {
-                event.preventDefault();
-                return;
-            }
-            trinity.dragIndex = Number(event.currentTarget.dataset.index);
-            event.dataTransfer.effectAllowed = 'move';
-            event.dataTransfer.setData('text/plain', String(trinity.dragIndex));
-        }
-
-        function finishTrinityHtmlDrop(event) {
-            event.preventDefault();
-            const targetIndex = Number(event.currentTarget.dataset.index);
-            const sourceIndex = Number(event.dataTransfer.getData('text/plain'));
-            trinity.dragIndex = null;
-            trinityPointerCoords = null;
-            clearTrinityHighlights();
-            if (indicesAreAdjacent(sourceIndex, targetIndex)) {
-                attemptTrinitySwap(sourceIndex, targetIndex);
-            }
-        }
-
-        function updateTrinityDropTarget(clientX, clientY) {
-            document.querySelectorAll('.trinity-tile.drop-target').forEach((tile) => tile.classList.remove('drop-target'));
-            const hoveredTile = document.elementFromPoint(clientX, clientY)?.closest('.trinity-tile');
-            if (!hoveredTile) return;
-            const hoveredIndex = Number(hoveredTile.dataset.index);
-            trinity.hoverIndex = hoveredIndex;
-            if (indicesAreAdjacent(trinity.dragIndex, hoveredIndex)) {
-                hoveredTile.classList.add('drop-target');
-            }
-        }
-
-        document.addEventListener('pointermove', (event) => {
-            if (trinity.dragIndex === null || trinity.resolving) return;
-            trinityPointerCoords = { clientX: event.clientX, clientY: event.clientY };
-            if (trinityPointerFrame !== null) return;
-            trinityPointerFrame = requestAnimationFrame(() => {
-                trinityPointerFrame = null;
-                if (!trinityPointerCoords) return;
-                updateTrinityDropTarget(trinityPointerCoords.clientX, trinityPointerCoords.clientY);
-            });
-        });
-
-        document.addEventListener('pointerup', (event) => {
-            if (trinity.dragIndex === null) return;
-            trinityPointerCoords = null;
-            const hoveredTile = document.elementFromPoint(event.clientX, event.clientY)?.closest('.trinity-tile');
-            finishTrinityGesture(hoveredTile ? Number(hoveredTile.dataset.index) : null);
-        });
-
-        function initializeTrinity() {
-            trinity.board = buildTrinityBoard();
-            trinity.score = 0;
-            trinity.level = 1;
-            trinity.initialized = true;
-            renderTrinityBoard();
-            setTrinityStatus('Drag adjacent virtues to align the Matrix Core.');
-            updateUI();
-        }
-
-        window.openTrinity = function() {
-            if (state.isFailed) return;
-            document.getElementById('legacy-protocol-ui').classList.add('hidden');
-            document.getElementById('trinity-view').classList.add('open');
-            if (!trinity.initialized) {
-                initializeTrinity();
+        function handleSelection(r, c, tileElement) {
+            if (!selectedTile) {
+                selectedTile = { r, c, element: tileElement };
+                tileElement.classList.add('selected');
             } else {
-                renderTrinityBoard();
-                setTrinityStatus('Matrix Core link restored. Continue alignment.');
-            }
-            log('TRINITY_ALIGNMENT LINK ESTABLISHED. TELEMETRY CHANNEL OPEN.');
-        };
+                const prevTile = selectedTile;
+                const isAdjacent = (Math.abs(prevTile.r - r) === 1 && prevTile.c === c) ||
+                                  (Math.abs(prevTile.c - c) === 1 && prevTile.r === r);
+                prevTile.element.classList.remove('selected');
+                selectedTile = null;
 
-        window.closeTrinity = function() {
-            document.getElementById('trinity-view').classList.remove('open');
-            document.getElementById('legacy-protocol-ui').classList.remove('hidden');
-            clearTrinityHighlights();
-            trinity.dragIndex = null;
-            trinity.hoverIndex = null;
-            log('TRINITY_ALIGNMENT TERMINATED. RETURNING TO MAIN TERMINAL.');
-        };
+                if (isAdjacent) {
+                    let temp = gridData[prevTile.r][prevTile.c];
+                    gridData[prevTile.r][prevTile.c] = gridData[r][c];
+                    gridData[r][c] = temp;
+                    
+                    if (!checkAndClearMatches()) {
+                        // Revert matrix state if invalid swap sequence
+                        temp = gridData[prevTile.r][prevTile.c];
+                        gridData[prevTile.r][prevTile.c] = gridData[r][c];
+                        gridData[r][c] = temp;
+                    } else {
+                        renderGridFromData();
+                    }
+                }
+            }
+        }
+
+        function checkAndClearMatches() {
+            let matched = Array.from({ length: gridSize }, () => Array(gridSize).fill(false));
+            let hasMatch = false;
+
+            // Matrix Row Vector Sweep
+            for (let r = 0; r < gridSize; r++) {
+                for (let c = 0; c < gridSize - 2; c++) {
+                    if (gridData[r][c] && gridData[r][c].symbol === gridData[r][c+1].symbol && gridData[r][c].symbol === gridData[r][c+2].symbol) {
+                        matched[r][c] = matched[r][c+1] = matched[r][c+2] = true;
+                        hasMatch = true;
+                    }
+                }
+            }
+            // Matrix Column Vector Sweep
+            for (let r = 0; r < gridSize - 2; r++) {
+                for (let c = 0; c < gridSize; c++) {
+                    if (gridData[r][c] && gridData[r][c].symbol === gridData[r+1][c].symbol && gridData[r][c].symbol === gridData[r+2][c].symbol) {
+                        matched[r][c] = matched[r+1][c] = matched[r+2][c] = true;
+                        hasMatch = true;
+                    }
+                }
+            }
+
+            if (hasMatch) {
+                let matchCount = 0;
+                for (let r = 0; r < gridSize; r++) {
+                    for (let c = 0; c < gridSize; c++) {
+                        if (matched[r][c]) {
+                            gridData[r][c] = null;
+                            matchCount++;
+                        }
+                    }
+                }
+                updateScore(matchCount * 10);
+                cascadeTiles();
+                return true;
+            }
+            return false;
+        }
+
+        function cascadeTiles() {
+            for (let c = 0; c < gridSize; c++) {
+                let emptyRow = gridSize - 1;
+                for (let r = gridSize - 1; r >= 0; r--) {
+                    if (gridData[r][c] !== null) {
+                        gridData[emptyRow][c] = gridData[r][c];
+                        if (emptyRow !== r) gridData[r][c] = null;
+                        emptyRow--;
+                    }
+                }
+                for (let r = emptyRow; r >= 0; r--) {
+                    gridData[r][c] = starNodes[Math.floor(Math.random() * starNodes.length)];
+                }
+            }
+            setTimeout(() => {
+                renderGridFromData();
+                if (checkAndClearMatches()) {
+                    renderGridFromData();
+                }
+            }, 250);
+        }
+
+        function renderGridFromData() {
+            const gridElement = document.getElementById('grid');
+            gridElement.innerHTML = '';
+            for (let r = 0; r < gridSize; r++) {
+                for (let c = 0; c < gridSize; c++) {
+                    if (gridData[r][c]) createTileElement(r, c, gridData[r][c]);
+                }
+            }
+        }
+
+        function updateScore(points) {
+            score += points;
+            document.getElementById('score-display').innerText = score;
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('matrix_high_score', highScore);
+                document.getElementById('high-score-display').innerText = highScore;
+            }
+        }
+
+        initGrid();
     </script>
 </body>
 </html>
