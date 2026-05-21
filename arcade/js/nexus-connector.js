@@ -76,7 +76,7 @@ export function writeCreditsTotal(total, storage = getStorage()) {
 
 export function normalizeModuleId(moduleId) {
   return typeof moduleId === 'string' && moduleId.trim()
-    ? moduleId.trim().replace(/[^A-Za-z0-9_-]+/g, '_').toUpperCase()
+    ? moduleId.trim().replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '').toUpperCase()
     : 'ARCADE';
 }
 
