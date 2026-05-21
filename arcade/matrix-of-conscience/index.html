@@ -383,13 +383,11 @@
                     currency: 'LUMEN',
                     reason: 'Calibration match resolved',
                 });
-            }
-            if (score > highScore) {
-                highScore = score;
-                localStorage.setItem('matrix_high_score', highScore);
-                document.getElementById('high-score-display').innerText = highScore;
-            }
-            if (points > 0) {
+                if (score > highScore) {
+                    highScore = score;
+                    localStorage.setItem('matrix_high_score', highScore);
+                    document.getElementById('high-score-display').innerText = highScore;
+                }
                 window.NexusArcadeBridge?.recordScore('MATRIX_OF_CONSCIENCE', score);
             }
         }

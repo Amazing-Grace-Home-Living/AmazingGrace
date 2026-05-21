@@ -170,14 +170,15 @@ export default function QuickClickApp() {
 
     const scoreToPersist = scoreRef.current;
     if (scoreToPersist > 0) {
-      getNexusConnector().publishTransaction({
+      const connector = getNexusConnector();
+      connector.publishTransaction({
         type: 'EARN_REWARD',
         module: 'QUICK_CLICK',
         value: scoreToPersist,
         currency: 'LUMEN',
         reason: 'Quick Click round complete',
       });
-      getNexusConnector().recordScore('QUICK_CLICK', scoreToPersist);
+      connector.recordScore('QUICK_CLICK', scoreToPersist);
     }
 
     if (!db) {
