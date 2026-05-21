@@ -19,10 +19,24 @@ describe('nexus clue-shake animation', () => {
     expect(html).toMatch(/\.suspect-panel\.clue-shake[^}]*animation:\s*clue-shake/s);
   });
 
-  it('defines the revealClue function', () => {
+  it('defines the revealClue function with correct classList operations', () => {
     const html = fs.readFileSync(NEXUS_HTML, 'utf8');
     expect(html).toContain('function revealClue(');
+    // Must remove before adding to restart the CSS animation
+    expect(html).toContain("classList.remove('clue-shake')");
     expect(html).toContain("classList.add('clue-shake')");
+  });
+
+  it('revealClue forces a reflow to restart the animation', () => {
+    const html = fs.readFileSync(NEXUS_HTML, 'utf8');
+    expect(html).toContain('void el.offsetWidth');
+  });
+
+  it('revealClue cleans up the clue-shake class after animation ends', () => {
+    const html = fs.readFileSync(NEXUS_HTML, 'utf8');
+    expect(html).toContain("addEventListener('animationend'");
+    expect(html).toContain("classList.remove('clue-shake')");
+    expect(html).toContain('{ once: true }');
   });
 
   it('includes a .suspect-panel element in the DOM', () => {
