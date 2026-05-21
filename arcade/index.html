@@ -551,8 +551,18 @@
                     btn.addEventListener('click', () => {
                         const value = btn.dataset.value;
                         if (value === c.answer) {
+                            const isFirstCompletion = !completedStars.includes(c.name);
                             completedStars = Array.from(new Set([...completedStars, c.name]));
                             localStorage.setItem('aghl_sevenStarsCompleted', JSON.stringify(completedStars));
+                            if (isFirstCompletion) {
+                                window.NexusArcadeBridge?.publishTransaction({
+                                    type: 'EARN_REWARD',
+                                    module: 'SEVEN_STARS',
+                                    value: 50,
+                                    currency: 'LUMEN',
+                                    reason: `Unlocked ${c.name}`,
+                                });
+                            }
                             const allDone = completedStars.length === churches.length;
                             showAlert(allDone ? 'Correct! You found the final star and completed the journey.' : `Correct! You collected the star of ${c.name}.`, allDone ? renderCompletion : renderMap);
                         } else {
@@ -575,6 +585,16 @@
 
             renderTitle();
         }
+    </script>
+    <script type="module">
+        import { bootstrapArcadeModule } from './js/nexus-connector.js';
+
+        bootstrapArcadeModule({
+            moduleId: 'ARCADE_HUB',
+            title: 'Nexus Arcade Hub',
+            href: './',
+            description: 'Kernel hub for the Amazing Grace arcade modules.',
+        });
     </script>
 </body>
 </html>

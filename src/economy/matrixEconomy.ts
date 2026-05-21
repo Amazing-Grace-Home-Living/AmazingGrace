@@ -1,3 +1,5 @@
+import { getNexusConnector } from '../../arcade/js/nexus-connector.js';
+
 /**
  * matrixEconomy.ts — Shared economy/progression foundation for the
  * Matrix of Conscience minigame hub (Phase 1).
@@ -107,6 +109,14 @@ export function spendCredits(amount: number): boolean {
   data.total -= deduct;
   _write(CREDITS_KEY, JSON.stringify(data));
   _dispatchCreditsUpdated(data.total);
+  _emitNexusTransaction({
+    type: 'SPEND_RESOURCE',
+    module: 'MATRIX_OF_CONSCIENCE',
+    value: deduct,
+    currency: 'LUMEN',
+    balanceAfter: data.total,
+    reason: 'Oracle unlock',
+  });
   return true;
 }
 
@@ -114,6 +124,11 @@ function _dispatchCreditsUpdated(total: number): void {
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent('credits:updated', { detail: { total } }));
   }
+}
+
+function _emitNexusTransaction(detail: Record<string, unknown>): void {
+  if (typeof window === 'undefined') return;
+  getNexusConnector().publishTransaction(detail);
 }
 
 // ── Donor access & launch promotion ──────────────────────────────────────────

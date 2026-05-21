@@ -375,14 +375,35 @@
         function updateScore(points) {
             score += points;
             document.getElementById('score-display').innerText = score;
+            if (points > 0) {
+                window.NexusArcadeBridge?.publishTransaction({
+                    type: 'EARN_REWARD',
+                    module: 'MATRIX_OF_CONSCIENCE',
+                    value: points,
+                    currency: 'LUMEN',
+                    reason: 'Calibration match resolved',
+                });
+                window.NexusArcadeBridge?.recordScore('MATRIX_OF_CONSCIENCE', score);
+            }
             if (score > highScore) {
                 highScore = score;
                 localStorage.setItem('matrix_high_score', highScore);
                 document.getElementById('high-score-display').innerText = highScore;
+                window.NexusArcadeBridge?.recordScore('MATRIX_OF_CONSCIENCE', score);
             }
         }
 
         initGrid();
+    </script>
+    <script type="module">
+        import { bootstrapArcadeModule } from '../js/nexus-connector.js';
+
+        bootstrapArcadeModule({
+            moduleId: 'MATRIX_OF_CONSCIENCE',
+            title: 'Matrix of Conscience',
+            href: './',
+            description: 'M45 calibration process linked to the arcade economy.',
+        });
     </script>
 </body>
 </html>

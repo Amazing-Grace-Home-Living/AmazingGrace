@@ -152,5 +152,15 @@
             gridEl.appendChild(tile);
         }
     </script>
+    <script type="module">
+        import { bootstrapArcadeModule } from '../js/nexus-connector.js';
+
+        bootstrapArcadeModule({
+            moduleId: 'TRINITY_MATCH',
+            title: 'Trinity Match',
+            href: './',
+            description: 'A lightweight process route wired into the Nexus kernel.',
+        });
+    </script>
 </body>
 </html>

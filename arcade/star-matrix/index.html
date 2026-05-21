@@ -630,6 +630,14 @@
       score += pts;
       if (matches.length >= 5) combo = Math.min(combo + 1, 5);
       smUpdateHUD();
+      window.NexusArcadeBridge?.publishTransaction({
+        type: 'EARN_REWARD',
+        module: 'STAR_MATRIX',
+        value: pts,
+        currency: 'LUMEN',
+        reason: 'Constellation match resolved'
+      });
+      window.NexusArcadeBridge?.recordScore('STAR_MATRIX', score);
 
       matches.forEach(({ r, c }) => {
         board[r][c] = null;
@@ -856,6 +864,16 @@
       }
 
       smInit();
+    });
+  </script>
+  <script type="module">
+    import { bootstrapArcadeModule } from '../js/nexus-connector.js';
+
+    bootstrapArcadeModule({
+      moduleId: 'STAR_MATRIX',
+      title: 'Star Matrix',
+      href: './',
+      description: 'Constellation process with shared arcade rewards.'
     });
   </script>
   <script src="../../sw-register.js" defer></script>

@@ -11,6 +11,7 @@ import {
   getAppId,
   getFirestoreDb,
 } from '../../firebase/nexus-firestore';
+import { getNexusConnector } from '../../../arcade/js/nexus-connector.js';
 import { assertPathSegment } from '../../firebase/path';
 import {
   clamp,
@@ -167,6 +168,18 @@ export default function QuickClickApp() {
     statusRef.current = 'ended';
     setStatus('ended');
 
+    const scoreToPersist = scoreRef.current;
+    if (scoreToPersist > 0) {
+      getNexusConnector().publishTransaction({
+        type: 'EARN_REWARD',
+        module: 'QUICK_CLICK',
+        value: scoreToPersist,
+        currency: 'LUMEN',
+        reason: 'Quick Click round complete',
+      });
+      getNexusConnector().recordScore('QUICK_CLICK', scoreToPersist);
+    }
+
     if (!db) {
       setPersistStatus({ state: 'unavailable' });
       return;
@@ -182,8 +195,6 @@ export default function QuickClickApp() {
 
       assertPathSegment('appId', appId);
       assertPathSegment('userId', user.uid);
-
-      const scoreToPersist = scoreRef.current;
 
       const statsRef = doc(
         db,
@@ -711,4 +722,3 @@ export default function QuickClickApp() {
     </section>
   );
 }
-

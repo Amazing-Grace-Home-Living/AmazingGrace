@@ -609,6 +609,14 @@
     function awardCredits(amount) {
         const newTotal = loadCredits() + amount;
         saveCredits(newTotal);
+        window.NexusArcadeBridge?.publishTransaction({
+            type: 'EARN_REWARD',
+            module: 'BIBLE_STUDY',
+            value: amount,
+            currency: 'LUMEN',
+            balanceAfter: newTotal,
+            reason: 'Correct answer'
+        });
         return newTotal;
     }
 
@@ -735,6 +743,16 @@
     // ── Reflect credit updates from other games ────────────────────────
     window.addEventListener('credits:updated', updateHUD);
     window.addEventListener('storage', updateHUD);
+    </script>
+    <script type="module">
+        import { bootstrapArcadeModule } from '../js/nexus-connector.js';
+
+        bootstrapArcadeModule({
+            moduleId: 'BIBLE_STUDY',
+            title: 'Bible Study Challenge',
+            href: './',
+            description: 'Scripture quiz process linked to the shared arcade economy.',
+        });
     </script>
     <script src="../../sw-register.js" defer></script>
 </body>

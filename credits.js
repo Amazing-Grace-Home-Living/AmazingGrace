@@ -9,24 +9,19 @@
  * Exports: getCredits, addCreditsFromPoints, addCreditsFromDonation, spendCredits
  */
 
-const STORAGE_KEY = 'aghl-credits';
 const CREDITS_PER_DOLLAR = 300;
+import {
+  getNexusConnector,
+  readCreditsTotal,
+  writeCreditsTotal,
+} from './arcade/js/nexus-connector.js';
 
 /**
  * Read the raw credits object from localStorage.
  * @returns {{ total: number }}
  */
 function _load() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (typeof parsed.total === 'number' && parsed.total >= 0) return parsed;
-    }
-  } catch (_) {
-    // ignore corrupt data
-  }
-  return { total: 0 };
+  return { total: readCreditsTotal() };
 }
 
 /**
@@ -34,11 +29,7 @@ function _load() {
  * @param {{ total: number }} data
  */
 function _save(data) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch (_) {
-    // ignore write failures (e.g. private-browsing quota)
-  }
+  writeCreditsTotal(data.total);
 }
 
 /**
@@ -46,7 +37,7 @@ function _save(data) {
  * @returns {number}
  */
 export function getCredits() {
-  return _load().total;
+  return readCreditsTotal();
 }
 
 /**
@@ -57,9 +48,16 @@ export function getCredits() {
 export function addCreditsFromPoints(points) {
   if (!Number.isFinite(points) || points <= 0) return getCredits();
   const data = _load();
-  data.total += Math.floor(points);
+  const value = Math.floor(points);
+  data.total += value;
   _save(data);
-  _dispatch(data.total);
+  _dispatch(data.total, {
+    type: 'EARN_REWARD',
+    module: 'MATCH_MAKER',
+    value,
+    currency: 'LUMEN',
+    reason: 'Gameplay points',
+  });
   return data.total;
 }
 
@@ -71,9 +69,16 @@ export function addCreditsFromPoints(points) {
 export function addCreditsFromDonation(dollars) {
   if (!Number.isFinite(dollars) || dollars <= 0) return getCredits();
   const data = _load();
-  data.total += Math.floor(dollars) * CREDITS_PER_DOLLAR;
+  const value = Math.floor(dollars) * CREDITS_PER_DOLLAR;
+  data.total += value;
   _save(data);
-  _dispatch(data.total);
+  _dispatch(data.total, {
+    type: 'EARN_REWARD',
+    module: 'DONATION',
+    value,
+    currency: 'LUMEN',
+    reason: 'Donation credits',
+  });
   return data.total;
 }
 
@@ -86,9 +91,16 @@ export function spendCredits(amount) {
   if (!Number.isFinite(amount) || amount <= 0) return false;
   const data = _load();
   if (data.total < amount) return false;
-  data.total -= Math.floor(amount);
+  const value = Math.floor(amount);
+  data.total -= value;
   _save(data);
-  _dispatch(data.total);
+  _dispatch(data.total, {
+    type: 'SPEND_RESOURCE',
+    module: 'NEXUS_STORE',
+    value,
+    currency: 'LUMEN',
+    reason: 'Store purchase',
+  });
   return true;
 }
 
@@ -96,8 +108,12 @@ export function spendCredits(amount) {
  * Dispatch a custom DOM event so any live HUD element can react.
  * @param {number} total
  */
-function _dispatch(total) {
+function _dispatch(total, transaction) {
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent('credits:updated', { detail: { total } }));
+    getNexusConnector().publishTransaction({
+      ...transaction,
+      balanceAfter: total,
+    });
   }
 }
