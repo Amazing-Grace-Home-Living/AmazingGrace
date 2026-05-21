@@ -320,91 +320,20 @@
 
     <main>
         <h1>📚 Library</h1>
-        <p class="subtitle">Stories, biblical resources, and faith-based content from Amazing Grace Home Living.</p>
+        <p class="subtitle">Stories, resources, and faith-based content from Amazing Grace Home Living.</p>
 
-        <h2 class="section-heading">Stories</h2>
-        <ul id="story-list" class="story-list" aria-label="Story list">
+        <div id="story-list" aria-label="Story list">
             <!-- Stories will be loaded dynamically -->
-        </ul>
-
-        <h2 class="section-heading">🎵 Audio Collection</h2>
-
-        <div class="audio-grid">
-            <article class="audio-card">
-                <h4>Storm</h4>
-                <p>Atmospheric score for dramatic ministry and story moments.</p>
-                <audio controls preload="none">
-                    <source src="../assets/audio/storm.mp3" type="audio/mpeg">
-                </audio>
-                <a class="media-download" href="../assets/audio/storm.mp3" download>Download MP3</a>
-            </article>
-
-            <article class="audio-card">
-                <h4>Victory</h4>
-                <p>Celebration cue used for success and completion moments.</p>
-                <audio controls preload="none">
-                    <source src="../assets/audio/victory.mp3" type="audio/mpeg">
-                </audio>
-                <a class="media-download" href="../assets/audio/victory.mp3" download>Download MP3</a>
-            </article>
-
-            <article class="audio-card">
-                <h4>Ending</h4>
-                <p>Long-form ambient track preserved for story and ministry playback.</p>
-                <audio controls preload="none">
-                    <source src="../assets/audio/ending.mp3" type="audio/mpeg">
-                </audio>
-                <a class="media-download" href="../assets/audio/ending.mp3" download>Download MP3</a>
-            </article>
-
-            <article class="audio-card">
-                <h4>Badge</h4>
-                <p>Short reward stinger used across the arcade experience.</p>
-                <audio controls preload="none">
-                    <source src="../assets/audio/badge.mp3" type="audio/mpeg">
-                </audio>
-                <a class="media-download" href="../assets/audio/badge.mp3" download>Download MP3</a>
-            </article>
-
-            <article class="audio-card">
-                <h4>Course Clear Fanfare</h4>
-                <p>Arcade completion fanfare from the shared audio library.</p>
-                <audio controls preload="none">
-                    <source src="../assets/audio/course-clear-fanfare.mp3" type="audio/mpeg">
-                </audio>
-                <a class="media-download" href="../assets/audio/course-clear-fanfare.mp3" download>Download MP3</a>
-            </article>
-
-            <article class="audio-card">
-                <h4>Player Down</h4>
-                <p>Game-over and warning cue from the ministry audio archive.</p>
-                <audio controls preload="none">
-                    <source src="../assets/audio/player-down.mp3" type="audio/mpeg">
-                </audio>
-                <a class="media-download" href="../assets/audio/player-down.mp3" download>Download MP3</a>
-            </article>
         </div>
 
-        <h2 class="section-heading">Resources</h2>
+        <hr style="border: 0; border-top: 1px solid var(--border); margin: 2rem 0;">
 
-        <a href="https://drive.google.com/file/d/1OVEEA0f9oXdfy62ZBEAKMU75-Ly99o7c/view?usp=drive_link" class="resource-link" target="_blank" rel="noopener noreferrer">
-            <div class="resource-title">📖 Ethiopian Bible</div>
-            <p class="resource-desc">Access the complete Ethiopian Bible translation.</p>
-        </a>
+        <a href="https://drive.google.com/file/d/1OVEEA0f9oXdfy62ZBEAKMU75-Ly99o7c/view?usp=drive_link" class="resource-link" target="_blank" rel="noopener noreferrer">Ethiopian Bible</a>
+        <br>
+        <a href="../audio-library/" class="resource-link">Audio Library</a>
 
-        <a href="../stories/" class="resource-link">
-            <div class="resource-title">📑 Stories Archive</div>
-            <p class="resource-desc">Browse the complete archive of all stories and articles.</p>
-        </a>
-
-        <h2 class="section-heading">📝 Featured Blog</h2>
-
-        <div class="blog-feature">
-            <span style="font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);font-weight:700;">First article</span>
-            <h3>Architectural JS Synthesis of the Matrix of Conscience</h3>
-            <p>An architectural deep-dive into unifying the Sequence Stabilizer, Binary Rain, and a point-based economy in high-fidelity simulation environments.</p>
-            <a href="../stories/blog/architectural-js-synthesis.html">Read full article →</a>
-        </div>
+        <br><br>
+        <a href="../stories/" class="resource-link">Stories Archive →</a>
     </main>
 
     <footer class="footer">
@@ -412,13 +341,6 @@
     </footer>
 
     <script>
-        var THUMBNAILS = {
-            'matrix-of-conscience': 'https://github.com/user-attachments/assets/9743f88b-2425-4a99-8eec-509bed3e24b3',
-            'expose-the-matrix':    'https://github.com/user-attachments/assets/08bda5db-0092-4a12-a378-94184861db7b',
-            'noah-and-the-ark':     'https://github.com/user-attachments/assets/ca12975d-2699-4bfd-b9ef-d06b4452cef6',
-            'the-lamp-in-the-window': 'https://github.com/user-attachments/assets/5e315c2c-6185-474e-a3f8-1ebf56224e45'
-        };
-
         function esc(str) {
             return String(str || '')
                 .replace(/&/g, '&amp;')
@@ -435,15 +357,6 @@
             if (p.startsWith('../')) return p;
             // fallback: build from slug
             return entry.slug ? '../stories/' + entry.slug + '/' : '#';
-        }
-
-        function pickIcon(entry) {
-            var tags = Array.isArray(entry.tags) ? entry.tags.map(function(t){ return String(t).toLowerCase(); }) : [];
-            var genre = String(entry.genre || '').toLowerCase();
-            if (tags.indexOf('faith') !== -1 || genre.indexOf('faith') !== -1) return '✝';
-            if (tags.indexOf('matrix') !== -1 || tags.indexOf('sci-fi') !== -1 || genre.indexOf('sci') !== -1) return '⌬';
-            if (tags.indexOf('covenant') !== -1) return '✧';
-            return '📖';
         }
 
         async function loadStories() {
@@ -466,24 +379,12 @@
 
                 entries.forEach(function (entry) {
                     var href = resolvePath(entry);
-                    var thumb = THUMBNAILS[entry.slug] || null;
-                    var li = document.createElement('li');
-
-                    var thumbHtml = thumb
-                        ? '<img class="story-card-thumb" src="' + esc(thumb) + '" alt="' + esc(entry.title) + '" loading="lazy">'
-                        : '<div class="story-card-thumb-placeholder">' + esc(pickIcon(entry)) + '</div>';
-
-                    var metaParts = [entry.author, entry.series, entry.genre].filter(Boolean);
-                    li.innerHTML =
-                        '<a class="story-card" href="' + esc(href) + '">' +
-                            thumbHtml +
-                            '<div class="story-card-body">' +
-                                '<div class="story-card-title">' + esc(entry.title || 'Untitled') + '</div>' +
-                                (metaParts.length ? '<div class="story-card-meta">' + esc(metaParts.join(' — ')) + '</div>' : '') +
-                                '<p class="story-card-summary">' + esc(entry.summary || '') + '</p>' +
-                            '</div>' +
-                        '</a>';
-                    list.appendChild(li);
+                    var link = document.createElement('a');
+                    link.href = href;
+                    link.className = 'resource-link';
+                    link.textContent = entry.title || 'Untitled';
+                    list.appendChild(link);
+                    list.appendChild(document.createElement('br'));
                 });
             } catch (err) {
                 console.error('Failed to load stories', err);

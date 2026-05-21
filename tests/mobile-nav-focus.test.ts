@@ -8,6 +8,6 @@ describe('homepage navigation', () => {
     expect(src).toContain('./assets/css/unified-nav.css');
     expect(src).not.toContain('class="menu-toggle"');
     expect(src).not.toContain('// Mobile nav toggle');
-    expect(src).toContain('>Listings<');
+    expect(src).toContain('>Homes<');
   });
 });
