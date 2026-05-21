@@ -54,7 +54,8 @@
   display: flex !important;
   align-items: center;
   gap: 0.5rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;      /* keep nav on a single row */
+  white-space: nowrap;    /* prevent link text from wrapping */
   justify-content: flex-end;
   position: static !important;
   width: auto !important;
