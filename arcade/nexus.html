@@ -178,6 +178,30 @@
 
 
 
+        /* Clue reveal shake — applies to both clue cards and the suspect panel */
+
+        .clue-card.clue-shake,
+
+        .suspect-panel.clue-shake {
+
+            animation: clue-shake 600ms ease;
+
+        }
+
+        @keyframes clue-shake {
+
+            0%, 100% { transform: translateX(0); }
+
+            20%       { transform: translateX(-8px) rotate(-2deg); }
+
+            40%       { transform: translateX(8px)  rotate(2deg);  }
+
+            60%       { transform: translateX(-5px) rotate(-1deg); }
+
+            80%       { transform: translateX(5px)  rotate(1deg);  }
+
+        }
+
         .star-glow { filter: drop-shadow(0 0 10px var(--gold-knowledge)); }
 
     </style>
@@ -245,6 +269,11 @@
             <h3 class="heading-cinzel text-[#F2C94C] text-xl mb-4">Investigator's Log: Sunken Pier</h3>
 
             <p class="subheading-merriweather text-slate-300 leading-relaxed italic mb-6">"Evidence suggests the family heirloom is hidden near the docks. Recover the Sapphire Scroll to unlock the secret of the pier."</p>
+
+            <div id="suspect-panel" class="suspect-panel mb-6 p-4 rounded-2xl border border-yellow-500/30 bg-slate-800/60 text-center hidden">
+                <div class="text-2xl mb-2">🕵️</div>
+                <p id="suspect-clue-text" class="subheading-merriweather text-sm text-slate-300 italic"></p>
+            </div>
 
             <div class="flex items-center gap-4">
 
@@ -447,6 +476,18 @@
 
 
     // --- POPUP LOGIC ---
+
+    /**
+     * Reveal a clue by shaking the target element.
+     * Works on both .clue-card and .suspect-panel elements.
+     * @param {Element} el - the DOM element to animate
+     */
+    function revealClue(el) {
+        el.classList.remove('clue-shake');
+        void el.offsetWidth; // force reflow to restart animation
+        el.classList.add('clue-shake');
+        el.addEventListener('animationend', () => el.classList.remove('clue-shake'), { once: true });
+    }
 
     function showCluePopup(clueTitle, clueText, icon) {
 
