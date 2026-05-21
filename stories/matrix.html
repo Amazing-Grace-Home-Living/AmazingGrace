@@ -70,7 +70,8 @@
 
     .nav-links {
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;      /* keep nav on a single row */
+      white-space: nowrap;    /* prevent link text from wrapping */
       gap: 0.75rem;
     }
 
