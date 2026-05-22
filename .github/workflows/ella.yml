@@ -57,4 +57,36 @@ jobs:
             let modified = false;
             for (const comment of suggestions) {
                 const filePath = comment.path;
+                const match = comment.body.match(/```suggestion\r?\n([\s\S]*?)```/);
+                if (!match) {
+                    core.warning(`Could not extract suggestion from comment ${comment.id} on ${filePath}`);
+                    continue;
+                }
+                const suggestedContent = match[1];
+                // comment.line is the end line (1-based), start_line is the start (falls back to line)
+                const startLine = (comment.start_line || comment.line) - 1; // convert to 0-based
+                const endLine = comment.line - 1; // 0-based
+
+                const fullPath = path.join(process.env.GITHUB_WORKSPACE, filePath);
+                if (!fs.existsSync(fullPath)) {
+                    core.warning(`File not found: ${fullPath}`);
+                    continue;
+                }
+                const fileLines = fs.readFileSync(fullPath, 'utf8').split('\n');
+                const newLines = suggestedContent.split('\n');
+                // Remove trailing empty element produced by a trailing newline in suggestedContent
+                if (newLines[newLines.length - 1] === '') newLines.pop();
+                fileLines.splice(startLine, endLine - startLine + 1, ...newLines);
+                fs.writeFileSync(fullPath, fileLines.join('\n'));
+                core.info(`Applied suggestion from comment ${comment.id} to ${filePath} (lines ${startLine + 1}–${endLine + 1})`);
+                modified = true;
+            }
+
+            if (modified) {
+                execSync('git add -A');
+                execSync('git commit -m "chore: apply review suggestions [Ella]"');
+                execSync(`git push origin HEAD:refs/heads/${context.payload.pull_request.head.ref}`);
+                core.info("Changes committed and pushed.");
+            } else {
+                core.info("No suggestions applied.");
             }
