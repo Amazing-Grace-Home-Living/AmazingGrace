@@ -14,7 +14,7 @@
  *   swapGems(grid, r1,c1, r2,c2)        → grid     (alias)
  *   findMatches(grid)                   → { matches, specials }
  *   applyMatches(grid, matchResult, comboLevel?) → grid
- *   triggerSpecial(grid, row,col, type, comboLevel?) → void (mutates copy)
+ *   triggerSpecial(grid, row,col, kind, comboLevel?) → void (mutates copy)
  *   applyGravity(grid)                  → grid
  *   clearMatches(grid, matchCells, replacements?) → grid  (legacy compat)
  */
@@ -27,29 +27,37 @@ function randomGemType() {
   return GEM_TYPES[Math.floor(Math.random() * GEM_TYPES.length)];
 }
 
-function makeGem(type, special = null) {
-  return { type, special, createdBy: null };
+/**
+ * Returns the kind string from a gem value (string or object).
+ */
+function gemType(gem) {
+  if (!gem) return null;
+  return typeof gem === 'string' ? gem : gem.kind;
+}
+
+function makeGem(kind, special = null) {
+  return special ? { kind, special, createdBy: null } : kind;
 }
 
 /* ── Grid creation ───────────────────────────────────────────────────────── */
 
 /**
  * Creates an initial 7×7 grid of gem objects with no pre-existing matches.
- * @returns {Array<Array<object>>}
+ * @returns {Array<Array<object|string>>}
  */
 export function createInitialGrid() {
   const grid = [];
   for (let r = 0; r < GRID_SIZE; r++) {
     grid[r] = [];
     for (let c = 0; c < GRID_SIZE; c++) {
-      let gemType;
+      let kind;
       do {
-        gemType = randomGemType();
+        kind = randomGemType();
       } while (
-        (c >= 2 && grid[r][c - 1]?.type === gemType && grid[r][c - 2]?.type === gemType) ||
-        (r >= 2 && grid[r - 1][c]?.type === gemType && grid[r - 2][c]?.type === gemType)
+        (c >= 2 && gemType(grid[r][c - 1]) === kind && gemType(grid[r][c - 2]) === kind) ||
+        (r >= 2 && gemType(grid[r - 1][c]) === kind && gemType(grid[r - 2][c]) === kind)
       );
-      grid[r][c] = makeGem(gemType);
+      grid[r][c] = makeGem(kind);
     }
   }
   return grid;
@@ -94,13 +102,13 @@ export const swapGems = applySwap;
  * Finds all horizontal and vertical matches of 3+ gems.
  * Returns `{ matches: [{row, col}…], specials: [{row, col, specialType}…] }`.
  *
- * Special types:
+ * Special kinds:
  *   lineH    — horizontal line-clear (4-in-a-row)
  *   lineV    — vertical line-clear   (4-in-a-row)
  *   bomb     — 3×3 explosion         (T/L shape ≥5)
- *   supernova — clear all same type  (5-in-a-row)
+ *   supernova — clear all same kind  (5-in-a-row)
  *
- * @param {Array<Array<object>>} grid
+ * @param {Array<Array<object|string>>} grid
  * @returns {{ matches: Array<{row:number,col:number}>, specials: Array<{row:number,col:number,specialType:string}> }}
  */
 export function findMatches(grid) {
@@ -114,7 +122,7 @@ export function findMatches(grid) {
     for (let c = 1; c <= cols; c++) {
       const prev = grid[r][c - 1];
       const curr = c < cols ? grid[r][c] : null;
-      if (!curr || !prev || curr.type !== prev.type) {
+      if (!curr || !prev || gemType(curr) !== gemType(prev)) {
         const len = c - runStart;
         if (len >= 3) {
           for (let k = runStart; k < c; k++) matched.add(`${r},${k}`);
@@ -130,7 +138,7 @@ export function findMatches(grid) {
     for (let r = 1; r <= rows; r++) {
       const prev = grid[r - 1][c];
       const curr = r < rows ? grid[r][c] : null;
-      if (!curr || !prev || curr.type !== prev.type) {
+      if (!curr || !prev || gemType(curr) !== gemType(prev)) {
         const len = r - runStart;
         if (len >= 3) {
           for (let k = runStart; k < r; k++) matched.add(`${k},${c}`);
@@ -191,6 +199,74 @@ function classifyShapes(basicMatches) {
   return { matches: basicMatches, specials };
 }
 
+/**
+ * Returns matches grouped by connected component (legacy format).
+ * @param {Array<Array<object|string>>} grid
+ * @returns {Array<Array<{r:number, c:number}>>}
+ */
+export function findMatchesGrouped(grid) {
+  const rows = grid.length;
+  const cols = grid[0].length;
+  const matched = new Set();
+
+  for (let r = 0; r < rows; r++) {
+    let runStart = 0;
+    for (let c = 1; c <= cols; c++) {
+      const prev = grid[r][c - 1];
+      const curr = c < cols ? grid[r][c] : null;
+      if (!curr || !prev || gemType(curr) !== gemType(prev)) {
+        const len = c - runStart;
+        if (len >= 3) {
+          for (let k = runStart; k < c; k++) matched.add(`${r},${k}`);
+        }
+        runStart = c;
+      }
+    }
+  }
+
+  for (let c = 0; c < cols; c++) {
+    let runStart = 0;
+    for (let r = 1; r <= rows; r++) {
+      const prev = grid[r - 1][c];
+      const curr = r < rows ? grid[r][c] : null;
+      if (!curr || !prev || gemType(curr) !== gemType(prev)) {
+        const len = r - runStart;
+        if (len >= 3) {
+          for (let k = runStart; k < r; k++) matched.add(`${k},${c}`);
+        }
+        runStart = r;
+      }
+    }
+  }
+
+  // BFS to group matched cells into components
+  const byCell = new Set(matched);
+  const groups = [];
+  const visited = new Set();
+
+  for (const key of byCell) {
+    if (visited.has(key)) continue;
+    const group = [];
+    const queue = [key];
+    visited.add(key);
+    while (queue.length > 0) {
+      const cur = queue.shift();
+      const [r, c] = cur.split(',').map(Number);
+      group.push({ r, c });
+      for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const nk = `${r + dr},${c + dc}`;
+        if (byCell.has(nk) && !visited.has(nk)) {
+          visited.add(nk);
+          queue.push(nk);
+        }
+      }
+    }
+    groups.push(group);
+  }
+
+  return groups;
+}
+
 function classifyComponent(comp) {
   const specials = [];
   if (comp.length < 3) return { specials };
@@ -248,10 +324,10 @@ function classifyComponent(comp) {
  *  3. Clears remaining matched cells.
  *  4. Triggers only the pre-existing specials.
  *
- * @param {Array<Array<object>>} grid
+ * @param {Array<Array<object|string>>} grid
  * @param {{ matches: Array<{row,col}>, specials: Array<{row,col,specialType}> }} matchResult
  * @param {number} [comboLevel=1]
- * @returns {Array<Array<object>>} New grid.
+ * @returns {Array<Array<object|string>>} New grid.
  */
 export function applyMatches(grid, matchResult, comboLevel = 1) {
   const { matches, specials } = matchResult;
@@ -260,8 +336,8 @@ export function applyMatches(grid, matchResult, comboLevel = 1) {
 
   // Capture pre-existing specials before clearing anything
   const preExistingSpecials = matches
-    .filter((m) => next[m.row][m.col]?.special)
-    .map((m) => ({ row: m.row, col: m.col, type: next[m.row][m.col].special }));
+    .filter((m) => typeof next[m.row][m.col] === 'object' && next[m.row][m.col]?.special)
+    .map((m) => ({ row: m.row, col: m.col, kind: next[m.row][m.col].special }));
 
   // Place newly-created special gems (remove from clear list so they persist)
   for (const s of specials) {
@@ -269,12 +345,12 @@ export function applyMatches(grid, matchResult, comboLevel = 1) {
     if (toClear.has(key)) {
       toClear.delete(key);
       const cell = next[s.row][s.col];
-      next[s.row][s.col] = {
-        ...(cell || {}),
-        type: cell?.type || 'star',
-        special: s.specialType,
-        createdBy: 'shape',
-      };
+      const kind = gemType(cell) || 'star';
+      next[s.row][s.col] = makeGem(kind, s.specialType);
+      // Explicitly mark as created by shape if it was an object before, or just force it
+      if (typeof next[s.row][s.col] === 'object') {
+        next[s.row][s.col].createdBy = 'shape';
+      }
     }
   }
 
@@ -286,7 +362,7 @@ export function applyMatches(grid, matchResult, comboLevel = 1) {
 
   // Trigger ONLY pre-existing specials that were part of the match
   for (const ps of preExistingSpecials) {
-    triggerSpecial(next, ps.row, ps.col, ps.type, comboLevel);
+    triggerSpecial(next, ps.row, ps.col, ps.kind, comboLevel);
   }
 
   return next;
@@ -295,13 +371,13 @@ export function applyMatches(grid, matchResult, comboLevel = 1) {
 /**
  * Clears cells affected by a special gem in-place (mutates the grid copy).
  *
- * @param {Array<Array<object>>} grid - Mutable grid copy.
+ * @param {Array<Array<object|string>>} grid - Mutable grid copy.
  * @param {number} row
  * @param {number} col
- * @param {string} type - 'lineH' | 'lineV' | 'bomb' | 'supernova'
+ * @param {string} kind - 'lineH' | 'lineV' | 'bomb' | 'supernova'
  * @param {number} [comboLevel=1]
  */
-export function triggerSpecial(grid, row, col, type, _comboLevel = 1) {
+export function triggerSpecial(grid, row, col, kind, _comboLevel = 1) {
   const rows = grid.length;
   const cols = grid[0].length;
 
@@ -310,22 +386,22 @@ export function triggerSpecial(grid, row, col, type, _comboLevel = 1) {
     grid[r][c] = null;
   };
 
-  if (type === 'lineH') {
+  if (kind === 'lineH') {
     for (let c = 0; c < cols; c++) mark(row, c);
-  } else if (type === 'lineV') {
+  } else if (kind === 'lineV') {
     for (let r = 0; r < rows; r++) mark(r, col);
-  } else if (type === 'bomb') {
+  } else if (kind === 'bomb') {
     for (let dr = -1; dr <= 1; dr++) {
       for (let dc = -1; dc <= 1; dc++) {
         mark(row + dr, col + dc);
       }
     }
-  } else if (type === 'supernova') {
-    const targetType = grid[row][col]?.type;
+  } else if (kind === 'supernova') {
+    const targetType = gemType(grid[row][col]);
     if (!targetType) return;
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
-        if (grid[r][c]?.type === targetType) mark(r, c);
+        if (gemType(grid[r][c]) === targetType) mark(r, c);
       }
     }
   }
