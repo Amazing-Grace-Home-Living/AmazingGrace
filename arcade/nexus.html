@@ -178,9 +178,7 @@
 
 
 
-        /* Clue reveal shake — applies to both clue cards and the suspect panel */
-
-        .clue-card.clue-shake,
+        /* Clue reveal shake for the suspect panel */
 
         .suspect-panel.clue-shake {
 
@@ -479,8 +477,7 @@
 
     /**
      * Reveal a clue by shaking the target element.
-     * Works on both .clue-card and .suspect-panel elements.
-     * @param {Element} el - the DOM element to animate
+     * @param {HTMLElement} el - the DOM element to animate
      */
     function revealClue(el) {
         el.classList.remove('clue-shake');

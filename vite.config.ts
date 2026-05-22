@@ -22,6 +22,7 @@ export default defineConfig({
         arcadeBibleStudy:  resolve(__dirname, "arcade/bible-study/index.html"),
         arcadeMatrixClassic: resolve(__dirname, "arcade/matrix-classic.html"),
         arcadeMatrixDebug:   resolve(__dirname, "arcade/matrix-debug.html"),
+        arcadeNexus:         resolve(__dirname, "arcade/nexus.html"),
         arcadeQuickClick:    resolve(__dirname, "arcade/quick-click/index.html"),
         arcadeTrinity:      resolve(__dirname, "arcade/trinity/index.html"),
         ministry:          resolve(__dirname, "ministry/index.html"),

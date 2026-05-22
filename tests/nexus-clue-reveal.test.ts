@@ -9,11 +9,6 @@ describe('nexus clue-shake animation', () => {
     expect(html).toContain('@keyframes clue-shake');
   });
 
-  it('applies clue-shake animation to .clue-card elements', () => {
-    const html = fs.readFileSync(NEXUS_HTML, 'utf8');
-    expect(html).toMatch(/\.clue-card\.clue-shake[^}]*animation:\s*clue-shake/s);
-  });
-
   it('applies clue-shake animation to .suspect-panel elements (selector is broad enough)', () => {
     const html = fs.readFileSync(NEXUS_HTML, 'utf8');
     expect(html).toMatch(/\.suspect-panel\.clue-shake[^}]*animation:\s*clue-shake/s);
