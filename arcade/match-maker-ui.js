@@ -1,4 +1,4 @@
-﻿import {
+import {
   createInitialGrid,
   canSwap,
   swapGems,
@@ -6,8 +6,8 @@
   applyGravity,
 } from './matchMakerState.js';
 
-const ROWS = 8;
-const COLS = 8;
+const ROWS = 7;
+const COLS = 7;
 const GEM_SIZE = 60;
 const SWAP_ANIM_DURATION = 200;
 const POINTS_PER_GEM = 10;

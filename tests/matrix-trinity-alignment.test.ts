@@ -14,9 +14,10 @@ describe('matrix alignment integration', () => {
   it('supports sequence alignment and scoring for M45 matches', () => {
     const html = fs.readFileSync('arcade/matrix-of-conscience/index.html', 'utf8');
 
+    expect(html).toContain('import {');
+    expect(html).toContain("from '../../js/matchmaker.js'");
     expect(html).toContain('function handleSelection(r, c, tileElement)');
-    expect(html).toContain('function checkAndClearMatches()');
-    expect(html).toContain('function cascadeTiles()');
+    expect(html).toContain('findMatchesGrouped(gridData)');
     expect(html).toContain('matrix_high_score');
   });
 });

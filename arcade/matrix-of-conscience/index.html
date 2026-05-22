@@ -167,7 +167,15 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        import {
+          createInitialGrid,
+          canSwap,
+          applySwap,
+          findMatchesGrouped,
+          applyGravity
+        } from '../../js/matchmaker.js';
+
         // --- 1. Ambient Background Starfield (Deep Field Physics) ---
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
@@ -210,47 +218,36 @@
         setInterval(drawStarField, 100);
 
         // --- 2. Alignment Token Parameters (M45 Structural Nodes) ---
-        const starNodes = [
-            { symbol: '★', type: 'blue' }, // Alcyone
-            { symbol: '⭐', type: 'blue' }, // Maia
-            { symbol: '🔷', type: 'blue' }, // Electra
-            { symbol: '♦', type: 'blue' },  // Taygeta
-            { symbol: '⬢', type: 'red' }   // Saturated Red Spectral Focus Node
-        ];
+        const starNodes = {
+            heart: { symbol: '★', type: 'blue' },
+            star:  { symbol: '⭐', type: 'blue' },
+            cross: { symbol: '🔷', type: 'blue' },
+            flame: { symbol: '♦', type: 'blue' },
+            drop:  { symbol: '⬢', type: 'red' }
+        };
         
-        const gridSize = 5;
+        const gridSize = 7; // Unified with canonical engine
         let score = 0;
         let highScore = localStorage.getItem('matrix_high_score') || 0;
         let gridData = [];
         let selectedTile = null;
+        let isAnimating = false;
         document.getElementById('high-score-display').innerText = highScore;
 
         function initGrid() {
             score = 0;
             updateScore(0);
+            gridData = createInitialGrid();
+            renderGridFromData();
+            
             const gridElement = document.getElementById('grid');
-            gridElement.innerHTML = '';
-            gridData = [];
-
-            for (let r = 0; r < gridSize; r++) {
-                gridData[r] = [];
-                for (let c = 0; c < gridSize; c++) {
-                    let node;
-                    // Mathematical logic to prevent starting grid match clusters
-                    do {
-                        node = starNodes[Math.floor(Math.random() * starNodes.length)];
-                    } while (
-                        (c >= 2 && gridData[r][c-1].symbol === node.symbol && gridData[r][c-2].symbol === node.symbol) ||
-                        (r >= 2 && gridData[r-1][c].symbol === node.symbol && gridData[r-2][c].symbol === node.symbol)
-                    );
-                    gridData[r][c] = node;
-                    createTileElement(r, c, node);
-                }
-            }
+            gridElement.style.gridTemplateColumns = `repeat(${gridSize}, 60px)`;
+            gridElement.style.gridTemplateRows = `repeat(${gridSize}, 60px)`;
         }
 
-        function createTileElement(r, c, node) {
+        function createTileElement(r, c, kind) {
             const gridElement = document.getElementById('grid');
+            const node = starNodes[kind] || starNodes.heart;
             const tile = document.createElement('div');
             tile.classList.add('tile');
             tile.innerText = node.symbol;
@@ -272,93 +269,59 @@
             gridElement.appendChild(tile);
         }
 
-        function handleSelection(r, c, tileElement) {
+        async function handleSelection(r, c, tileElement) {
+            if (isAnimating) return;
+
             if (!selectedTile) {
                 selectedTile = { r, c, element: tileElement };
                 tileElement.classList.add('selected');
             } else {
                 const prevTile = selectedTile;
-                const isAdjacent = (Math.abs(prevTile.r - r) === 1 && prevTile.c === c) ||
-                                  (Math.abs(prevTile.c - c) === 1 && prevTile.r === r);
+                const r1 = prevTile.r, c1 = prevTile.c;
+                const r2 = r, c2 = c;
+                
                 prevTile.element.classList.remove('selected');
                 selectedTile = null;
 
-                if (isAdjacent) {
-                    let temp = gridData[prevTile.r][prevTile.c];
-                    gridData[prevTile.r][prevTile.c] = gridData[r][c];
-                    gridData[r][c] = temp;
-                    
-                    if (!checkAndClearMatches()) {
-                        // Revert matrix state if invalid swap sequence
-                        temp = gridData[prevTile.r][prevTile.c];
-                        gridData[prevTile.r][prevTile.c] = gridData[r][c];
-                        gridData[r][c] = temp;
-                    } else {
-                        renderGridFromData();
-                    }
-                }
-            }
-        }
-
-        function checkAndClearMatches() {
-            let matched = Array.from({ length: gridSize }, () => Array(gridSize).fill(false));
-            let hasMatch = false;
-
-            // Matrix Row Vector Sweep
-            for (let r = 0; r < gridSize; r++) {
-                for (let c = 0; c < gridSize - 2; c++) {
-                    if (gridData[r][c] && gridData[r][c].symbol === gridData[r][c+1].symbol && gridData[r][c].symbol === gridData[r][c+2].symbol) {
-                        matched[r][c] = matched[r][c+1] = matched[r][c+2] = true;
-                        hasMatch = true;
-                    }
-                }
-            }
-            // Matrix Column Vector Sweep
-            for (let r = 0; r < gridSize - 2; r++) {
-                for (let c = 0; c < gridSize; c++) {
-                    if (gridData[r][c] && gridData[r][c].symbol === gridData[r+1][c].symbol && gridData[r][c].symbol === gridData[r+2][c].symbol) {
-                        matched[r][c] = matched[r+1][c] = matched[r+2][c] = true;
-                        hasMatch = true;
-                    }
-                }
-            }
-
-            if (hasMatch) {
-                let matchCount = 0;
-                for (let r = 0; r < gridSize; r++) {
-                    for (let c = 0; c < gridSize; c++) {
-                        if (matched[r][c]) {
-                            gridData[r][c] = null;
-                            matchCount++;
-                        }
-                    }
-                }
-                updateScore(matchCount * 10);
-                cascadeTiles();
-                return true;
-            }
-            return false;
-        }
-
-        function cascadeTiles() {
-            for (let c = 0; c < gridSize; c++) {
-                let emptyRow = gridSize - 1;
-                for (let r = gridSize - 1; r >= 0; r--) {
-                    if (gridData[r][c] !== null) {
-                        gridData[emptyRow][c] = gridData[r][c];
-                        if (emptyRow !== r) gridData[r][c] = null;
-                        emptyRow--;
-                    }
-                }
-                for (let r = emptyRow; r >= 0; r--) {
-                    gridData[r][c] = starNodes[Math.floor(Math.random() * starNodes.length)];
-                }
-            }
-            setTimeout(() => {
-                renderGridFromData();
-                if (checkAndClearMatches()) {
+                if (canSwap(null, r1, c1, r2, c2)) {
+                    isAnimating = true;
+                    gridData = applySwap(gridData, r1, c1, r2, c2);
                     renderGridFromData();
+                    
+                    const matches = findMatchesGrouped(gridData);
+                    if (matches.length === 0) {
+                        // Revert
+                        setTimeout(() => {
+                            gridData = applySwap(gridData, r1, c1, r2, c2);
+                            renderGridFromData();
+                            isAnimating = false;
+                        }, 300);
+                    } else {
+                        await processMatches();
+                    }
                 }
+            }
+        }
+
+        async function processMatches() {
+            let matches = findMatchesGrouped(gridData);
+            if (matches.length === 0) {
+                isAnimating = false;
+                return;
+            }
+
+            const clearedCells = matches.flat();
+            updateScore(clearedCells.length * 10);
+            
+            clearedCells.forEach(({ r, c }) => {
+                gridData[r][c] = null;
+            });
+            renderGridFromData();
+
+            setTimeout(() => {
+                gridData = applyGravity(gridData);
+                renderGridFromData();
+                setTimeout(() => processMatches(), 250);
             }, 250);
         }
 
@@ -368,6 +331,12 @@
             for (let r = 0; r < gridSize; r++) {
                 for (let c = 0; c < gridSize; c++) {
                     if (gridData[r][c]) createTileElement(r, c, gridData[r][c]);
+                    else {
+                        const empty = document.createElement('div');
+                        empty.classList.add('tile');
+                        empty.style.opacity = '0';
+                        gridElement.appendChild(empty);
+                    }
                 }
             }
         }
@@ -383,6 +352,7 @@
         }
 
         initGrid();
+        window.initGrid = initGrid;
     </script>
 </body>
 </html>
