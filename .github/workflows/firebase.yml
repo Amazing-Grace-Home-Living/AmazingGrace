@@ -6,6 +6,10 @@ on:
       - main
   workflow_dispatch:
 
+concurrency:
+  group: firebase-hosting-live
+  cancel-in-progress: false
+
 jobs:
   build_and_validate:
     runs-on: ubuntu-latest
@@ -48,11 +52,17 @@ jobs:
             exit 1
           fi
 
+      - name: Validate internal navigation and asset links
+        run: node scripts/validate-dist-links.mjs
+
       - name: Upload dist artifact
         uses: actions/upload-artifact@v4
         with:
           name: site-dist
           path: dist
+
+    permissions:
+      contents: read
 
   deploy:
     needs: build_and_validate
@@ -80,3 +90,7 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_AMAZING_GRACE_HL_BBEAA }}
           projectId: amazing-grace-hl-bbeaa
           channelId: live
+
+    permissions:
+      contents: read
+      pull-requests: write
