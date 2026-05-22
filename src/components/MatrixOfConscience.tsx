@@ -1,4 +1,3 @@
-import React from 'react';
 import type { FamilyStats } from '../hooks/useFamilyStats';
 
 type Props = {
