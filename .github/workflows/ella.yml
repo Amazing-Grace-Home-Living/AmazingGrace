@@ -57,12 +57,4 @@ jobs:
             let modified = false;
             for (const comment of suggestions) {
                 const filePath = comment.path;
-                const sugMatch = comment.body.match(/
-http://googleusercontent.com/immersive_entry_chip/0
-
-### Next Steps:
-1.  **Commit this file:** Copy the block above and paste it into `.github/workflows/ella.yml` in your `AmazingGrace` repo.
-2.  **Verify Secrets:** Ensure `KEY_MASTER_URL` and `KEY_MASTER_TOKEN` are populated in your GitHub Repository Secrets.
-3.  **Delete Legacy:** Once this file is working, delete `ella-auto-apply.yml` and `key-master-sync.yml` to prevent duplicate triggers.
-
-Does this consolidated version clear the errors in your GitHub editor?
+            }

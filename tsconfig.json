@@ -2,9 +2,11 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
     "strict": true,
     "moduleResolution": "bundler",
-    "types": ["node"],
+    "types": ["node", "vite/client"],
     "rootDir": "./src",
     "outDir": "./dist"
   },
