@@ -27,8 +27,5 @@ describe("ministry media library", () => {
       const repoRelativeAssetPath = assetPath.startsWith("../") ? assetPath.slice(3) : assetPath;
       expect(fs.existsSync(resolve(repoRoot, repoRelativeAssetPath))).toBe(true);
     }
-
-    expect(html).toContain("assets/audio/ethiopian-bible/");
-    expect(fs.existsSync(resolve(repoRoot, "assets/audio/ethiopian-bible/.gitkeep"))).toBe(true);
   });
 });

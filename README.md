@@ -94,7 +94,6 @@ assets/
 │   └── <name>_frame_N.png      ← Star Matrix animation sprites (add when ready)
 │
 ├── audio/                       ← MP3 music & SFX served through shared asset paths
-│   ├── ethiopian-bible/         ← Ethiopian Bible audio archive for ministry playback/download
 │   └── <filename>.mp3           ← served at /assets/audio/<filename>.mp3
 │
 └── music/                       ← Downloadable MIDI music archive
