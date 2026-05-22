@@ -3,6 +3,17 @@ dist/
 *.local
 desktop.ini
 
+# Visual Studio
+.vs/
+*.slnx
+*.sqlite
+
+# Empty trigger files
+.push-trigger
+
+# Redundant deployment scripts (GitHub Actions handles this)
+build-and-deploy.sh
+
 # ── Exported story-engine bundles ────────────────────────────────────────────
 # These browser-saved static exports may embed Google API keys, Firebase
 # credentials, or other service tokens and must never be committed.

@@ -101,3 +101,32 @@ assets/
 ```
 
 The homepage reads listing photos directly from `assets/images/<slug>/`; the old `galleries/` route tree is no longer part of the site.
+
+---
+
+## 🌐 Domain Configuration
+
+| | |
+|---|---|
+| **Domain** | `amazinggracehl.org` |
+| **Repo** | `NicholaiMadias/Amazing-Grace` |
+| **Pages** | `https://amazinggracehl.org/` |
+| **CNAME** | `amazinggracehl.org` |
+
+### DNS Records
+
+```
+A    @      → 185.199.108.153
+A    @      → 185.199.109.153
+A    @      → 185.199.110.153
+A    @      → 185.199.111.153
+CNAME www   → nicholaimadias.github.io
+```
+
+### Arcade Subdomain (`arcade.amazinggracehl.org`)
+
+```
+CNAME arcade → nicholaimadias.github.io
+```
+
+Points to the Nexus Arcade hosted on GitHub Pages.
