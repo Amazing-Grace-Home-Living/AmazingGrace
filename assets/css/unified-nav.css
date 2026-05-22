@@ -54,7 +54,8 @@
   display: flex !important;
   align-items: center;
   gap: 0.5rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;      /* keep nav on a single row */
+  white-space: nowrap;    /* prevent link text from wrapping */
   justify-content: flex-end;
   position: static !important;
   width: auto !important;
@@ -101,4 +102,33 @@
 
 .menu-toggle {
   display: none !important;
+}
+
+/* Mobile-specific navigation improvements for iPhone and small screens */
+@media (max-width: 768px) {
+  .site-header .nav-container {
+    justify-content: center;
+    padding: 0.75rem 1rem;
+  }
+
+  .site-header .logo {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .site-header nav#main-nav,
+  .site-header .nav-links,
+  .site-header .main-nav {
+    width: 100%;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+
+  .site-header nav#main-nav a,
+  .site-header .nav-links a,
+  .site-header .main-nav a {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.9rem;
+  }
 }

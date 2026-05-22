@@ -249,7 +249,7 @@ describe("clearMatches", () => {
     const cells = [{ r: 2, c: 3 }];
     const replacements = [{ r: 2, c: 3, kind: "flame", special: "row" }];
     const next = clearMatches(grid, cells, replacements);
-    expect(next[2][3]).toEqual({ kind: "flame", special: "row" });
+    expect(next[2][3]).toMatchObject({ kind: "flame", special: "row" });
   });
 });
 

@@ -407,7 +407,15 @@
     <button class="play-again-btn" onclick="smReset()">↩ Play Again</button>
   </div>
 
-  <script>
+  <script type="module">
+    import {
+      createInitialGrid,
+      canSwap,
+      applySwap,
+      findMatchesGrouped,
+      applyGravity
+    } from '../../js/matchmaker.js';
+
     const STAR_TYPES = [
       { id: 'supernova', emoji: '🌟' },
       { id: 'shooting', emoji: '💫' },
@@ -438,47 +446,9 @@
       certId = null;
       isProcessing = false;
       dragStartTile = null;
-      createBoard();
+      board = createInitialGrid();
       smRender();
       smUpdateHUD();
-    }
-
-    function randomStar() {
-      return STAR_TYPES[Math.floor(Math.random() * STAR_TYPES.length)];
-    }
-
-    function wouldCreateImmediateMatch(r, c, row, star) {
-      return (
-        (c >= 2 && row[c - 1] && row[c - 2] && row[c - 1].id === star.id && row[c - 2].id === star.id) ||
-        (r >= 2 && board[r - 1][c] && board[r - 2][c] && board[r - 1][c].id === star.id && board[r - 2][c].id === star.id)
-      );
-    }
-
-    function createBoard() {
-      board = [];
-      for (let r = 0; r < GRID_SIZE; r++) {
-        const row = [];
-        for (let c = 0; c < GRID_SIZE; c++) {
-          let star;
-          let attempts = 0;
-          do {
-            star = randomStar();
-            attempts++;
-          } while (attempts < 20 && wouldCreateImmediateMatch(r, c, row, star));
-
-          if (wouldCreateImmediateMatch(r, c, row, star)) {
-            for (const fallback of STAR_TYPES) {
-              if (!wouldCreateImmediateMatch(r, c, row, fallback)) {
-                star = fallback;
-                break;
-              }
-            }
-          }
-
-          row.push(star);
-        }
-        board.push(row);
-      }
     }
 
     function smRender() {
@@ -488,16 +458,17 @@
 
       for (let r = 0; r < GRID_SIZE; r++) {
         for (let c = 0; c < GRID_SIZE; c++) {
-          const star = board[r][c];
+          const starKind = board[r][c];
+          const star = STAR_TYPES.find(t => t.id === starKind) || STAR_TYPES[0];
           const cell = document.createElement('button');
           cell.type = 'button';
           cell.className = 'star-cell';
           cell.setAttribute('data-row', r);
           cell.setAttribute('data-col', c);
-          cell.setAttribute('data-type', star ? star.id : '');
+          cell.setAttribute('data-type', star.id);
           cell.setAttribute('role', 'gridcell');
-          cell.setAttribute('aria-label', (star ? star.id : 'empty') + ' star');
-          cell.textContent = star ? star.emoji : '';
+          cell.setAttribute('aria-label', star.id + ' star');
+          cell.textContent = star.emoji;
           cell.addEventListener('pointerdown', onPointerDown);
           cell.addEventListener('pointerup', onPointerUp);
           grid.appendChild(cell);
@@ -555,22 +526,18 @@
       dragStartTile = null;
     }
 
-    function swapTiles(r1, c1, r2, c2) {
-      const tmp = board[r1][c1];
-      board[r1][c1] = board[r2][c2];
-      board[r2][c2] = tmp;
-    }
-
     function smSwap(r1, c1, r2, c2) {
       if (moves <= 0 || gameOver || isProcessing) return;
+      if (!canSwap(null, r1, c1, r2, c2)) return;
+
       isProcessing = true;
-      swapTiles(r1, c1, r2, c2);
+      board = applySwap(board, r1, c1, r2, c2);
       smRender();
 
       setTimeout(() => {
-        const matches = findMatches();
+        const matches = findMatchesGrouped(board);
         if (matches.length === 0) {
-          swapTiles(r1, c1, r2, c2);
+          board = applySwap(board, r1, c1, r2, c2);
           smRender();
           isProcessing = false;
           return;
@@ -582,42 +549,13 @@
       }, 180);
     }
 
-    function findMatches() {
-      const matched = new Set();
-
-      for (let r = 0; r < GRID_SIZE; r++) {
-        for (let c = 0; c < GRID_SIZE - 2; c++) {
-          if (board[r][c] && board[r][c + 1] && board[r][c + 2] && board[r][c].id === board[r][c + 1].id && board[r][c].id === board[r][c + 2].id) {
-            matched.add(r + ',' + c);
-            matched.add(r + ',' + (c + 1));
-            matched.add(r + ',' + (c + 2));
-          }
-        }
-      }
-
-      for (let c = 0; c < GRID_SIZE; c++) {
-        for (let r = 0; r < GRID_SIZE - 2; r++) {
-          if (board[r][c] && board[r + 1][c] && board[r + 2][c] && board[r][c].id === board[r + 1][c].id && board[r][c].id === board[r + 2][c].id) {
-            matched.add(r + ',' + c);
-            matched.add((r + 1) + ',' + c);
-            matched.add((r + 2) + ',' + c);
-          }
-        }
-      }
-
-      return Array.from(matched).map((key) => {
-        const [r, c] = key.split(',').map(Number);
-        return { r, c };
-      });
-    }
-
     function smResolveMatches() {
       if (gameOver) {
         isProcessing = false;
         return;
       }
 
-      const matches = findMatches();
+      const matches = findMatchesGrouped(board);
       if (matches.length === 0) {
         combo = 1;
         smUpdateHUD();
@@ -626,38 +564,23 @@
         return;
       }
 
-      const pts = matches.length * 10 * combo;
+      const clearedCells = matches.flat();
+      const pts = clearedCells.length * 10 * combo;
       score += pts;
-      if (matches.length >= 5) combo = Math.min(combo + 1, 5);
+      if (clearedCells.length >= 5) combo = Math.min(combo + 1, 5);
       smUpdateHUD();
 
-      matches.forEach(({ r, c }) => {
+      clearedCells.forEach(({ r, c }) => {
         board[r][c] = null;
       });
 
       smRender();
 
       setTimeout(() => {
-        smApplyGravity();
+        board = applyGravity(board);
         smRender();
         setTimeout(smResolveMatches, 220);
       }, 220);
-    }
-
-    function smApplyGravity() {
-      for (let c = 0; c < GRID_SIZE; c++) {
-        let bottom = GRID_SIZE - 1;
-        for (let r = GRID_SIZE - 1; r >= 0; r--) {
-          if (board[r][c] !== null) {
-            board[bottom][c] = board[r][c];
-            if (bottom !== r) board[r][c] = null;
-            bottom--;
-          }
-        }
-        for (let r = bottom; r >= 0; r--) {
-          board[r][c] = randomStar();
-        }
-      }
     }
 
     function smCheckGameEnd() {
@@ -857,6 +780,9 @@
 
       smInit();
     });
+
+    window.smCertPNG = smCertPNG;
+    window.smReset = smReset;
   </script>
   <script src="../../sw-register.js" defer></script>
 </body>

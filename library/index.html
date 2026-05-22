@@ -69,7 +69,8 @@
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;      /* keep nav on a single row */
+            white-space: nowrap;    /* prevent link text from wrapping */
             gap: 0.75rem;
         }
 
@@ -387,9 +388,9 @@
 
         <h2 class="section-heading">Resources</h2>
 
-        <a href="https://drive.google.com/file/d/1OVEEA0f9oXdfy62ZBEAKMU75-Ly99o7c/view?usp=drive_link" class="resource-link" target="_blank" rel="noopener noreferrer">
+        <a href="https://solomonsgatepressbible.com/pages/ethiopian-bible-bonuses" class="resource-link" target="_blank" rel="noopener noreferrer">
             <div class="resource-title">📖 Ethiopian Bible</div>
-            <p class="resource-desc">Access the complete Ethiopian Bible translation.</p>
+            <p class="resource-desc">Access the complete Ethiopian Bible translation with PDF format and bonus audio content.</p>
         </a>
 
         <a href="../stories/" class="resource-link">

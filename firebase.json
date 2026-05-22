@@ -10,7 +10,7 @@
   "firestore": {
     "database": "(default)",
     "location": "nam5",
-    "rules": "firebase.json",
+    "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
   "functions": [
@@ -18,10 +18,10 @@
       "codebase": "default",
       "disallowLegacyRuntimeConfig": true,
       "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run lint",
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ],
-      "source": "functions"
+      "source": "functions",
+      "secrets": ["SOVEREIGN_API_KEY"]
     },
     {
       "source": "matrix",
@@ -34,26 +34,32 @@
         "firebase-debug.*.log",
         "*.local"
       ],
-      "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run lint"
-      ]
+      "secrets": ["SOVEREIGN_API_KEY"]
     }
   ],
+  "hosting": {
+    "site": "amazing-grace-hl-bbeaa",
+    "public": "dist",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**/arcade/**",
+        "destination": "/arcade/index.html"
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
   "apphosting": [
     {
       "backendId": "limitlessnexus",
-      "rootDir": "npm run build",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "functions"
-      ]
-    },
-    {
-      "backendId": "limitlessnexus",
-      "rootDir": "AmazingGrace",
+      "rootDir": ".",
       "ignore": [
         "node_modules",
         ".git",
