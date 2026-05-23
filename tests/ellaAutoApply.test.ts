@@ -4,9 +4,9 @@ import {
   extractPatchBlocks,
   listTouchedPathsFromPatch,
   wantsAutoApply,
-} from '../scripts/ella-auto-apply-review.js';
+} from '../scripts/ella-auto-apply-review.js'; 
 
-describe('ella auto-apply helpers', () => {
+describe('ella auto-apply helpers', () => {    
   test('wantsAutoApply detects marker', () => {
     expect(wantsAutoApply('<!-- ella:apply -->')).toBe(true);
     expect(wantsAutoApply('<!-- ELLA:APPLY -->')).toBe(true);
@@ -54,4 +54,3 @@ describe('ella auto-apply helpers', () => {
     expect(() => assertPatchPathsAllowed(['src/app.js', 'README.md'])).not.toThrow();
   });
 });
-

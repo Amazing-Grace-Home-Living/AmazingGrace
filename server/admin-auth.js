@@ -49,8 +49,8 @@ export function isAuthorizedAdminRequest(req, expectedSecret) {
 export function requireAdminApiKey(req, res, next) {
   const expected = String(process.env.ADMIN_API_KEY ?? "").trim();
   if (!expected) {
-    return res.status(401).json({
-      error: "Unauthorized",
+    return res.status(503).json({
+      error: "Server Configuration Error",
     });
   }
 

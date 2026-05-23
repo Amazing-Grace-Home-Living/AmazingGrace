@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import { resolve } from "path";
+import { copyFileSync, mkdirSync } from "fs";
 
 export default defineConfig({
   // Use relative asset paths so the site works on GitHub Pages PR previews
@@ -19,8 +20,6 @@ export default defineConfig({
         matrixConscienceIndex: resolve(__dirname, "matrix-of-conscience/index.html"),
         arcadeCertificates: resolve(__dirname, "arcade/certificates/index.html"),
         arcadeBibleStudy:  resolve(__dirname, "arcade/bible-study/index.html"),
-        arcadeMatrixClassic: resolve(__dirname, "arcade/matrix-classic.html"),
-        arcadeMatrixDebug:   resolve(__dirname, "arcade/matrix-debug.html"),
         arcadeQuickClick:    resolve(__dirname, "arcade/quick-click/index.html"),
         arcadeTrinity:      resolve(__dirname, "arcade/trinity/index.html"),
         ministry:          resolve(__dirname, "ministry/index.html"),
@@ -56,5 +55,23 @@ export default defineConfig({
         arcadeRedirect:    resolve(__dirname, "arcade.html"),
       }
     }
-  }
+  },
+  plugins: [
+    {
+      name: 'copy-library-json',
+      closeBundle() {
+        // Copy stories/library.json to dist/stories/library.json
+        try {
+          mkdirSync(resolve(__dirname, 'dist/stories'), { recursive: true });
+          copyFileSync(
+            resolve(__dirname, 'stories/library.json'),
+            resolve(__dirname, 'dist/stories/library.json')
+          );
+          console.log('✓ Copied stories/library.json to dist/stories/');
+        } catch (err) {
+          console.error('Failed to copy library.json:', err);
+        }
+      }
+    }
+  ]
 });

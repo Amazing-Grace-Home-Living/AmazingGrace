@@ -1,16 +1,3 @@
-# apphosting.yaml
-# Configuration for Firebase App Hosting
-
-runConfig:
-  # Allocates 1 CPU and 512 MB of memory per instance
-  cpu: 1
-  memoryMiB: 512
-  # Allows up to 80 concurrent requests per instance
-  concurrency: 80
-  # Prevents runaway costs by capping the maximum number of instances
-  maxInstances: 50
-  minInstances: 0
-
-env:
-  - variable: ENVIRONMENT
-    value: production
+runtime: nodejs22
+scripts:
+  build: npm run build

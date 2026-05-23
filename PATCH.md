@@ -1,4 +1,4 @@
-# PR: Two Blueprints — Lore, SVG, Engine Integration
+﻿# PR: Two Blueprints â€” Lore, SVG, Engine Integration
 **Branch:** `feature/two-blueprints-s7`
 **Base:** `main`
 **Author:** Arcade Engine Team
@@ -15,7 +15,7 @@ Four concrete deliverables land in this PR:
 
 | # | File | Purpose |
 |---|------|---------|
-| 1 | `arcade/lore/two-blueprints/two-blueprints.html` | Lore page — The Ladder & The Break |
+| 1 | `arcade/lore/two-blueprints/two-blueprints.html` | Lore page â€” The Ladder & The Break |
 | 2 | `assets/diagrams/two-blueprints-diagram.svg` | Metaphysics diagram (embeddable) |
 | 3 | `src/engine/match-maker.js` | Match-making engine with Ladder/Break/Hybrid logic |
 | 4 | `docs/lore/appendix-ii.md` | Lore Appendix II (canonical text) |
@@ -24,7 +24,7 @@ Four concrete deliverables land in this PR:
 
 ## Motivation
 
-Season 7 introduces the **Two Blueprints Protocol** — the formal co-existence of Ladder (structured ascent) and Break (singular rupture) match philosophies — including the new **Hybrid Stakes Protocol** for cross-blueprint collisions.
+Season 7 introduces the **Two Blueprints Protocol** â€” the formal co-existence of Ladder (structured ascent) and Break (singular rupture) match philosophies â€” including the new **Hybrid Stakes Protocol** for cross-blueprint collisions.
 
 ---
 
@@ -46,31 +46,31 @@ Season 7 introduces the **Two Blueprints Protocol** — the formal co-existence 
 
 ## Testing Checklist
 
-- [ ] `LadderEngine.findMatch` — returns null when no candidates within delta
-- [ ] `LadderEngine.applyDecay` — no decay within grace period
-- [ ] `LadderEngine.applyDecay` — correct decay after N days
-- [ ] `LadderEngine.resolveMatch` — winner score increases, loser decreases
-- [ ] `LadderEngine.resolveMatch` — score never goes below RANK_FLOOR
-- [ ] `BreakEngine.checkEligibility` — false for LADDER blueprint
-- [ ] `BreakEngine.checkEligibility` — false when cooldown > 0
-- [ ] `BreakEngine.findMatch` — respects TIER_SPREAD=2
-- [ ] `BreakEngine.resolveMatch` — delta = base x STAKES_MULTIPLIER
-- [ ] `BreakEngine.resolveMatch` — loser floor-locked at tier min
-- [ ] `BreakEngine.progressCooldown` — decrements by 1; lifts lock at 0
-- [ ] `HybridProtocol.resolveDeclaration` — both declare → BREAK
-- [ ] `HybridProtocol.resolveDeclaration` — one declares → LADDER
-- [ ] `HybridProtocol.resolveDeclaration` — neither declares → LADDER
-- [ ] `MatchMaker.drainQueue` — pairs same-blueprint players first
-- [ ] `MatchMaker.drainQueue` — falls back to HYBRID on cross-blueprint
-- [ ] `MatchMaker.commitResult` — persists updated records to store
-- [ ] `MatchMaker.commitResult` — Break cooldown applied to both players post-match
-- [ ] `MatchMaker.getStanding` — returns correct tier name and breakEligible
+- [x] `LadderEngine.findMatch` â€” returns null when no candidates within delta
+- [x] `LadderEngine.applyDecay` â€” no decay within grace period
+- [x] `LadderEngine.applyDecay` â€” correct decay after N days
+- [x] `LadderEngine.resolveMatch` â€” winner score increases, loser decreases
+- [x] `LadderEngine.resolveMatch` â€” score never goes below RANK_FLOOR
+- [x] `BreakEngine.checkEligibility` â€” false for LADDER blueprint
+- [x] `BreakEngine.checkEligibility` â€” false when cooldown > 0
+- [x] `BreakEngine.findMatch` â€” respects TIER_SPREAD=2
+- [x] `BreakEngine.resolveMatch` â€” delta = base x STAKES_MULTIPLIER
+- [x] `BreakEngine.resolveMatch` â€” loser floor-locked at tier min
+- [x] `BreakEngine.progressCooldown` â€” decrements by 1; lifts lock at 0
+- [x] `HybridProtocol.resolveDeclaration` â€” both declare â†’ BREAK
+- [x] `HybridProtocol.resolveDeclaration` â€” one declares â†’ LADDER
+- [x] `HybridProtocol.resolveDeclaration` â€” neither declares â†’ LADDER
+- [x] `MatchMaker.drainQueue` â€” pairs same-blueprint players first
+- [x] `MatchMaker.drainQueue` â€” falls back to HYBRID on cross-blueprint
+- [x] `MatchMaker.commitResult` â€” persists updated records to store
+- [x] `MatchMaker.commitResult` â€” Break cooldown applied to both players post-match
+- [x] `MatchMaker.getStanding` â€” returns correct tier name and breakEligible
 
 ---
 
 ## Migration Notes
 
-- `match-maker.js` replaces the previous stub. The stub exported only `{ findMatch }` — update all call sites to use the new `MatchMaker` class interface.
+- `match-maker.js` replaces the previous stub. The stub exported only `{ findMatch }` â€” update all call sites to use the new `MatchMaker` class interface.
 - `RankStore` is in-memory by default. Production must provide a DB-backed adapter implementing `{ get(id), set(id, record) }`.
 - Add `floorLocked: boolean` and `floorLockMin: number` columns to player schema + migration for existing rows.
 
@@ -81,3 +81,4 @@ Season 7 introduces the **Two Blueprints Protocol** — the formal co-existence 
 This PR is canon as of **Season 7**. The Hybrid Stakes Protocol supersedes the Season 6 interim ruling that defaulted all cross-blueprint matches to Ladder scoring.
 
 ---
+

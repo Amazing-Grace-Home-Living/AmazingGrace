@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+﻿import { describe, it, expect, beforeEach, vi } from "vitest";
 
-// ── localStorage mock (node environment) ─────────────────────────────────────
+// â”€â”€ localStorage mock (node environment) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const store: Record<string, string> = {};
 const localStorageMock = {
@@ -31,7 +31,7 @@ describe("saveSystem", () => {
     });
 
     it("defaults to slot1 when slot is falsy", () => {
-      expect(loadGame(null as any)).toBeNull();
+      expect(loadGame(null as unknown as string)).toBeNull();
     });
   });
 
@@ -56,7 +56,7 @@ describe("saveSystem", () => {
     });
 
     it("uses slot1 as default when a falsy slot is provided", () => {
-      saveGame(null as any, { score: 42 });
+      saveGame(null as unknown as string, { score: 42 });
       expect(loadGame("slot1")).toEqual({ score: 42 });
     });
 
@@ -92,3 +92,4 @@ describe("saveSystem", () => {
     });
   });
 });
+

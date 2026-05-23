@@ -26,258 +26,129 @@ const CHAIN_BONUS = 25;
 const CONSCIENCE_KEYS = ['empathy', 'justice', 'wisdom', 'growth'];
 
 const GEM_DISPLAY = {
-  heart: { emoji: '❤️', cls: 'gem-heart', label: 'Heart' },
-  star:  { emoji: '⭐', cls: 'gem-star',  label: 'Star'  },
-  cross: { emoji: '✝️', cls: 'gem-cross', label: 'Cross' },
-  flame: { emoji: '🔥', cls: 'gem-flame', label: 'Flame' },
-  drop:  { emoji: '💧', cls: 'gem-drop',  label: 'Drop'  }
+  heart: { emoji: '❤', cls: 'gem-heart', label: 'Empathy' },
+  star:  { emoji: '⭐', cls: 'gem-star',  label: 'Justice' },
+  cross: { emoji: '✝', cls: 'gem-cross', label: 'Wisdom'  },
+  flame: { emoji: '🔥', cls: 'gem-flame', label: 'Growth'  },
+  drop:  { emoji: '💧', cls: 'gem-drop',  label: 'Grace'   },
 };
 
-let grid         = [];
-let score        = 0;
-let moves        = 0;
-let level        = 1;
-let selected     = null;
-let locked       = false;
-let conscience   = { empathy: 0, justice: 0, wisdom: 0, growth: 0 };
-let totalClears  = 0;
-let combo        = 0;
-let explosions   = 0;
-let daysPlayed   = 1;
-let slotSelect   = null;
+let grid = [];
+let score = 0;
+let level = 1;
+let moves = 0;
+let totalClears = 0;
+let combo = 0;
+let explosions = 0;
+let selected = null;
+let locked = false;
+let conscience = { empathy: 0, justice: 0, wisdom: 0, growth: 0 };
 let progressionState = createInitialState();
 
-const dom = {};
-
-function inferPatternType(matches, chain) {
-  const longestMatch = Math.max(0, ...matches.map(group => group.length));
-  return longestMatch >= 4 || chain > 1 ? 'break' : 'ladder';
-}
-
-function savePatternState(state) {
-  progressionState = state;
-  void persistPatternState(progressionState);
-}
-
-function maybePlay(soundId) {
-  if (typeof window !== 'undefined' && typeof window.play === 'function') {
-    window.play(soundId);
-  }
-}
-
-function maybeUnlock(key) {
-  if (typeof window !== 'undefined' && typeof window.unlock === 'function') {
-    window.unlock(key);
-  }
-}
+const dom = {
+  board:  null,
+  score:  null,
+  level:  null,
+  moves:  null,
+  clears: null,
+  bars:   {},
+};
 
 function cacheDom() {
-  dom.board      = document.getElementById('match-grid');
-  dom.score      = document.getElementById('match-score');
-  dom.level      = document.getElementById('match-level');
-  dom.moves      = document.getElementById('match-moves');
-  dom.msg        = document.getElementById('match-msg');
-  dom.barEmpathy = document.getElementById('mc-empathy-bar');
-  dom.barJustice = document.getElementById('mc-justice-bar');
-  dom.barWisdom  = document.getElementById('mc-wisdom-bar');
-  dom.barGrowth  = document.getElementById('mc-growth-bar');
-  dom.pctEmpathy = document.getElementById('mc-empathy');
-  dom.pctJustice = document.getElementById('mc-justice');
-  dom.pctWisdom  = document.getElementById('mc-wisdom');
-  dom.pctGrowth  = document.getElementById('mc-growth');
-  slotSelect     = document.getElementById('save-slot');
-}
-
-function safeSlotValue() {
-  return slotSelect?.value || 'slot1';
-}
-
-function saveState() {
-  saveGame(safeSlotValue(), {
-    score,
-    level,
-    moves,
-    grid,
-    totalClears,
-    combo,
-    explosions,
-    daysPlayed
+  dom.board  = document.getElementById('matchmaker-board');
+  dom.score  = document.getElementById('score-val');
+  dom.level  = document.getElementById('level-val');
+  dom.moves  = document.getElementById('moves-val');
+  dom.clears = document.getElementById('clears-val');
+  CONSCIENCE_KEYS.forEach(key => {
+    dom.bars[key] = document.getElementById(`bar-${key}`);
   });
-  savePatternState(progressionState);
-}
-
-function loadState() {
-  const data = loadGame(safeSlotValue());
-  if (!data) return false;
-
-  score       = data.score ?? 0;
-  level       = data.level ?? 1;
-  moves       = data.moves ?? getLevelConfig(level).moves;
-  grid        = data.grid ?? createInitialGrid();
-  totalClears = data.totalClears ?? 0;
-  combo       = data.combo ?? 0;
-  explosions  = data.explosions ?? 0;
-  daysPlayed  = data.daysPlayed ?? 1;
-
-  renderBoard();
-  updateHUD();
-  updateConscience();
-  return true;
-}
-
-function updateDayStreak() {
-  try {
-    const today = new Date().toDateString();
-    const saved = JSON.parse(localStorage.getItem('mm-streak') || '{}');
-    let streak = 1;
-    if (saved.date === today) {
-      streak = saved.streak || 1;
-    } else if (saved.date) {
-      const last = new Date(saved.date);
-      const diff = (new Date(today) - last) / (1000 * 60 * 60 * 24);
-      streak = diff <= 1.5 ? (saved.streak || 1) + 1 : 1;
-    }
-    daysPlayed = streak;
-    localStorage.setItem('mm-streak', JSON.stringify({ date: today, streak }));
-  } catch (e) {
-    daysPlayed = 1;
-  }
 }
 
 function updateHUD() {
-  if (dom.score) dom.score.textContent = score;
-  if (dom.level) dom.level.textContent = level;
-  if (dom.moves) dom.moves.textContent = moves;
-}
+  if (dom.score)  dom.score.textContent  = score;
+  if (dom.level)  dom.level.textContent  = level;
+  if (dom.moves)  dom.moves.textContent  = moves;
+  if (dom.clears) dom.clears.textContent = totalClears;
 
-function showMsg(text) {
-  if (dom.msg) dom.msg.textContent = text;
-}
-
-function updateConscience() {
   CONSCIENCE_KEYS.forEach(key => {
-    const val  = Math.min(conscience[key], 100);
-    const bar  = dom['bar' + key.charAt(0).toUpperCase() + key.slice(1)];
-    const pct  = dom['pct' + key.charAt(0).toUpperCase() + key.slice(1)];
-    if (bar) bar.style.width = val + '%';
-    if (pct) pct.textContent = val;
+    if (dom.bars[key]) {
+      dom.bars[key].style.width = `${Math.min(100, conscience[key])}%`;
+    }
   });
-}
-
-function bumpConscience(matchCount) {
-  const boost = Math.ceil(matchCount * 1.5);
-  conscience.empathy = Math.min(100, conscience.empathy + boost + Math.floor(Math.random() * 3));
-  conscience.justice = Math.min(100, conscience.justice + boost + Math.floor(Math.random() * 2));
-  conscience.wisdom  = Math.min(100, conscience.wisdom  + Math.floor(boost * 0.8));
-  conscience.growth  = Math.min(100, conscience.growth  + Math.floor(boost * 1.2));
-  updateConscience();
 }
 
 function renderBoard() {
   if (!dom.board) return;
   dom.board.innerHTML = '';
-
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'gem-cell';
+      cell.dataset.r = r;
+      cell.dataset.c = c;
+
       const gemType = grid[r]?.[c];
       const info    = GEM_DISPLAY[gemType] || { emoji: '?', cls: '', label: gemType };
-      const cell    = document.createElement('button');
-      const idx     = r * COLS + c;
+      cell.innerHTML = `<span class="gem-icon ${info.cls}">${info.emoji}</span>`;
+      cell.title     = info.label;
 
-      cell.className = 'gem-cell ' + info.cls;
-      cell.textContent = info.emoji;
-      cell.dataset.row = r;
-      cell.dataset.col = c;
-      cell.setAttribute('role', 'gridcell');
-      cell.setAttribute('aria-label', info.label + ', row ' + (r + 1) + ' column ' + (c + 1));
-      cell.setAttribute('tabindex', idx === 0 ? '0' : '-1');
-
-      if (selected && selected.row === r && selected.col === c) {
+      if (selected && selected.r === r && selected.c === c) {
         cell.classList.add('selected');
       }
 
-      cell.addEventListener('click', () => onCellClick(r, c));
-      cell.addEventListener('keydown', (e) => onCellKey(e, r, c));
+      cell.addEventListener('click', () => handleCellClick(r, c));
       dom.board.appendChild(cell);
     }
   }
 }
 
-function onCellClick(row, col) {
-  if (locked) return;
+async function handleCellClick(r, c) {
+  if (locked || moves <= 0) return;
+
   if (!selected) {
-    selected = { row, col };
+    selected = { r, c };
     renderBoard();
-  } else if (selected.row === row && selected.col === col) {
-    selected = null;
-    renderBoard();
-  } else if (canSwap(grid, selected.row, selected.col, row, col)) {
-    attemptSwap(selected.row, selected.col, row, col);
-  } else {
-    selected = { row, col };
-    renderBoard();
-  }
-}
-
-function onCellKey(e, row, col) {
-  let targetR = row;
-  let targetC = col;
-
-  switch (e.key) {
-    case 'ArrowUp':    targetR = Math.max(0, row - 1); break;
-    case 'ArrowDown':  targetR = Math.min(ROWS - 1, row + 1); break;
-    case 'ArrowLeft':  targetC = Math.max(0, col - 1); break;
-    case 'ArrowRight': targetC = Math.min(COLS - 1, col + 1); break;
-    case 'Enter':
-    case ' ':
-      e.preventDefault();
-      onCellClick(row, col);
-      return;
-    case 'Escape':
-      selected = null;
-      renderBoard();
-      return;
-    default:
-      return;
-  }
-
-  e.preventDefault();
-  const idx = targetR * COLS + targetC;
-  const cells = dom.board.querySelectorAll('.gem-cell');
-  if (cells[idx]) cells[idx].focus();
-}
-
-function attemptSwap(r1, c1, r2, c2) {
-  if (moves <= 0) {
-    showMsg('No moves left');
     return;
   }
 
+  if (selected.r === r && selected.c === c) {
+    selected = null;
+    renderBoard();
+    return;
+  }
+
+  if (canSwap(grid, selected.r, selected.c, r, c)) {
+    const r1 = selected.r, c1 = selected.c;
+    selected = null;
+    moves--;
+    await executeMove(r1, c1, r, c);
+  } else {
+    selected = { r, c };
+    renderBoard();
+  }
+}
+
+async function executeMove(r1, c1, r2, c2) {
   locked = true;
-  selected = null;
   grid = applySwap(grid, r1, c1, r2, c2);
-  moves = Math.max(0, moves - 1);
-  updateHUD();
   renderBoard();
 
   const matches = findMatches(grid);
   if (matches.length === 0) {
+    // Revert
     setTimeout(() => {
       grid = applySwap(grid, r1, c1, r2, c2);
-      progressionState = applyPatternOutcome(progressionState, { type: 'ladder' });
-      savePatternState(progressionState);
-      showMsg('No match — try again');
-      renderBoard();
-      setTimeout(() => showMsg(''), 1200);
       locked = false;
-      finalizeMove();
-    }, CASCADE_DELAY);
-  } else {
-    processCascade(1);
+      renderBoard();
+    }, 300);
+    return;
   }
+
+  await processCascade(1);
 }
 
-function processCascade(chain) {
+async function processCascade(chain) {
   const matches = findMatches(grid);
   if (matches.length === 0) {
     locked = false;
@@ -285,18 +156,17 @@ function processCascade(chain) {
     return;
   }
 
-  const clearedCells = matches.reduce((sum, group) => sum + group.length, 0);
-  const points = clearedCells * (BASE_POINTS + CHAIN_BONUS * (chain - 1));
+  const clearedCells = matches.flat();
+  const points = (clearedCells.length * BASE_POINTS) + (chain > 1 ? (chain * CHAIN_BONUS) : 0);
+
   score += points;
-  totalClears += clearedCells;
-  combo = Math.max(combo, ...matches.map(g => g.length));
-  if (matches.some(g => g.length >= 4)) explosions += 1;
+  totalClears += clearedCells.length;
+  if (chain > combo) combo = chain;
 
-  if (chain > 1) {
-    showMsg('Chain x' + chain + '! +' + points);
-  }
-
+  // Track patterns for progression engine
   progressionState = applyPatternOutcome(progressionState, {
+    count: clearedCells.length,
+    chain,
     type: inferPatternType(matches, chain),
   });
   savePatternState(progressionState);
@@ -313,6 +183,22 @@ function processCascade(chain) {
     renderBoard();
     setTimeout(() => processCascade(chain + 1), CASCADE_DELAY);
   }, CASCADE_DELAY);
+}
+
+function inferPatternType(matches, chain) {
+  if (chain >= 3) return 'break';
+  if (matches.some(m => m.length >= 5)) return 'break';
+  return 'ladder';
+}
+
+function bumpConscience(cells) {
+  cells.forEach(cell => {
+    const gem = grid[cell.r][cell.c];
+    if (gem === 'heart') conscience.empathy += 1;
+    if (gem === 'star')  conscience.justice += 1;
+    if (gem === 'cross') conscience.wisdom  += 1;
+    if (gem === 'flame') conscience.growth  += 1;
+  });
 }
 
 function highlightMatched(matches) {
@@ -339,8 +225,6 @@ function afterScoring() {
   if (completedLevel < MAX_LEVEL) {
     level = completedLevel + 1;
     initLevel();
-    maybePlay('levelup');
-    maybeUnlock('level_' + level);
   }
 
   onLevelComplete(completedLevel, score, null, null);
@@ -363,7 +247,6 @@ function finalizeMove() {
 
   const dailyDone = checkDailyCompletion({ score, level, clears: totalClears });
   if (dailyDone) {
-    maybeUnlock('daily_complete');
     unlockStar('silver');
   }
 
@@ -372,15 +255,31 @@ function finalizeMove() {
   if (totalClears >= 50) unlockStar('emerald');
   if (combo >= 5) unlockStar('ruby');
   if (explosions >= 10) unlockStar('amethyst');
-  if (daysPlayed >= 7) unlockStar('obsidian');
 
   saveState();
 }
 
-export function initMatchMaker(db, user) {
-  cacheDom();
-  updateDayStreak();
+function saveState() {
+  saveGame('slot1', {
+    grid, score, level, totalClears, combo, explosions, conscience
+  });
+}
 
+function loadState() {
+  const data = loadGame('slot1');
+  if (!data) return false;
+  grid = data.grid;
+  score = data.score;
+  level = data.level;
+  totalClears = data.totalClears;
+  combo = data.combo;
+  explosions = data.explosions;
+  conscience = data.conscience;
+  return true;
+}
+
+export function initMatchMaker() {
+  cacheDom();
   grid         = createInitialGrid();
   score        = 0;
   level        = 1;
@@ -394,16 +293,12 @@ export function initMatchMaker(db, user) {
 
   loadPatternState((storedState) => {
     progressionState = storedState;
-
     initLevel();
     if (!loadState()) {
       renderBoard();
-      updateConscience();
-      showMsg('Match the gems — align your conscience');
-      saveState();
     } else {
+      updateHUD();
       renderBoard();
-      showMsg('Loaded your save slot');
     }
   });
 }

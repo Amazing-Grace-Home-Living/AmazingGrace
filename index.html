@@ -61,7 +61,7 @@
         }
 
         .logo img {
-            height: 42px;
+            height: 40px;
             width: auto;
             border-radius: 6px;
         }
@@ -70,7 +70,8 @@
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;      /* keep nav on a single row */
+            white-space: nowrap;    /* prevent link text from wrapping */
             gap: 0.75rem;
         }
 
@@ -272,7 +273,7 @@
     <main>
         <section class="hero">
             <div class="hero-copy">
-                <h1>Secure housing, community support, and a cleaner path to update the site.</h1>
+                <h1>Secure housing and community support in Tampa and Largo.</h1>
                 <p>
                     Amazing Grace Home Living provides all-inclusive rooms in Tampa and Largo while keeping
                     ministry and arcade resources easy to reach from one dependable GitHub Pages site.
