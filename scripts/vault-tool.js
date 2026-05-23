@@ -1,28 +1,56 @@
 Javascript
+import https from 'https';
+
 /**
- * Receives secret updates from the Vault CLI.
+ * Syncs a new secret version to the Key Matrix via the Nexus Relay.
+ * @param {string} feature - The feature ID (Gemini, Firebase, Master).
+ * @param {string} secretValue - The raw sensitive key string.
  */
-function doPost(e) {
-  const authorizedKey = PropertiesService.getScriptProperties().getProperty('VAULT_ACCESS_KEY');
-  const data = JSON.parse(e.postData.contents);
-  
-  // Security Handshake
-  if (e.parameter.key !== authorizedKey && data.authKey !== authorizedKey) {
-    return ContentService.createTextOutput("Unauthorized").setMimeType(ContentService.MimeType.TEXT);
+async function syncSecretToMatrix(feature, secretValue) {
+  const relayUrl = process.env.NEXUS_RELAY_URL; // Your Apps Script Web App URL
+  const authKey = process.env.VAULT_ACCESS_KEY; // Managed via your local system keychain
+
+  if (!relayUrl || !authKey) {
+    console.error("Error: NEXUS_RELAY_URL or VAULT_ACCESS_KEY environment variables are not set.");
+    process.exit(1);
   }
 
-  const ss = SpreadsheetApp.openById('1qf9fChZmrzKHwyaiA2FN8q-fImn3Pg5lQQt-4EDw33A');
-  const sheet = ss.getSheetByName('map');
-  
-  // Logic to find the row based on the "Feature" name (Gemini, Firebase, Master)
-  const dataRange = sheet.getDataRange().getValues();
-  for (let i = 0; i < dataRange.length; i++) {
-    if (dataRange[i][0] === data.feature) { // Assumes Feature Name is in Column A
-      sheet.getRange(i + 1, 6).setValue(data.value); // Updates Secret in Column F
-      sheet.getRange(i + 1, 5).setValue(new Date()); // Updates Rotation Date in Column E
-      break;
+  const payload = JSON.stringify({
+    action: 'update_matrix',
+    feature: feature,
+    value: secretValue,
+    authKey: authKey, // Passing as payload property to ensure delivery to Apps Script
+    timestamp: new Date().toISOString()
+  });
+
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
     }
-  }
+  };
 
-  return ContentService.createTextOutput("Vault Synced Successfully").setMimeType(ContentService.MimeType.TEXT);
+  const req = https.request(relayUrl, options, (res) => {
+    console.log(`Vault Sync Status: ${res.statusCode}`);
+    let responseData = '';
+    res.on('data', (chunk) => { responseData += chunk; });
+    res.on('end', () => {
+      console.log('Response:', responseData);
+    });
+  });
+
+  req.on('error', (e) => console.error(`Vault Sync Failure: ${e.message}`));
+  req.write(payload);
+  req.end();
+}
+
+// Execution logic for the CLI using process.argv
+const feature = process.argv[2];
+const key = process.argv[3];
+
+if (feature && key) {
+  console.log(`Locking ${feature} secret into the Vault...`);
+  syncSecretToMatrix(feature, key);
+} else {
+  console.error("Usage: npm run sync-key -- [FeatureName] [SecretValue]");
 }
