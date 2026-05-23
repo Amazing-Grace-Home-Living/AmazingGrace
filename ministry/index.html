@@ -324,6 +324,22 @@
             margin-bottom: 0.75rem;
         }
 
+        .video-wrap {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+        }
+
+        .video-wrap iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: 0;
+        }
+
         .media-download {
             display: inline-block;
             color: var(--gold);
@@ -450,6 +466,27 @@
                         <h4>Voice of Jesus Network</h4>
                         <p>Follow the Bible Study channel on YouTube for video teaching and scripture-centered encouragement.</p>
                         <a class="media-download" href="https://www.youtube.com/channel/UCPw8Ed4knDZxhlKn5H2T9ow" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
+                    </article>
+
+                    <article class="audio-card">
+                        <h4>Bible Study Short</h4>
+                        <div class="video-wrap">
+                            <iframe src="https://www.youtube.com/embed/EOOcReGQVuo" title="Bible Study Short — Voice of Jesus Network" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                    </article>
+
+                    <article class="audio-card">
+                        <h4>Bible Study Teaching</h4>
+                        <div class="video-wrap">
+                            <iframe src="https://www.youtube.com/embed/aNlPUYeqFn0" title="Bible Study Teaching — Voice of Jesus Network" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                    </article>
+
+                    <article class="audio-card">
+                        <h4>Bible Study Message</h4>
+                        <div class="video-wrap">
+                            <iframe src="https://www.youtube.com/embed/jxgcKA9JywM" title="Bible Study Message — Voice of Jesus Network" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                        </div>
                     </article>
                 </div>
             </div>

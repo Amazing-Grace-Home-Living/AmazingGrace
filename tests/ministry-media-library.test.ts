@@ -38,4 +38,18 @@ describe("ministry media library", () => {
     expect(html).toContain('rel="noopener noreferrer"');
     expect(html.indexOf("Voice of Jesus Network")).toBeLessThan(html.indexOf("Music &amp; Audio Archive"));
   });
+
+  it("embeds the three Voice of Jesus Network YouTube videos in the Bible Study Videos section", () => {
+    const html = fs.readFileSync(ministryPagePath, "utf8");
+
+    expect(html).toContain("https://www.youtube.com/embed/EOOcReGQVuo");
+    expect(html).toContain("https://www.youtube.com/embed/aNlPUYeqFn0");
+    expect(html).toContain("https://www.youtube.com/embed/jxgcKA9JywM");
+
+    // All three embeds appear before the Music & Audio Archive
+    const audioArchiveIdx = html.indexOf("Music &amp; Audio Archive");
+    expect(html.indexOf("EOOcReGQVuo")).toBeLessThan(audioArchiveIdx);
+    expect(html.indexOf("aNlPUYeqFn0")).toBeLessThan(audioArchiveIdx);
+    expect(html.indexOf("jxgcKA9JywM")).toBeLessThan(audioArchiveIdx);
+  });
 });
