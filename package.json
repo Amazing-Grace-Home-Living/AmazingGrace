@@ -5,12 +5,13 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run"
-  },
+"scripts": {
+  "dev": "vite",
+  "build": "vite build",
+  "typecheck": "tsc --noEmit",
+  "test": "vitest run",
+  "sync-key": "node scripts/vault-tool.js"
+},
   "dependencies": {
     "firebase": "^12.13.0",
     "react": "^19.2.6",
