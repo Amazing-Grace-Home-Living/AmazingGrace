@@ -28,4 +28,14 @@ describe("ministry media library", () => {
       expect(fs.existsSync(resolve(repoRoot, repoRelativeAssetPath))).toBe(true);
     }
   });
+
+  it("includes the Voice of Jesus Network Bible Study video link ahead of the audio archive", () => {
+    const html = fs.readFileSync(ministryPagePath, "utf8");
+
+    expect(html).toContain("Bible Study Videos");
+    expect(html).toContain("Voice of Jesus Network");
+    expect(html).toContain('href="https://www.youtube.com/channel/UCPw8Ed4knDZxhlKn5H2T9ow"');
+    expect(html).toContain('rel="noopener noreferrer"');
+    expect(html.indexOf("Voice of Jesus Network")).toBeLessThan(html.indexOf("Music &amp; Audio Archive"));
+  });
 });
