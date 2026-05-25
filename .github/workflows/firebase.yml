@@ -50,6 +50,7 @@ jobs:
 
       - name: Check for placeholder content
         run: |
+          # Keep this narrow so normal HTML placeholder attributes do not fail deploy validation.
           matches=$(grep -RInE --include='*.html' "lorem ipsum|todo|placeholder text" dist || true)
           if [ -n "$matches" ]; then
             printf '%s\n' "$matches"

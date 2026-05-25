@@ -23,15 +23,21 @@ describe('workflow cleanup', () => {
 
   it('keeps firebase deploy validation focused on real filler content', () => {
     const firebase = fs.readFileSync('.github/workflows/firebase.yml', 'utf8');
+    const placeholderPattern = /lorem ipsum|todo|placeholder text/i;
 
     const testStepIndex = firebase.indexOf("npm test -- --passWithNoTests");
     const placeholderStepIndex = firebase.indexOf('Check for placeholder content');
 
     expect(firebase).toContain("npm test -- --passWithNoTests");
+    expect(firebase).toContain('normal HTML placeholder attributes do not fail deploy validation');
     expect(firebase).toContain("grep -RInE --include='*.html'");
     expect(firebase).toContain('lorem ipsum|todo|placeholder text');
     expect(firebase).not.toContain('coming soon|todo|placeholder');
     expect(testStepIndex).toBeGreaterThanOrEqual(0);
     expect(placeholderStepIndex).toBeGreaterThan(testStepIndex);
+    expect(placeholderPattern.test('<p>Lorem ipsum</p>')).toBe(true);
+    expect(placeholderPattern.test('<section>TODO</section>')).toBe(true);
+    expect(placeholderPattern.test('<div>placeholder text</div>')).toBe(true);
+    expect(placeholderPattern.test('<input placeholder=\"Your name\">')).toBe(false);
   });
 });
