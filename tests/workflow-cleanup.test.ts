@@ -43,7 +43,7 @@ describe('workflow cleanup', () => {
     expect(placeholderPattern.test('<input placeholder=\"Your name\">')).toBe(false);
   });
 
-  it('keeps Ella review automation aligned with trusted review feedback handling', () => {
+  it('verifies Ella workflow handles trusted review states and auto-apply markers', () => {
     const ella = fs.readFileSync('.github/workflows/ella.yml', 'utf8');
 
     expect(ella).toContain('contains(fromJSON(\'["commented","changes_requested"]\'), github.event.review.state)');

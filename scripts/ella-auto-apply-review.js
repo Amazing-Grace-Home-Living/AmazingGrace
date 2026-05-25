@@ -166,10 +166,16 @@ async function main() {
     return;
   }
 
-  assertPatchPathsAllowed(touchedPaths);
+  try {
+    assertPatchPathsAllowed(touchedPaths);
+  } catch (error) {
+    writeOutput('reason', 'protected_path_change');
+    writeOutput('result', 'error');
+    return;
+  }
 
   if (!shouldApply) {
-    writeOutput('reason', 'dry_run_only');
+    writeOutput('reason', 'validated_for_apply');
     writeOutput('result', 'ready');
     return;
   }
