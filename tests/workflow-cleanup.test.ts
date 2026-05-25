@@ -23,11 +23,11 @@ describe('workflow cleanup', () => {
 
   it('keeps firebase deploy validation focused on real filler content', () => {
     const firebase = fs.readFileSync('.github/workflows/firebase.yml', 'utf8');
-    const patternMatch = firebase.match(/grep -RInE --include='\*\.html' "([^"]+)"/);
+    const patternMatch = firebase.match(/grep -RIniE --include='\*\.html' "([^"]+)"/);
 
     expect(firebase).toContain("npm test -- --passWithNoTests");
     expect(firebase).toContain('normal HTML placeholder attributes do not fail deploy validation');
-    expect(firebase).toContain("grep -RInE --include='*.html'");
+    expect(firebase).toContain("grep -RIniE --include='*.html'");
     expect(firebase).toContain('lorem ipsum|todo|placeholder text');
     expect(firebase).not.toContain('coming soon|todo|placeholder');
     expect(firebase).toMatch(

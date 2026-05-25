@@ -64,6 +64,9 @@ default when they clearly request changes.
 - Prefer a manual trigger model based on a label or slash-command such as
   `copilot: act` if you want an explicit opt-in without requiring mentions in
   the comment body.
+- If a PR branch falls behind and develops merge conflicts, sync it with the
+  target branch and resolve those conflicts before continuing with follow-up
+  requests; auto-merge only helps when the branch is already conflict-free.
 - Scope this behavior to the current PR and trusted actors only; avoid treating
   unrelated issue comments or stale threads as commands.
 - If the hard requirement to mention `@copilot` comes from an outer task or

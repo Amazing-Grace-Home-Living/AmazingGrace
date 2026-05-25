@@ -31,6 +31,7 @@ describe('Rulesets and agents documentation', () => {
     expect(doc).toContain('new comments on the current PR');
     expect(doc).toContain('PR author, repo owner, or other trusted maintainers');
     expect(doc).toContain('copilot: act');
+    expect(doc).toContain('resolve those conflicts before continuing');
     expect(doc).toContain('repository docs alone cannot override it');
   });
 
@@ -40,5 +41,6 @@ describe('Rulesets and agents documentation', () => {
     expect(instructions).toContain('Treat **new comments on the current PR**');
     expect(instructions).toContain('Do **not** require an `@copilot` mention');
     expect(instructions).toContain('copilot: act');
+    expect(instructions).toContain('resolve the conflicts before making');
   });
 });

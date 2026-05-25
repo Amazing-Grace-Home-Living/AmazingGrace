@@ -16,13 +16,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
-          cache: npm
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -51,7 +51,7 @@ jobs:
       - name: Check for placeholder content
         run: |
           # Keep this narrow so normal HTML placeholder attributes do not fail deploy validation.
-          matches=$(grep -RInE --include='*.html' "lorem ipsum|todo|placeholder text" dist || true)
+          matches=$(grep -RIniE --include='*.html' "lorem ipsum|todo|placeholder text" dist || true)
           if [ -n "$matches" ]; then
             printf '%s\n' "$matches"
             echo "Placeholder content found in dist/"
@@ -76,7 +76,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Download dist artifact
         uses: actions/download-artifact@v4.1.3
