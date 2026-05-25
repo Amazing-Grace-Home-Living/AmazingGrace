@@ -9,6 +9,7 @@ export default defineConfig({
   build: {
     outDir: "dist",
     emptyOutDir: true,
+    chunkSizeWarningLimit: 600,
     rollupOptions: {
       input: {
         main:              resolve(__dirname, "index.html"),
@@ -53,6 +54,18 @@ export default defineConfig({
         support:           resolve(__dirname, "support/index.html"),
         privacy:           resolve(__dirname, "privacy.html"),
         arcadeRedirect:    resolve(__dirname, "arcade.html"),
+      },
+      output: {
+        manualChunks(id) {
+          // Split Firebase into its own chunk
+          if (id.includes('node_modules/firebase')) {
+            return 'firebase';
+          }
+          // Split React into its own chunk
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
+            return 'react';
+          }
+        }
       }
     }
   },
