@@ -24,9 +24,14 @@ describe('workflow cleanup', () => {
   it('keeps firebase deploy validation focused on real filler content', () => {
     const firebase = fs.readFileSync('.github/workflows/firebase.yml', 'utf8');
 
+    const testStepIndex = firebase.indexOf("npm test -- --passWithNoTests");
+    const placeholderStepIndex = firebase.indexOf('Check for placeholder content');
+
     expect(firebase).toContain("npm test -- --passWithNoTests");
-    expect(firebase).toContain("find dist -name '*.html' -exec grep -nEi");
+    expect(firebase).toContain("grep -RInE --include='*.html'");
     expect(firebase).toContain('lorem ipsum|todo|placeholder text');
     expect(firebase).not.toContain('coming soon|todo|placeholder');
+    expect(testStepIndex).toBeGreaterThanOrEqual(0);
+    expect(placeholderStepIndex).toBeGreaterThan(testStepIndex);
   });
 });
