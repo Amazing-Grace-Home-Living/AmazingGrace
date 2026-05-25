@@ -134,6 +134,7 @@ async function main() {
   const pr = payload.pull_request;
 
   if (!review || !pr) {
+    writeOutput('reason', 'missing_review_or_pr');
     writeOutput('result', 'skipped');
     return;
   }
@@ -144,11 +145,13 @@ async function main() {
   const headRef = pr.head?.ref;
 
   if (!ALLOWED_AUTHOR_ASSOCIATIONS.has(authorAssociation)) {
+    writeOutput('reason', 'untrusted_author_association');
     writeOutput('result', 'skipped');
     return;
   }
 
   if (!wantsAutoApply(reviewBody)) {
+    writeOutput('reason', 'no_apply_marker');
     writeOutput('result', 'skipped');
     return;
   }
@@ -158,6 +161,7 @@ async function main() {
   const touchedPaths = listTouchedPathsFromPatch(patchText);
 
   if (!patchText.trim()) {
+    writeOutput('reason', 'no_patch_blocks');
     writeOutput('result', 'error');
     return;
   }
@@ -165,7 +169,8 @@ async function main() {
   assertPatchPathsAllowed(touchedPaths);
 
   if (!shouldApply) {
-    writeOutput('result', 'skipped');
+    writeOutput('reason', 'dry_run_only');
+    writeOutput('result', 'ready');
     return;
   }
 
@@ -182,6 +187,7 @@ async function main() {
   writeOutput('changed_files', JSON.stringify(changedFiles));
 
   if (!changedFiles.length) {
+    writeOutput('reason', 'no_changes_after_apply');
     writeOutput('result', 'skipped');
     return;
   }
@@ -192,6 +198,7 @@ async function main() {
 
   const pushedSha = git(['rev-parse', '--short', 'HEAD']).trim();
   writeOutput('pushed_sha', pushedSha);
+  writeOutput('reason', 'applied');
   writeOutput('result', 'applied');
 }
 

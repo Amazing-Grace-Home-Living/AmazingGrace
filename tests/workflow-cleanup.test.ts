@@ -42,4 +42,15 @@ describe('workflow cleanup', () => {
     expect(placeholderPattern.test('<div>placeholder text</div>')).toBe(true);
     expect(placeholderPattern.test('<input placeholder=\"Your name\">')).toBe(false);
   });
+
+  it('keeps Ella review automation aligned with trusted review feedback handling', () => {
+    const ella = fs.readFileSync('.github/workflows/ella.yml', 'utf8');
+
+    expect(ella).toContain('contains(fromJSON(\'["commented","changes_requested"]\'), github.event.review.state)');
+    expect(ella).toContain('contains(fromJSON(\'["OWNER","MEMBER","COLLABORATOR"]\'), github.event.review.author_association)');
+    expect(ella).toContain('node scripts/ella-auto-apply-review.js');
+    expect(ella).toContain('node scripts/ella-auto-apply-review.js --apply');
+    expect(ella).toContain('No auto-apply patch marker was found in the review body.');
+    expect(ella).toContain('I will handle the requested updates in follow-up commits on this PR.');
+  });
 });
