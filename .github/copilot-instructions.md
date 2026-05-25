@@ -31,6 +31,19 @@ Generate the minimal, surgical changes required to address findings. Prefer
 existing libraries over new dependencies. Update tests and documentation when
 behaviour changes.
 
+### Pull Request Comment Triggers
+- Treat **new comments on the current PR** from the PR author, repo owner, or
+  other trusted maintainers as actionable by default when they clearly request
+  changes.
+- Do **not** require an `@copilot` mention for those trusted current-PR
+  comments; use `@copilot` only as an optional override when a thread is
+  ambiguous.
+- Ignore comments from unrelated issues/PRs, stale threads, or untrusted actors
+  unless an explicit manual trigger is present.
+- If a manual trigger is preferred, use a label or slash-command convention
+  such as `copilot: act` instead of requiring an `@copilot` mention in the
+  comment body.
+
 ### Execute
 1. Apply changes to the local workspace.
 2. Run `npm ci && npm test -- --passWithNoTests && npm run build` to validate.

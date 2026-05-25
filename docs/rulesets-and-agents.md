@@ -52,6 +52,24 @@ In GitHub rulesets, add bypass for the exact automation you want to function:
 Keep bypass scope as narrow as possible (e.g., only for `gh-pages`, or only for
 non-`main` branches).
 
+## Copilot Trigger Policy
+
+If you want Copilot to respond without requiring `@copilot` in every message,
+adjust the **trigger policy** so that **new comments on the current PR** from
+the PR author, repo owner, or other trusted maintainers are actionable by
+default when they clearly request changes.
+
+- Keep `@copilot` as an optional override for ambiguous threads rather than a
+  mandatory mention for every request.
+- Prefer a manual trigger model based on a label or slash-command such as
+  `copilot: act` if you want an explicit opt-in without requiring mentions in
+  the comment body.
+- Scope this behavior to the current PR and trusted actors only; avoid treating
+  unrelated issue comments or stale threads as commands.
+- If the hard requirement to mention `@copilot` comes from an outer task or
+  review configuration, that requirement must be changed there as well; the
+  repository docs alone cannot override it.
+
 ## Why This Exists
 
 The “agent couldn’t start” error is a platform-level block: the automation is
