@@ -20,4 +20,12 @@ describe('workflow cleanup', () => {
     expect(deploy).toContain('actions/deploy-pages@v5');
     expect(deploy).not.toContain('npm test');
   });
+
+  it('lets Ella inspect any submitted in-repo review for suggestions', () => {
+    const ella = fs.readFileSync('.github/workflows/ella.yml', 'utf8');
+
+    expect(ella).toContain("github.event_name == 'pull_request_review'");
+    expect(ella).toContain('github.event.pull_request.head.repo.full_name == github.repository');
+    expect(ella).not.toContain("github.event.review.state == 'commented'");
+  });
 });

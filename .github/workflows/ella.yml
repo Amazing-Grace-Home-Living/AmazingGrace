@@ -20,7 +20,7 @@ permissions:
 jobs:
   # 1. Ella's Reviewer Engine
   apply-suggestions:
-    if: github.event_name == 'pull_request_review' && github.event.review.state == 'commented' && github.event.pull_request.head.repo.full_name == github.repository && !github.event.pull_request.draft
+    if: github.event_name == 'pull_request_review' && github.event.pull_request.head.repo.full_name == github.repository && !github.event.pull_request.draft
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
