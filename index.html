@@ -195,11 +195,32 @@
             box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
         }
 
-        .property-card img {
+        .property-card>img {
             display: block;
             width: 100%;
             height: 220px;
             object-fit: cover;
+            background: #020617;
+        }
+
+        .property-card-gallery {
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: minmax(104px, 1fr);
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 0.75rem 0.75rem 0.9rem;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .property-card-gallery img {
+            display: block;
+            width: 100%;
+            height: 92px;
+            object-fit: cover;
+            border-radius: 0.55rem;
+            border: 1px solid var(--border);
             background: #020617;
         }
 
@@ -322,7 +343,21 @@
                 </article>
 
                 <article class="property-card">
-                    <img src="./assets/images/1142-7th-street/CIOM8075.JPEG" alt="Interior room at 1142 7th Street NW in Largo">
+                    <img src="./assets/images/1142-7th-street/889bbd8f-3c61-431a-9da7-d21e0738ec8c.jpg" alt="Exterior entry at 1142 7th Street NW in Largo">
+                    <div class="property-card-gallery" aria-label="1142 7th Street NW photo gallery">
+                        <img src="./assets/images/1142-7th-street/db43caca-6cf5-44db-9977-ea590b416bca.jpg" alt="1142 7th Street NW photo 2" loading="lazy">
+                        <img src="./assets/images/1142-7th-street/9b5c9a4e-78cf-4b3d-bc58-2e63de8971a7.jpg" alt="1142 7th Street NW photo 3" loading="lazy">
+                        <img src="./assets/images/1142-7th-street/01b83773-5e20-4b83-8da4-13719a8e1a5a.jpg" alt="1142 7th Street NW photo 4" loading="lazy">
+                        <img src="./assets/images/1142-7th-street/3c2f9c29-7787-42df-a5ef-57727fd00951.jpg" alt="1142 7th Street NW photo 5" loading="lazy">
+                        <img src="./assets/images/1142-7th-street/b4ad39de-6b72-45c7-adf3-862acac5e5b5.jpg" alt="1142 7th Street NW photo 6" loading="lazy">
+                        <img src="./assets/images/1142-7th-street/8dce806b-e552-47b7-bd41-07017c8792ca.jpg" alt="1142 7th Street NW photo 7" loading="lazy">
+                        <img src="./assets/images/1142-7th-street/1d5c47cd-7d54-446f-82eb-ea1d7a089b30.jpg" alt="1142 7th Street NW photo 8" loading="lazy">
+                        <img src="./assets/images/1142-7th-street/1940a088-9629-4609-b018-523611119aa0.jpg" alt="1142 7th Street NW photo 9" loading="lazy">
+                        <img src="./assets/images/1142-7th-street/7a984ab5-2ec7-4211-bc99-ad8eadec9936.jpg" alt="1142 7th Street NW photo 10" loading="lazy">
+                        <img src="./assets/images/1142-7th-street/ff665772-3e1e-45e2-9937-2ba09c754d7b.jpg" alt="1142 7th Street NW photo 11" loading="lazy">
+                        <img src="./assets/images/1142-7th-street/eb85c854-4d64-4e6f-a981-632d7af77ca1.jpg" alt="1142 7th Street NW photo 12" loading="lazy">
+                        <img src="./assets/images/1142-7th-street/57d23a1f-270e-4583-b04b-753286f8dd80.jpg" alt="1142 7th Street NW photo 13" loading="lazy">
+                    </div>
                     <div class="property-card-content">
                         <h3>1142 7th Street NW</h3>
                         <p class="property-meta">Largo, FL · $1,000/mo</p>
