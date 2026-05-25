@@ -20,7 +20,12 @@ permissions:
 jobs:
   # 0. Auto-sync conflicted PR branches when trusted reviewers request it
   sync-conflicted-branch:
-    if: github.event_name == 'pull_request_review' && (github.event.review.state == 'changes_requested' || github.event.review.state == 'commented') && github.event.pull_request.head.repo.full_name == github.repository && !github.event.pull_request.draft && (github.event.review.author_association == 'OWNER' || github.event.review.author_association == 'MEMBER' || github.event.review.author_association == 'COLLABORATOR')
+    if: >-
+      github.event_name == 'pull_request_review' &&
+      (github.event.review.state == 'changes_requested' || github.event.review.state == 'commented') &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      !github.event.pull_request.draft &&
+      (github.event.review.author_association == 'OWNER' || github.event.review.author_association == 'MEMBER' || github.event.review.author_association == 'COLLABORATOR')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -40,7 +45,7 @@ jobs:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
-          if ! printf '%s' "$REVIEW_BODY" | grep -Eiq 'resolve conflicts?|merge conflicts?'; then
+          if ! printf '%s' "$REVIEW_BODY" | grep -Eiq '(resolve|merge) conflicts?'; then
             echo "No conflict-resolution request in this review."
             exit 0
           fi
@@ -51,10 +56,16 @@ jobs:
           if git merge --no-edit "origin/$BASE_REF"; then
             echo "Merged base branch into PR branch."
           else
-            echo "Merge conflict detected; auto-resolving by preferring PR branch changes for conflicting hunks."
-            git checkout --ours .
+            conflicted_files="$(git diff --name-only --diff-filter=U)"
+            echo "Merge conflict detected; auto-resolving conflicting files by preferring PR branch changes:"
+            printf '%s\n' "$conflicted_files"
+            while IFS= read -r file; do
+              [ -z "$file" ] && continue
+              git checkout --ours -- "$file"
+            done <<< "$conflicted_files"
             git add -A
-            git commit -m "chore: auto-resolve merge conflicts [Ella]"
+            conflict_count="$(printf '%s\n' "$conflicted_files" | sed '/^$/d' | wc -l | tr -d ' ')"
+            git commit -m "chore: auto-resolve merge conflicts [Ella] (${conflict_count} files)"
           fi
 
           after_sha="$(git rev-parse HEAD)"

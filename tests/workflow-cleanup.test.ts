@@ -50,9 +50,10 @@ describe('workflow cleanup', () => {
     expect(ella).toContain("github.event.review.author_association == 'OWNER'");
     expect(ella).toContain("github.event.review.author_association == 'MEMBER'");
     expect(ella).toContain("github.event.review.author_association == 'COLLABORATOR'");
-    expect(ella).toContain("grep -Eiq 'resolve conflicts?|merge conflicts?'");
+    expect(ella).toContain("grep -Eiq '(resolve|merge) conflicts?'");
     expect(ella).toContain('git merge --no-edit "origin/$BASE_REF"');
-    expect(ella).toContain('git checkout --ours .');
+    expect(ella).toContain('git checkout --ours -- "$file"');
+    expect(ella).toContain('auto-resolve merge conflicts [Ella] (');
     expect(ella).toContain('node scripts/ella-auto-apply-review.js --apply');
   });
 });
