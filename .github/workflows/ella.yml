@@ -45,7 +45,7 @@ jobs:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
-          if ! printf '%s' "$REVIEW_BODY" | grep -Eiq '(resolve|merge) conflicts?'; then
+          if ! printf '%s' "$REVIEW_BODY" | grep -Eiq '(resolve|merge|fix|sync) (the )?(merge )?conflicts?|update( the)? branch'; then
             echo "No conflict-resolution request in this review."
             exit 0
           fi
@@ -61,6 +61,7 @@ jobs:
             printf '%s\n' "$conflicted_files"
             while IFS= read -r file; do
               [ -z "$file" ] && continue
+              # Intentional: this runs only after an explicit trusted review request to resolve/sync conflicts.
               git checkout --ours -- "$file"
             done <<< "$conflicted_files"
             git add -A
