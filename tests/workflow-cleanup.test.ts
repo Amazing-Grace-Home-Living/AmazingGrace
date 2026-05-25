@@ -42,4 +42,17 @@ describe('workflow cleanup', () => {
     expect(placeholderPattern.test('<div>placeholder text</div>')).toBe(true);
     expect(placeholderPattern.test('<input placeholder=\"Your name\">')).toBe(false);
   });
+
+  it('keeps Ella automation for conflict syncing and trusted recommendation application', () => {
+    const ella = fs.readFileSync('.github/workflows/ella.yml', 'utf8');
+
+    expect(ella).toContain('sync-conflicted-branch');
+    expect(ella).toContain("github.event.review.author_association == 'OWNER'");
+    expect(ella).toContain("github.event.review.author_association == 'MEMBER'");
+    expect(ella).toContain("github.event.review.author_association == 'COLLABORATOR'");
+    expect(ella).toContain("grep -Eiq 'resolve conflicts?|merge conflicts?'");
+    expect(ella).toContain('git merge --no-edit "origin/$BASE_REF"');
+    expect(ella).toContain('git checkout --ours .');
+    expect(ella).toContain('node scripts/ella-auto-apply-review.js --apply');
+  });
 });

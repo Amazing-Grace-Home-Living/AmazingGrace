@@ -18,6 +18,53 @@ permissions:
   pull-requests: write
 
 jobs:
+  # 0. Auto-sync conflicted PR branches when trusted reviewers request it
+  sync-conflicted-branch:
+    if: github.event_name == 'pull_request_review' && (github.event.review.state == 'changes_requested' || github.event.review.state == 'commented') && github.event.pull_request.head.repo.full_name == github.repository && !github.event.pull_request.draft && (github.event.review.author_association == 'OWNER' || github.event.review.author_association == 'MEMBER' || github.event.review.author_association == 'COLLABORATOR')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git identity
+        run: |
+          git config user.name "Ella"
+          git config user.email "ella[bot]@users.noreply.github.com"
+
+      - name: Sync branch when review requests conflict resolution
+        env:
+          REVIEW_BODY: ${{ github.event.review.body }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          if ! printf '%s' "$REVIEW_BODY" | grep -Eiq 'resolve conflicts?|merge conflicts?'; then
+            echo "No conflict-resolution request in this review."
+            exit 0
+          fi
+
+          before_sha="$(git rev-parse HEAD)"
+          git fetch origin "$BASE_REF"
+
+          if git merge --no-edit "origin/$BASE_REF"; then
+            echo "Merged base branch into PR branch."
+          else
+            echo "Merge conflict detected; auto-resolving by preferring PR branch changes for conflicting hunks."
+            git checkout --ours .
+            git add -A
+            git commit -m "chore: auto-resolve merge conflicts [Ella]"
+          fi
+
+          after_sha="$(git rev-parse HEAD)"
+          if [ "$before_sha" = "$after_sha" ]; then
+            echo "Branch already up to date; nothing to push."
+            exit 0
+          fi
+
+          git push origin HEAD:"refs/heads/$HEAD_REF"
+
   # 1. Ella's Reviewer Engine
   apply-suggestions:
     if: github.event_name == 'pull_request_review' && github.event.review.state == 'commented' && github.event.pull_request.head.repo.full_name == github.repository && !github.event.pull_request.draft
@@ -32,6 +79,9 @@ jobs:
         run: |
           git config user.name "Ella"
           git config user.email "ella[bot]@users.noreply.github.com"
+
+      - name: Apply trusted review patch recommendations
+        run: node scripts/ella-auto-apply-review.js --apply
 
       - name: Apply Review Suggestions
         uses: actions/github-script@v7
