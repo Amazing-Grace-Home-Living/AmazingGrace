@@ -50,8 +50,11 @@ describe('workflow cleanup', () => {
     expect(ella).toContain("github.event.review.author_association == 'OWNER'");
     expect(ella).toContain("github.event.review.author_association == 'MEMBER'");
     expect(ella).toContain("github.event.review.author_association == 'COLLABORATOR'");
-    expect(ella).toContain("grep -Eiq '(resolve|merge|fix|sync) (the )?(merge )?conflicts?|update( the)? branch'");
+    expect(ella).toContain('CONFLICT_TRIGGER_REGEX:');
+    expect(ella).toContain('SENSITIVE_CONFLICT_PATH_REGEX:');
+    expect(ella).toContain('grep -Eiq "$CONFLICT_TRIGGER_REGEX"');
     expect(ella).toContain('git merge --no-edit "origin/$BASE_REF"');
+    expect(ella).toContain('Sensitive conflict paths require manual resolution:');
     expect(ella).toContain('git checkout --ours -- "$file"');
     expect(ella).toContain('auto-resolve merge conflicts [Ella] (');
     expect(ella).toContain('node scripts/ella-auto-apply-review.js --apply');

@@ -44,8 +44,10 @@ jobs:
           REVIEW_BODY: ${{ github.event.review.body }}
           BASE_REF: ${{ github.event.pull_request.base.ref }}
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          CONFLICT_TRIGGER_REGEX: '(resolve|merge|fix|sync) (the )?(merge )?conflicts?|update( the)? branch'
+          SENSITIVE_CONFLICT_PATH_REGEX: '(^|/)(auth|security|secret|token|credential|key|\.github|workflow)(/|$|[^a-zA-Z])'
         run: |
-          if ! printf '%s' "$REVIEW_BODY" | grep -Eiq '(resolve|merge|fix|sync) (the )?(merge )?conflicts?|update( the)? branch'; then
+          if ! printf '%s' "$REVIEW_BODY" | grep -Eiq "$CONFLICT_TRIGGER_REGEX"; then
             echo "No conflict-resolution request in this review."
             exit 0
           fi
@@ -59,6 +61,13 @@ jobs:
             conflicted_files="$(git diff --name-only --diff-filter=U)"
             echo "Merge conflict detected; auto-resolving conflicting files by preferring PR branch changes:"
             printf '%s\n' "$conflicted_files"
+            sensitive_conflicts="$(printf '%s\n' "$conflicted_files" | grep -Ei "$SENSITIVE_CONFLICT_PATH_REGEX" || true)"
+            if [ -n "$sensitive_conflicts" ]; then
+              echo "Sensitive conflict paths require manual resolution:"
+              printf '%s\n' "$sensitive_conflicts"
+              git merge --abort
+              exit 1
+            fi
             while IFS= read -r file; do
               [ -z "$file" ] && continue
               # Intentional: this runs only after an explicit trusted review request to resolve/sync conflicts.
