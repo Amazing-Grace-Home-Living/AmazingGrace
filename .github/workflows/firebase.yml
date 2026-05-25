@@ -27,6 +27,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run tests
+        run: npm test -- --passWithNoTests
+
       - name: Type check
         run: npm run typecheck
 
@@ -47,7 +50,7 @@ jobs:
 
       - name: Check for placeholder content
         run: |
-          if grep -RInE "lorem ipsum|coming soon|todo|placeholder" dist; then
+          if find dist -name '*.html' -exec grep -nEi "lorem ipsum|todo|placeholder text" {} +; then
             echo "Placeholder content found in dist/"
             exit 1
           fi

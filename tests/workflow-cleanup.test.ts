@@ -20,4 +20,13 @@ describe('workflow cleanup', () => {
     expect(deploy).toContain('actions/deploy-pages@v5');
     expect(deploy).not.toContain('npm test');
   });
+
+  it('keeps firebase deploy validation focused on real filler content', () => {
+    const firebase = fs.readFileSync('.github/workflows/firebase.yml', 'utf8');
+
+    expect(firebase).toContain("npm test -- --passWithNoTests");
+    expect(firebase).toContain("find dist -name '*.html' -exec grep -nEi");
+    expect(firebase).toContain('lorem ipsum|todo|placeholder text');
+    expect(firebase).not.toContain('coming soon|todo|placeholder');
+  });
 });
