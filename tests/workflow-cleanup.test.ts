@@ -7,6 +7,7 @@ describe('workflow cleanup', () => {
       'deploy.yml',
       'ella.yml',
       'firebase.yml',
+      'sync-secrets-from-matrix.yml',
     ]);
   });
 

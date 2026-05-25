@@ -256,6 +256,44 @@
             margin-bottom: 0.5rem;
         }
 
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.25rem;
+            margin: 1rem 0 2rem;
+        }
+
+        .video-card {
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .video-card iframe {
+            width: 100%;
+            aspect-ratio: 16/9;
+            display: block;
+            border: none;
+        }
+
+        .video-card-content {
+            padding: 1.1rem;
+        }
+
+        .video-card h4 {
+            margin: 0 0 0.35rem;
+            font-size: 1rem;
+            color: #fff;
+        }
+
+        .video-card p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
         .blog-feature {
             background: rgba(15, 23, 42, 0.92);
             border: 1px solid rgba(56, 189, 248, 0.28);
@@ -385,14 +423,65 @@
                 <a class="media-download" href="../assets/audio/player-down.mp3" download>Download MP3</a>
             </article>
         </div>
+        <h2 class="section-heading">🎬 Video Collection</h2>
 
-        <h2 class="section-heading">📺 Video Collection</h2>
+        <div class="video-grid">
+            <article class="video-card">
+                <iframe
+                    src="https://www.youtube.com/embed/GKrXY0zH7lQ"
+                    title="Matrix of Conscience"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                    loading="lazy">
+                </iframe>
+                <div class="video-card-content">
+                    <h4>Matrix of Conscience</h4>
+                    <p>The official video tied to the Matrix of Conscience system and its themes.</p>
+                </div>
+            </article>
 
-        <a href="https://www.youtube.com/channel/UCPw8Ed4knDZxhlKn5H2T9ow" class="resource-link" target="_blank" rel="noopener noreferrer">
-            <div class="resource-title">📺 Voice of Jesus Network</div>
-            <p class="resource-desc">Watch Bible study videos and ministry teaching content from the Voice of Jesus Network on YouTube.</p>
-        </a>
+            <article class="video-card">
+                <iframe
+                    src="https://www.youtube.com/embed/ZgRolaeK1fg"
+                    title="AMV Feature"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                    loading="lazy">
+                </iframe>
+                <div class="video-card-content">
+                    <h4>AMV Feature</h4>
+                    <p>A creative AMV piece included for artistic variety and visual engagement.</p>
+                </div>
+            </article>
 
+            <article class="video-card">
+                <iframe
+                    src="https://www.youtube.com/embed/EOOcReGQVuo"
+                    title="Electra Comedy Intro"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                    loading="lazy">
+                </iframe>
+                <div class="video-card-content">
+                    <h4>Electra Comedy Intro</h4>
+                    <p>A short intro featuring Electra — lighthearted and full of personality.</p>
+                </div>
+            </article>
+
+            <article class="video-card">
+                <iframe
+                    src="https://www.youtube.com/embed/9SxnzBAQ46U"
+                    title="Bible Study"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                    loading="lazy">
+                </iframe>
+                <div class="video-card-content">
+                    <h4>Bible Study</h4>
+                    <p>A teaching-focused Bible study session offering depth, clarity, and insight.</p>
+                </div>
+            </article>
+        </div>
         <h2 class="section-heading">Resources</h2>
 
         <a href="https://solomonsgatepressbible.com/pages/ethiopian-bible-bonuses" class="resource-link" target="_blank" rel="noopener noreferrer">
