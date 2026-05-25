@@ -256,6 +256,44 @@
             margin-bottom: 0.5rem;
         }
 
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.25rem;
+            margin: 1rem 0 2rem;
+        }
+
+        .video-card {
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .video-card iframe {
+            width: 100%;
+            aspect-ratio: 16/9;
+            display: block;
+            border: none;
+        }
+
+        .video-card-content {
+            padding: 1.1rem;
+        }
+
+        .video-card h4 {
+            margin: 0 0 0.35rem;
+            font-size: 1rem;
+            color: #fff;
+        }
+
+        .video-card p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
         .blog-feature {
             background: rgba(15, 23, 42, 0.92);
             border: 1px solid rgba(56, 189, 248, 0.28);
@@ -383,6 +421,52 @@
                     <source src="../assets/audio/player-down.mp3" type="audio/mpeg">
                 </audio>
                 <a class="media-download" href="../assets/audio/player-down.mp3" download>Download MP3</a>
+            </article>
+        </div>
+
+        <h2 class="section-heading">🎬 Video Collection</h2>
+
+        <div class="video-grid">
+            <article class="video-card">
+                <iframe
+                    src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                    title="Example Video 1"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                    loading="lazy">
+                </iframe>
+                <div class="video-card-content">
+                    <h4>Welcome Video</h4>
+                    <p>An introduction to Amazing Grace Home Living and our mission.</p>
+                </div>
+            </article>
+
+            <article class="video-card">
+                <iframe
+                    src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                    title="Example Video 2"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                    loading="lazy">
+                </iframe>
+                <div class="video-card-content">
+                    <h4>Faith and Fellowship</h4>
+                    <p>Stories of faith, community, and grace in action.</p>
+                </div>
+            </article>
+
+            <article class="video-card">
+                <iframe
+                    src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                    title="Example Video 3"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                    loading="lazy">
+                </iframe>
+                <div class="video-card-content">
+                    <h4>Testimony Collection</h4>
+                    <p>Powerful testimonies from our community members.</p>
+                </div>
             </article>
         </div>
 
