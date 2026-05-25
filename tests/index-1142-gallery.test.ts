@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 
-describe('1142 listing gallery', () => {
-  it('renders the expanded 1142 image gallery on the homepage', () => {
+describe('listing gallery links', () => {
+  it('renders the 1142 gallery with anchor links on the homepage', () => {
     const home = fs.readFileSync('index.html', 'utf8');
 
     expect(home).toContain('aria-label="1142 7th Street NW photo gallery"');
@@ -13,5 +13,25 @@ describe('1142 listing gallery', () => {
 
     const imageRefs = home.match(/\.\/assets\/images\/1142-7th-street\/[a-zA-Z0-9-]+\.(jpg|JPEG)/g) ?? [];
     expect(imageRefs.length).toBeGreaterThanOrEqual(13);
+
+    // Gallery images must be wrapped in anchor links
+    expect(home).toMatch(/href="\.\/assets\/images\/1142-7th-street\/889bbd8f[^"]+"/);
+    expect(home).toMatch(/href="\.\/assets\/images\/1142-7th-street\/db43caca[^"]+"/);
+  });
+
+  it('renders the 1144 gallery with anchor links on the homepage', () => {
+    const home = fs.readFileSync('index.html', 'utf8');
+
+    expect(home).toContain('aria-label="1144 7th Street NW photo gallery"');
+    expect(home).toContain('./assets/images/1144-7th-street/1144-7th-street-largo.jpg');
+    expect(home).toContain('./assets/images/1144-7th-street/image.jpg');
+    expect(home).toContain('./assets/images/1144-7th-street/image_67125505.JPG');
+
+    const imageRefs = home.match(/\.\/assets\/images\/1144-7th-street\/[a-zA-Z0-9_.-]+/g) ?? [];
+    expect(imageRefs.length).toBeGreaterThanOrEqual(13);
+
+    // Gallery images must be wrapped in anchor links
+    expect(home).toMatch(/href="\.\/assets\/images\/1144-7th-street\/1144-7th-street-largo\.jpg"/);
+    expect(home).toMatch(/href="\.\/assets\/images\/1144-7th-street\/image\.jpg"/);
   });
 });
