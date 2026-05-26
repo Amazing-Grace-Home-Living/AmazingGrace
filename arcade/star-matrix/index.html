@@ -470,6 +470,7 @@
           cell.setAttribute('data-type', star.id);
           cell.setAttribute('role', 'gridcell');
           cell.setAttribute('aria-label', star.id + ' star');
+          cell.setAttribute('aria-selected', 'false');
           cell.textContent = star.emoji;
           cell.addEventListener('pointerdown', onPointerDown);
           cell.addEventListener('pointermove', onPointerMove);
@@ -498,6 +499,7 @@
       dragStartTile = tile;
       dragTargetTile = tile;
       tile.classList.add('selected');
+      tile.setAttribute('aria-selected', 'true');
       e.currentTarget.setPointerCapture(e.pointerId);
     }
 
@@ -530,6 +532,7 @@
     function resetDragState() {
       if (dragStartTile) {
         dragStartTile.classList.remove('selected');
+        dragStartTile.setAttribute('aria-selected', 'false');
       }
       dragStartTile = null;
       dragTargetTile = null;
