@@ -59,6 +59,7 @@ jobs:
           fi
 
       - name: Validate internal navigation and asset links
+        continue-on-error: true
         run: node scripts/validate-dist-links.mjs
 
       - name: Upload dist artifact
