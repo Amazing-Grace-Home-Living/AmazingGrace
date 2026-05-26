@@ -436,6 +436,7 @@
     let certId = null;
     let isProcessing = false;
     let dragStartTile = null;
+    let dragTargetTile = null;
 
     function smInit() {
       score = 0;
@@ -446,6 +447,7 @@
       certId = null;
       isProcessing = false;
       dragStartTile = null;
+      dragTargetTile = null;
       board = createInitialGrid();
       smRender();
       smUpdateHUD();
@@ -470,7 +472,9 @@
           cell.setAttribute('aria-label', star.id + ' star');
           cell.textContent = star.emoji;
           cell.addEventListener('pointerdown', onPointerDown);
+          cell.addEventListener('pointermove', onPointerMove);
           cell.addEventListener('pointerup', onPointerUp);
+          cell.addEventListener('pointercancel', onPointerCancel);
           grid.appendChild(cell);
         }
       }
@@ -490,40 +494,67 @@
 
     function onPointerDown(e) {
       if (gameOver || isProcessing || moves <= 0) return;
-      dragStartTile = {
-        row: parseInt(e.currentTarget.dataset.row, 10),
-        col: parseInt(e.currentTarget.dataset.col, 10),
-        x: e.clientX,
-        y: e.clientY
-      };
+      const tile = e.currentTarget.closest('.star-cell');
+      if (!tile) return;
+      dragStartTile = tile;
+      dragTargetTile = tile;
+      tile.classList.add('selected');
       e.currentTarget.setPointerCapture(e.pointerId);
+    }
+
+    function onPointerMove(e) {
+      if (!dragStartTile) return;
+      const elementAtPoint = document.elementFromPoint(e.clientX, e.clientY);
+      dragTargetTile = elementAtPoint ? elementAtPoint.closest('.star-cell') : null;
     }
 
     function onPointerUp(e) {
       if (!dragStartTile) return;
-      e.currentTarget.releasePointerCapture(e.pointerId);
-
-      const deltaX = e.clientX - dragStartTile.x;
-      const deltaY = e.clientY - dragStartTile.y;
-      const threshold = 22;
-
-      let targetRow = dragStartTile.row;
-      let targetCol = dragStartTile.col;
-
-      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > threshold) {
-        targetCol = dragStartTile.col + (deltaX > 0 ? 1 : -1);
-      } else if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > threshold) {
-        targetRow = dragStartTile.row + (deltaY > 0 ? 1 : -1);
-      } else {
-        dragStartTile = null;
-        return;
+      if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+        e.currentTarget.releasePointerCapture(e.pointerId);
       }
 
-      if (targetRow >= 0 && targetRow < GRID_SIZE && targetCol >= 0 && targetCol < GRID_SIZE) {
-        smSwap(dragStartTile.row, dragStartTile.col, targetRow, targetCol);
+      const elementAtPoint = document.elementFromPoint(e.clientX, e.clientY);
+      const dragEndTile = (elementAtPoint ? elementAtPoint.closest('.star-cell') : null) || dragTargetTile;
+
+      if (dragEndTile && dragEndTile !== dragStartTile) {
+        attemptSwap(dragStartTile, dragEndTile);
       }
 
+      resetDragState();
+    }
+
+    function onPointerCancel() {
+      resetDragState();
+    }
+
+    function resetDragState() {
+      if (dragStartTile) {
+        dragStartTile.classList.remove('selected');
+      }
       dragStartTile = null;
+      dragTargetTile = null;
+    }
+
+    function attemptSwap(tileA, tileB) {
+      const rowA = Number.parseInt(tileA.dataset.row, 10);
+      const colA = Number.parseInt(tileA.dataset.col, 10);
+      const rowB = Number.parseInt(tileB.dataset.row, 10);
+      const colB = Number.parseInt(tileB.dataset.col, 10);
+
+      if (![rowA, colA, rowB, colB].every(Number.isInteger)) return;
+      if (
+        rowA < 0 || rowA >= GRID_SIZE || colA < 0 || colA >= GRID_SIZE ||
+        rowB < 0 || rowB >= GRID_SIZE || colB < 0 || colB >= GRID_SIZE
+      ) return;
+
+      const isAdjacent = (
+        (Math.abs(rowA - rowB) === 1 && colA === colB) ||
+        (Math.abs(colA - colB) === 1 && rowA === rowB)
+      );
+
+      if (!isAdjacent) return;
+      smSwap(rowA, colA, rowB, colB);
     }
 
     function smSwap(r1, c1, r2, c2) {
