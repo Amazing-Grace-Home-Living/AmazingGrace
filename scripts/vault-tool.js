@@ -1,9 +1,8 @@
-Javascript
 import https from 'https';
 
 /**
  * Syncs a new secret version to the Key Matrix via the Nexus Relay.
- * @param {string} feature - The feature ID (Gemini, Firebase, Master).
+ * @param {string} feature - The feature ID (Gemini, Firebase, Master).        
  * @param {string} secretValue - The raw sensitive key string.
  */
 async function syncSecretToMatrix(feature, secretValue) {
