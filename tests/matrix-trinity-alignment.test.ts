@@ -19,10 +19,10 @@ describe('matrix alignment integration', () => {
     expect(html).toContain('function handleSelection(r, c, tileElement)');
     expect(html).toContain("tile.addEventListener('pointerdown', handlePointerDown);");
     expect(html).toContain("tile.addEventListener('pointerenter', handlePointerEnter);");
-    expect(html).toContain("tile.addEventListener('pointerup', handlePointerUp);");
     expect(html).toContain('let currentDragPath = [];');
     expect(html).toContain('.tile.is-dragging');
-    expect(html).toContain('touch-action: none;');
+    expect(html).toContain('touch-action: manipulation;');
+    expect(html).toContain("window.addEventListener('pointerup', handlePointerUp);");
     expect(html).toContain('findMatchesGrouped(gridData)');
     expect(html).toContain('matrix_high_score');
   });
