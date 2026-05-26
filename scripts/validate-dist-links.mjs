@@ -72,15 +72,27 @@ async function resolveBuiltPath(fromHtmlFile, rawRef) {
 
 function collectRefs(html) {
   const refs = [];
-  const regexes = [
-    /(?:href|src)=["']([^"']+)["']/gi,
-    /content=["']([^"']+)["']/gi,
-  ];
+  const refRegex = /(?:href|src)=["']([^"']+)["']/gi;
+  let match;
 
-  for (const regex of regexes) {
-    let match;
-    while ((match = regex.exec(html)) !== null) {
-      refs.push(match[1]);
+  while ((match = refRegex.exec(html)) !== null) {
+    refs.push(match[1]);
+  }
+
+  const metaTagRegex = /<meta\b[^>]*>/gi;
+  while ((match = metaTagRegex.exec(html)) !== null) {
+    const tag = match[0];
+    if (!/\bhttp-equiv=["']refresh["']/i.test(tag)) continue;
+
+    const contentMatch = tag.match(/\bcontent=["']([^"']+)["']/i);
+    if (!contentMatch) continue;
+
+    const refreshUrlMatch = contentMatch[1].match(/(?:^|;)\s*url\s*=\s*([^;]+)/i);
+    if (!refreshUrlMatch) continue;
+
+    const refreshUrl = refreshUrlMatch[1].trim().replace(/^['"]|['"]$/g, '');
+    if (refreshUrl) {
+      refs.push(refreshUrl);
     }
   }
 
