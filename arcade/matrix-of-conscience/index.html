@@ -83,6 +83,7 @@
             margin: 0 auto;
             width: 100%;
             max-width: 450px;
+            touch-action: manipulation;
         }
 
         /* Individual Star Node Formats */
@@ -113,6 +114,11 @@
         .tile.selected {
             border: 2px solid var(--amber-selected);
             transform: scale(0.95);
+        }
+
+        .tile.is-dragging {
+            border: 2px solid var(--pleiades-blue);
+            box-shadow: 0 0 10px var(--pleiades-glow);
         }
 
         #controls {
@@ -244,6 +250,11 @@
         let gridData = [];
         let selectedTile = null;
         let isAnimating = false;
+        let isDragging = false;
+        let currentDragPath = [];
+        let dragOriginTile = null;
+        let dragTargetTile = null;
+        let shouldSuppressNextClick = false;
         document.getElementById('high-score-display').innerText = highScore;
 
         function initGrid() {
@@ -267,14 +278,111 @@
             tile.setAttribute('tabindex', '0');
             tile.setAttribute('aria-label', `Row ${r + 1}, Column ${c + 1}: ${node.symbol}`);
 
-            tile.addEventListener('click', () => handleSelection(r, c, tile));
+            tile.addEventListener('click', () => {
+                if (shouldSuppressNextClick) {
+                    shouldSuppressNextClick = false;
+                    return;
+                }
+                handleSelection(r, c, tile);
+            });
             tile.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     handleSelection(r, c, tile);
                 }
             });
+            tile.addEventListener('pointerdown', handlePointerDown);
+            tile.addEventListener('pointerenter', handlePointerEnter);
             gridElement.appendChild(tile);
+        }
+
+        function getTileCoords(tile) {
+            return {
+                r: Number(tile.dataset.row),
+                c: Number(tile.dataset.col)
+            };
+        }
+
+        function clearDragSelection() {
+            isDragging = false;
+            currentDragPath = [];
+            dragOriginTile = null;
+            dragTargetTile = null;
+            document.querySelectorAll('.tile.is-dragging').forEach((tile) => {
+                tile.classList.remove('is-dragging');
+            });
+        }
+
+        async function processSwap(r1, c1, r2, c2) {
+            if (!canSwap(null, r1, c1, r2, c2)) return;
+
+            isAnimating = true;
+            gridData = applySwap(gridData, r1, c1, r2, c2);
+            renderGridFromData();
+
+            const matches = findMatchesGrouped(gridData);
+            if (matches.length === 0) {
+                // Revert
+                setTimeout(() => {
+                    gridData = applySwap(gridData, r1, c1, r2, c2);
+                    renderGridFromData();
+                    isAnimating = false;
+                }, 300);
+            } else {
+                await processMatches();
+            }
+        }
+
+        function handlePointerDown(event) {
+            if (isAnimating) return;
+
+            const tile = event.target.closest('.tile[data-row][data-col]');
+            if (!tile) return;
+
+            shouldSuppressNextClick = false;
+            if (event.pointerType !== 'mouse') {
+                event.preventDefault();
+            }
+            if (selectedTile) {
+                selectedTile.element.classList.remove('selected');
+                selectedTile = null;
+            }
+            clearDragSelection();
+
+            dragOriginTile = tile;
+            dragTargetTile = null;
+            isDragging = true;
+            currentDragPath = [getTileCoords(tile)];
+            tile.classList.add('is-dragging');
+        }
+
+        function handlePointerEnter(event) {
+            if (!isDragging || !dragOriginTile || isAnimating) return;
+
+            const tile = event.target.closest('.tile[data-row][data-col]');
+            if (!tile || tile === dragOriginTile || tile === dragTargetTile) return;
+
+            const origin = getTileCoords(dragOriginTile);
+            const target = getTileCoords(tile);
+            if (!canSwap(null, origin.r, origin.c, target.r, target.c)) return;
+
+            if (dragTargetTile) dragTargetTile.classList.remove('is-dragging');
+            dragTargetTile = tile;
+            currentDragPath = [origin, target];
+            tile.classList.add('is-dragging');
+        }
+
+        async function handlePointerUp() {
+            if (!isDragging || !dragOriginTile || isAnimating) return;
+
+            const origin = getTileCoords(dragOriginTile);
+            const target = dragTargetTile ? getTileCoords(dragTargetTile) : null;
+            clearDragSelection();
+
+            if (target) {
+                shouldSuppressNextClick = true;
+                await processSwap(origin.r, origin.c, target.r, target.c);
+            }
         }
 
         async function handleSelection(r, c, tileElement) {
@@ -290,24 +398,7 @@
                 
                 prevTile.element.classList.remove('selected');
                 selectedTile = null;
-
-                if (canSwap(null, r1, c1, r2, c2)) {
-                    isAnimating = true;
-                    gridData = applySwap(gridData, r1, c1, r2, c2);
-                    renderGridFromData();
-                    
-                    const matches = findMatchesGrouped(gridData);
-                    if (matches.length === 0) {
-                        // Revert
-                        setTimeout(() => {
-                            gridData = applySwap(gridData, r1, c1, r2, c2);
-                            renderGridFromData();
-                            isAnimating = false;
-                        }, 300);
-                    } else {
-                        await processMatches();
-                    }
-                }
+                await processSwap(r1, c1, r2, c2);
             }
         }
 
@@ -335,6 +426,10 @@
 
         function renderGridFromData() {
             const gridElement = document.getElementById('grid');
+            isDragging = false;
+            currentDragPath = [];
+            dragOriginTile = null;
+            dragTargetTile = null;
             gridElement.innerHTML = '';
             for (let r = 0; r < gridSize; r++) {
                 for (let c = 0; c < gridSize; c++) {
@@ -359,6 +454,8 @@
             }
         }
 
+        window.addEventListener('pointerup', handlePointerUp);
+        window.addEventListener('pointercancel', clearDragSelection);
         initGrid();
         window.initGrid = initGrid;
     </script>
