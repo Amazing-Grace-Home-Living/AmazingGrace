@@ -15,8 +15,11 @@ describe('star matrix input handling', () => {
     const html = fs.readFileSync('arcade/star-matrix/index.html', 'utf8');
 
     expect(html).toContain('function attemptSwap(tileA, tileB) {');
+    expect(html).toContain('if (![rowA, colA, rowB, colB].every(Number.isFinite)) return;');
     expect(html).toContain('Math.abs(rowA - rowB) === 1 && colA === colB');
     expect(html).toContain('Math.abs(colA - colB) === 1 && rowA === rowB');
+    expect(html).toContain('if (!isAdjacent) return;');
+    expect(html).toContain('smSwap(rowA, colA, rowB, colB);');
     expect(html).toContain('resetDragState();');
     expect(html).toContain("dragStartTile.classList.remove('selected');");
   });

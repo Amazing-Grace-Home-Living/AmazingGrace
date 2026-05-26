@@ -542,7 +542,7 @@
       const rowB = Number.parseInt(tileB.dataset.row, 10);
       const colB = Number.parseInt(tileB.dataset.col, 10);
 
-      if (![rowA, colA, rowB, colB].every(Number.isInteger)) return;
+      if (![rowA, colA, rowB, colB].every(Number.isFinite)) return;
       if (
         rowA < 0 || rowA >= GRID_SIZE || colA < 0 || colA >= GRID_SIZE ||
         rowB < 0 || rowB >= GRID_SIZE || colB < 0 || colB >= GRID_SIZE
