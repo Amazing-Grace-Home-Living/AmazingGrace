@@ -16,9 +16,10 @@ describe('Matrix of Conscience mobile optimization', () => {
   });
 
   it('has responsive symbol sizing', () => {
-    expect(matrixHTML).toContain('max-width: 70%');
-    expect(matrixHTML).toContain('max-height: 70%');
-    expect(matrixHTML).toContain('object-fit: contain');
+    expect(matrixHTML).toContain('font-size: clamp(1.1rem, 4vw, 1.6rem)');
+    expect(matrixHTML).not.toContain('.tile img,');
+    expect(matrixHTML).not.toContain('.tile svg,');
+    expect(matrixHTML).not.toContain('.tile .symbol {');
   });
 
   it('has mobile-optimized button styles', () => {
