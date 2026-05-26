@@ -409,7 +409,6 @@
 
   <script type="module">
     import {
-      createInitialGrid,
       canSwap,
       applySwap,
       findMatchesGrouped,
@@ -441,6 +440,26 @@
     let dragStartX = 0;
     let dragStartY = 0;
 
+    function smCreateStarGrid() {
+      const grid = [];
+      const starIds = STAR_TYPES.map(t => t.id);
+
+      for (let r = 0; r < GRID_SIZE; r++) {
+        grid[r] = [];
+        for (let c = 0; c < GRID_SIZE; c++) {
+          let kind;
+          do {
+            kind = starIds[Math.floor(Math.random() * starIds.length)];
+          } while (
+            (c >= 2 && grid[r][c - 1] === kind && grid[r][c - 2] === kind) ||
+            (r >= 2 && grid[r - 1][c] === kind && grid[r - 2][c] === kind)
+          );
+          grid[r][c] = kind;
+        }
+      }
+      return grid;
+    }
+
     function smInit() {
       score = 0;
       moves = MAX_MOVES;
@@ -454,7 +473,7 @@
       activePointerId = null;
       dragStartX = 0;
       dragStartY = 0;
-      board = createInitialGrid();
+      board = smCreateStarGrid();
       smRender();
       smUpdateHUD();
     }
