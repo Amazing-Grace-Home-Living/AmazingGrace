@@ -84,6 +84,7 @@ assets/
 │   ├── 1144-7th-street/         ← 1144 7th St NW, Largo listing photos
 │   ├── 1142-7th-street/         ← 1142 7th St NW, Largo listing photos
 │   ├── 926-poinsettia/          ← 926 E Poinsettia Ave, Tampa listing photos
+│   ├── ministry/                ← Ministry gallery videos preserved from issue uploads
 │   └── supernova_explosion.svg  ← Game illustration
 │
 ├── icons/                       ← Small game-optimised icons & sprite frames

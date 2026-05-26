@@ -301,6 +301,40 @@
             margin-top: 1rem;
         }
 
+        .media-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .media-video-card {
+            background: rgba(13,1,21,0.72);
+            border: 1px solid rgba(255,215,0,0.16);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .media-video-card h4 {
+            color: var(--text);
+            margin-bottom: 0.25rem;
+            font-size: 0.98rem;
+        }
+
+        .media-video-card p {
+            font-size: 0.85rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .media-video-card video {
+            width: 100%;
+            display: block;
+            border-radius: 10px;
+            border: 1px solid rgba(255,215,0,0.14);
+            background: #020617;
+            margin-bottom: 0.75rem;
+        }
+
         .audio-card {
             background: rgba(13,1,21,0.72);
             border: 1px solid rgba(255,215,0,0.16);
@@ -440,6 +474,83 @@
                 Shared ministry audio and music now live under the main assets folders so they stay discoverable,
                 reusable, and protected during repository cleanup.
             </p>
+
+            <div class="media-section">
+                <h3 id="ministry-gallery-heading">Ministry Gallery</h3>
+                <p>Recent ministry recordings now live under <code>assets/images/ministry/</code> so the outreach archive stays local to the repository.</p>
+
+                <div class="media-gallery-grid" role="region" aria-labelledby="ministry-gallery-heading">
+                    <article class="media-video-card">
+                        <h4>Portrait archive recording 1 · 4 sec · 720 × 1280</h4>
+                        <p>First preserved MP4 issue upload, kept as a 720 × 1280 portrait clip in the local ministry archive.</p>
+                        <video controls preload="metadata" playsinline aria-label="Portrait archive recording 1, 4 second video" title="Portrait archive recording 1, 4 second video">
+                            <source src="../assets/images/ministry/f848d75b-7d0a-459d-9f8f-4023ac7b4f46.mp4" type="video/mp4">
+                            Your browser does not support the video element.
+                        </video>
+                        <a class="media-download" href="../assets/images/ministry/f848d75b-7d0a-459d-9f8f-4023ac7b4f46.mp4" target="_blank" rel="noopener">Open full video</a>
+                    </article>
+
+                    <article class="media-video-card">
+                        <h4>Portrait archive recording 2 · 4 sec · 720 × 1280</h4>
+                        <p>Second preserved MP4 issue upload, kept as another 720 × 1280 portrait clip in the local ministry archive.</p>
+                        <video controls preload="metadata" playsinline aria-label="Portrait archive recording 2, 4 second video" title="Portrait archive recording 2, 4 second video">
+                            <source src="../assets/images/ministry/7a65ebf3-4f2b-4fbf-9fd9-174859d47a1f.mp4" type="video/mp4">
+                            Your browser does not support the video element.
+                        </video>
+                        <a class="media-download" href="../assets/images/ministry/7a65ebf3-4f2b-4fbf-9fd9-174859d47a1f.mp4" target="_blank" rel="noopener">Open full video</a>
+                    </article>
+
+                    <article class="media-video-card">
+                        <h4>Portrait archive recording 3 · 10 sec · 720 × 1280</h4>
+                        <p>Original MP4 issue upload preserved as a 720 × 1280 portrait clip with a longer 10 second runtime.</p>
+                        <video controls preload="metadata" playsinline aria-label="Portrait archive recording 3, 10 second video" title="Portrait archive recording 3, 10 second video">
+                            <source src="../assets/images/ministry/82179453-3283-4aae-b0af-6b8caf68eb9b.mp4" type="video/mp4">
+                            Your browser does not support the video element.
+                        </video>
+                        <a class="media-download" href="../assets/images/ministry/82179453-3283-4aae-b0af-6b8caf68eb9b.mp4" target="_blank" rel="noopener">Open full video</a>
+                    </article>
+
+                    <article class="media-video-card">
+                        <h4>QuickTime archive recording 4 · MOV upload</h4>
+                        <p>Original QuickTime issue upload preserved in the local ministry archive for download and playback.</p>
+                        <video controls preload="metadata" playsinline aria-label="QuickTime archive recording 4 video" title="QuickTime archive recording 4 video">
+                            <source src="../assets/images/ministry/4e5e0fe6-d627-44b3-9e07-b54346aefe5c.MOV" type="video/quicktime">
+                            Your browser does not support the video element.
+                        </video>
+                        <a class="media-download" href="../assets/images/ministry/4e5e0fe6-d627-44b3-9e07-b54346aefe5c.MOV" target="_blank" rel="noopener">Open full video</a>
+                    </article>
+
+                    <article class="media-video-card">
+                        <h4>Portrait archive recording 5 · 5 sec · 1080 × 1920</h4>
+                        <p>Original MP4 issue upload preserved as a 1080 × 1920 portrait clip with just over 5 seconds of runtime.</p>
+                        <video controls preload="metadata" playsinline aria-label="Portrait archive recording 5, 5 second video" title="Portrait archive recording 5, 5 second video">
+                            <source src="../assets/images/ministry/a2715c20-d753-48bb-9ae5-110f60991b75.mp4" type="video/mp4">
+                            Your browser does not support the video element.
+                        </video>
+                        <a class="media-download" href="../assets/images/ministry/a2715c20-d753-48bb-9ae5-110f60991b75.mp4" target="_blank" rel="noopener">Open full video</a>
+                    </article>
+
+                    <article class="media-video-card">
+                        <h4>Landscape archive recording 6 · 5 sec · 832 × 480</h4>
+                        <p>Original MP4 issue upload preserved as an 832 × 480 landscape clip with just over 5 seconds of runtime.</p>
+                        <video controls preload="metadata" playsinline aria-label="Landscape archive recording 6, 5 second video" title="Landscape archive recording 6, 5 second video">
+                            <source src="../assets/images/ministry/610a3d0c-68c5-49c7-b124-9727214036c2.mp4" type="video/mp4">
+                            Your browser does not support the video element.
+                        </video>
+                        <a class="media-download" href="../assets/images/ministry/610a3d0c-68c5-49c7-b124-9727214036c2.mp4" target="_blank" rel="noopener">Open full video</a>
+                    </article>
+
+                    <article class="media-video-card">
+                        <h4>Portrait archive recording 7 · 4 sec · 1080 × 1920</h4>
+                        <p>Original MP4 issue upload preserved as a 1080 × 1920 portrait clip in the local ministry archive.</p>
+                        <video controls preload="metadata" playsinline aria-label="Portrait archive recording 7, 4 second video" title="Portrait archive recording 7, 4 second video">
+                            <source src="../assets/images/ministry/57466648-ccca-4c11-ae7f-9f61cf8490ea.mp4" type="video/mp4">
+                            Your browser does not support the video element.
+                        </video>
+                        <a class="media-download" href="../assets/images/ministry/57466648-ccca-4c11-ae7f-9f61cf8490ea.mp4" target="_blank" rel="noopener">Open full video</a>
+                    </article>
+                </div>
+            </div>
 
             <div class="media-section">
                 <h3>Music &amp; Audio Archive</h3>
