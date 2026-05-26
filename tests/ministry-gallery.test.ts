@@ -23,7 +23,8 @@ describe("ministry gallery", () => {
     const html = fs.readFileSync(ministryPagePath, "utf8");
 
     expect(html).toContain("assets/images/ministry/");
-    expect(html).toContain('aria-label="Ministry video gallery"');
+    expect(html).toContain('role="region"');
+    expect(html).toContain('aria-labelledby="ministry-gallery-heading"');
 
     for (const file of requiredFiles) {
       expect(html).toContain(`../assets/images/ministry/${file}`);
