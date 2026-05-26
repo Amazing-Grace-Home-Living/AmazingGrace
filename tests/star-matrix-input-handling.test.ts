@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 
+const html = fs.readFileSync('arcade/star-matrix/index.html', 'utf8');
+
 describe('star matrix input handling', () => {
   it('uses unified pointer drag handlers on each star cell', () => {
-    const html = fs.readFileSync('arcade/star-matrix/index.html', 'utf8');
-
     expect(html).toContain("cell.addEventListener('pointerdown', onPointerDown);");
     expect(html).toContain("cell.addEventListener('pointermove', onPointerMove);");
     expect(html).toContain("cell.addEventListener('pointerup', onPointerUp);");
@@ -12,8 +12,6 @@ describe('star matrix input handling', () => {
   });
 
   it('validates swaps as orthogonally adjacent and resets drag state', () => {
-    const html = fs.readFileSync('arcade/star-matrix/index.html', 'utf8');
-
     expect(html).toContain('function attemptSwap(tileA, tileB) {');
     expect(html).toContain('if (![rowA, colA, rowB, colB].every(Number.isFinite)) return;');
     expect(html).toContain('Math.abs(rowA - rowB) === 1 && colA === colB');

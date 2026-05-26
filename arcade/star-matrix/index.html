@@ -494,8 +494,7 @@
 
     function onPointerDown(e) {
       if (gameOver || isProcessing || moves <= 0) return;
-      const tile = e.currentTarget.closest('.star-cell');
-      if (!tile) return;
+      const tile = e.currentTarget;
       dragStartTile = tile;
       dragTargetTile = tile;
       tile.classList.add('selected');
