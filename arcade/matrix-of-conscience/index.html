@@ -73,28 +73,29 @@
         /* Border-Only Grid: Clean Alignment without Visual Bloat */
         #grid {
             display: grid;
-            grid-template-columns: repeat(5, 60px);
-            grid-template-rows: repeat(5, 60px);
-            gap: 8px;
+            grid-template-columns: repeat(7, 1fr);
+            grid-template-rows: repeat(7, 1fr);
+            gap: 4px;
             background-color: #000000;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid rgba(0, 229, 255, 0.2);
             border-radius: 4px;
             margin: 0 auto;
-            width: max-content;
+            width: 100%;
+            max-width: 450px;
         }
 
         /* Individual Star Node Formats */
         .tile {
-            width: 60px;
-            height: 60px;
+            width: 100%;
+            aspect-ratio: 1 / 1;
             background: #000000;
             border: 1px solid rgba(0, 229, 255, 0.3);
             border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.6rem;
+            font-size: clamp(1.1rem, 4vw, 1.6rem);
             cursor: pointer;
             user-select: none;
             transition: transform 0.1s ease, border-color 0.2s ease;
@@ -103,7 +104,7 @@
         /* Accurate M45 Spectral Tuning */
         .tile[data-type="blue"] { color: var(--pleiades-blue); text-shadow: 0 0 8px var(--pleiades-blue); }
         .tile[data-type="red"] { color: var(--star-red); text-shadow: 0 0 8px var(--star-red); }
-        
+
         .tile:hover {
             border-color: var(--pleiades-blue);
             box-shadow: 0 0 8px var(--pleiades-glow);
@@ -122,9 +123,11 @@
             background-color: transparent;
             color: #ffffff;
             border: 1px solid var(--pleiades-blue);
-            padding: 10px 24px;
+            padding: 12px 0;
+            width: calc(100% - 20px);
+            max-width: 300px;
             font-family: inherit;
-            font-size: 0.85rem;
+            font-size: 16px;
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -145,6 +148,15 @@
             width: 100vw;
             height: 100vh;
             z-index: 1;
+        }
+
+        /* Mobile Optimization */
+        @media (max-width: 400px) {
+            #scoreboard {
+                display: flex;
+                justify-content: space-between;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
@@ -239,10 +251,6 @@
             updateScore(0);
             gridData = createInitialGrid();
             renderGridFromData();
-            
-            const gridElement = document.getElementById('grid');
-            gridElement.style.gridTemplateColumns = `repeat(${gridSize}, 60px)`;
-            gridElement.style.gridTemplateRows = `repeat(${gridSize}, 60px)`;
         }
 
         function createTileElement(r, c, kind) {
