@@ -87,10 +87,15 @@ function collectRefs(html) {
     const contentMatch = tag.match(/\bcontent=["']([^"']+)["']/i);
     if (!contentMatch) continue;
 
-    const refreshUrlMatch = contentMatch[1].match(/(?:^|;)\s*url\s*=\s*([^;]+)/i);
+    const refreshUrlMatch = contentMatch[1].match(
+      /(?:^|;\s*)url\s*=\s*(?:"([^"]*)"|'([^']*)'|([^;]*))/i
+    );
     if (!refreshUrlMatch) continue;
 
-    const refreshUrl = refreshUrlMatch[1].trim().replace(/^['"]|['"]$/g, '');
+    const [_fullMatch, doubleQuotedUrl, singleQuotedUrl, bareUrl] = refreshUrlMatch;
+    const refreshUrl = [doubleQuotedUrl, singleQuotedUrl, bareUrl]
+      .find((candidate) => candidate !== undefined)
+      ?.trim() ?? '';
     if (refreshUrl) {
       refs.push(refreshUrl);
     }
