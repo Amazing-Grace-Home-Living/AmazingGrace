@@ -301,6 +301,41 @@
             margin-top: 1rem;
         }
 
+        .media-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .media-video-card {
+            background: rgba(13,1,21,0.72);
+            border: 1px solid rgba(255,215,0,0.16);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .media-video-card h4 {
+            color: var(--text);
+            margin-bottom: 0.25rem;
+            font-size: 0.98rem;
+        }
+
+        .media-video-card p {
+            font-size: 0.85rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .media-video-card video {
+            width: 100%;
+            display: block;
+            border-radius: 10px;
+            border: 1px solid rgba(255,215,0,0.14);
+            background: #020617;
+            aspect-ratio: 9 / 16;
+            margin-bottom: 0.75rem;
+        }
+
         .audio-card {
             background: rgba(13,1,21,0.72);
             border: 1px solid rgba(255,215,0,0.16);
@@ -440,6 +475,76 @@
                 Shared ministry audio and music now live under the main assets folders so they stay discoverable,
                 reusable, and protected during repository cleanup.
             </p>
+
+            <div class="media-section">
+                <h3>Ministry Gallery</h3>
+                <p>Recent ministry recordings now live under <code>assets/images/ministry/</code> so the outreach archive stays local to the repository.</p>
+
+                <div class="media-gallery-grid" aria-label="Ministry video gallery">
+                    <article class="media-video-card">
+                        <h4>Ministry Clip 1</h4>
+                        <p>Shared ministry recording preserved from the original issue attachments.</p>
+                        <video controls preload="metadata" playsinline>
+                            <source src="../assets/images/ministry/f848d75b-7d0a-459d-9f8f-4023ac7b4f46.mp4" type="video/mp4">
+                        </video>
+                        <a class="media-download" href="../assets/images/ministry/f848d75b-7d0a-459d-9f8f-4023ac7b4f46.mp4" target="_blank" rel="noopener">Open full video</a>
+                    </article>
+
+                    <article class="media-video-card">
+                        <h4>Ministry Clip 2</h4>
+                        <p>Shared ministry recording preserved from the original issue attachments.</p>
+                        <video controls preload="metadata" playsinline>
+                            <source src="../assets/images/ministry/7a65ebf3-4f2b-4fbf-9fd9-174859d47a1f.mp4" type="video/mp4">
+                        </video>
+                        <a class="media-download" href="../assets/images/ministry/7a65ebf3-4f2b-4fbf-9fd9-174859d47a1f.mp4" target="_blank" rel="noopener">Open full video</a>
+                    </article>
+
+                    <article class="media-video-card">
+                        <h4>Ministry Clip 3</h4>
+                        <p>Shared ministry recording preserved from the original issue attachments.</p>
+                        <video controls preload="metadata" playsinline>
+                            <source src="../assets/images/ministry/82179453-3283-4aae-b0af-6b8caf68eb9b.mp4" type="video/mp4">
+                        </video>
+                        <a class="media-download" href="../assets/images/ministry/82179453-3283-4aae-b0af-6b8caf68eb9b.mp4" target="_blank" rel="noopener">Open full video</a>
+                    </article>
+
+                    <article class="media-video-card">
+                        <h4>Ministry Clip 4</h4>
+                        <p>Shared ministry recording preserved from the original issue attachments.</p>
+                        <video controls preload="metadata" playsinline>
+                            <source src="../assets/images/ministry/4e5e0fe6-d627-44b3-9e07-b54346aefe5c.MOV" type="video/quicktime">
+                        </video>
+                        <a class="media-download" href="../assets/images/ministry/4e5e0fe6-d627-44b3-9e07-b54346aefe5c.MOV" target="_blank" rel="noopener">Open full video</a>
+                    </article>
+
+                    <article class="media-video-card">
+                        <h4>Ministry Clip 5</h4>
+                        <p>Shared ministry recording preserved from the original issue attachments.</p>
+                        <video controls preload="metadata" playsinline>
+                            <source src="../assets/images/ministry/a2715c20-d753-48bb-9ae5-110f60991b75.mp4" type="video/mp4">
+                        </video>
+                        <a class="media-download" href="../assets/images/ministry/a2715c20-d753-48bb-9ae5-110f60991b75.mp4" target="_blank" rel="noopener">Open full video</a>
+                    </article>
+
+                    <article class="media-video-card">
+                        <h4>Ministry Clip 6</h4>
+                        <p>Shared ministry recording preserved from the original issue attachments.</p>
+                        <video controls preload="metadata" playsinline>
+                            <source src="../assets/images/ministry/610a3d0c-68c5-49c7-b124-9727214036c2.mp4" type="video/mp4">
+                        </video>
+                        <a class="media-download" href="../assets/images/ministry/610a3d0c-68c5-49c7-b124-9727214036c2.mp4" target="_blank" rel="noopener">Open full video</a>
+                    </article>
+
+                    <article class="media-video-card">
+                        <h4>Ministry Clip 7</h4>
+                        <p>Shared ministry recording preserved from the original issue attachments.</p>
+                        <video controls preload="metadata" playsinline>
+                            <source src="../assets/images/ministry/57466648-ccca-4c11-ae7f-9f61cf8490ea.mp4" type="video/mp4">
+                        </video>
+                        <a class="media-download" href="../assets/images/ministry/57466648-ccca-4c11-ae7f-9f61cf8490ea.mp4" target="_blank" rel="noopener">Open full video</a>
+                    </article>
+                </div>
+            </div>
 
             <div class="media-section">
                 <h3>Music &amp; Audio Archive</h3>
