@@ -532,25 +532,6 @@
 
       if (dragEndTile && dragEndTile !== dragStartTile) {
         attemptSwap(dragStartTile, dragEndTile);
-      } else {
-        const SWIPE_THRESHOLD = 20;
-        const dx = e.clientX - dragStartX;
-        const dy = e.clientY - dragStartY;
-        if (Math.abs(dx) >= SWIPE_THRESHOLD || Math.abs(dy) >= SWIPE_THRESHOLD) {
-          const row = Number.parseInt(dragStartTile.dataset.row, 10);
-          const col = Number.parseInt(dragStartTile.dataset.col, 10);
-          let nRow = row;
-          let nCol = col;
-          if (Math.abs(dx) >= Math.abs(dy)) {
-            nCol = dx > 0 ? col + 1 : col - 1;
-          } else {
-            nRow = dy > 0 ? row + 1 : row - 1;
-          }
-          const neighborTile = document.querySelector(`.star-cell[data-row="${nRow}"][data-col="${nCol}"]`);
-          if (neighborTile) {
-            attemptSwap(dragStartTile, neighborTile);
-          }
-        }
       }
 
       resetDragState();
