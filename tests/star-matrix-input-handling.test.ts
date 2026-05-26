@@ -20,5 +20,14 @@ describe('star matrix input handling', () => {
     expect(html).toContain('smSwap(rowA, colA, rowB, colB);');
     expect(html).toContain('resetDragState();');
     expect(html).toContain("dragStartTile.classList.remove('selected');");
+    expect(html).toContain("dragStartTile.setAttribute('aria-selected', 'false');");
+  });
+
+  it('tracks a single active pointer and restores swipe-neighbor fallback', () => {
+    expect(html).toContain('let activePointerId = null;');
+    expect(html).toContain('if (dragStartTile || activePointerId !== null) return;');
+    expect(html).toContain('if (e.pointerId !== activePointerId) return;');
+    expect(html).toContain('const dragEndTile = (elementAtPoint ? elementAtPoint.closest(\'.star-cell\') : null) || dragTargetTile || inferSwipeNeighbor(e);');
+    expect(html).toContain('function inferSwipeNeighbor(e) {');
   });
 });

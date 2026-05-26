@@ -437,6 +437,7 @@
     let isProcessing = false;
     let dragStartTile = null;
     let dragTargetTile = null;
+    let activePointerId = null;
     let dragStartX = 0;
     let dragStartY = 0;
 
@@ -450,6 +451,9 @@
       isProcessing = false;
       dragStartTile = null;
       dragTargetTile = null;
+      activePointerId = null;
+      dragStartX = 0;
+      dragStartY = 0;
       board = createInitialGrid();
       smRender();
       smUpdateHUD();
@@ -472,6 +476,7 @@
           cell.setAttribute('data-type', star.id);
           cell.setAttribute('role', 'gridcell');
           cell.setAttribute('aria-label', star.id + ' star');
+          cell.setAttribute('aria-selected', 'false');
           cell.textContent = star.emoji;
           cell.addEventListener('pointerdown', onPointerDown);
           cell.addEventListener('pointermove', onPointerMove);
@@ -496,29 +501,34 @@
 
     function onPointerDown(e) {
       if (gameOver || isProcessing || moves <= 0) return;
+      if (dragStartTile || activePointerId !== null) return;
       const tile = e.currentTarget;
       dragStartTile = tile;
       dragTargetTile = tile;
+      activePointerId = e.pointerId;
       dragStartX = e.clientX;
       dragStartY = e.clientY;
       tile.classList.add('selected');
+      tile.setAttribute('aria-selected', 'true');
       e.currentTarget.setPointerCapture(e.pointerId);
     }
 
     function onPointerMove(e) {
+      if (e.pointerId !== activePointerId) return;
       if (!dragStartTile) return;
       const elementAtPoint = document.elementFromPoint(e.clientX, e.clientY);
       dragTargetTile = elementAtPoint ? elementAtPoint.closest('.star-cell') : null;
     }
 
     function onPointerUp(e) {
+      if (e.pointerId !== activePointerId) return;
       if (!dragStartTile) return;
       if (e.currentTarget.hasPointerCapture(e.pointerId)) {
         e.currentTarget.releasePointerCapture(e.pointerId);
       }
 
       const elementAtPoint = document.elementFromPoint(e.clientX, e.clientY);
-      const dragEndTile = (elementAtPoint ? elementAtPoint.closest('.star-cell') : null) || dragTargetTile;
+      const dragEndTile = (elementAtPoint ? elementAtPoint.closest('.star-cell') : null) || dragTargetTile || inferSwipeNeighbor(e);
 
       if (dragEndTile && dragEndTile !== dragStartTile) {
         attemptSwap(dragStartTile, dragEndTile);
@@ -546,16 +556,42 @@
       resetDragState();
     }
 
-    function onPointerCancel() {
+    function inferSwipeNeighbor(e) {
+      if (!dragStartTile) return null;
+      const deltaX = e.clientX - dragStartX;
+      const deltaY = e.clientY - dragStartY;
+      const swipeThreshold = 20;
+      if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) < swipeThreshold) return null;
+
+      const row = Number.parseInt(dragStartTile.dataset.row, 10);
+      const col = Number.parseInt(dragStartTile.dataset.col, 10);
+      if (![row, col].every(Number.isFinite)) return null;
+
+      let targetRow = row;
+      let targetCol = col;
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        targetCol += deltaX > 0 ? 1 : -1;
+      } else {
+        targetRow += deltaY > 0 ? 1 : -1;
+      }
+
+      if (targetRow < 0 || targetRow >= GRID_SIZE || targetCol < 0 || targetCol >= GRID_SIZE) return null;
+      return document.querySelector(`.star-cell[data-row="${targetRow}"][data-col="${targetCol}"]`);
+    }
+
+    function onPointerCancel(e) {
+      if (e.pointerId !== activePointerId) return;
       resetDragState();
     }
 
     function resetDragState() {
       if (dragStartTile) {
         dragStartTile.classList.remove('selected');
+        dragStartTile.setAttribute('aria-selected', 'false');
       }
       dragStartTile = null;
       dragTargetTile = null;
+      activePointerId = null;
       dragStartX = 0;
       dragStartY = 0;
     }
