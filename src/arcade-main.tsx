@@ -1,8 +1,9 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import MatrixOfConscience from './components/MatrixOfConscience';
 import { useFamilyStats } from './hooks/useFamilyStats';
 import styles from './arcade-main.module.css';
+import { mountScarletLattice, type ScarletLatticeController } from './fx/scarletLattice';
 
 type FamilyStats = {
   karma: number;
@@ -38,6 +39,8 @@ function LoadingSkeleton() {
 
 function ArcadeApp() {
   const { stats, chainLevel, activeUser, syncStatus, syncError, isLoading } = useFamilyStats();
+  const scarletCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const scarletControllerRef = useRef<ScarletLatticeController | null>(null);
 
   const statEntries: Array<{ label: string; value: number }> = [
     { label: 'Karma', value: stats.karma },
@@ -46,10 +49,32 @@ function ArcadeApp() {
     { label: 'Community', value: stats.community },
   ];
 
+  useEffect(() => {
+    const canvas = scarletCanvasRef.current;
+    if (!canvas) return;
+
+    const controller = mountScarletLattice(canvas);
+    if (!controller) return;
+
+    scarletControllerRef.current = controller;
+
+    return () => {
+      controller.destroy();
+      if (scarletControllerRef.current === controller) {
+        scarletControllerRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    scarletControllerRef.current?.updateStats({ integrity: stats.integrity, community: stats.community });
+  }, [stats.community, stats.integrity]);
+
   const homeHref = import.meta.env.BASE_URL || '/';
 
   return (
     <main className={styles.main}>
+      <canvas id="scarlet-lattice" ref={scarletCanvasRef} className={styles.scarletLattice} aria-hidden="true" />
       <section className={styles.section} aria-labelledby="nexus-arcade-title">
         <header className={styles.header}>
           <div>
