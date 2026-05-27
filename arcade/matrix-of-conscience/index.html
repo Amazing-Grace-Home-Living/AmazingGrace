@@ -162,6 +162,17 @@
             z-index: 1;
         }
 
+        /* Tri-Weave Bundle Canvas — sits above starfield, below game UI */
+        #weave-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 2;
+            pointer-events: none;
+        }
+
         /* Mobile Optimization */
 	        @media (max-width: 400px) {
 	            #scoreboard {
@@ -182,6 +193,7 @@
 </head>
 <body>
     <canvas id="bg-canvas"></canvas>
+    <canvas id="weave-canvas" aria-hidden="true"></canvas>
     
     <div id="game-container" role="application" aria-label="Matrix of Conscience M45 Engine">
         <h1>Matrix of Conscience</h1>
@@ -248,6 +260,170 @@
             });
         }
         setInterval(drawStarField, 100);
+
+        // --- Tri-Weave Bundle Engine ---
+        // Connects Arachne's Anchor Thread (screen center) to UI panels
+        // via braided psionic filaments driven by player stats.
+
+        const weaveCanvas = document.getElementById('weave-canvas');
+        const weaveCtx = weaveCanvas.getContext('2d');
+
+        function resizeWeaveCanvas() {
+            weaveCanvas.width = window.innerWidth;
+            weaveCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeWeaveCanvas);
+        resizeWeaveCanvas();
+
+        // Weave state — updated by updateThreadWeave(stats)
+        let weaveTick     = 0;
+        let weaveStrength  = 0.5;
+        let weaveClarity   = 0.8;
+        let weaveStability = 0.5;
+        window.currentCommunity = 0;
+
+        // Community score needed to add each additional bundle
+        const COMMUNITY_BUNDLE_THRESHOLD = 50;
+
+        // Weave stat scaling divisors (match the issue spec)
+        const WEAVE_KARMA_SCALE     = 150;
+        const WEAVE_WISDOM_SCALE    = 200;
+        const WEAVE_INTEGRITY_SCALE = 150;
+
+        // Score-to-stat divisors for game-driven weave feedback
+        const SCORE_TO_KARMA     = 5;
+        const SCORE_TO_WISDOM    = 8;
+        const SCORE_TO_INTEGRITY = 6;
+        const SCORE_TO_COMMUNITY = 10;
+
+        // Panel destinations: corners and cardinal edges for bundle endpoints
+        function getWeavePanels() {
+            const W = weaveCanvas.width;
+            const H = weaveCanvas.height;
+            return [
+                { x: 0,     y: 0     },  // top-left
+                { x: W,     y: 0     },  // top-right
+                { x: W,     y: H     },  // bottom-right
+                { x: 0,     y: H     },  // bottom-left
+                { x: W / 2, y: 0     },  // top-center
+                { x: W / 2, y: H     },  // bottom-center
+            ];
+        }
+
+        /**
+         * Draw a single psionic filament in a braid.
+         * @param {number} x1 - Anchor x
+         * @param {number} y1 - Anchor y
+         * @param {number} x2 - Panel x
+         * @param {number} y2 - Panel y
+         * @param {number} offset - Lateral offset driven by bundle index and stability
+         * @param {number} phase  - Phase angle for this strand (120° apart per strand)
+         */
+        function drawTriWeaveStrand(x1, y1, x2, y2, offset, phase) {
+            const t = weaveTick;
+
+            const cpX = (x1 + x2) / 2 +
+                Math.sin(t * weaveClarity + phase) * (60 + offset);
+
+            const cpY = (y1 + y2) / 2 +
+                Math.cos(t * weaveClarity + phase) * (60 + offset);
+
+            const pulse = Math.sin(t * 4 + phase) * 0.1 * weaveStrength;
+            const alpha = 0.12 + weaveStrength * 0.25 + pulse;
+
+            weaveCtx.strokeStyle = `rgba(255, 215, 0, ${alpha})`;
+            weaveCtx.lineWidth = 1.4 + weaveStrength * 0.4;
+
+            weaveCtx.beginPath();
+            weaveCtx.moveTo(x1, y1);
+            weaveCtx.quadraticCurveTo(cpX, cpY, x2, y2);
+            weaveCtx.stroke();
+        }
+
+        /**
+         * Draw a tri-weave bundle (3 braided filaments) from anchor to panel.
+         * @param {number} x1 - Anchor x
+         * @param {number} y1 - Anchor y
+         * @param {number} x2 - Panel x
+         * @param {number} y2 - Panel y
+         * @param {number} bundleIndex  - Index of this bundle
+         * @param {number} totalBundles - Total bundles being drawn
+         */
+        function drawTriWeaveBundle(x1, y1, x2, y2, bundleIndex, totalBundles) {
+            const baseOffset = (bundleIndex - totalBundles / 2) * 40 * weaveStability;
+
+            for (let strand = 0; strand < 3; strand++) {
+                const phase = strand * Math.PI * 0.66; // 120° apart
+                drawTriWeaveStrand(x1, y1, x2, y2, baseOffset, phase);
+            }
+        }
+
+        /**
+         * Update weave engine from player stats.
+         * @param {{ karma?: number, wisdom?: number, integrity?: number, community?: number }} stats
+         */
+        function updateThreadWeave(stats) {
+            weaveStrength  = 0.5 + (stats.karma     || 0) / WEAVE_KARMA_SCALE;
+            weaveClarity   = 0.8 + (stats.wisdom    || 0) / WEAVE_WISDOM_SCALE;
+            weaveStability = 0.5 + (stats.integrity || 0) / WEAVE_INTEGRITY_SCALE;
+
+            window.currentCommunity = stats.community || 0;
+        }
+
+        /**
+         * Trigger a golden flare across all braids (Arachne unifies minds).
+         * A pulse counter prevents overlapping setTimeout callbacks from
+         * decrementing weave values below their baseline.
+         */
+        let _pulseCount = 0;
+        function triWeavePulse() {
+            _pulseCount++;
+            weaveStrength += 1.5;
+            weaveClarity  += 0.4;
+            setTimeout(() => {
+                _pulseCount--;
+                weaveStrength -= 1.5;
+                weaveClarity  -= 0.4;
+                // Clamp to spec baseline values
+                weaveStrength  = Math.max(0.5, weaveStrength);
+                weaveClarity   = Math.max(0.8, weaveClarity);
+            }, 900);
+        }
+
+        /**
+         * Apply Red Queen corruption — frays braids and desyncs strands.
+         * @param {number} amount - Corruption intensity (0–1)
+         */
+        function corruptTriWeave(amount) {
+            weaveStability = Math.max(0.2, weaveStability - amount * 0.3);
+            weaveClarity   = Math.max(0.5, weaveClarity   - amount * 0.2);
+        }
+
+        // Expose weave API globally for integration with game stats
+        window.updateThreadWeave = updateThreadWeave;
+        window.triWeavePulse     = triWeavePulse;
+        window.corruptTriWeave   = corruptTriWeave;
+
+        function drawWeaveFrame() {
+            weaveTick += 0.012;
+            weaveCtx.clearRect(0, 0, weaveCanvas.width, weaveCanvas.height);
+
+            const coreX = weaveCanvas.width  / 2;
+            const coreY = weaveCanvas.height / 2;
+            const panels = getWeavePanels();
+
+            // Community-driven bundle count: 0–49 → 1, 50–99 → 2, …
+            const bundleCount = 1 + Math.floor((window.currentCommunity || 0) / COMMUNITY_BUNDLE_THRESHOLD);
+
+            panels.forEach(({ x: px, y: py }) => {
+                for (let b = 0; b < bundleCount; b++) {
+                    drawTriWeaveBundle(coreX, coreY, px, py, b, bundleCount);
+                }
+            });
+
+            requestAnimationFrame(drawWeaveFrame);
+        }
+        drawWeaveFrame();
 
         // --- 2. Alignment Token Parameters (M45 Structural Nodes) ---
         const starNodes = {
@@ -466,6 +642,15 @@
                 localStorage.setItem('matrix_high_score', highScore);
                 document.getElementById('high-score-display').innerText = highScore;
             }
+            // Drive Tri-Weave engine from accumulated score milestones
+            updateThreadWeave({
+                karma:     Math.min(score / SCORE_TO_KARMA,     WEAVE_KARMA_SCALE),
+                wisdom:    Math.min(score / SCORE_TO_WISDOM,    WEAVE_WISDOM_SCALE),
+                integrity: Math.min(score / SCORE_TO_INTEGRITY, WEAVE_INTEGRITY_SCALE),
+                community: Math.min(score / SCORE_TO_COMMUNITY, WEAVE_WISDOM_SCALE),
+            });
+            // Pulse the weave on every match score event
+            triWeavePulse();
         }
 
         window.addEventListener('pointerup', handlePointerUp);
