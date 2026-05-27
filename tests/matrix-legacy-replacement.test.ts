@@ -3,14 +3,14 @@ import fs from 'node:fs';
 import viteConfig from '../vite.config';
 
 describe('matrix legacy replacement', () => {
-  it('serves modern protocol content from matrix-of-conscience route', () => {
+  it('redirects the legacy matrix-of-conscience arcade route into Star Matrix', () => {
     const matrixOfConscience = fs.readFileSync('arcade/matrix-of-conscience/index.html', 'utf8');
-    const charsetIndex = matrixOfConscience.indexOf('<meta charset="UTF-8">');
 
-    expect(matrixOfConscience).toContain('Matrix of Conscience');
-    expect(matrixOfConscience).toContain('M45 Seven Sisters Alignment');
-    expect(matrixOfConscience).toContain("font-family: 'Courier New', Courier, monospace;");
-    expect(charsetIndex).toBeGreaterThanOrEqual(0);
+    expect(matrixOfConscience).toContain('<meta charset="UTF-8">');
+    expect(matrixOfConscience).toContain('http-equiv="refresh"');
+    expect(matrixOfConscience).toContain('url=../star-matrix/');
+    expect(matrixOfConscience).toContain('Star Matrix');
+    expect(matrixOfConscience).not.toContain('M45 Seven Sisters Alignment');
   });
 
   it('removes the redundant matrix-legacy route file and build input', () => {

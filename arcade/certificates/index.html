@@ -60,10 +60,66 @@
       max-width: 860px; margin: 0 auto 2rem;
       display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
     }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
     .page-header h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 900; color: #fff; }
     .page-header p  { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--neon-blue); margin-top: 0.25rem; }
     .back-link { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); text-decoration: none; white-space: nowrap; padding-top: 0.4rem; }
     .back-link:hover { color: var(--neon-blue); }
+
+    /* 3D glowing star */
+    .glow-star {
+      width: 54px;
+      height: 54px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(251,191,36,0.35), rgba(188,19,254,0.12) 55%, rgba(0,242,255,0.08) 80%, rgba(0,0,0,0) 100%);
+      box-shadow:
+        0 0 18px rgba(188,19,254,0.24),
+        0 0 32px rgba(0,242,255,0.12),
+        inset 0 0 18px rgba(251,191,36,0.14);
+      transform-style: preserve-3d;
+      animation: starSpin 7s linear infinite;
+      border: 1px solid rgba(255,255,255,0.12);
+      position: relative;
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+    .glow-star::before {
+      content: '';
+      position: absolute;
+      inset: -20%;
+      background: conic-gradient(from 220deg, rgba(0,242,255,0.0), rgba(0,242,255,0.25), rgba(188,19,254,0.0), rgba(251,191,36,0.28), rgba(0,242,255,0.0));
+      filter: blur(8px);
+      opacity: 0.9;
+      animation: starSheen 2.8s ease-in-out infinite;
+      transform: translateZ(-10px);
+    }
+    .glow-star svg {
+      width: 26px;
+      height: 26px;
+      filter: drop-shadow(0 0 14px rgba(251,191,36,0.6)) drop-shadow(0 0 22px rgba(188,19,254,0.35));
+      transform: translateZ(18px);
+      position: relative;
+      z-index: 1;
+    }
+    @keyframes starSpin {
+      0%   { transform: rotateX(18deg) rotateY(0deg) rotateZ(0deg); }
+      100% { transform: rotateX(18deg) rotateY(360deg) rotateZ(360deg); }
+    }
+    @keyframes starSheen {
+      0%, 100% { opacity: 0.75; transform: rotate(0deg) translateZ(-10px); }
+      50%      { opacity: 1; transform: rotate(180deg) translateZ(-10px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .glow-star { animation: none; }
+      .glow-star::before { animation: none; }
+    }
 
     /* Certificate cards */
     .cert-list { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem; }
@@ -108,9 +164,16 @@
 <body>
   <!-- Header -->
   <div class="page-header">
-    <div>
-      <h1>CERTIFICATES</h1>
-      <p>Nexus Arcade — Completion Records</p>
+    <div class="header-left">
+      <div class="glow-star" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" role="presentation">
+          <path d="M12 2.2l2.9 6.1 6.7.9-4.9 4.7 1.2 6.7L12 17.9 6.1 20.6l1.2-6.7L2.4 9.2l6.7-.9L12 2.2z" fill="rgba(251,191,36,0.95)"/>
+        </svg>
+      </div>
+      <div>
+        <h1>CERTIFICATES</h1>
+        <p>Nexus Arcade — Completion Records</p>
+      </div>
     </div>
     <a class="back-link" href="../">← Back to Arcade</a>
   </div>
@@ -127,31 +190,102 @@
     <a class="play-btn" href="../">▶ Play Now</a>
   </div>
 
-  <script>
-    (function () {
-      let certs = [];
-      try {
-        certs = JSON.parse(localStorage.getItem('arcade-certificates') || '[]');
-      } catch (_) { /* storage unavailable */ }
+  <script type="module">
+    import {
+      getAppId,
+      getFirestoreDb,
+      ensureAnonymousUser,
+      assertPathSegment,
+    } from '../../src/firebase/nexus-firestore.ts';
+    import { collection, getDocs, limit, orderBy, query } from 'firebase/firestore';
 
-      const list       = document.getElementById('cert-list');
-      const emptyState = document.getElementById('empty-state');
-      const countLabel = document.getElementById('count-label');
+    const LOCAL_KEYS = Object.freeze(['star-matrix:certificates', 'arcade-certificates']);
+
+    const list = document.getElementById('cert-list');
+    const emptyState = document.getElementById('empty-state');
+    const countLabel = document.getElementById('count-label');
+
+    function esc(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function normalizeCert(raw) {
+      if (!raw || typeof raw !== 'object') return null;
+      const cert = raw;
+      const id = typeof cert.id === 'string' ? cert.id : null;
+      const game = typeof cert.game === 'string' ? cert.game : 'Star Matrix';
+      const player = typeof cert.player === 'string' ? cert.player : 'Player';
+      const date = typeof cert.date === 'string' ? cert.date : '—';
+      const score =
+        typeof cert.score === 'number' && Number.isFinite(cert.score) ? cert.score : null;
+      if (!id) return null;
+      return { id, game, player, date, score };
+    }
+
+    function loadLocalCerts() {
+      const all = [];
+      for (const key of LOCAL_KEYS) {
+        try {
+          const parsed = JSON.parse(localStorage.getItem(key) || '[]');
+          if (Array.isArray(parsed)) {
+            for (const item of parsed) {
+              const cert = normalizeCert(item);
+              if (cert) all.push(cert);
+            }
+          }
+        } catch (_) {
+          // storage unavailable
+        }
+      }
+      return all;
+    }
+
+    async function loadFirestoreCerts() {
+      const db = getFirestoreDb();
+      if (!db) return [];
+
+      const user = await ensureAnonymousUser();
+      if (!user) return [];
+
+      const appId = getAppId('arcade');
+      assertPathSegment('appId', appId);
+      assertPathSegment('userId', user.uid);
+
+      const certsRef = collection(db, 'artifacts', appId, 'users', user.uid, 'certificates');
+      const q = query(certsRef, orderBy('createdAt', 'desc'), limit(50));
+      const snap = await getDocs(q);
+      const out = [];
+      snap.forEach((docSnap) => {
+        const data = docSnap.data();
+        const normalized = normalizeCert({ id: docSnap.id, ...data });
+        if (normalized) out.push(normalized);
+      });
+      return out;
+    }
+
+    function render(certs, meta) {
+      list.innerHTML = '';
 
       if (!Array.isArray(certs) || certs.length === 0) {
         emptyState.style.display = '';
+        countLabel.textContent = '';
         return;
       }
 
-      countLabel.textContent = certs.length + ' certificate' + (certs.length !== 1 ? 's' : '') + ' earned';
+      emptyState.style.display = 'none';
+      const suffix = certs.length !== 1 ? 's' : '';
+      countLabel.textContent = `${certs.length} certificate${suffix} earned${meta ? ' · ' + meta : ''}`;
 
-      // Show newest first
-      certs.slice().reverse().forEach(function (cert) {
-        var card = document.createElement('div');
+      certs.forEach((cert) => {
+        const card = document.createElement('div');
         card.className = 'cert-card';
         card.innerHTML =
           '<div class="cert-meta">' +
-            '<div class="cert-game">' + esc(cert.game || 'Unknown Game') + '</div>' +
+            '<div class="cert-game">' + esc(cert.game || 'Star Matrix') + '</div>' +
             '<div class="cert-player">Player: <span>' + esc(cert.player || 'Player') + '</span></div>' +
             '<div class="cert-detail">Completed: ' + esc(cert.date || '—') +
               (cert.score != null ? ' &nbsp;·&nbsp; Score: ' + esc(String(cert.score)) : '') +
@@ -161,15 +295,26 @@
           '<div class="cert-icon" aria-hidden="true">🏆</div>';
         list.appendChild(card);
       });
+    }
 
-      function esc(str) {
-        return String(str)
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;');
+    function dedupeNewestFirst(certs) {
+      const map = new Map();
+      for (const cert of certs) {
+        if (!map.has(cert.id)) map.set(cert.id, cert);
       }
-    })();
+      return Array.from(map.values());
+    }
+
+    const localCerts = loadLocalCerts();
+    render(dedupeNewestFirst(localCerts), localCerts.length ? 'Local' : '');
+
+    try {
+      const remoteCerts = await loadFirestoreCerts();
+      const merged = dedupeNewestFirst([...remoteCerts, ...localCerts]);
+      render(merged, remoteCerts.length ? 'Synced' : (localCerts.length ? 'Local' : ''));
+    } catch (_) {
+      // Keep local render
+    }
   </script>
 </body>
 </html>

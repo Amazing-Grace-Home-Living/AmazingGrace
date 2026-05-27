@@ -1,463 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matrix of Conscience - M45 Calibration</title>
-    <style>
-        :root {
-            /* Astronomical Color Palette */
-            --space-black: #000000;
-            --pleiades-blue: #00e5ff;
-            --pleiades-glow: rgba(0, 229, 255, 0.4);
-            --star-red: #ff3b30;
-            --star-red-glow: rgba(255, 59, 48, 0.5);
-            --amber-selected: #ffb000;
-        }
-
-        body {
-            background-color: var(--space-black);
-            color: var(--pleiades-blue);
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            overflow: hidden;
-        }
-
-        /* Keyboard Accessibility Indicator */
-        *:focus-visible {
-            outline: 3px solid var(--amber-selected);
-            outline-offset: 2px;
-        }
-
-        #game-container {
-            text-align: center;
-            border: 1px solid var(--pleiades-blue);
-            padding: 24px;
-            box-shadow: 0 0 30px var(--pleiades-glow);
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 10;
-            border-radius: 4px;
-        }
-
-        h1 {
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 5px;
-            font-size: 1.4rem;
-            color: #ffffff;
-            text-shadow: 0 0 10px var(--pleiades-blue);
-        }
-
-        .subtitle {
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-            color: var(--pleiades-blue);
-            opacity: 0.8;
-            margin-bottom: 20px;
-        }
-
-        #scoreboard {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            border-bottom: 1px dashed rgba(0, 229, 255, 0.4);
-            padding-bottom: 12px;
-        }
-
-        /* Border-Only Grid: Clean Alignment without Visual Bloat */
-        #grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            grid-template-rows: repeat(7, 1fr);
-            gap: 4px;
-            background-color: #000000;
-            padding: 10px;
-            border: 1px solid rgba(0, 229, 255, 0.2);
-            border-radius: 4px;
-            margin: 0 auto;
-            width: 100%;
-            max-width: 450px;
-            touch-action: manipulation;
-        }
-
-        /* Individual Star Node Formats */
-        .tile {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            background: #000000;
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: clamp(1.1rem, 4vw, 1.6rem);
-            cursor: pointer;
-            user-select: none;
-            transition: transform 0.1s ease, border-color 0.2s ease;
-        }
-
-        /* Accurate M45 Spectral Tuning */
-        .tile[data-type="blue"] { color: var(--pleiades-blue); text-shadow: 0 0 8px var(--pleiades-blue); }
-        .tile[data-type="red"] { color: var(--star-red); text-shadow: 0 0 8px var(--star-red); }
-
-        .tile:hover {
-            border-color: var(--pleiades-blue);
-            box-shadow: 0 0 8px var(--pleiades-glow);
-        }
-
-        .tile.selected {
-            border: 2px solid var(--amber-selected);
-            transform: scale(0.95);
-        }
-
-        .tile.is-dragging {
-            border: 2px solid var(--pleiades-blue);
-            box-shadow: 0 0 10px var(--pleiades-glow);
-        }
-
-        #controls {
-            margin-top: 24px;
-        }
-
-        .btn {
-            background-color: transparent;
-            color: #ffffff;
-            border: 1px solid var(--pleiades-blue);
-            padding: 12px 0;
-            width: calc(100% - 20px);
-            max-width: 300px;
-            font-family: inherit;
-            font-size: 16px;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.2s ease;
-        }
-
-        .btn:hover {
-            background-color: var(--pleiades-blue);
-            color: var(--space-black);
-            box-shadow: 0 0 15px var(--pleiades-blue);
-        }
-
-        /* Deep Ambient Star Field Canvas */
-        #bg-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 1;
-        }
-
-        /* Mobile Optimization */
-        @media (max-width: 400px) {
-            #scoreboard {
-                display: flex;
-                justify-content: space-between;
-                font-size: 14px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Arcade — Star Matrix</title>
+  <meta name="description" content="This Arcade route has been consolidated into Star Matrix.">
+  <meta http-equiv="refresh" content="0; url=../star-matrix/">
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 1.5rem;
+      background: radial-gradient(circle at 40% 20%, rgba(188,19,254,0.18), transparent 55%),
+                  radial-gradient(circle at 60% 80%, rgba(0,242,255,0.12), transparent 60%),
+                  #020617;
+      color: #e2e8f0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, sans-serif;
+    }
+    .card {
+      width: min(720px, 100%);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 18px;
+      padding: 1.25rem;
+      background: rgba(15,23,42,0.65);
+      backdrop-filter: blur(10px);
+    }
+    h1 {
+      margin: 0 0 0.25rem;
+      font-size: 1.15rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    p { margin: 0.35rem 0 0; color: rgba(226,232,240,0.78); line-height: 1.55; }
+    a { color: #fbbf24; text-decoration: none; font-weight: 800; }
+    a:hover { text-decoration: underline; }
+  </style>
 </head>
 <body>
-    <canvas id="bg-canvas"></canvas>
-    
-    <div id="game-container" role="application" aria-label="Matrix of Conscience M45 Engine">
-        <h1>Matrix of Conscience</h1>
-        <div class="subtitle">M45 Seven Sisters Alignment</div>
-                
-        <div id="scoreboard">
-            <div>Stellar Points: <span id="score-display">0</span></div>
-            <div>High Score: <span id="high-score-display">0</span></div>
-        </div>    
-    
-        <div id="grid" role="grid" aria-label="Sequence Alignment Grid"></div>
-        
-        <div id="controls">
-            <button class="btn" id="reset-btn" onclick="initGrid()">Reset Calibration</button>
-        </div>
-    </div>
+  <div class="card" role="status" aria-live="polite">
+    <h1>Star Matrix</h1>
+    <p>This route has been consolidated into the unified Star Matrix experience.</p>
+    <p><a href="../star-matrix/">Continue to Star Matrix →</a></p>
+  </div>
 
-    <script type="module">
-        import {
-          createInitialGrid,
-          canSwap,
-          applySwap,
-          findMatchesGrouped,
-          applyGravity
-        } from '../../js/matchmaker.js';
-
-        // --- 1. Ambient Background Starfield (Deep Field Physics) ---
-        const canvas = document.getElementById('bg-canvas');
-        const ctx = canvas.getContext('2d');
-        
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        const starsCount = 120;
-        const starField = Array.from({ length: starsCount }).map(() => ({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            size: Math.random() * 1.5,
-            color: Math.random() > 0.12 ? '#00e5ff' : '#ff3b30', // Accurate spectrum classification split
-            alpha: Math.random()
-        }));
-
-        function drawStarField() {
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            starField.forEach(star => {
-                ctx.save();
-                ctx.globalAlpha = star.alpha;
-                ctx.fillStyle = star.color;
-                ctx.beginPath();
-                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
-                
-                // Subtle organic shimmering loop
-                star.alpha += (Math.random() - 0.5) * 0.04;
-                if (star.alpha < 0) star.alpha = 0;
-                if (star.alpha > 1) star.alpha = 1;
-            });
-        }
-        setInterval(drawStarField, 100);
-
-        // --- 2. Alignment Token Parameters (M45 Structural Nodes) ---
-        const starNodes = {
-            heart: { symbol: '★', type: 'blue' },
-            star:  { symbol: '⭐', type: 'blue' },
-            cross: { symbol: '🔷', type: 'blue' },
-            flame: { symbol: '♦', type: 'blue' },
-            drop:  { symbol: '⬢', type: 'red' }
-        };
-        
-        const gridSize = 7; // Unified with canonical engine
-        let score = 0;
-        let highScore = localStorage.getItem('matrix_high_score') || 0;
-        let gridData = [];
-        let selectedTile = null;
-        let isAnimating = false;
-        let isDragging = false;
-        let currentDragPath = [];
-        let dragOriginTile = null;
-        let dragTargetTile = null;
-        let shouldSuppressNextClick = false;
-        document.getElementById('high-score-display').innerText = highScore;
-
-        function initGrid() {
-            score = 0;
-            updateScore(0);
-            gridData = createInitialGrid();
-            renderGridFromData();
-        }
-
-        function createTileElement(r, c, kind) {
-            const gridElement = document.getElementById('grid');
-            const node = starNodes[kind] || starNodes.heart;
-            const tile = document.createElement('div');
-            tile.classList.add('tile');
-            tile.innerText = node.symbol;
-            tile.setAttribute('data-type', node.type);
-            tile.dataset.row = r;
-            tile.dataset.col = c;
-            
-            tile.setAttribute('role', 'gridcell');
-            tile.setAttribute('tabindex', '0');
-            tile.setAttribute('aria-label', `Row ${r + 1}, Column ${c + 1}: ${node.symbol}`);
-
-            tile.addEventListener('click', () => {
-                if (shouldSuppressNextClick) {
-                    shouldSuppressNextClick = false;
-                    return;
-                }
-                handleSelection(r, c, tile);
-            });
-            tile.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    handleSelection(r, c, tile);
-                }
-            });
-            tile.addEventListener('pointerdown', handlePointerDown);
-            tile.addEventListener('pointerenter', handlePointerEnter);
-            gridElement.appendChild(tile);
-        }
-
-        function getTileCoords(tile) {
-            return {
-                r: Number(tile.dataset.row),
-                c: Number(tile.dataset.col)
-            };
-        }
-
-        function clearDragSelection() {
-            isDragging = false;
-            currentDragPath = [];
-            dragOriginTile = null;
-            dragTargetTile = null;
-            document.querySelectorAll('.tile.is-dragging').forEach((tile) => {
-                tile.classList.remove('is-dragging');
-            });
-        }
-
-        async function processSwap(r1, c1, r2, c2) {
-            if (!canSwap(null, r1, c1, r2, c2)) return;
-
-            isAnimating = true;
-            gridData = applySwap(gridData, r1, c1, r2, c2);
-            renderGridFromData();
-
-            const matches = findMatchesGrouped(gridData);
-            if (matches.length === 0) {
-                // Revert
-                setTimeout(() => {
-                    gridData = applySwap(gridData, r1, c1, r2, c2);
-                    renderGridFromData();
-                    isAnimating = false;
-                }, 300);
-            } else {
-                await processMatches();
-            }
-        }
-
-        function handlePointerDown(event) {
-            if (isAnimating) return;
-
-            const tile = event.target.closest('.tile[data-row][data-col]');
-            if (!tile) return;
-
-            shouldSuppressNextClick = false;
-            if (event.pointerType !== 'mouse') {
-                event.preventDefault();
-            }
-            if (selectedTile) {
-                selectedTile.element.classList.remove('selected');
-                selectedTile = null;
-            }
-            clearDragSelection();
-
-            dragOriginTile = tile;
-            dragTargetTile = null;
-            isDragging = true;
-            currentDragPath = [getTileCoords(tile)];
-            tile.classList.add('is-dragging');
-        }
-
-        function handlePointerEnter(event) {
-            if (!isDragging || !dragOriginTile || isAnimating) return;
-
-            const tile = event.target.closest('.tile[data-row][data-col]');
-            if (!tile || tile === dragOriginTile || tile === dragTargetTile) return;
-
-            const origin = getTileCoords(dragOriginTile);
-            const target = getTileCoords(tile);
-            if (!canSwap(null, origin.r, origin.c, target.r, target.c)) return;
-
-            if (dragTargetTile) dragTargetTile.classList.remove('is-dragging');
-            dragTargetTile = tile;
-            currentDragPath = [origin, target];
-            tile.classList.add('is-dragging');
-        }
-
-        async function handlePointerUp() {
-            if (!isDragging || !dragOriginTile || isAnimating) return;
-
-            const origin = getTileCoords(dragOriginTile);
-            const target = dragTargetTile ? getTileCoords(dragTargetTile) : null;
-            clearDragSelection();
-
-            if (target) {
-                shouldSuppressNextClick = true;
-                await processSwap(origin.r, origin.c, target.r, target.c);
-            }
-        }
-
-        async function handleSelection(r, c, tileElement) {
-            if (isAnimating) return;
-
-            if (!selectedTile) {
-                selectedTile = { r, c, element: tileElement };
-                tileElement.classList.add('selected');
-            } else {
-                const prevTile = selectedTile;
-                const r1 = prevTile.r, c1 = prevTile.c;
-                const r2 = r, c2 = c;
-                
-                prevTile.element.classList.remove('selected');
-                selectedTile = null;
-                await processSwap(r1, c1, r2, c2);
-            }
-        }
-
-        async function processMatches() {
-            let matches = findMatchesGrouped(gridData);
-            if (matches.length === 0) {
-                isAnimating = false;
-                return;
-            }
-
-            const clearedCells = matches.flat();
-            updateScore(clearedCells.length * 10);
-            
-            clearedCells.forEach(({ r, c }) => {
-                gridData[r][c] = null;
-            });
-            renderGridFromData();
-
-            setTimeout(() => {
-                gridData = applyGravity(gridData);
-                renderGridFromData();
-                setTimeout(() => processMatches(), 250);
-            }, 250);
-        }
-
-        function renderGridFromData() {
-            const gridElement = document.getElementById('grid');
-            isDragging = false;
-            currentDragPath = [];
-            dragOriginTile = null;
-            dragTargetTile = null;
-            gridElement.innerHTML = '';
-            for (let r = 0; r < gridSize; r++) {
-                for (let c = 0; c < gridSize; c++) {
-                    if (gridData[r][c]) createTileElement(r, c, gridData[r][c]);
-                    else {
-                        const empty = document.createElement('div');
-                        empty.classList.add('tile');
-                        empty.style.opacity = '0';
-                        gridElement.appendChild(empty);
-                    }
-                }
-            }
-        }
-
-        function updateScore(points) {
-            score += points;
-            document.getElementById('score-display').innerText = score;
-            if (score > highScore) {
-                highScore = score;
-                localStorage.setItem('matrix_high_score', highScore);
-                document.getElementById('high-score-display').innerText = highScore;
-            }
-        }
-
-        window.addEventListener('pointerup', handlePointerUp);
-        window.addEventListener('pointercancel', clearDragSelection);
-        initGrid();
-        window.initGrid = initGrid;
-    </script>
+  <script>
+    (function () {
+      try {
+        window.location.replace('../star-matrix/');
+      } catch (_) {
+        window.location.href = '../star-matrix/';
+      }
+    })();
+  </script>
 </body>
 </html>

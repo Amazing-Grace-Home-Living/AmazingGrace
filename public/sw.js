@@ -1,4 +1,4 @@
-const CACHE_NAME = 'amazing-grace-v8';
+const CACHE_NAME = 'amazing-grace-v9';
 
 // Core pages and game modules deployed at stable paths.
 // Use scope-relative URLs (./…) so the service worker works correctly
@@ -10,7 +10,6 @@ const ASSETS_TO_CACHE = [
     './index.html',
     './arcade/index.html',
     './arcade/star-matrix/index.html',
-    './arcade/matrix-of-conscience/index.html',
     './arcade/trinity/index.html',
     './arcade/bible-study/index.html',
     './arcade/certificates/index.html',
@@ -18,10 +17,8 @@ const ASSETS_TO_CACHE = [
     './manifest.json',
     './star-map.js',
     './badges.js',
-    './saveSystem.js',
     './levelSystem.js',
     './daily.js',
-    './sevenStars.js'
 ];
 
 const STATIC_DESTINATIONS = new Set(['style', 'script', 'image', 'font', 'manifest']);
@@ -33,8 +30,10 @@ const OFFLINE_PAGE_FALLBACKS = new Map([
     ['/arcade/index.html', './arcade/index.html'],
     ['/arcade/star-matrix/', './arcade/star-matrix/index.html'],
     ['/arcade/star-matrix/index.html', './arcade/star-matrix/index.html'],
-    ['/arcade/matrix-of-conscience/', './arcade/matrix-of-conscience/index.html'],
-    ['/arcade/matrix-of-conscience/index.html', './arcade/matrix-of-conscience/index.html'],
+    ['/arcade/matrix-of-conscience/', './arcade/star-matrix/index.html'],
+    ['/arcade/matrix-of-conscience/index.html', './arcade/star-matrix/index.html'],
+    ['/arcade/certificates/', './arcade/certificates/index.html'],
+    ['/arcade/certificates/index.html', './arcade/certificates/index.html'],
     ['/arcade/trinity/', './arcade/trinity/index.html'],
     ['/arcade/trinity/index.html', './arcade/trinity/index.html'],
     ['/arcade/bible-study/', './arcade/bible-study/index.html'],
