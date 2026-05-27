@@ -11,6 +11,13 @@ describe('Matrix of Conscience mobile optimization', () => {
     expect(matrixHTML).toContain('max-width: 450px');
   });
 
+  it('keeps the game shell responsive to avoid clipping on narrow screens', () => {
+    expect(matrixHTML).toContain('width: min(100%, 540px)');
+    expect(matrixHTML).toContain('box-sizing: border-box');
+    expect(matrixHTML).toContain('overflow-x: hidden');
+    expect(matrixHTML).toContain('overflow-y: auto');
+  });
+
   it('uses aspect-ratio for square cells', () => {
     expect(matrixHTML).toContain('aspect-ratio: 1 / 1');
   });
