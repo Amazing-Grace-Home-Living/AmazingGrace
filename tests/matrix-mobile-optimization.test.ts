@@ -9,6 +9,8 @@ describe('Matrix of Conscience mobile optimization', () => {
     expect(matrixHTML).toContain('grid-template-rows: repeat(7, 1fr)');
     expect(matrixHTML).toContain('width: 100%');
     expect(matrixHTML).toContain('max-width: 450px');
+    // Prevent 100% width + padding from overflowing on mobile.
+    expect(matrixHTML).toMatch(/#grid\s*\{[\s\S]*?box-sizing:\s*border-box/);
   });
 
   it('keeps the game shell responsive to avoid clipping on narrow screens', () => {
@@ -39,6 +41,11 @@ describe('Matrix of Conscience mobile optimization', () => {
   it('has mobile media query for scoreboard', () => {
     expect(matrixHTML).toContain('@media (max-width: 400px)');
     expect(matrixHTML).toContain('font-size: 14px');
+  });
+
+  it('stacks the scoreboard on extra-narrow screens', () => {
+    expect(matrixHTML).toContain('@media (max-width: 360px)');
+    expect(matrixHTML).toContain('flex-direction: column');
   });
 
   it('does not use fixed pixel grid sizing in JavaScript', () => {
