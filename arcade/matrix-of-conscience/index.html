@@ -25,7 +25,8 @@
             justify-content: center;
             min-height: 100vh;
             margin: 0;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
         /* Keyboard Accessibility Indicator */
@@ -42,6 +43,8 @@
             background: rgba(0, 0, 0, 0.95);
             z-index: 10;
             border-radius: 4px;
+            width: min(100%, 540px);
+            box-sizing: border-box;
         }
 
         h1 {
