@@ -23,6 +23,7 @@ export default defineConfig({
         arcadeBibleStudy:  resolve(__dirname, "arcade/bible-study/index.html"),
         arcadeQuickClick:    resolve(__dirname, "arcade/quick-click/index.html"),
         arcadeTrinity:      resolve(__dirname, "arcade/trinity/index.html"),
+        arcadeNexusArcade:  resolve(__dirname, "arcade/nexus-arcade/index.html"),
         ministry:          resolve(__dirname, "ministry/index.html"),
         ministryBibleJourney: resolve(__dirname, "ministry/bible-journey.html"),
         ministryTheRedQueen:  resolve(__dirname, "ministry/the-red-queen.html"),
