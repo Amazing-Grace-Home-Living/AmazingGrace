@@ -74,36 +74,39 @@
         }
 
         /* Border-Only Grid: Clean Alignment without Visual Bloat */
-        #grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            grid-template-rows: repeat(7, 1fr);
-            gap: 4px;
-            background-color: #000000;
-            padding: 10px;
-            border: 1px solid rgba(0, 229, 255, 0.2);
-            border-radius: 4px;
-            margin: 0 auto;
-            width: 100%;
-            max-width: 450px;
-            touch-action: manipulation;
-        }
+	        #grid {
+	            display: grid;
+	            grid-template-columns: repeat(7, 1fr);
+	            grid-template-rows: repeat(7, 1fr);
+	            gap: 4px;
+	            background-color: #000000;
+	            padding: 10px;
+	            border: 1px solid rgba(0, 229, 255, 0.2);
+	            border-radius: 4px;
+	            margin: 0 auto;
+	            width: 100%;
+	            max-width: 450px;
+	            box-sizing: border-box;
+	            touch-action: manipulation;
+	        }
 
         /* Individual Star Node Formats */
-        .tile {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            background: #000000;
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: clamp(1.1rem, 4vw, 1.6rem);
-            cursor: pointer;
-            user-select: none;
-            transition: transform 0.1s ease, border-color 0.2s ease;
-        }
+	        .tile {
+	            width: 100%;
+	            aspect-ratio: 1 / 1;
+	            background: #000000;
+	            border: 1px solid rgba(0, 229, 255, 0.3);
+	            border-radius: 4px;
+	            display: flex;
+	            align-items: center;
+	            justify-content: center;
+	            min-width: 0;
+	            font-size: clamp(1.1rem, 4vw, 1.6rem);
+	            line-height: 1;
+	            cursor: pointer;
+	            user-select: none;
+	            transition: transform 0.1s ease, border-color 0.2s ease;
+	        }
 
         /* Accurate M45 Spectral Tuning */
         .tile[data-type="blue"] { color: var(--pleiades-blue); text-shadow: 0 0 8px var(--pleiades-blue); }
@@ -160,14 +163,22 @@
         }
 
         /* Mobile Optimization */
-        @media (max-width: 400px) {
-            #scoreboard {
-                display: flex;
-                justify-content: space-between;
-                font-size: 14px;
-            }
-        }
-    </style>
+	        @media (max-width: 400px) {
+	            #scoreboard {
+	                display: flex;
+	                justify-content: space-between;
+	                font-size: 14px;
+	            }
+	        }
+
+	        @media (max-width: 360px) {
+	            #scoreboard {
+	                flex-direction: column;
+	                gap: 6px;
+	                align-items: center;
+	            }
+	        }
+	    </style>
 </head>
 <body>
     <canvas id="bg-canvas"></canvas>
