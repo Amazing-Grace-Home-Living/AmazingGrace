@@ -26,7 +26,9 @@ const THEMES = {
     moves: 30,
     mapping: { heart: '🌟', star: '💫', cross: '💎', flame: '⭐', drop: '🔴' },
     bg: 'radial-gradient(circle at 50% 20%, #1a0533 0%, #020617 70%)',
-    accent: '#bc13fe'
+    accent: '#bc13fe',
+    music: 'star_bg',
+    sfxChain: 'star_chain'
   },
   [MODES.CONSCIENCE]: {
     title: 'Matrix of Conscience',
@@ -66,6 +68,8 @@ class NexusMatrix {
     this.isProcessing = false;
     this.gameOver = false;
     this.assistant = false;
+    
+    this.audio = null;
 
     this.init();
   }
@@ -76,7 +80,32 @@ class NexusMatrix {
     this.input = new InputHandler(document.getElementById('sm-grid'), this.handleSwap.bind(this));
     this.updateHUD();
     this.wireEvents();
+    this.initAudio();
     this.log(`System initialized. Mode: ${this.theme.title.toUpperCase()}`);
+  }
+
+  initAudio() {
+    if (window.AudioManager) {
+        this.audio = new window.AudioManager();
+        // Register requested tracks
+        this.audio.registerTrack('star_bg', '../../assets/music/m64slide.mid');
+        this.audio.registerSFX('star_chain', '../../assets/audio/storm.mp3');
+        
+        // Start music if applicable
+        if (this.theme.music) {
+            this.audio.playMusic(this.theme.music);
+        }
+        
+        // Mount UI to sidebar if container exists
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) {
+            const audioUI = document.createElement('div');
+            audioUI.id = 'audio-controls';
+            audioUI.style.marginTop = '12px';
+            sidebar.insertBefore(audioUI, sidebar.querySelector('.store-panel'));
+            this.audio.mountToggleUI('#audio-controls');
+        }
+    }
   }
 
   log(msg) {
@@ -152,6 +181,7 @@ class NexusMatrix {
     this.isProcessing = true;
     this.board = applySwap(this.board, r1, c1, r2, c2);
     this.renderBoard();
+    if (this.audio) this.audio.playSFX('click');
 
     const matches = findMatchesGrouped(this.board);
     if (matches.length === 0) {
@@ -181,6 +211,15 @@ class NexusMatrix {
     const cleared = matches.flat();
     const pts = cleared.length * 10 * this.combo;
     this.score += pts;
+    
+    if (this.audio) {
+        if (this.combo > 1 || cleared.length >= 4) {
+            this.audio.playSFX('star_chain'); // Use storm.mp3 for chain reactions
+        } else {
+            this.audio.playSFX('success');
+        }
+    }
+
     if (cleared.length >= 4) {
         this.combo++;
         this.log(`COMBO INCREASED: x${this.combo}`);
@@ -204,9 +243,11 @@ class NexusMatrix {
   checkEndState() {
     if (this.score >= this.theme.target && !this.gameOver) {
         this.gameOver = true;
+        if (this.audio) this.audio.playSFX('victory');
         this.showOverlay('MISSION COMPLETE', 'The matrix has been successfully aligned.');
     } else if (this.moves <= 0 && !this.gameOver) {
         this.gameOver = true;
+        if (this.audio) this.audio.playSFX('defeat');
         this.showOverlay('SYSTEM FAILURE', 'Maximum moves exceeded. Matrix destabilized.', true);
     }
   }
@@ -229,11 +270,13 @@ class NexusMatrix {
         this.score -= 1000;
         this.assistant = true;
         this.log('Spirit Guide deployed.');
+        if (this.audio) this.audio.playSFX('powerup');
         const btn = document.getElementById('buy-guide');
         if (btn) { btn.textContent = 'ACTIVE'; btn.disabled = true; }
     } else if (item === 'burst' && this.score >= 500) {
         this.score -= 500;
         this.log('Power Burst activated. Board clearing...');
+        if (this.audio) this.audio.playSFX('whoosh');
         this.score += 250;
     }
     this.updateHUD();
@@ -244,9 +287,11 @@ class NexusMatrix {
     if (code === 'NIMBUS') {
         this.score += 1000;
         this.log('Code NIMBUS accepted. +1000 Score.');
+        if (this.audio) this.audio.playSFX('success');
     } else if (code === 'GRACE') {
         this.moves += 10;
         this.log('Code GRACE accepted. +10 Moves.');
+        if (this.audio) this.audio.playSFX('powerup');
     }
     this.updateHUD();
   }
