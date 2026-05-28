@@ -2,17 +2,23 @@ import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 
 describe('arcade cleanup', () => {
-  it('shows a focused arcade hub (no Match Maker card; Matrix of Conscience is active)', () => {
+  it('shows a focused arcade hub index with only working links', () => {
     const arcade = fs.readFileSync('arcade/index.html', 'utf8');
 
+    expect(arcade).toContain('aria-label="Arcade index"');
+    expect(arcade).not.toContain('class="game-card');
+    expect(arcade).not.toContain('launchGame(');
     expect(arcade).toContain('href="./star-matrix/"');
     expect(arcade).toContain('Star Matrix');
+    expect(arcade).toContain('href="./matrix-of-conscience/"');
+    expect(arcade).toContain('Matrix of Conscience');
     expect(arcade).toContain('href="./bible-study/"');
     expect(arcade).toContain('Bible Study Quiz');
-    expect(arcade).toContain('Mystery of the Seven Stars');
+    expect(arcade).toContain('href="./certificates/"');
+    expect(arcade).toContain('My Certificates');
     expect(arcade).not.toContain('Match Maker');
-    expect(arcade).toContain('Matrix of Conscience');
-    expect(arcade).toContain('href="./matrix-of-conscience/"');
+    expect(arcade).not.toContain('quick-click');
+    expect(arcade).not.toContain('trinity');
     expect(arcade).not.toContain('href="../arcade.html"');
   });
 
@@ -44,5 +50,16 @@ describe('arcade cleanup', () => {
     expect(fs.existsSync('arcade/match-maker-ui.js')).toBe(false);
     expect(fs.existsSync('saveSystem.js')).toBe(false);
     expect(fs.existsSync('sevenStars.js')).toBe(false);
+  });
+
+  it('removes mojibake and merge conflict artifacts from arcade pages', () => {
+    const arcade = fs.readFileSync('arcade/index.html', 'utf8');
+    const starMatrix = fs.readFileSync('arcade/star-matrix/index.html', 'utf8');
+
+    expect(arcade).not.toContain('â€”');
+    expect(arcade).not.toContain('âš¡');
+    expect(arcade).not.toContain('Â·');
+    expect(starMatrix).not.toContain('<<<<<<<');
+    expect(starMatrix).not.toContain('>>>>>>>');
   });
 });

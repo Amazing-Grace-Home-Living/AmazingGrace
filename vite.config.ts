@@ -21,8 +21,6 @@ export default defineConfig({
         matrixConscienceIndex: resolve(__dirname, "matrix-of-conscience/index.html"),
         arcadeCertificates: resolve(__dirname, "arcade/certificates/index.html"),
         arcadeBibleStudy:  resolve(__dirname, "arcade/bible-study/index.html"),
-        arcadeQuickClick:    resolve(__dirname, "arcade/quick-click/index.html"),
-        arcadeTrinity:      resolve(__dirname, "arcade/trinity/index.html"),
         arcadeNexusArcade:  resolve(__dirname, "arcade/nexus-arcade/index.html"),
         ministry:          resolve(__dirname, "ministry/index.html"),
         ministryBibleJourney: resolve(__dirname, "ministry/bible-journey.html"),
