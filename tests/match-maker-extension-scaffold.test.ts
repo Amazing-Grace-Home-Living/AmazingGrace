@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 
 describe('arcade cleanup', () => {
-  it('shows a focused arcade hub (no Match Maker card; Matrix of Conscience is active)', () => {
+  it('shows a focused arcade hub (no Match Maker card; Nexus Matrix is active)', () => {
     const arcade = fs.readFileSync('arcade/index.html', 'utf8');
 
     expect(arcade).toContain('href="./star-matrix/"');
@@ -12,7 +12,7 @@ describe('arcade cleanup', () => {
     expect(arcade).toContain('Mystery of the Seven Stars');
     expect(arcade).not.toContain('Match Maker');
     expect(arcade).toContain('Matrix of Conscience');
-    expect(arcade).toContain('href="./matrix-of-conscience/"');
+    expect(arcade).toContain('href="./nexus-matrix/"');
     expect(arcade).not.toContain('href="../arcade.html"');
   });
 
