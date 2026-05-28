@@ -14,13 +14,19 @@ export function migrateLegacyState(oldState = {}) {
   };
 
   const state = { ...defaults, ...oldState };
+  const toNormalizedPercent = (value) => {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) return 0;
+    const normalized = numeric / 100;
+    return Math.min(1, Math.max(0, normalized));
+  };
 
   return {
-    scarletGrowth: state.corruption / 100,
-    whiteClarity: state.wisdom / 100,
+    scarletGrowth: toNormalizedPercent(state.corruption),
+    whiteClarity: toNormalizedPercent(state.wisdom),
     janus: {
-      stability: state.integrity / 100
+      stability: toNormalizedPercent(state.integrity)
     },
-    convergencePotential: state.community / 100
+    convergencePotential: toNormalizedPercent(state.community)
   };
 }

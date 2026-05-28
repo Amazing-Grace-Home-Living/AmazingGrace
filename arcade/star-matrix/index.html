@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -419,15 +419,8 @@
   <div id="sm-cert-overlay" class="cert-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="cert-title">
     <button id="sm-cert-close" class="cert-overlay-close" aria-label="Close certificate overlay">×</button>
     
-    <div id="sm-name-phase" style="display:flex; flex-direction:column; align-items:center; width:100%;">
-      <h2 id="cert-title">Constellation Aligned</h2>
-      <p style="color:#94a3b8; margin-bottom:1.5rem; text-align:center;">Enter your name for the Star Matrix Alignment Certificate.</p>
-      <input type="text" id="sm-player-name" class="name-input" placeholder="Your Name" maxlength="30">
-      <button id="sm-gen-btn" class="cert-btn purple" style="width:100%; max-width:320px; justify-content:center;">Generate Certificate</button>
-    </div>
-
     <div id="sm-cert-phase" style="display:none; flex-direction:column; align-items:center; width:100%;">
-      <h2>Alignment Verified</h2>
+      <h2 id="cert-title">Alignment Verified</h2>
       <canvas id="sm-cert-canvas" class="cert-canvas"></canvas>
       <div class="cert-actions">
         <button class="cert-btn cyan" onclick="smCertPNG()">⬇ Download PNG</button>
@@ -462,11 +455,11 @@
     } from 'firebase/firestore';
 
     const STAR_TYPES = [
-      { id: 'heart', emoji: 'ðŸŒŸ' },
-      { id: 'star', emoji: 'ðŸ’«' },
-      { id: 'cross', emoji: 'ðŸ’Ž' },
-      { id: 'flame', emoji: 'â­' },
-      { id: 'drop', emoji: 'ðŸ”´' }
+      { id: 'heart', emoji: '🌟' },
+      { id: 'star', emoji: '💫' },
+      { id: 'cross', emoji: '💎' },
+      { id: 'flame', emoji: '⭐' },
+      { id: 'drop', emoji: '🔴' }
     ];
 
     const GRID_SIZE = 7;
@@ -498,6 +491,7 @@
     let persistTimer = null;
     let persistInFlight = false;
     let persistQueued = false;
+    let localCertificatesCache = [];
 
     const SM_MUSIC_URL = new URL('../../assets/audio/storm.mp3', import.meta.url).href;
     let smMusic = null;
@@ -678,7 +672,7 @@
       const overlay = document.getElementById('sm-resume-overlay');
       const meta = document.getElementById('sm-resume-meta');
       if (meta) {
-        meta.textContent = `Saved run found (${sourceLabel}) â€” Score ${payload.score}, Moves ${payload.moves}, Combo Ã—${payload.combo}.`;
+        meta.textContent = `Saved run found (${sourceLabel}) — Score ${payload.score}, Moves ${payload.moves}, Combo ×${payload.combo}.`;
       }
       overlay.classList.remove('hidden');
       document.getElementById('sm-page-bg').inert = true;
@@ -819,7 +813,6 @@
       board = next?.board ?? smCreateStarGrid();
       smRender();
       smUpdateHUD();
-      
       if (next) {
         smCheckGameEnd();
         return;
@@ -858,7 +851,7 @@
     function smUpdateHUD() {
       document.getElementById('sm-score').textContent = score;
       document.getElementById('sm-target').textContent = TARGET;
-      document.getElementById('sm-combo').textContent = 'Ã—' + combo;
+      document.getElementById('sm-combo').textContent = '×' + combo;
       document.getElementById('sm-moves').textContent = moves;
       const pct = Math.min(100, Math.round((score / TARGET) * 100));
       document.getElementById('sm-pct').textContent = pct + '%';
@@ -1141,18 +1134,11 @@
     }
 
     function loadLocalCertificates() {
-      try {
-        const raw = JSON.parse(localStorage.getItem(STORAGE.certKey) || '[]');
-        return Array.isArray(raw) ? raw : [];
-      } catch (_) {
-        return [];
-      }
+      return Array.isArray(localCertificatesCache) ? [...localCertificatesCache] : [];
     }
 
     function saveLocalCertificates(certs) {
-      try {
-        localStorage.setItem(STORAGE.certKey, JSON.stringify(certs));
-      } catch (_) {}
+      localCertificatesCache = Array.isArray(certs) ? [...certs] : [];
     }
 
     function upsertLocalCert(cert) {
@@ -1214,7 +1200,7 @@
 
       ctx.font = '20px serif';
       ctx.textAlign = 'center';
-      ['ðŸŒŸ', 'ðŸŒŸ', 'ðŸŒŸ', 'ðŸŒŸ'].forEach((s, i) => {
+      ['🌟', '🌟', '🌟', '🌟'].forEach((s, i) => {
         const x = i < 2 ? 28 : W - 28;
         const y = i % 2 === 0 ? 28 : H - 18;
         ctx.fillText(s, x, y);
@@ -1231,7 +1217,7 @@
       ctx.stroke();
       ctx.fillStyle = '#fbbf24';
       ctx.font = '10px monospace';
-      ctx.fillText('STAR MATRIX  Â·  NEXUS ARCADE  Â·  AMAZING GRACE', W / 2, 116);
+      ctx.fillText('STAR MATRIX  ·  NEXUS ARCADE  ·  AMAZING GRACE', W / 2, 116);
       ctx.fillStyle = '#94a3b8';
       ctx.font = '14px sans-serif';
       ctx.fillText('This certifies that', W / 2, 170);
@@ -1246,7 +1232,7 @@
       ctx.fillText(gameTitle, W / 2, 318);
       ctx.fillStyle = '#bc13fe';
       ctx.font = '12px monospace';
-      ctx.fillText('Final Score: ' + finalScore + ' Â· Stars Aligned', W / 2, 356);
+      ctx.fillText('Final Score: ' + finalScore + ' · Stars Aligned', W / 2, 356);
       ctx.strokeStyle = 'rgba(188,19,254,0.2)';
       ctx.lineWidth = 1;
       ctx.beginPath();
@@ -1378,4 +1364,3 @@
   <script src="../../sw-register.js" defer></script>
 </body>
 </html>
-
