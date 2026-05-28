@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -367,7 +367,7 @@
       <a href="..">← Back</a>
       <div class="game-title">STAR MATRIX</div>
       <div class="game-header-right">
-        <button class="sm-music-btn" id="sm-music-btn" aria-pressed="false">♪ Music Off</button>
+        <button class="sm-music-btn" id="sm-sound-toggle" aria-pressed="true">Sound: On</button>
         <a class="cert-link" href="../certificates/">My Certificates</a>
       </div>
     </div>
@@ -438,7 +438,7 @@
     <button class="play-again-btn" onclick="smReset()">↺ Play Again</button>
   </div>
 
-  <script type="module">
+    <script type="module">
     import {
       createInitialGrid,
       canSwap,
@@ -446,18 +446,38 @@
       findMatchesGrouped,
       applyGravity
     } from '../../js/matchmaker.js';
+    import {
+      getAppId,
+      getFirestoreDb,
+      ensureAnonymousUser,
+      assertPathSegment,
+    } from '../../src/firebase/nexus-firestore.ts';
+    import {
+      deleteDoc,
+      doc,
+      getDoc,
+      runTransaction,
+      serverTimestamp,
+      setDoc,
+    } from 'firebase/firestore';
 
     const STAR_TYPES = [
-      { id: 'heart', emoji: '🌟' },
-      { id: 'star', emoji: '💫' },
-      { id: 'cross', emoji: '💎' },
-      { id: 'flame', emoji: '⭐' },
-      { id: 'drop', emoji: '🔴' }
+      { id: 'heart', emoji: 'ðŸŒŸ' },
+      { id: 'star', emoji: 'ðŸ’«' },
+      { id: 'cross', emoji: 'ðŸ’Ž' },
+      { id: 'flame', emoji: 'â­' },
+      { id: 'drop', emoji: 'ðŸ”´' }
     ];
 
     const GRID_SIZE = 7;
     const TARGET = 1000;
     const MAX_MOVES = 30;
+
+    const STORAGE = Object.freeze({
+      runKey: 'star-matrix:run',
+      certKey: 'star-matrix:certificates',
+      soundKey: 'star-matrix:sound',
+    });
 
     let board = [];
     let score = 0;
@@ -473,11 +493,263 @@
     let activePointerId = null;
     let dragStartX = 0;
     let dragStartY = 0;
-    const SM_MUSIC_PREF_KEY = 'sm_music_enabled';
-    const SM_MUSIC_URL = new URL('../../assets/music/m64slide.mid', import.meta.url).href;
-    const SM_SFX_URL = new URL('../../assets/audio/storm.mp3', import.meta.url).href;
+    let resumePayload = null;
+    let hasPersistedEnd = false;
+    let persistTimer = null;
+    let persistInFlight = false;
+    let persistQueued = false;
+
+    const SM_MUSIC_URL = new URL('../../assets/audio/storm.mp3', import.meta.url).href;
     let smMusic = null;
-    let smMusicEnabled = false;
+    let musicArmActive = false;
+
+    const sfx = (() => {
+      const make = (src, volume) => {
+        const audio = new Audio(src);
+        audio.preload = 'auto';
+        audio.volume = volume;
+        return audio;
+      };
+      return {
+        swap: make('../../assets/audio/badge.mp3', 0.25),
+        match: make('../../assets/audio/badge.mp3', 0.35),
+        win: make('../../assets/audio/course-clear-fanfare.mp3', 0.45),
+        fail: make('../../assets/audio/player-down.mp3', 0.25),
+      };
+    })();
+
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    function isSoundEnabled() {
+      try {
+        const raw = localStorage.getItem(STORAGE.soundKey);
+        if (raw === 'off') return false;
+      } catch (_) {}
+      return true;
+    }
+
+    function setSoundEnabled(enabled) {
+      try {
+        localStorage.setItem(STORAGE.soundKey, enabled ? 'on' : 'off');
+      } catch (_) {}
+      smRenderSoundToggle();
+      if (enabled) {
+        smArmMusicStartOnGesture();
+      } else {
+        smStopMusic();
+      }
+    }
+
+    function smRenderSoundToggle() {
+      const btn = document.getElementById('sm-sound-toggle');
+      if (!btn) return;
+      const on = isSoundEnabled();
+      btn.textContent = `Sound: ${on ? 'On' : 'Off'}`;
+      btn.classList.toggle('on', on);
+      btn.setAttribute('aria-pressed', String(on));
+    }
+
+    function playSfx(name) {
+      if (!isSoundEnabled()) return;
+      const audio = sfx[name];
+      if (!audio) return;
+      try {
+        audio.currentTime = 0;
+        void audio.play();
+      } catch (_) {}
+    }
+
+    function normalizeRunPayload(raw) {
+      if (!raw || typeof raw !== 'object') return null;
+      const p = raw;
+      const b = p.board;
+      if (!Array.isArray(b) || b.length !== GRID_SIZE) return null;
+      for (const row of b) {
+        if (!Array.isArray(row) || row.length !== GRID_SIZE) return null;
+        for (const cell of row) {
+          if (cell !== null && typeof cell !== 'string') return null;
+        }
+      }
+      const nextScore = typeof p.score === 'number' && Number.isFinite(p.score) ? p.score : 0;
+      const nextMoves = typeof p.moves === 'number' && Number.isFinite(p.moves) ? p.moves : MAX_MOVES;
+      const nextCombo = typeof p.combo === 'number' && Number.isFinite(p.combo) ? p.combo : 1;
+      const updatedAt = typeof p.updatedAt === 'number' && Number.isFinite(p.updatedAt) ? p.updatedAt : 0;
+      return { board: b, score: nextScore, moves: nextMoves, combo: nextCombo, updatedAt };
+    }
+
+    function loadLocalRun() {
+      try {
+        const raw = JSON.parse(localStorage.getItem(STORAGE.runKey) || 'null');
+        return normalizeRunPayload(raw);
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function saveLocalRun() {
+      try {
+        const payload = { board, score, moves, combo, updatedAt: Date.now() };
+        localStorage.setItem(STORAGE.runKey, JSON.stringify(payload));
+      } catch (_) {}
+    }
+
+    async function clearSavedRun() {
+      try {
+        localStorage.removeItem(STORAGE.runKey);
+      } catch (_) {}
+
+      try {
+        const db = getFirestoreDb();
+        if (!db) return;
+        const user = await ensureAnonymousUser();
+        if (!user) return;
+
+        const appId = getAppId('arcade');
+        assertPathSegment('appId', appId);
+        assertPathSegment('userId', user.uid);
+        await deleteDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'game_state', 'star_matrix'));
+      } catch (err) {
+        console.warn('Failed to delete saved run from Firestore:', err);
+      }
+    }
+
+    function queuePersistRun() {
+      saveLocalRun();
+      if (persistTimer) return;
+      persistTimer = window.setTimeout(() => {
+        persistTimer = null;
+        void persistRemoteRun();
+      }, 900);
+    }
+
+    async function persistRemoteRun() {
+      if (persistInFlight) {
+        persistQueued = true;
+        return;
+      }
+      persistInFlight = true;
+      try {
+        const db = getFirestoreDb();
+        if (!db) return;
+        const user = await ensureAnonymousUser();
+        if (!user) return;
+
+        const appId = getAppId('arcade');
+        assertPathSegment('appId', appId);
+        assertPathSegment('userId', user.uid);
+        await setDoc(
+          doc(db, 'artifacts', appId, 'users', user.uid, 'game_state', 'star_matrix'),
+          { board, score, moves, combo, updatedAt: serverTimestamp() },
+          { merge: true }
+        );
+      } catch (_) {
+        // Fallback gracefully to local storage coverage
+      } finally {
+        persistInFlight = false;
+        if (persistQueued) {
+          persistQueued = false;
+          void persistRemoteRun();
+        }
+      }
+    }
+
+    async function loadRemoteRun() {
+      const db = getFirestoreDb();
+      if (!db) return null;
+      const user = await ensureAnonymousUser();
+      if (!user) return null;
+      const appId = getAppId('arcade');
+      assertPathSegment('appId', appId);
+      assertPathSegment('userId', user.uid);
+      const snap = await getDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'game_state', 'star_matrix'));
+      if (!snap.exists()) return null;
+      const data = snap.data();
+      return normalizeRunPayload({
+        board: data.board,
+        score: data.score,
+        moves: data.moves,
+        combo: data.combo,
+        updatedAt: Date.now(),
+      });
+    }
+
+    function showResumeOverlay(payload, sourceLabel) {
+      resumePayload = payload;
+      const overlay = document.getElementById('sm-resume-overlay');
+      const meta = document.getElementById('sm-resume-meta');
+      if (meta) {
+        meta.textContent = `Saved run found (${sourceLabel}) â€” Score ${payload.score}, Moves ${payload.moves}, Combo Ã—${payload.combo}.`;
+      }
+      overlay.classList.remove('hidden');
+      document.getElementById('sm-page-bg').inert = true;
+      setTimeout(() => document.getElementById('sm-resume-btn')?.focus(), 80);
+    }
+
+    function hideResumeOverlay() {
+      const overlay = document.getElementById('sm-resume-overlay');
+      overlay.classList.add('hidden');
+      document.getElementById('sm-page-bg').inert = false;
+    }
+
+    function showGameOverOverlay() {
+      const overlay = document.getElementById('sm-gameover-overlay');
+      const scoreDisplay = document.querySelector('#sm-gameover-score span');
+      if (scoreDisplay) {
+        scoreDisplay.textContent = score.toString();
+      }
+      overlay.classList.remove('hidden');
+      document.getElementById('sm-page-bg').inert = true;
+      setTimeout(() => document.getElementById('sm-tryagain-btn')?.focus(), 80);
+    }
+
+    function hideGameOverOverlay() {
+      const overlay = document.getElementById('sm-gameover-overlay');
+      overlay.classList.add('hidden');
+      document.getElementById('sm-page-bg').inert = false;
+    }
+
+    async function smStartMusic() {
+      if (!smMusic) {
+        smMusic = new Audio(SM_MUSIC_URL);
+        smMusic.loop = true;
+        smMusic.preload = 'none';
+        smMusic.volume = 0.28;
+      }
+      try {
+        await smMusic.play();
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function smStopMusic() {
+      if (!smMusic) return;
+      try {
+        smMusic.pause();
+        smMusic.currentTime = 0;
+      } catch (_) {}
+    }
+
+    function smArmMusicStartOnGesture() {
+      if (musicArmActive) return;
+      musicArmActive = true;
+
+      const startOnFirstGesture = async () => {
+        musicArmActive = false;
+        if (!isSoundEnabled()) return;
+        const ok = await smStartMusic();
+        if (!ok) {
+          try {
+            localStorage.setItem(STORAGE.soundKey, 'off');
+          } catch (_) {}
+          smRenderSoundToggle();
+        }
+      };
+
+      document.addEventListener('pointerdown', startOnFirstGesture, { once: true, capture: true });
+      document.addEventListener('keydown', startOnFirstGesture, { once: true, capture: true });
+    }
 
     function parseTileRC(tile) {
       if (!tile) return null;
@@ -529,11 +801,13 @@
       return grid;
     }
 
-    function smInit() {
-      score = 0;
-      moves = MAX_MOVES;
-      combo = 1;
+    function smInit(state) {
+      const next = state || null;
+      score = next?.score ?? 0;
+      moves = next?.moves ?? MAX_MOVES;
+      combo = next?.combo ?? 1;
       gameOver = false;
+      hasPersistedEnd = false;
       certDataUrl = null;
       certId = null;
       isProcessing = false;
@@ -542,9 +816,15 @@
       activePointerId = null;
       dragStartX = 0;
       dragStartY = 0;
-      board = smCreateStarGrid();
+      board = next?.board ?? smCreateStarGrid();
       smRender();
       smUpdateHUD();
+      
+      if (next) {
+        smCheckGameEnd();
+        return;
+      }
+      queuePersistRun();
     }
 
     function smRender() {
@@ -578,79 +858,13 @@
     function smUpdateHUD() {
       document.getElementById('sm-score').textContent = score;
       document.getElementById('sm-target').textContent = TARGET;
-      document.getElementById('sm-combo').textContent = '×' + combo;
+      document.getElementById('sm-combo').textContent = 'Ã—' + combo;
       document.getElementById('sm-moves').textContent = moves;
       const pct = Math.min(100, Math.round((score / TARGET) * 100));
       document.getElementById('sm-pct').textContent = pct + '%';
       const bar = document.getElementById('sm-progress');
       bar.style.width = pct + '%';
       bar.setAttribute('aria-valuenow', pct);
-    }
-
-    function smUpdateMusicButton() {
-      const btn = document.getElementById('sm-music-btn');
-      if (!btn) return;
-      btn.setAttribute('aria-pressed', smMusicEnabled ? 'true' : 'false');
-      btn.textContent = smMusicEnabled ? '♪ Music On' : '♪ Music Off';
-    }
-
-    function smLoadMusicPref() {
-      try {
-        return localStorage.getItem(SM_MUSIC_PREF_KEY) === 'true';
-      } catch (_) {
-        return false;
-      }
-    }
-
-    function smSaveMusicPref(enabled) {
-      try {
-        localStorage.setItem(SM_MUSIC_PREF_KEY, enabled ? 'true' : 'false');
-      } catch (_) {}
-    }
-
-    async function smStartMusic() {
-      if (!smMusic) {
-        smMusic = new Audio(SM_MUSIC_URL);
-        smMusic.loop = true;
-        smMusic.preload = 'none';
-        smMusic.volume = 0.28;
-      }
-      try {
-        await smMusic.play();
-        return true;
-      } catch (_) {
-        return false;
-      }
-    }
-
-    function smStopMusic() {
-      if (!smMusic) return;
-      try {
-        smMusic.pause();
-        smMusic.currentTime = 0;
-      } catch (_) {}
-    }
-
-    async function smToggleMusic() {
-      smMusicEnabled = !smMusicEnabled;
-      smSaveMusicPref(smMusicEnabled);
-      smUpdateMusicButton();
-      if (smMusicEnabled) {
-        const ok = await smStartMusic();
-        if (!ok) {
-          smMusicEnabled = false;
-          smSaveMusicPref(false);
-          smUpdateMusicButton();
-        }
-      } else {
-        smStopMusic();
-      }
-    }
-
-    function smPlaySFX() {
-      const audio = new Audio(SM_SFX_URL);
-      audio.volume = 0.45;
-      audio.play().catch(() => {});
     }
 
     function onPointerDown(e) {
@@ -763,6 +977,7 @@
       if (!canSwap(null, r1, c1, r2, c2)) return;
 
       isProcessing = true;
+      playSfx('swap');
       board = applySwap(board, r1, c1, r2, c2);
       smRender();
 
@@ -771,67 +986,112 @@
         if (matches.length === 0) {
           board = applySwap(board, r1, c1, r2, c2);
           smRender();
+          playSfx('fail');
           isProcessing = false;
           return;
         }
 
         moves--;
         smUpdateHUD();
-        setTimeout(smResolveMatches, 220);
+        queuePersistRun();
+        setTimeout(() => void smResolveMatches(), 220);
       }, 180);
     }
 
-    function smResolveMatches() {
+    function markMatched(cells) {
+      for (const { r, c } of cells) {
+        const el = document.querySelector(`.star-cell[data-row="${r}"][data-col="${c}"]`);
+        if (el) el.classList.add('matched');
+      }
+    }
+
+    async function smResolveMatches() {
       if (gameOver) {
         isProcessing = false;
         return;
       }
 
-      const matches = findMatchesGrouped(board);
-      if (matches.length === 0) {
-        combo = 1;
+      while (true) {
+        const matches = findMatchesGrouped(board);
+        if (matches.length === 0) break;
+
+        const clearedCells = matches.flat();
+        markMatched(clearedCells);
+        playSfx('match');
+        await sleep(180);
+
+        const pts = clearedCells.length * 10 * combo;
+        score += pts;
+        if (clearedCells.length >= 5) combo = Math.min(combo + 1, 5);
         smUpdateHUD();
-        isProcessing = false;
-        smCheckGameEnd();
-        return;
-      }
 
-      const clearedCells = matches.flat();
-      const pts = clearedCells.length * 10 * combo;
-      score += pts;
-      
-      // Play SFX on match
-      if (combo > 1 || clearedCells.length >= 4) {
-        smPlaySFX();
-      }
+        clearedCells.forEach(({ r, c }) => {
+          board[r][c] = null;
+        });
+        smRender();
+        await sleep(180);
 
-      if (clearedCells.length >= 5) combo = Math.min(combo + 1, 5);
-      smUpdateHUD();
-
-      clearedCells.forEach(({ r, c }) => {
-        board[r][c] = null;
-      });
-
-      smRender();
-
-      setTimeout(() => {
         board = applyGravity(board);
         smRender();
-        setTimeout(smResolveMatches, 220);
-      }, 220);
+        await sleep(180);
+      }
+
+      combo = 1;
+      smUpdateHUD();
+      queuePersistRun();
+      isProcessing = false;
+      smCheckGameEnd();
+    }
+
+    async function smPersistEnd(outcome) {
+      if (hasPersistedEnd) return;
+      hasPersistedEnd = true;
+
+      const db = getFirestoreDb();
+      if (!db) return;
+      const user = await ensureAnonymousUser();
+      if (!user) return;
+
+      const appId = getAppId('arcade');
+      assertPathSegment('appId', appId);
+      assertPathSegment('userId', user.uid);
+
+      const scoreToPersist = score;
+      const statsRef = doc(db, 'artifacts', appId, 'users', user.uid, 'game_stats', 'star_matrix');
+
+      await runTransaction(db, async (tx) => {
+        const snap = await tx.get(statsRef);
+        const data = snap.exists() ? snap.data() : null;
+        const prevHigh = typeof data?.highScore === 'number' && Number.isFinite(data.highScore) ? data.highScore : 0;
+        const highScore = Math.max(prevHigh, scoreToPersist);
+        const clears = typeof data?.clears === 'number' && Number.isFinite(data.clears) ? data.clears : 0;
+        const nextClears = outcome === 'win' ? clears + 1 : clears;
+
+        tx.set(
+          statsRef,
+          {
+            lastScore: scoreToPersist,
+            highScore,
+            clears: nextClears,
+            lastOutcome: outcome,
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true }
+        );
+      });
     }
 
     function smCheckGameEnd() {
       if (score >= TARGET && !gameOver) {
         gameOver = true;
+        void smPersistEnd('win');
         setTimeout(smShowCert, 400);
         return;
       }
       if (moves <= 0 && !gameOver) {
         gameOver = true;
-        setTimeout(() => {
-          if (confirm('No moves left! Score: ' + score + '\n\nPlay again?')) smInit();
-        }, 250);
+        void smPersistEnd('lose');
+        setTimeout(showGameOverOverlay, 400);
       }
     }
 
@@ -845,12 +1105,11 @@
     }
 
     function smShowCert() {
-      document.getElementById('sm-name-phase').style.display = 'flex';
-      document.getElementById('sm-cert-phase').style.display = 'none';
       const overlay = document.getElementById('sm-cert-overlay');
       overlay.classList.remove('hidden');
       document.getElementById('sm-page-bg').inert = true;
       setTimeout(() => document.getElementById('sm-cert-close').focus(), 80);
+      void smGenerateCert();
     }
 
     function smCloseCert() {
@@ -860,30 +1119,70 @@
     }
 
     async function smGenerateCert() {
-      const btn = document.getElementById('sm-gen-btn');
-      const playerName = (document.getElementById('sm-player-name').value || '').trim().slice(0, 30) || 'Star Guardian';
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = 'Generating…';
-      }
+      const playerName = "Star Guardian";
+      certId = smGenCertId();
+      const gameTitle = 'Star Matrix';
+      const completionDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      
       try {
-        certId = smGenCertId();
-        const gameTitle = 'Star Matrix';
-        const completionDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-        try {
-          localStorage.setItem('sm_complete', 'true');
-        } catch (_) {}
-        const canvas = document.getElementById('sm-cert-canvas');
-        await smCertDraw(canvas, playerName, gameTitle, completionDate, certId, score);
-        certDataUrl = canvas.toDataURL('image/png');
-        document.getElementById('sm-name-phase').style.display = 'none';
-        document.getElementById('sm-cert-phase').style.display = 'flex';
-      } finally {
-        if (btn) {
-          btn.disabled = false;
-          btn.textContent = 'Generate Certificate';
-        }
+        localStorage.setItem('sm_complete', 'true');
+      } catch (_) {}
+      
+      const canvas = document.getElementById('sm-cert-canvas');
+      await smCertDraw(canvas, playerName, gameTitle, completionDate, certId, score);
+      certDataUrl = canvas.toDataURL('image/png');
+      playSfx('win');
+      
+      void smPersistCertificate({ id: certId, game: gameTitle, player: playerName, date: completionDate, score });
+      void clearSavedRun();
+      
+      const phase = document.getElementById('sm-cert-phase');
+      if (phase) phase.style.display = 'flex';
+    }
+
+    function loadLocalCertificates() {
+      try {
+        const raw = JSON.parse(localStorage.getItem(STORAGE.certKey) || '[]');
+        return Array.isArray(raw) ? raw : [];
+      } catch (_) {
+        return [];
       }
+    }
+
+    function saveLocalCertificates(certs) {
+      try {
+        localStorage.setItem(STORAGE.certKey, JSON.stringify(certs));
+      } catch (_) {}
+    }
+
+    function upsertLocalCert(cert) {
+      const list = loadLocalCertificates();
+      const map = new Map();
+      for (const item of list) {
+        if (item && typeof item === 'object' && typeof item.id === 'string') map.set(item.id, item);
+      }
+      map.set(cert.id, cert);
+      saveLocalCertificates(Array.from(map.values()));
+    }
+
+    async function smPersistCertificate(cert) {
+      upsertLocalCert(cert);
+
+      const db = getFirestoreDb();
+      if (!db) return;
+      const user = await ensureAnonymousUser();
+      if (!user) return;
+
+      const appId = getAppId('arcade');
+      assertPathSegment('appId', appId);
+      assertPathSegment('userId', user.uid);
+      assertPathSegment('certId', cert.id);
+
+      await setDoc(
+        doc(db, 'artifacts', appId, 'users', user.uid, 'certificates', cert.id),
+        { ...cert, createdAt: serverTimestamp() },
+        { merge: true }
+      );
     }
 
     async function smCertDraw(canvas, playerName, gameTitle, completionDate, id, finalScore) {
@@ -915,7 +1214,7 @@
 
       ctx.font = '20px serif';
       ctx.textAlign = 'center';
-      ['🌟', '🌟', '🌟', '🌟'].forEach((s, i) => {
+      ['ðŸŒŸ', 'ðŸŒŸ', 'ðŸŒŸ', 'ðŸŒŸ'].forEach((s, i) => {
         const x = i < 2 ? 28 : W - 28;
         const y = i % 2 === 0 ? 28 : H - 18;
         ctx.fillText(s, x, y);
@@ -932,7 +1231,7 @@
       ctx.stroke();
       ctx.fillStyle = '#fbbf24';
       ctx.font = '10px monospace';
-      ctx.fillText('STAR MATRIX  ·  NEXUS ARCADE  ·  AMAZING GRACE', W / 2, 116);
+      ctx.fillText('STAR MATRIX  Â·  NEXUS ARCADE  Â·  AMAZING GRACE', W / 2, 116);
       ctx.fillStyle = '#94a3b8';
       ctx.font = '14px sans-serif';
       ctx.fillText('This certifies that', W / 2, 170);
@@ -947,7 +1246,7 @@
       ctx.fillText(gameTitle, W / 2, 318);
       ctx.fillStyle = '#bc13fe';
       ctx.font = '12px monospace';
-      ctx.fillText('Final Score: ' + finalScore + ' · Stars Aligned', W / 2, 356);
+      ctx.fillText('Final Score: ' + finalScore + ' Â· Stars Aligned', W / 2, 356);
       ctx.strokeStyle = 'rgba(188,19,254,0.2)';
       ctx.lineWidth = 1;
       ctx.beginPath();
@@ -976,43 +1275,56 @@
     }
 
     window.addEventListener('DOMContentLoaded', function () {
-      smMusicEnabled = smLoadMusicPref();
-      smUpdateMusicButton();
-
-      const musicBtn = document.getElementById('sm-music-btn');
-      if (musicBtn) {
-        musicBtn.addEventListener('click', smToggleMusic);
+      const soundToggle = document.getElementById('sm-sound-toggle');
+      if (soundToggle) {
+        soundToggle.addEventListener('click', () => setSoundEnabled(!isSoundEnabled()));
       }
+      smRenderSoundToggle();
+      if (isSoundEnabled()) smArmMusicStartOnGesture();
 
-      if (smMusicEnabled) {
-        const startOnFirstGesture = async () => {
-          if (!smMusicEnabled) return;
-          const ok = await smStartMusic();
-          if (!ok) {
-            smMusicEnabled = false;
-            smSaveMusicPref(false);
-            smUpdateMusicButton();
-          }
-        };
-        document.addEventListener('pointerdown', startOnFirstGesture, { once: true, capture: true });
-        document.addEventListener('keydown', startOnFirstGesture, { once: true, capture: true });
+      const resumeBtn = document.getElementById('sm-resume-btn');
+      const newBtn = document.getElementById('sm-new-btn');
+      if (resumeBtn) {
+        resumeBtn.addEventListener('click', () => {
+          const payload = resumePayload;
+          resumePayload = null;
+          hideResumeOverlay();
+          smInit(payload);
+        });
       }
-
-      const nameInput = document.getElementById('sm-player-name');
-      if (nameInput) {
-        nameInput.addEventListener('keydown', function (e) {
-          if (e.key === 'Enter') smGenerateCert();
+      if (newBtn) {
+        newBtn.addEventListener('click', async () => {
+          resumePayload = null;
+          hideResumeOverlay();
+          await clearSavedRun();
+          smInit();
         });
       }
 
-      const genBtn = document.getElementById('sm-gen-btn');
-      if (genBtn) genBtn.addEventListener('click', smGenerateCert);
+      const tryAgainBtn = document.getElementById('sm-tryagain-btn');
+      if (tryAgainBtn) {
+        tryAgainBtn.addEventListener('click', () => {
+          hideGameOverOverlay();
+          smInit();
+        });
+      }
 
       const closeBtn = document.getElementById('sm-cert-close');
       if (closeBtn) closeBtn.addEventListener('click', smCloseCert);
 
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
+          const resumeOverlay = document.getElementById('sm-resume-overlay');
+          if (resumeOverlay && !resumeOverlay.classList.contains('hidden')) {
+            resumePayload = null;
+            hideResumeOverlay();
+            void clearSavedRun().then(() => smInit());
+            return;
+          }
+          const gameoverOverlay = document.getElementById('sm-gameover-overlay');
+          if (gameoverOverlay && !gameoverOverlay.classList.contains('hidden')) {
+            return;
+          }
           const overlay = document.getElementById('sm-cert-overlay');
           if (overlay && !overlay.classList.contains('hidden')) smCloseCert();
         }
@@ -1038,7 +1350,26 @@
         });
       }
 
-      smInit();
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') queuePersistRun();
+      });
+
+      (async () => {
+        const local = loadLocalRun();
+        if (local) {
+          showResumeOverlay(local, 'Local');
+          return;
+        }
+        try {
+          const remote = await loadRemoteRun();
+          if (remote) {
+            showResumeOverlay(remote, 'Synced');
+            return;
+          }
+        } catch (_) {}
+
+        smInit();
+      })();
     });
 
     window.smCertPNG = smCertPNG;
@@ -1047,3 +1378,4 @@
   <script src="../../sw-register.js" defer></script>
 </body>
 </html>
+
