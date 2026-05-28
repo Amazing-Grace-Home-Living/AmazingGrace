@@ -20,13 +20,13 @@ const FEATURES = [
   {
     id: 'diagnostics',
     label: 'Diagnostics Console',
-    hint: 'Reach level 3 in Match Maker.',
+    hint: 'Reach level 3 in Janus Continuum.',
     condition: (p) => (p.level ?? 0) >= 3,
   },
   {
     id: 'nations',
     label: 'Sovereign Nations',
-    hint: 'Score 1 000 points in Match Maker.',
+    hint: 'Score 1 000 points in Janus Continuum.',
     condition: (p) => (p.score ?? 0) >= 1000,
   },
   {
