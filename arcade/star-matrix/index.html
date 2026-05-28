@@ -923,6 +923,10 @@
       board = next?.board ?? smCreateStarGrid();
       smRender();
       smUpdateHUD();
+      if (next) {
+        smCheckGameEnd();
+        return;
+      }
       queuePersistRun();
       
       // When resuming from saved state, check if game was already finished
