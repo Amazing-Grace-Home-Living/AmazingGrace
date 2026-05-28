@@ -297,7 +297,7 @@
       });
     }
 
-    function dedupeNewestFirst(certs) {
+    function dedupeById(certs) {
       const map = new Map();
       for (const cert of certs) {
         if (!map.has(cert.id)) map.set(cert.id, cert);
@@ -306,11 +306,11 @@
     }
 
     const localCerts = loadLocalCerts();
-    render(dedupeNewestFirst(localCerts), localCerts.length ? 'Local' : '');
+    render(dedupeById(localCerts), localCerts.length ? 'Local' : '');
 
     try {
       const remoteCerts = await loadFirestoreCerts();
-      const merged = dedupeNewestFirst([...remoteCerts, ...localCerts]);
+      const merged = dedupeById([...remoteCerts, ...localCerts]);
       render(merged, remoteCerts.length ? 'Synced' : (localCerts.length ? 'Local' : ''));
     } catch (_) {
       // Keep local render
