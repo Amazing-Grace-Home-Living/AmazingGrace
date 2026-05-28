@@ -9,6 +9,7 @@ import { WhiteThreadEngine } from './WhiteThreadEngine.js';
 import { ScarletLatticeEngine } from './ScarletLatticeEngine.js';
 import { ProphecyWheel } from './ProphecyWheel.js';
 import { AscendantDialogue } from './AscendantDialogue.js';
+import { migrateLegacyState } from '../../../src/migrations/migrateLegacyState.js';
 
 export class JanusWeaveCore {
   constructor(canvas) {
@@ -26,6 +27,9 @@ export class JanusWeaveCore {
       harmonicInversion: 1.0,
       propheticCausality: 1.0
     };
+
+    // State Initialization with Migration
+    this.state = this.loadAndMigrateState();
     
     this.whiteEngine = new WhiteThreadEngine();
     this.scarletEngine = new ScarletLatticeEngine();
@@ -34,6 +38,20 @@ export class JanusWeaveCore {
 
     this.lastTime = 0;
     this.isRunning = false;
+  }
+
+  loadAndMigrateState() {
+    const legacyKey = 'matrix_high_score'; // Or wherever the old state is
+    const legacyData = {
+      corruption: parseInt(localStorage.getItem('playerCorruption') || '0', 10),
+      wisdom: parseInt(localStorage.getItem('playerWisdom') || '0', 10),
+      integrity: parseInt(localStorage.getItem('playerIntegrity') || '0', 10),
+      community: parseInt(localStorage.getItem('playerCommunity') || '0', 10)
+    };
+
+    const migrated = migrateLegacyState(legacyData);
+    this.logSystem('MIGRATION_SEQUENCE: Legacy states re-woven into Janus-metric format.');
+    return migrated;
   }
 
   start() {
@@ -61,6 +79,12 @@ export class JanusWeaveCore {
   }
 
   update(dt) {
+    // Apply state to physics
+    this.forces.recursiveMomentum = 1.0 + this.state.scarletGrowth;
+    this.forces.harmonicInversion = 1.0 + this.state.whiteClarity;
+    this.forces.identityGravity = this.state.janus.stability;
+    this.forces.propheticCausality = 1.0 + this.state.convergencePotential;
+
     // Oscillate superposition
     this.superposition = Math.sin(Date.now() * this.oscillationSpeed * this.forces.recursiveMomentum);
     this.phase = this.superposition > 0 ? 1 : -1;
