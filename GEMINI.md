@@ -16,7 +16,9 @@
 ## Workflows
 - **Ella:** Unified operations for review suggestions and automated patches.
   - Marker: `<!-- ella:apply -->` in a review body triggers a full repo diff apply via `scripts/ella-auto-apply-review.js`.
-  - Marker: ` ```suggestion` in a comment applies inline suggestions.
+- **System Auditing:** Professional PowerShell maintenance suite.
+  - `SystemHealthAudit.ps1`: Monitors disk space and critical service states (WinRM, W32Time).
+  - `RepositoryIndexer.ps1`: Generates structural Data Matrices (CSV) and JSON manifests of project assets.
 - **Firebase:** Build, validate, and deploy to Hosting.
   - Automatically triggered on push to `main`.
 - **Sync Secrets:** repository_dispatch `key_rotation_event` updates GitHub secrets via `sync-secrets-from-matrix.yml`.
