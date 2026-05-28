@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Janus-Weave Duality Engine | Nexus Arcade</title>
+  <link rel="stylesheet" href="./css/janus.css">
+  <script src="../../assets/vendor/hosted-only.js"></script>
+</head>
+<body>
+  <div id="janus-shell">
+    <canvas id="janus-canvas"></canvas>
+
+    <div id="janus-ui">
+      <div id="janus-header">
+        <div class="engine-id">JANUS_WEAVE_V2.0</div>
+        <div id="phase-indicator">STABILIZING...</div>
+      </div>
+
+      <div id="janus-console">
+        <div id="janus-console-log"></div>
+      </div>
+
+      <div id="janus-controls">
+        <button id="oscillate-btn">FORCE OSCILLATION</button>
+        <button id="reversal-btn">REVERSAL SEQUENCE</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { JanusWeaveCore } from './js/JanusWeaveCore.js';
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const canvas = document.getElementById('janus-canvas');
+      
+      const resize = () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      };
+      window.addEventListener('resize', resize);
+      resize();
+
+      const engine = new JanusWeaveCore(canvas);
+      engine.start();
+
+      canvas.addEventListener('pointerdown', (e) => {
+        engine.handleInteraction(e.clientX, e.clientY);
+      });
+
+      document.getElementById('oscillate-btn').addEventListener('click', () => {
+        engine.oscillationSpeed *= 2;
+        setTimeout(() => engine.oscillationSpeed /= 2, 2000);
+      });
+
+      document.getElementById('reversal-btn').addEventListener('click', () => {
+        engine.logSystem('COLLAPSE_REVERSAL triggered. Re-knitting timeline filaments.');
+      });
+    });
+  </script>
+</body>
+</html>

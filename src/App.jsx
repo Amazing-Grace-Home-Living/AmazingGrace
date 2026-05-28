@@ -7,6 +7,7 @@ import MatrixHUD from '@/modules/matrix/MatrixHUD';
 import MatrixExchange from '@/modules/matrix/MatrixExchange';
 import StorybookHub from '@/modules/storybook/StorybookHub';
 import ReclaimMission from '@/modules/arcade/ReclaimMission';
+import AuthorsMandate from './components/AuthorsMandate';
 
 // Thematic Configuration (Nimbus Land / Voice of Jesus)
 const OS_THEME = {
@@ -39,9 +40,9 @@ export default function StellaraOS() {
     <nav className="sticky top-0 z-50 w-full border-b border-purple-900/50 bg-black/80 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          
+
           {/* Identity Shield & Branding */}
-          <div 
+          <div
             className="flex items-center gap-3 cursor-pointer"
             onClick={() => navigateTo('hub')}
           >
@@ -59,6 +60,9 @@ export default function StellaraOS() {
             </button>
             <button onClick={() => navigateTo('storybook')} className={`text-sm font-bold uppercase tracking-widest transition-colors ${activeView === 'storybook' ? 'text-purple-400' : 'text-gray-400 hover:text-white'}`}>
               Shell of Vision
+            </button>
+            <button onClick={() => navigateTo('mandate')} className={`text-sm font-bold uppercase tracking-widest transition-colors ${activeView === 'mandate' ? 'text-[#7effd8]' : 'text-gray-400 hover:text-white'}`}>
+              Author's Mandate
             </button>
             <button onClick={() => navigateTo('exchange')} className={`text-sm font-bold uppercase tracking-widest transition-colors ${activeView === 'exchange' ? 'text-yellow-400' : 'text-gray-400 hover:text-white'}`}>
               Lumen Exchange
@@ -80,6 +84,7 @@ export default function StellaraOS() {
         <div className="md:hidden bg-[#050505] border-b border-purple-900/50 p-4 flex flex-col gap-4">
           <button onClick={() => navigateTo('hub')} className="text-left text-white font-bold uppercase tracking-widest">Telemetry Hub</button>
           <button onClick={() => navigateTo('storybook')} className="text-left text-white font-bold uppercase tracking-widest">Shell of Vision</button>
+          <button onClick={() => navigateTo('mandate')} className="text-left text-[#7effd8] font-bold uppercase tracking-widest">Author's Mandate</button>
           <button onClick={() => navigateTo('exchange')} className="text-left text-white font-bold uppercase tracking-widest">Lumen Exchange</button>
         </div>
       )}
@@ -91,7 +96,7 @@ export default function StellaraOS() {
   // ---------------------------------------------------------------------------
   const renderActiveView = () => {
     switch(activeView) {
-      
+
       // The Core Telemetry Dashboard
       case 'hub':
         return (
@@ -104,10 +109,10 @@ export default function StellaraOS() {
                 System Integrity: Stable. {getUnlockedCount()} / 7 Virtues Resonating.
               </p>
             </div>
-            
+
             {/* The primary HUD we built earlier */}
-            <MatrixHUD 
-              integrity={matrixMetrics.integrity} 
+            <MatrixHUD
+              integrity={matrixMetrics.integrity}
               lumen={matrixMetrics.globalLumen}
               activeStars={getUnlockedCount()}
               sisters={sisters}
@@ -115,7 +120,7 @@ export default function StellaraOS() {
 
             {/* Quick Action CTA */}
             <div className="flex justify-center mt-12">
-              <button 
+              <button
                 onClick={() => navigateTo('storybook')}
                 className="flex items-center gap-3 px-8 py-4 bg-purple-900/40 border border-purple-500 text-white rounded-lg hover:bg-purple-800 transition-all shadow-[0_0_20px_rgba(120,81,169,0.3)] font-bold uppercase tracking-widest"
               >
@@ -130,9 +135,9 @@ export default function StellaraOS() {
       case 'storybook':
         return (
           <div className="animate-in slide-in-from-bottom-4 duration-500">
-            <StorybookHub 
-              sisters={sisters} 
-              onLaunchMission={(id) => navigateTo('mission', id)} 
+            <StorybookHub
+              sisters={sisters}
+              onLaunchMission={(id) => navigateTo('mission', id)}
             />
           </div>
         );
@@ -142,15 +147,15 @@ export default function StellaraOS() {
         return (
           <div className="animate-in zoom-in-95 duration-500">
              {/* If the Guardian bails on the mission, return them to the storybook */}
-            <button 
+            <button
               onClick={() => navigateTo('storybook')}
               className="mb-4 text-purple-400 hover:text-white text-sm font-bold uppercase tracking-widest flex items-center gap-2"
             >
               <X size={16} /> Abort Mission Sequence
             </button>
-            
-            <ReclaimMission 
-              targetSisterId={activeMissionId} 
+
+            <ReclaimMission
+              targetSisterId={activeMissionId}
               onMissionComplete={() => navigateTo('hub')}
             />
           </div>
@@ -164,13 +169,20 @@ export default function StellaraOS() {
           </div>
         );
 
+      case 'mandate':
+        return (
+          <div className="animate-in fade-in duration-500">
+            <AuthorsMandate />
+          </div>
+        );
+
       default:
         return null;
     }
   };
 
   return (
-    <div 
+    <div
       className="min-h-screen text-white font-sans selection:bg-purple-500/30 selection:text-white pb-24"
       style={{ backgroundColor: OS_THEME.background }}
     >

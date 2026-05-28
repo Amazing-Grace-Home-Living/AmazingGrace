@@ -438,18 +438,23 @@
 <body>
   <div id="sm-page-bg">
     <div class="game-header">
-      <a href="..">← Nexus Arcade</a>
-      <span class="game-title orbitron">STAR MATRIX</span>
+      <a href="..">← Back</a>
+      <div class="game-title">STAR MATRIX</div>
       <div class="game-header-right">
+<<<<<<< feature/unified-matrix-final
+        <button class="sm-music-btn" id="sm-music-btn" aria-pressed="false">♪ Music Off</button>
+        <a class="cert-link" href="../certificates/">My Certificates</a>
+=======
         <button id="sm-sound-toggle" class="sound-toggle" type="button" aria-label="Toggle sound">Sound: On</button>
         <a href="../certificates/" class="cert-link">📜 Certificates</a>
+>>>>>>> main
       </div>
     </div>
 
     <div class="hud">
       <div class="hud-stat">
         <div class="hud-label">Score</div>
-        <div class="hud-value purple" id="sm-score">0</div>
+        <div class="hud-value" id="sm-score">0</div>
       </div>
       <div class="hud-stat">
         <div class="hud-label">Target</div>
@@ -483,13 +488,23 @@
         <div class="legend-item">💫 Shooting</div>
         <div class="legend-item">💎 Gem</div>
         <div class="legend-item">⭐ Rank</div>
-        <div class="legend-item">✨ Cosmic</div>
+        <div class="legend-item">🔴 Cosmic</div>
       </div>
 
-      <p class="hint-text">Swipe or drag adjacent stars to swap · Match 3+ of the same type</p>
+      <div class="hint-text">Match 3 stars of the same type to align the constellation</div>
     </div>
   </div>
 
+<<<<<<< feature/unified-matrix-final
+  <div id="sm-cert-overlay" class="cert-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="cert-title">
+    <button id="sm-cert-close" class="cert-overlay-close" aria-label="Close certificate overlay">×</button>
+    
+    <div id="sm-name-phase" style="display:flex; flex-direction:column; align-items:center; width:100%;">
+      <h2 id="cert-title">Constellation Aligned</h2>
+      <p style="color:#94a3b8; margin-bottom:1.5rem; text-align:center;">Enter your name for the Star Matrix Alignment Certificate.</p>
+      <input type="text" id="sm-player-name" class="name-input" placeholder="Your Name" maxlength="30">
+      <button id="sm-gen-btn" class="cert-btn purple" style="width:100%; max-width:320px; justify-content:center;">Generate Certificate</button>
+=======
   <div id="sm-resume-overlay" class="resume-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="sm-resume-title">
     <div class="resume-card">
       <div style="font-size:2.2rem;margin-bottom:0.4rem;" aria-hidden="true">🌟</div>
@@ -523,16 +538,12 @@
       <div style="font-size:3rem;margin-bottom:0.75rem;" aria-hidden="true">🌟</div>
       <h2 id="sm-cert-title">STAR MATRIX CLEARED!</h2>
       <p style="font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--neon-purple);font-weight:700;">Seven Stars Protocol Achieved</p>
+>>>>>>> main
     </div>
 
-    <div id="sm-name-phase" style="display:flex;flex-direction:column;align-items:center;width:100%;max-width:320px;">
-      <label for="sm-player-name" style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.15em;color:#94a3b8;margin-bottom:0.5rem;">Your name for the certificate</label>
-      <input id="sm-player-name" type="text" maxlength="30" placeholder="Star Guardian" class="name-input" autocomplete="name" aria-label="Player name for certificate">
-      <button class="cert-btn purple" id="sm-gen-btn">Generate Certificate</button>
-    </div>
-
-    <div id="sm-cert-phase" style="display:none;flex-direction:column;align-items:center;gap:0.75rem;width:100%;">
-      <canvas id="sm-cert-canvas" class="cert-canvas" aria-label="Completion certificate"></canvas>
+    <div id="sm-cert-phase" style="display:none; flex-direction:column; align-items:center; width:100%;">
+      <h2>Alignment Verified</h2>
+      <canvas id="sm-cert-canvas" class="cert-canvas"></canvas>
       <div class="cert-actions">
         <button class="cert-btn cyan" onclick="smCertPNG()">⬇ Download PNG</button>
         <a class="cert-btn green" href="../certificates/" role="button">📜 My Certificates</a>
@@ -540,11 +551,12 @@
       </div>
     </div>
 
-    <button class="play-again-btn" onclick="smReset()">↩ Play Again</button>
+    <button class="play-again-btn" onclick="smReset()">↺ Play Again</button>
   </div>
 
   <script type="module">
     import {
+      createInitialGrid,
       canSwap,
       applySwap,
       findMatchesGrouped,
@@ -567,11 +579,12 @@
 
     const STAR_TYPES = [
       { id: 'heart', emoji: '🌟' },
-      { id: 'star', emoji: '⭐' },
-      { id: 'cross', emoji: '✨' },
-      { id: 'flame', emoji: '💫' },
-      { id: 'drop', emoji: '💎' }
+      { id: 'star', emoji: '💫' },
+      { id: 'cross', emoji: '💎' },
+      { id: 'flame', emoji: '⭐' },
+      { id: 'drop', emoji: '🔴' }
     ];
+
     const GRID_SIZE = 7;
     const TARGET = 1000;
     const MAX_MOVES = 30;
@@ -596,6 +609,11 @@
     let activePointerId = null;
     let dragStartX = 0;
     let dragStartY = 0;
+<<<<<<< feature/unified-matrix-final
+    const SM_MUSIC_PREF_KEY = 'sm_music_enabled';
+    const SM_MUSIC_URL = new URL('../../assets/music/m64slide.mid', import.meta.url).href;
+    const SM_SFX_URL = new URL('../../assets/audio/storm.mp3', import.meta.url).href;
+=======
     let resumePayload = null;
     let hasPersistedEnd = false;
     let persistTimer = null;
@@ -809,6 +827,7 @@
     }
 
     const SM_MUSIC_URL = new URL('../../assets/audio/storm.mp3', import.meta.url).href;
+>>>>>>> main
     let smMusic = null;
     let musicArmActive = false;
 
@@ -975,6 +994,75 @@
       bar.setAttribute('aria-valuenow', pct);
     }
 
+<<<<<<< feature/unified-matrix-final
+    function smUpdateMusicButton() {
+      const btn = document.getElementById('sm-music-btn');
+      if (!btn) return;
+      btn.setAttribute('aria-pressed', smMusicEnabled ? 'true' : 'false');
+      btn.textContent = smMusicEnabled ? '♪ Music On' : '♪ Music Off';
+    }
+
+    function smLoadMusicPref() {
+      try {
+        return localStorage.getItem(SM_MUSIC_PREF_KEY) === 'true';
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function smSaveMusicPref(enabled) {
+      try {
+        localStorage.setItem(SM_MUSIC_PREF_KEY, enabled ? 'true' : 'false');
+      } catch (_) {}
+    }
+
+    async function smStartMusic() {
+      if (!smMusic) {
+        smMusic = new Audio(SM_MUSIC_URL);
+        smMusic.loop = true;
+        smMusic.preload = 'none';
+        smMusic.volume = 0.28;
+      }
+      try {
+        await smMusic.play();
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function smStopMusic() {
+      if (!smMusic) return;
+      try {
+        smMusic.pause();
+        smMusic.currentTime = 0;
+      } catch (_) {}
+    }
+
+    async function smToggleMusic() {
+      smMusicEnabled = !smMusicEnabled;
+      smSaveMusicPref(smMusicEnabled);
+      smUpdateMusicButton();
+      if (smMusicEnabled) {
+        const ok = await smStartMusic();
+        if (!ok) {
+          smMusicEnabled = false;
+          smSaveMusicPref(false);
+          smUpdateMusicButton();
+        }
+      } else {
+        smStopMusic();
+      }
+    }
+
+    function smPlaySFX() {
+      const audio = new Audio(SM_SFX_URL);
+      audio.volume = 0.45;
+      audio.play().catch(() => {});
+    }
+
+=======
+>>>>>>> main
     function onPointerDown(e) {
       if (gameOver || isProcessing || moves <= 0) return;
       if (dragStartTile || activePointerId !== null) return;
@@ -1119,9 +1207,23 @@
         return;
       }
 
+<<<<<<< feature/unified-matrix-final
+      const clearedCells = matches.flat();
+      const pts = clearedCells.length * 10 * combo;
+      score += pts;
+      
+      // Play SFX on match
+      if (combo > 1 || clearedCells.length >= 4) {
+        smPlaySFX();
+      }
+
+      if (clearedCells.length >= 5) combo = Math.min(combo + 1, 5);
+      smUpdateHUD();
+=======
       while (true) {
         const matches = findMatchesGrouped(board);
         if (matches.length === 0) break;
+>>>>>>> main
 
         const clearedCells = matches.flat();
         markMatched(clearedCells);
