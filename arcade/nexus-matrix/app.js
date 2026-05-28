@@ -39,12 +39,12 @@ const THEMES = {
     accent: '#00f2ff'
   },
   [MODES.CLASSIC]: {
-    title: 'Match Maker',
+    title: 'Janus Weave',
     target: 5000,
     moves: 60,
-    mapping: { heart: '❤️', star: '⭐', cross: '🍀', flame: '💎', drop: '🧿' },
-    bg: 'radial-gradient(circle at 50% 20%, #1a1a2e 0%, #0f0f1e 70%)',
-    accent: '#fbbf24'
+    mapping: { heart: '⚪', star: '✨', cross: '💎', flame: '🔴', drop: '💠' },
+    bg: 'radial-gradient(circle at 50% 20%, #0f172a 0%, #020617 70%)',
+    accent: '#7effd8'
   },
   [MODES.SPIDER]: {
     title: 'Spider Protocol',
