@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The Amazing Grace Nexus Arcade — play Seven Stars, Star Matrix, and Bible Study Quiz: interactive faith-based games from Amazing Grace Home Living.">
+    <meta name="description" content="The Amazing Grace Nexus Arcade — play Seven Stars, Star Matrix, Matrix of Conscience, Bible Study Quiz, and Match Maker, interactive faith-based games from Amazing Grace Home Living.">
     <meta name="theme-color" content="#0f172a">
 
     <meta property="og:type" content="website">
     <meta property="og:title" content="Nexus Arcade — Amazing Grace Home Living">
-    <meta property="og:description" content="Play Seven Stars, Star Matrix, and Bible Study Quiz at the Amazing Grace Nexus Arcade.">
+    <meta property="og:description" content="Play Seven Stars, Star Matrix, Matrix of Conscience, Bible Study Quiz, and Match Maker at the Amazing Grace Nexus Arcade.">
     <meta property="og:url" content="https://amazinggracehl.org/arcade">
 
     <link rel="icon" type="image/png" href="../assets/logo.png">
@@ -328,7 +328,7 @@
                 <h1>⚡ Nexus Arcade</h1>
                 <p>Play, learn, and grow through interactive faith-based games.</p>
                 <div class="arcade-links" aria-label="Arcade links">
-                    <a class="accent" href="./star-matrix/">Play Star Matrix</a>
+                    <a class="accent" href="./janus/">Play Janus Continuum</a>
                     <a href="./certificates/">My Certificates</a>
                 </div>
             </div>
@@ -342,53 +342,35 @@
                     <button class="play-btn play-btn-gold" tabindex="-1">▶ Play Now</button>
                 </div>
 
+                <a href="./nexus-matrix/" class="game-card card-matrix" style="text-decoration:none;" aria-label="Play Nexus Matrix">
+                    <div class="game-card-icon">🧩</div>
+                    <div class="game-card-title">Nexus Matrix</div>
+                    <div class="game-card-desc">The unified Match-3 experience. Includes Star Matrix, Matrix of Conscience, and Spider Protocol modes.</div>
+                    <span class="game-card-badge badge-purple">High Performance</span>
+                    <button class="play-btn play-btn-violet" tabindex="-1">▶ Play Now</button>
+                </a>
+
                 <a href="./star-matrix/" class="game-card card-stars" style="text-decoration:none;" aria-label="Play Star Matrix">
                     <div class="game-card-icon">🌟</div>
                     <div class="game-card-title">Star Matrix</div>
-                    <div class="game-card-desc">Match star constellations on a 7×7 board. Swipe adjacent stars, chain combos, and reach 1000 points to earn your certificate.</div>
-                    <span class="game-card-badge badge-gold">Live · Star Puzzle</span>
+                    <div class="game-card-desc">Align the constellations in this specialized star-matching puzzle with session sync.</div>
+                    <span class="game-card-badge badge-gold">Standalone</span>
                     <button class="play-btn play-btn-gold" tabindex="-1">▶ Play Now</button>
-                </a>
-
-                <a href="./matrix-of-conscience/" class="game-card card-matrix" style="text-decoration:none;" aria-label="Play Matrix of Conscience">
-                    <div class="game-card-icon">🧠</div>
-                    <div class="game-card-title">Matrix of Conscience</div>
-                    <div class="game-card-desc">Enter a mobile-friendly match-3 matrix. Swipe virtues, chain fragments, and climb through seven escalating calibration levels.</div>
-                    <span class="game-card-badge badge-purple">Live · Match 3</span>
-                    <button class="play-btn play-btn-violet" tabindex="-1">▶ Enter the Matrix</button>
                 </a>
 
                 <a href="./bible-study/" class="game-card card-stars" style="text-decoration:none;" aria-label="Play Bible Study Quiz">
                     <div class="game-card-icon">📖</div>
                     <div class="game-card-title">Bible Study Quiz</div>
-                    <div class="game-card-desc">Answer Old and New Testament questions, build knowledge streaks, and strengthen scripture memory in a guided quiz journey.</div>
-                    <span class="game-card-badge badge-gold">Live · Knowledge Quiz</span>
-                    <button class="play-btn play-btn-gold" tabindex="-1">▶ Start Quiz</button>
-                </a>
-
-                <a href="./matrix-of-conscience/" class="game-card card-stars" style="text-decoration:none;" aria-label="Open Matrix of Conscience">
-                    <div class="game-card-icon">🧠</div>
-                    <div class="game-card-title">Matrix of Conscience</div>
-                    <div class="game-card-desc">Run the Duality Core console, execute weave/split/merge/collapse protocols, and monitor live identity metrics.</div>
-                    <span class="game-card-badge badge-gold">Live · Duality Core</span>
-                    <button class="play-btn play-btn-gold" tabindex="-1">▶ Open Console</button>
+                    <div class="game-card-desc">Test your knowledge of the Word with interactive quizzes.</div>
+                    <span class="game-card-badge badge-gold">Learning</span>
+                    <button class="play-btn play-btn-gold" tabindex="-1">▶ Play Now</button>
                 </a>
             </div>
         </div>
 
         <div id="stage-sevenstars" class="game-stage">
-            <button class="stage-back-btn" onclick="backToLobby()">← Back to Arcade</button>
-
-            <div class="game-wrapper relative mx-auto">
-                <div class="game-header-bar">The Mystery of the Seven Stars</div>
-                <div id="game-screen" class="game-content"></div>
-                <div id="game-alert-overlay" class="game-message-overlay">
-                    <div class="game-message-box">
-                        <p id="game-alert-text" class="text-lg font-semibold mb-4"></p>
-                        <button id="game-alert-close" class="game-btn">Continue</button>
-                    </div>
-                </div>
-            </div>
+            <button class="stage-back-btn" onclick="returnToLobby()">← Back to Lobby</button>
+            <div id="sevenstars-root" class="game-wrapper"></div>
         </div>
     </main>
 
@@ -400,6 +382,15 @@
         const lobby = document.getElementById('game-lobby');
         const stageSeven = document.getElementById('stage-sevenstars');
 
+        function returnToLobby() {
+            stageSeven.classList.remove('active');
+            lobby.style.display = 'block';
+            window.scrollTo(0, 0);
+            const url = new URL(window.location);
+            url.searchParams.delete('game');
+            window.history.pushState({}, '', url);
+        }
+
         function launchGame(id) {
             lobby.style.display = 'none';
             stageSeven.classList.remove('active');
@@ -410,134 +401,97 @@
                     window._sevenStarsStarted = true;
                     initSevenStars();
                 }
-            } else {
-                console.warn('[arcade] Unknown game id:', id);
-                backToLobby();
             }
+            
+            const url = new URL(window.location);
+            url.searchParams.set('game', id);
+            window.history.pushState({}, '', url);
         }
 
-        function backToLobby() {
-            stageSeven.classList.remove('active');
-            lobby.style.display = '';
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const gameId = urlParams.get('game');
+        // Initialize game from URL
+        window.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const gameId = params.get('game');
             if (gameId) launchGame(gameId);
         });
 
-        const churches = [
-            { name: 'Ephesus', message: 'The church in Ephesus was known for its hard work and perseverance. However, Jesus warned them that they had abandoned their first love.', question: 'What had the church in Ephesus abandoned?', options: ['Their generosity', 'Their first love', 'Their church building', 'Their daily prayers'], answer: 'Their first love' },
-            { name: 'Smyrna', message: 'The church in Smyrna faced tribulation and poverty, yet Jesus praised their faithfulness and told them not to fear suffering.', question: 'What did Jesus tell Smyrna not to fear?', options: ['False prophets', 'Poverty', 'Suffering', 'Travel'], answer: 'Suffering' },
-            { name: 'Pergamum', message: 'Pergamum held fast to Jesus' name in a difficult city, but some there were tolerating false teaching.', question: 'What problem did Pergamum tolerate?', options: ['False teaching', 'Silence', 'No worship songs', 'Lack of elders'], answer: 'False teaching' },
-            { name: 'Thyatira', message: 'Thyatira was praised for love, faith, service, and perseverance, but rebuked for tolerating corruption.', question: 'What was Thyatira praised for?', options: ['Military power', 'Love and service', 'Wealth alone', 'Temple size'], answer: 'Love and service' },
-            { name: 'Sardis', message: 'Sardis had a reputation for being alive, but Jesus said they were dead and needed to wake up.', question: 'What did Sardis need to do?', options: ['Build larger walls', 'Wake up', 'Move cities', 'Collect offerings'], answer: 'Wake up' },
-            { name: 'Philadelphia', message: 'Philadelphia had little strength, but kept Jesus' word and did not deny His name. An open door was set before them.', question: 'What was set before Philadelphia?', options: ['A closed gate', 'A golden crown', 'An open door', 'A mountain path'], answer: 'An open door' },
-            { name: 'Laodicea', message: 'Laodicea was called lukewarm—neither hot nor cold—and was warned against complacency.', question: 'How was Laodicea described?', options: ['Faithful', 'Bold', 'Lukewarm', 'Joyful'], answer: 'Lukewarm' }
-        ];
-
+        // Seven Stars Logic (Minimal implementation to keep file lean)
         function initSevenStars() {
-            const gameScreen = document.getElementById('game-screen');
-            const overlay = document.getElementById('game-alert-overlay');
-            const alertText = document.getElementById('game-alert-text');
-            const alertClose = document.getElementById('game-alert-close');
-            let completedStars = JSON.parse(localStorage.getItem('aghl_sevenStarsCompleted') || '[]');
+            const root = document.getElementById('sevenstars-root');
+            const churches = [
+                { name: 'Ephesus', message: 'The church in Ephesus was known for its hard work and perseverance. However, Jesus warned them that they had abandoned their first love.', question: 'What had the church in Ephesus abandoned?', options: ['Their generosity', 'Their first love', 'Their church building', 'Their daily prayers'], answer: 'Their first love' },
+                { name: 'Smyrna', message: 'The church in Smyrna faced tribulation and poverty, yet Jesus praised their faithfulness and told them not to fear suffering.', question: 'What did Jesus tell Smyrna not to fear?', options: ['False prophets', 'Poverty', 'Suffering', 'Travel'], answer: 'Suffering' },
+                { name: 'Pergamum', message: 'Pergamum held fast to Jesus’ name in a difficult city, but some there were tolerating false teaching.', question: 'What problem did Pergamum tolerate?', options: ['False teaching', 'Silence', 'No worship songs', 'Lack of elders'], answer: 'False teaching' },
+                { name: 'Thyatira', message: 'Thyatira was praised for love, faith, service, and perseverance, but rebuked for tolerating corruption.', question: 'What was Thyatira praised for?', options: ['Military power', 'Love and service', 'Wealth alone', 'Temple size'], answer: 'Love and service' },
+                { name: 'Sardis', message: 'Sardis had a reputation for being alive, but Jesus said they were dead and needed to wake up.', question: 'What did Sardis need to do?', options: ['Build larger walls', 'Wake up', 'Move cities', 'Collect offerings'], answer: 'Wake up' },
+                { name: 'Philadelphia', message: 'Philadelphia had little strength, but kept Jesus’ word and did not deny His name. An open door was set before them.', question: 'What was set before Philadelphia?', options: ['A closed gate', 'A golden crown', 'An open door', 'A mountain path'], answer: 'An open door' },
+                { name: 'Laodicea', message: 'Laodicea was called lukewarm—neither hot nor cold—and was warned against complacency.', question: 'How was Laodicea described?', options: ['Faithful', 'Bold', 'Lukewarm', 'Joyful'], answer: 'Lukewarm' }
+            ];
 
-            function showAlert(text, cb) {
-                alertText.textContent = text;
-                overlay.style.display = 'flex';
-                alertClose.onclick = () => {
-                    overlay.style.display = 'none';
-                    if (cb) cb();
-                };
-            }
+            let completed = JSON.parse(localStorage.getItem('aghl_sevenStarsCompleted') || '[]');
 
             function renderTitle() {
-                gameScreen.innerHTML = `
-                    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;max-width:480px;margin:0 auto;padding:2rem 1rem">
-                        <h1 style="font-family:'Playfair Display',serif;font-size:clamp(1.5rem,4vw,2.25rem);color:#FFD700;margin-bottom:1rem">Find the Seven Stars</h1>
-                        <p style="color:#94a3b8;margin-bottom:2rem;line-height:1.6">Embark on a spiritual journey to the seven churches of Asia Minor. Read their messages and test your knowledge to collect every star.</p>
-                        <button id="start-journey-btn" class="game-btn" style="font-size:1rem;padding:.75rem 2rem">Start Journey</button>
+                root.innerHTML = `
+                    <div class="game-header-bar">MYSTERY OF THE SEVEN STARS</div>
+                    <div class="game-content">
+                        <div style="font-size:4rem;margin:1rem 0">🌟</div>
+                        <p style="margin-bottom:2rem;font-size:1.1rem;max-width:500px">"The mystery of the seven stars which you saw in My right hand... The seven stars are the angels of the seven churches."</p>
+                        <button class="game-btn" onclick="window.sevenStarsRenderMap()">Begin Journey</button>
                     </div>`;
-                document.getElementById('start-journey-btn').addEventListener('click', renderMap);
             }
 
-            function renderMap() {
-                gameScreen.innerHTML = `
-                    <p style="font-size:1rem;font-weight:600;color:#e2e8f0;margin-bottom:.5rem">Select a destination to explore:</p>
-                    <div class="map-grid" style="padding-bottom:1.5rem">
-                        ${churches.map((c, i) => `
-                            <div class="map-item ${completedStars.includes(c.name) ? 'completed' : ''}" data-index="${i}" role="button" tabindex="0" aria-label="Explore ${c.name}">
-                                <svg class="star-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                                </svg>
-                                <span style="font-weight:700;font-size:.9rem">${c.name}</span>
-                                <span style="font-size:.75rem;margin-top:.25rem;color:${completedStars.includes(c.name) ? '#22c55e' : '#64748b'}">${completedStars.includes(c.name) ? '✔ Collected' : 'Not yet collected'}</span>
-                            </div>`).join('')}
-                    </div>`;
-                gameScreen.querySelectorAll('.map-item').forEach((item) => {
-                    const activate = () => renderChurch(parseInt(item.dataset.index, 10));
-                    item.addEventListener('click', activate);
-                    item.addEventListener('keydown', (e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            activate();
-                        }
-                    });
-                });
-            }
-
-            function renderChurch(i) {
-                const c = churches[i];
-                const done = completedStars.includes(c.name);
-                gameScreen.innerHTML = `
-                    <div style="width:100%;max-width:560px;background:rgba(255,255,255,.06);border:1px solid #334155;border-radius:1rem;padding:1.5rem;text-align:left;margin-top:.5rem">
-                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;gap:1rem;flex-wrap:wrap;">
-                            <h2 style="font-family:'Playfair Display',serif;font-size:1.5rem;color:#FFD700;margin:0">${c.name}</h2>
-                            ${done ? '<span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.75rem;font-weight:700;padding:.2rem .6rem;border-radius:999px;border:1px solid #22c55e">Completed</span>' : ''}
+            window.sevenStarsRenderMap = function() {
+                root.innerHTML = `
+                    <div class="game-header-bar">SELECT A CHURCH</div>
+                    <div class="game-content">
+                        <div class="map-grid">
+                            ${churches.map((c, i) => `
+                                <div class="map-item ${completed.includes(c.name) ? 'completed' : ''}" onclick="window.sevenStarsShowChurch(${i})">
+                                    <svg class="star-svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                    <span style="font-size:0.8rem;font-weight:bold">${c.name.toUpperCase()}</span>
+                                </div>
+                            `).join('')}
                         </div>
-                        <p style="color:#cbd5e1;line-height:1.7;background:rgba(0,0,0,.3);padding:1rem;border-radius:.5rem;margin-bottom:1.5rem;font-style:italic">${c.message}</p>
-                        <div id="quiz-area"></div>
-                        <button id="back-map" style="margin-top:1.25rem;background:none;border:none;color:#64748b;cursor:pointer;font-size:.875rem;font-weight:600">← Return to Map</button>
+                        ${completed.length === 7 ? `<button class="game-btn" style="margin-top:2rem" onclick="window.sevenStarsFinish()">Claim Your Certificate</button>` : ''}
                     </div>`;
-                document.getElementById('back-map').addEventListener('click', renderMap);
-                if (!done) renderQuiz(i);
-                else {
-                    document.getElementById('quiz-area').innerHTML = '<p style="color:#22c55e;font-weight:700;">You already collected this star.</p>';
+            }
+
+            window.sevenStarsShowChurch = function(index) {
+                const c = churches[index];
+                root.innerHTML = `
+                    <div class="game-header-bar">${c.name.toUpperCase()}</div>
+                    <div class="game-content">
+                        <p style="margin-bottom:1.5rem;line-height:1.7;background:rgba(0,0,0,0.2);padding:1rem;border-radius:0.5rem">${c.message}</p>
+                        <div style="text-align:left;width:100%">
+                            <p style="font-weight:bold;margin-bottom:1rem;color:var(--accent2)">${c.question}</p>
+                            ${c.options.map(opt => `
+                                <button class="game-btn" style="display:block;width:100%;margin-bottom:0.5rem;text-align:left;background:#334155;color:white" onclick="window.sevenStarsCheckAnswer('${c.name}', '${opt}', '${c.answer}')">${opt}</button>
+                            `).join('')}
+                        </div>
+                    </div>`;
+            }
+
+            window.sevenStarsCheckAnswer = function(name, selected, correct) {
+                if (selected === correct) {
+                    if (!completed.includes(name)) {
+                        completed.push(name);
+                        localStorage.setItem('aghl_sevenStarsCompleted', JSON.stringify(completed));
+                    }
+                    alert("Correct! You have collected a star.");
+                    window.sevenStarsRenderMap();
+                } else {
+                    alert("Incorrect. Reflect on the message and try again.");
                 }
             }
 
-            function renderQuiz(i) {
-                const c = churches[i];
-                const quizArea = document.getElementById('quiz-area');
-                quizArea.innerHTML = `
-                    <h3 style="color:#e2e8f0;font-size:1rem;margin-bottom:.75rem">${c.question}</h3>
-                    <div>${c.options.map((opt) => `<button class="option-btn" data-value="${opt}" style="display:block;width:100%;text-align:left;padding:.8rem 1rem;margin-bottom:.5rem;border-radius:.75rem;border:2px solid #4e4e6a;background:rgba(255,255,255,0.08);color:white;cursor:pointer;font-size:1rem;">${opt}</button>`).join('')}</div>`;
-                quizArea.querySelectorAll('.option-btn').forEach((btn) => {
-                    btn.addEventListener('click', () => {
-                        const value = btn.dataset.value;
-                        if (value === c.answer) {
-                            completedStars = Array.from(new Set([...completedStars, c.name]));
-                            localStorage.setItem('aghl_sevenStarsCompleted', JSON.stringify(completedStars));
-                            const allDone = completedStars.length === churches.length;
-                            showAlert(allDone ? 'Correct! You found the final star and completed the journey.' : `Correct! You collected the star of ${c.name}.`, allDone ? renderCompletion : renderMap);
-                        } else {
-                            showAlert('Not quite. Read the message carefully and try again.');
-                        }
-                    });
-                });
-            }
-
-            function renderCompletion() {
-                gameScreen.innerHTML = `
-                    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;max-width:520px;margin:0 auto;padding:2rem 1rem;gap:1rem;">
-                        <div style="font-size:3rem">🏆</div>
-                        <h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.6rem,4vw,2.3rem);color:#FFD700;margin:0">Journey Complete</h2>
-                        <p style="color:#94a3b8;line-height:1.7;">You discovered all seven stars and completed the messages to the churches. This experience is live and working, so it remains listed in the arcade.</p>
-                        <button class="game-btn" id="restart-sevenstars">Play Again</button>
+            window.sevenStarsFinish = function() {
+                root.innerHTML = `
+                    <div class="game-header-bar">JOURNEY COMPLETE</div>
+                    <div class="game-content">
+                        <h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.6rem,4vw,2.3rem);color:#FFD700;margin:0">Alignment Verified</h2>
+                        <p style="color:#94a3b8;line-height:1.7;margin-top:1rem">You have successfully navigated the seven churches and collected all stars.</p>
+                        <a class="game-btn" href="./certificates/" style="margin-top:2rem;text-decoration:none;display:inline-block">View Certificates</a>
                     </div>`;
-                document.getElementById('restart-sevenstars').addEventListener('click', renderMap);
             }
 
             renderTitle();
