@@ -30,4 +30,13 @@ describe('star matrix input handling', () => {
     expect(html).toContain('const dragEndTile = (elementAtPoint ? elementAtPoint.closest(\'.star-cell\') : null) || dragTargetTile || inferSwipeNeighbor(e);');
     expect(html).toContain('function inferSwipeNeighbor(e) {');
   });
+
+  it('adds sound and Firebase-backed persistence for Star Matrix progress and certificates', () => {
+    expect(html).toContain('id="sm-sound-toggle"');
+    expect(html).toContain("runKey: 'star-matrix:run'");
+    expect(html).toContain("certKey: 'star-matrix:certificates'");
+    expect(html).toContain("'game_stats', 'star_matrix'");
+    expect(html).toContain("'game_state', 'star_matrix'");
+    expect(html).toContain("'certificates'");
+  });
 });

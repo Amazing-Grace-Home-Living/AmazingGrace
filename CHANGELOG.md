@@ -62,8 +62,7 @@ Initial public release of the Amazing Grace Home Living site:
 
 - Property listing galleries (1142 7th St, 1144 7th St, 926 E Poinsettia Ave / Tampa property).
 - Ministry section with Bible Journey and Seven-Star Canon pages.
-- Nexus Arcade with Match Maker game, Seven Stars progression, and Matrix of
-  Conscience modules.
+- Nexus Arcade with Seven Stars progression and Star Matrix modules.
 - GitHub Pages deployment to `amazinggracehl.org`.
 
 ## [0.1.0] — 2026-04-24
