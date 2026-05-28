@@ -1,1 +1,0 @@
-import"./modulepreload-polyfill-Bchw24nj.js";var e=document.getElementById(`sm-cert-close`),t=document.getElementById(`sm-cert-overlay`);e&&t&&e.addEventListener(`click`,()=>t.classList.add(`hidden`));
