@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 
 describe('arcade cleanup', () => {
-  it('shows a focused arcade hub (no Match Maker or Matrix of Conscience cards)', () => {
+  it('shows a focused arcade hub (no Match Maker card; Matrix of Conscience is active)', () => {
     const arcade = fs.readFileSync('arcade/index.html', 'utf8');
 
     expect(arcade).toContain('href="./star-matrix/"');
@@ -11,19 +11,20 @@ describe('arcade cleanup', () => {
     expect(arcade).toContain('Bible Study Quiz');
     expect(arcade).toContain('Mystery of the Seven Stars');
     expect(arcade).not.toContain('Match Maker');
-    expect(arcade).not.toContain('Matrix of Conscience');
-    expect(arcade).not.toContain('href="./matrix-of-conscience/"');
+    expect(arcade).toContain('Matrix of Conscience');
+    expect(arcade).toContain('href="./matrix-of-conscience/"');
     expect(arcade).not.toContain('href="../arcade.html"');
   });
 
-  it('keeps legacy routes as redirects into Star Matrix', () => {
+  it('keeps arcade.html as a redirect while matrix-of-conscience is a standalone page', () => {
     const legacyArcade = fs.readFileSync('arcade.html', 'utf8');
     const legacyMatrix = fs.readFileSync('arcade/matrix-of-conscience/index.html', 'utf8');
 
     expect(legacyArcade).toContain('http-equiv="refresh"');
     expect(legacyArcade).toContain('url=./arcade/star-matrix/');
-    expect(legacyMatrix).toContain('http-equiv="refresh"');
-    expect(legacyMatrix).toContain('url=../star-matrix/');
+    expect(legacyMatrix).not.toContain('http-equiv="refresh"');
+    expect(legacyMatrix).toContain('Matrix of Conscience — Duality Core');
+    expect(legacyMatrix).toContain('id="btn-weave"');
   });
 
   it('removes duplicate/dead listings CTA rows from the arcade hub', () => {
