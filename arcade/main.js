@@ -1,6 +1,6 @@
 /**
  * arcade/main.js - Legacy Entry Point
- * Redirects to the new unified Nexus Matrix.
+ * Redirects to the new Janus Continuum engine.
  */
 
-window.location.href = './nexus-matrix/?mode=classic';
+window.location.href = './janus/';
