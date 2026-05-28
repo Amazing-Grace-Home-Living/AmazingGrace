@@ -89,26 +89,21 @@
       align-items: center;
       gap: 10px;
     }
-
-    .sm-music-btn {
+    .sound-toggle {
       border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(15,23,42,0.55);
+      background: rgba(15,23,42,0.65);
       color: #94a3b8;
-      font-size: 0.6rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
       border-radius: 999px;
-      padding: 0.45rem 0.7rem;
+      padding: 6px 10px;
       cursor: pointer;
-      transition: color 0.2s, border-color 0.2s, background 0.2s;
+      font-weight: 800;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: color 0.2s, border-color 0.2s, transform 0.15s;
     }
-    .sm-music-btn:hover { color: #e2e8f0; border-color: rgba(255,255,255,0.28); }
-    .sm-music-btn[aria-pressed="true"] {
-      color: var(--neon-blue);
-      border-color: rgba(0, 242, 255, 0.45);
-      background: rgba(0, 242, 255, 0.08);
-    }
+    .sound-toggle:hover { color: #fff; border-color: rgba(255,255,255,0.28); transform: translateY(-1px); }
+    .sound-toggle.on { color: var(--neon-gold); border-color: rgba(251,191,36,0.35); }
 
     .hud {
       width: 100%;
@@ -314,6 +309,8 @@
     .cert-btn.cyan:hover { border-color: var(--neon-blue); background: rgba(0,242,255,0.08); }
     .cert-btn.green { color: #4ade80; }
     .cert-btn.green:hover { border-color: #4ade80; background: rgba(74,222,128,0.08); }
+    .cert-btn.gold { color: var(--neon-gold); }
+    .cert-btn.gold:hover { border-color: var(--neon-gold); background: rgba(251,191,36,0.08); }
 
     .name-input {
       width: 100%;
@@ -359,6 +356,83 @@
       transition: color 0.2s, border-color 0.2s;
     }
     .cert-overlay-close:hover { color: #fff; border-color: rgba(255,255,255,0.35); }
+
+    .resume-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 280;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      background: rgba(2,6,23,0.96);
+    }
+    .resume-overlay.hidden { display: none !important; }
+    .resume-card {
+      width: min(520px, 100%);
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(15,23,42,0.75);
+      box-shadow: 0 0 50px rgba(188,19,254,0.2);
+      padding: 1.25rem 1.25rem 1.15rem;
+      text-align: center;
+    }
+    .resume-card h2 {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.1rem;
+      letter-spacing: 0.08em;
+      margin: 0 0 0.6rem;
+      color: #fff;
+    }
+    .resume-card p {
+      margin: 0.4rem 0 0;
+      color: #94a3b8;
+      font-size: 0.8rem;
+      line-height: 1.6;
+    }
+    .resume-actions {
+      margin-top: 1rem;
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .resume-actions button {
+      padding: 0.7rem 1.1rem;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(15,23,42,0.85);
+      color: #e2e8f0;
+      cursor: pointer;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.65rem;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      min-height: 44px;
+    }
+    .resume-actions button:hover { border-color: rgba(255,255,255,0.28); transform: translateY(-1px); }
+    .resume-actions button.primary { border-color: rgba(251,191,36,0.35); color: var(--neon-gold); }
+    .resume-actions button.primary:hover { border-color: rgba(251,191,36,0.7); }
+    .resume-actions .next-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.7rem 1.1rem;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(15,23,42,0.85);
+      color: #e2e8f0;
+      cursor: pointer;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.65rem;
+      text-decoration: none;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      min-height: 44px;
+    }
+    .resume-actions .next-btn:hover { border-color: rgba(255,255,255,0.28); transform: translateY(-1px); }
   </style>
 </head>
 <body>
@@ -367,8 +441,13 @@
       <a href="..">← Back</a>
       <div class="game-title">STAR MATRIX</div>
       <div class="game-header-right">
+<<<<<<< feature/unified-matrix-final
         <button class="sm-music-btn" id="sm-music-btn" aria-pressed="false">♪ Music Off</button>
         <a class="cert-link" href="../certificates/">My Certificates</a>
+=======
+        <button id="sm-sound-toggle" class="sound-toggle" type="button" aria-label="Toggle sound">Sound: On</button>
+        <a href="../certificates/" class="cert-link">📜 Certificates</a>
+>>>>>>> main
       </div>
     </div>
 
@@ -416,6 +495,7 @@
     </div>
   </div>
 
+<<<<<<< feature/unified-matrix-final
   <div id="sm-cert-overlay" class="cert-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="cert-title">
     <button id="sm-cert-close" class="cert-overlay-close" aria-label="Close certificate overlay">×</button>
     
@@ -424,6 +504,41 @@
       <p style="color:#94a3b8; margin-bottom:1.5rem; text-align:center;">Enter your name for the Star Matrix Alignment Certificate.</p>
       <input type="text" id="sm-player-name" class="name-input" placeholder="Your Name" maxlength="30">
       <button id="sm-gen-btn" class="cert-btn purple" style="width:100%; max-width:320px; justify-content:center;">Generate Certificate</button>
+=======
+  <div id="sm-resume-overlay" class="resume-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="sm-resume-title">
+    <div class="resume-card">
+      <div style="font-size:2.2rem;margin-bottom:0.4rem;" aria-hidden="true">🌟</div>
+      <h2 id="sm-resume-title">Resume Star Matrix?</h2>
+      <p id="sm-resume-meta">A saved run is available.</p>
+      <div class="resume-actions">
+        <button id="sm-resume-btn" class="primary" type="button">Resume</button>
+        <button id="sm-new-btn" type="button">Start New</button>
+      </div>
+      <p style="font-size:0.65rem;letter-spacing:0.14em;text-transform:uppercase;color:#475569;margin-top:0.85rem;">
+        Progress syncs when Firebase is available
+      </p>
+    </div>
+  </div>
+
+  <div id="sm-gameover-overlay" class="resume-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="sm-gameover-title">
+    <div class="resume-card">
+      <div style="font-size:2.2rem;margin-bottom:0.4rem;" aria-hidden="true">💫</div>
+      <h2 id="sm-gameover-title">Out of Moves!</h2>
+      <p id="sm-gameover-score" style="font-size:1.1rem;color:#94a3b8;margin:1rem 0;">Your Score: <span style="color:var(--neon-purple);font-weight:700;">0</span></p>
+      <div class="resume-actions">
+        <button id="sm-tryagain-btn" class="primary" type="button">Try Again</button>
+        <a id="sm-next-btn" href="../matrix-of-conscience/" class="next-btn" role="button">Next Game →</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="sm-cert-overlay" class="cert-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="sm-cert-title">
+    <button id="sm-cert-close" class="cert-overlay-close" type="button" aria-label="Close certificate overlay">&times;</button>
+    <div style="text-align:center;margin-bottom:1.5rem;">
+      <div style="font-size:3rem;margin-bottom:0.75rem;" aria-hidden="true">🌟</div>
+      <h2 id="sm-cert-title">STAR MATRIX CLEARED!</h2>
+      <p style="font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--neon-purple);font-weight:700;">Seven Stars Protocol Achieved</p>
+>>>>>>> main
     </div>
 
     <div id="sm-cert-phase" style="display:none; flex-direction:column; align-items:center; width:100%;">
@@ -431,7 +546,8 @@
       <canvas id="sm-cert-canvas" class="cert-canvas"></canvas>
       <div class="cert-actions">
         <button class="cert-btn cyan" onclick="smCertPNG()">⬇ Download PNG</button>
-        <a class="cert-btn green" href="../certificates/">📜 My Certificates</a>
+        <a class="cert-btn green" href="../certificates/" role="button">📜 My Certificates</a>
+        <a class="cert-btn gold" href="../matrix-of-conscience/" role="button">▶ Next Game</a>
       </div>
     </div>
 
@@ -446,6 +562,20 @@
       findMatchesGrouped,
       applyGravity
     } from '../../js/matchmaker.js';
+    import {
+      getAppId,
+      getFirestoreDb,
+      ensureAnonymousUser,
+      assertPathSegment,
+    } from '../../src/firebase/nexus-firestore.ts';
+    import {
+      deleteDoc,
+      doc,
+      getDoc,
+      runTransaction,
+      serverTimestamp,
+      setDoc,
+    } from 'firebase/firestore';
 
     const STAR_TYPES = [
       { id: 'heart', emoji: '🌟' },
@@ -458,6 +588,12 @@
     const GRID_SIZE = 7;
     const TARGET = 1000;
     const MAX_MOVES = 30;
+
+    const STORAGE = Object.freeze({
+      runKey: 'star-matrix:run',
+      certKey: 'star-matrix:certificates',
+      soundKey: 'star-matrix:sound',
+    });
 
     let board = [];
     let score = 0;
@@ -473,11 +609,270 @@
     let activePointerId = null;
     let dragStartX = 0;
     let dragStartY = 0;
+<<<<<<< feature/unified-matrix-final
     const SM_MUSIC_PREF_KEY = 'sm_music_enabled';
     const SM_MUSIC_URL = new URL('../../assets/music/m64slide.mid', import.meta.url).href;
     const SM_SFX_URL = new URL('../../assets/audio/storm.mp3', import.meta.url).href;
+=======
+    let resumePayload = null;
+    let hasPersistedEnd = false;
+    let persistTimer = null;
+    let persistInFlight = false;
+    let persistQueued = false;
+
+    const sfx = (() => {
+      const make = (src, volume) => {
+        const audio = new Audio(src);
+        audio.preload = 'auto';
+        audio.volume = volume;
+        return audio;
+      };
+      return {
+        swap: make('../../assets/audio/badge.mp3', 0.25),
+        match: make('../../assets/audio/badge.mp3', 0.35),
+        win: make('../../assets/audio/course-clear-fanfare.mp3', 0.45),
+        fail: make('../../assets/audio/player-down.mp3', 0.25),
+      };
+    })();
+
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    function isSoundEnabled() {
+      try {
+        const raw = localStorage.getItem(STORAGE.soundKey);
+        if (raw === 'off') return false;
+      } catch (_) {}
+      return true;
+    }
+
+    function setSoundEnabled(enabled) {
+      try {
+        localStorage.setItem(STORAGE.soundKey, enabled ? 'on' : 'off');
+      } catch (_) {}
+      smRenderSoundToggle();
+      if (enabled) {
+        smArmMusicStartOnGesture();
+      } else {
+        smStopMusic();
+      }
+    }
+
+    function smRenderSoundToggle() {
+      const btn = document.getElementById('sm-sound-toggle');
+      if (!btn) return;
+      const on = isSoundEnabled();
+      btn.textContent = `Sound: ${on ? 'On' : 'Off'}`;
+      btn.classList.toggle('on', on);
+      btn.setAttribute('aria-pressed', String(on));
+    }
+
+    function playSfx(name) {
+      if (!isSoundEnabled()) return;
+      const audio = sfx[name];
+      if (!audio) return;
+      try {
+        audio.currentTime = 0;
+        void audio.play();
+      } catch (_) {}
+    }
+
+    function normalizeRunPayload(raw) {
+      if (!raw || typeof raw !== 'object') return null;
+      const p = raw;
+      const b = p.board;
+      if (!Array.isArray(b) || b.length !== GRID_SIZE) return null;
+      for (const row of b) {
+        if (!Array.isArray(row) || row.length !== GRID_SIZE) return null;
+        for (const cell of row) {
+          if (cell !== null && typeof cell !== 'string') return null;
+        }
+      }
+      const nextScore = typeof p.score === 'number' && Number.isFinite(p.score) ? p.score : 0;
+      const nextMoves = typeof p.moves === 'number' && Number.isFinite(p.moves) ? p.moves : MAX_MOVES;
+      const nextCombo = typeof p.combo === 'number' && Number.isFinite(p.combo) ? p.combo : 1;
+      const updatedAt = typeof p.updatedAt === 'number' && Number.isFinite(p.updatedAt) ? p.updatedAt : 0;
+      return { board: b, score: nextScore, moves: nextMoves, combo: nextCombo, updatedAt };
+    }
+
+    function loadLocalRun() {
+      try {
+        const raw = JSON.parse(localStorage.getItem(STORAGE.runKey) || 'null');
+        return normalizeRunPayload(raw);
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function saveLocalRun() {
+      try {
+        const payload = { board, score, moves, combo, updatedAt: Date.now() };
+        localStorage.setItem(STORAGE.runKey, JSON.stringify(payload));
+      } catch (_) {}
+    }
+
+    async function clearSavedRun() {
+      try {
+        localStorage.removeItem(STORAGE.runKey);
+      } catch (_) {}
+
+      try {
+        const db = getFirestoreDb();
+        if (!db) return;
+        const user = await ensureAnonymousUser();
+        if (!user) return;
+
+        const appId = getAppId('arcade');
+        assertPathSegment('appId', appId);
+        assertPathSegment('userId', user.uid);
+        await deleteDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'game_state', 'star_matrix'));
+      } catch (err) {
+        // Swallow remote-delete errors so local reset always proceeds
+        console.warn('Failed to delete saved run from Firestore:', err);
+      }
+    }
+
+    function queuePersistRun() {
+      saveLocalRun();
+      if (persistTimer) return;
+      persistTimer = window.setTimeout(() => {
+        persistTimer = null;
+        void persistRemoteRun();
+      }, 900);
+    }
+
+    async function persistRemoteRun() {
+      if (persistInFlight) {
+        persistQueued = true;
+        return;
+      }
+      persistInFlight = true;
+      try {
+        const db = getFirestoreDb();
+        if (!db) return;
+        const user = await ensureAnonymousUser();
+        if (!user) return;
+
+        const appId = getAppId('arcade');
+        assertPathSegment('appId', appId);
+        assertPathSegment('userId', user.uid);
+        await setDoc(
+          doc(db, 'artifacts', appId, 'users', user.uid, 'game_state', 'star_matrix'),
+          { board, score, moves, combo, updatedAt: serverTimestamp() },
+          { merge: true }
+        );
+      } catch (_) {
+        // Ignore: local run persists
+      } finally {
+        persistInFlight = false;
+        if (persistQueued) {
+          persistQueued = false;
+          void persistRemoteRun();
+        }
+      }
+    }
+
+    async function loadRemoteRun() {
+      const db = getFirestoreDb();
+      if (!db) return null;
+      const user = await ensureAnonymousUser();
+      if (!user) return null;
+      const appId = getAppId('arcade');
+      assertPathSegment('appId', appId);
+      assertPathSegment('userId', user.uid);
+      const snap = await getDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'game_state', 'star_matrix'));
+      if (!snap.exists()) return null;
+      const data = snap.data();
+      return normalizeRunPayload({
+        board: data.board,
+        score: data.score,
+        moves: data.moves,
+        combo: data.combo,
+        updatedAt: Date.now(),
+      });
+    }
+
+    function showResumeOverlay(payload, sourceLabel) {
+      resumePayload = payload;
+      const overlay = document.getElementById('sm-resume-overlay');
+      const meta = document.getElementById('sm-resume-meta');
+      if (meta) {
+        meta.textContent = `Saved run found (${sourceLabel}) — Score ${payload.score}, Moves ${payload.moves}, Combo ×${payload.combo}.`;
+      }
+      overlay.classList.remove('hidden');
+      document.getElementById('sm-page-bg').inert = true;
+      setTimeout(() => document.getElementById('sm-resume-btn')?.focus(), 80);
+    }
+
+    function hideResumeOverlay() {
+      const overlay = document.getElementById('sm-resume-overlay');
+      overlay.classList.add('hidden');
+      document.getElementById('sm-page-bg').inert = false;
+    }
+
+    function showGameOverOverlay() {
+      const overlay = document.getElementById('sm-gameover-overlay');
+      const scoreDisplay = document.querySelector('#sm-gameover-score span');
+      if (scoreDisplay) {
+        scoreDisplay.textContent = score.toString();
+      }
+      overlay.classList.remove('hidden');
+      document.getElementById('sm-page-bg').inert = true;
+      setTimeout(() => document.getElementById('sm-tryagain-btn')?.focus(), 80);
+    }
+
+    function hideGameOverOverlay() {
+      const overlay = document.getElementById('sm-gameover-overlay');
+      overlay.classList.add('hidden');
+      document.getElementById('sm-page-bg').inert = false;
+    }
+
+    const SM_MUSIC_URL = new URL('../../assets/audio/storm.mp3', import.meta.url).href;
+>>>>>>> main
     let smMusic = null;
-    let smMusicEnabled = false;
+    let musicArmActive = false;
+
+    async function smStartMusic() {
+      if (!smMusic) {
+        smMusic = new Audio(SM_MUSIC_URL);
+        smMusic.loop = true;
+        smMusic.preload = 'none';
+        smMusic.volume = 0.28;
+      }
+      try {
+        await smMusic.play();
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function smStopMusic() {
+      if (!smMusic) return;
+      try {
+        smMusic.pause();
+        smMusic.currentTime = 0;
+      } catch (_) {}
+    }
+
+    function smArmMusicStartOnGesture() {
+      if (musicArmActive) return;
+      musicArmActive = true;
+
+      const startOnFirstGesture = async () => {
+        musicArmActive = false;
+        if (!isSoundEnabled()) return;
+        const ok = await smStartMusic();
+        if (!ok) {
+          try {
+            localStorage.setItem(STORAGE.soundKey, 'off');
+          } catch (_) {}
+          smRenderSoundToggle();
+        }
+      };
+
+      document.addEventListener('pointerdown', startOnFirstGesture, { once: true, capture: true });
+      document.addEventListener('keydown', startOnFirstGesture, { once: true, capture: true });
+    }
 
     function parseTileRC(tile) {
       if (!tile) return null;
@@ -529,11 +924,13 @@
       return grid;
     }
 
-    function smInit() {
-      score = 0;
-      moves = MAX_MOVES;
-      combo = 1;
+    function smInit(state) {
+      const next = state || null;
+      score = next?.score ?? 0;
+      moves = next?.moves ?? MAX_MOVES;
+      combo = next?.combo ?? 1;
       gameOver = false;
+      hasPersistedEnd = false;
       certDataUrl = null;
       certId = null;
       isProcessing = false;
@@ -542,9 +939,19 @@
       activePointerId = null;
       dragStartX = 0;
       dragStartY = 0;
-      board = smCreateStarGrid();
+      board = next?.board ?? smCreateStarGrid();
       smRender();
       smUpdateHUD();
+      if (next) {
+        smCheckGameEnd();
+        return;
+      }
+      queuePersistRun();
+      
+      // When resuming from saved state, check if game was already finished
+      if (next) {
+        smCheckGameEnd();
+      }
     }
 
     function smRender() {
@@ -587,6 +994,7 @@
       bar.setAttribute('aria-valuenow', pct);
     }
 
+<<<<<<< feature/unified-matrix-final
     function smUpdateMusicButton() {
       const btn = document.getElementById('sm-music-btn');
       if (!btn) return;
@@ -653,6 +1061,8 @@
       audio.play().catch(() => {});
     }
 
+=======
+>>>>>>> main
     function onPointerDown(e) {
       if (gameOver || isProcessing || moves <= 0) return;
       if (dragStartTile || activePointerId !== null) return;
@@ -763,6 +1173,7 @@
       if (!canSwap(null, r1, c1, r2, c2)) return;
 
       isProcessing = true;
+      playSfx('swap');
       board = applySwap(board, r1, c1, r2, c2);
       smRender();
 
@@ -771,31 +1182,32 @@
         if (matches.length === 0) {
           board = applySwap(board, r1, c1, r2, c2);
           smRender();
+          playSfx('fail');
           isProcessing = false;
           return;
         }
 
         moves--;
         smUpdateHUD();
-        setTimeout(smResolveMatches, 220);
+        queuePersistRun();
+        setTimeout(() => void smResolveMatches(), 220);
       }, 180);
     }
 
-    function smResolveMatches() {
+    function markMatched(cells) {
+      for (const { r, c } of cells) {
+        const el = document.querySelector(`.star-cell[data-row="${r}"][data-col="${c}"]`);
+        if (el) el.classList.add('matched');
+      }
+    }
+
+    async function smResolveMatches() {
       if (gameOver) {
         isProcessing = false;
         return;
       }
 
-      const matches = findMatchesGrouped(board);
-      if (matches.length === 0) {
-        combo = 1;
-        smUpdateHUD();
-        isProcessing = false;
-        smCheckGameEnd();
-        return;
-      }
-
+<<<<<<< feature/unified-matrix-final
       const clearedCells = matches.flat();
       const pts = clearedCells.length * 10 * combo;
       score += pts;
@@ -807,31 +1219,89 @@
 
       if (clearedCells.length >= 5) combo = Math.min(combo + 1, 5);
       smUpdateHUD();
+=======
+      while (true) {
+        const matches = findMatchesGrouped(board);
+        if (matches.length === 0) break;
+>>>>>>> main
 
-      clearedCells.forEach(({ r, c }) => {
-        board[r][c] = null;
-      });
+        const clearedCells = matches.flat();
+        markMatched(clearedCells);
+        playSfx('match');
+        await sleep(180);
 
-      smRender();
+        const pts = clearedCells.length * 10 * combo;
+        score += pts;
+        if (clearedCells.length >= 5) combo = Math.min(combo + 1, 5);
+        smUpdateHUD();
 
-      setTimeout(() => {
+        clearedCells.forEach(({ r, c }) => {
+          board[r][c] = null;
+        });
+        smRender();
+        await sleep(180);
+
         board = applyGravity(board);
         smRender();
-        setTimeout(smResolveMatches, 220);
-      }, 220);
+        await sleep(180);
+      }
+
+      combo = 1;
+      smUpdateHUD();
+      queuePersistRun();
+      isProcessing = false;
+      smCheckGameEnd();
+    }
+
+    async function smPersistGameEnd(outcome) {
+      if (hasPersistedEnd) return;
+      hasPersistedEnd = true;
+
+      const db = getFirestoreDb();
+      if (!db) return;
+      const user = await ensureAnonymousUser();
+      if (!user) return;
+
+      const appId = getAppId('arcade');
+      assertPathSegment('appId', appId);
+      assertPathSegment('userId', user.uid);
+
+      const scoreToPersist = score;
+      const statsRef = doc(db, 'artifacts', appId, 'users', user.uid, 'game_stats', 'star_matrix');
+
+      await runTransaction(db, async (tx) => {
+        const snap = await tx.get(statsRef);
+        const data = snap.exists() ? snap.data() : null;
+        const prevHigh = typeof data?.highScore === 'number' && Number.isFinite(data.highScore) ? data.highScore : 0;
+        const highScore = Math.max(prevHigh, scoreToPersist);
+        const clears = typeof data?.clears === 'number' && Number.isFinite(data.clears) ? data.clears : 0;
+        const nextClears = outcome === 'win' ? clears + 1 : clears;
+
+        tx.set(
+          statsRef,
+          {
+            lastScore: scoreToPersist,
+            highScore,
+            clears: nextClears,
+            lastOutcome: outcome,
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true }
+        );
+      });
     }
 
     function smCheckGameEnd() {
       if (score >= TARGET && !gameOver) {
         gameOver = true;
+        void smPersistGameEnd('win');
         setTimeout(smShowCert, 400);
         return;
       }
       if (moves <= 0 && !gameOver) {
         gameOver = true;
-        setTimeout(() => {
-          if (confirm('No moves left! Score: ' + score + '\n\nPlay again?')) smInit();
-        }, 250);
+        void smPersistGameEnd('lose');
+        setTimeout(showGameOverOverlay, 400);
       }
     }
 
@@ -876,6 +1346,9 @@
         const canvas = document.getElementById('sm-cert-canvas');
         await smCertDraw(canvas, playerName, gameTitle, completionDate, certId, score);
         certDataUrl = canvas.toDataURL('image/png');
+        playSfx('win');
+        void smPersistCertificate({ id: certId, game: gameTitle, player: playerName, date: completionDate, score });
+        void clearSavedRun();
         document.getElementById('sm-name-phase').style.display = 'none';
         document.getElementById('sm-cert-phase').style.display = 'flex';
       } finally {
@@ -884,6 +1357,51 @@
           btn.textContent = 'Generate Certificate';
         }
       }
+    }
+
+    function loadLocalCertificates() {
+      try {
+        const raw = JSON.parse(localStorage.getItem(STORAGE.certKey) || '[]');
+        return Array.isArray(raw) ? raw : [];
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function saveLocalCertificates(certs) {
+      try {
+        localStorage.setItem(STORAGE.certKey, JSON.stringify(certs));
+      } catch (_) {}
+    }
+
+    function upsertLocalCert(cert) {
+      const list = loadLocalCertificates();
+      const map = new Map();
+      for (const item of list) {
+        if (item && typeof item === 'object' && typeof item.id === 'string') map.set(item.id, item);
+      }
+      map.set(cert.id, cert);
+      saveLocalCertificates(Array.from(map.values()));
+    }
+
+    async function smPersistCertificate(cert) {
+      upsertLocalCert(cert);
+
+      const db = getFirestoreDb();
+      if (!db) return;
+      const user = await ensureAnonymousUser();
+      if (!user) return;
+
+      const appId = getAppId('arcade');
+      assertPathSegment('appId', appId);
+      assertPathSegment('userId', user.uid);
+      assertPathSegment('certId', cert.id);
+
+      await setDoc(
+        doc(db, 'artifacts', appId, 'users', user.uid, 'certificates', cert.id),
+        { ...cert, createdAt: serverTimestamp() },
+        { merge: true }
+      );
     }
 
     async function smCertDraw(canvas, playerName, gameTitle, completionDate, id, finalScore) {
@@ -976,26 +1494,38 @@
     }
 
     window.addEventListener('DOMContentLoaded', function () {
-      smMusicEnabled = smLoadMusicPref();
-      smUpdateMusicButton();
+      const soundToggle = document.getElementById('sm-sound-toggle');
+      if (soundToggle) {
+        soundToggle.addEventListener('click', () => setSoundEnabled(!isSoundEnabled()));
+      }
+      smRenderSoundToggle();
+      if (isSoundEnabled()) smArmMusicStartOnGesture();
 
-      const musicBtn = document.getElementById('sm-music-btn');
-      if (musicBtn) {
-        musicBtn.addEventListener('click', smToggleMusic);
+      const resumeBtn = document.getElementById('sm-resume-btn');
+      const newBtn = document.getElementById('sm-new-btn');
+      if (resumeBtn) {
+        resumeBtn.addEventListener('click', () => {
+          const payload = resumePayload;
+          resumePayload = null;
+          hideResumeOverlay();
+          smInit(payload);
+        });
+      }
+      if (newBtn) {
+        newBtn.addEventListener('click', async () => {
+          resumePayload = null;
+          hideResumeOverlay();
+          await clearSavedRun();
+          smInit();
+        });
       }
 
-      if (smMusicEnabled) {
-        const startOnFirstGesture = async () => {
-          if (!smMusicEnabled) return;
-          const ok = await smStartMusic();
-          if (!ok) {
-            smMusicEnabled = false;
-            smSaveMusicPref(false);
-            smUpdateMusicButton();
-          }
-        };
-        document.addEventListener('pointerdown', startOnFirstGesture, { once: true, capture: true });
-        document.addEventListener('keydown', startOnFirstGesture, { once: true, capture: true });
+      const tryAgainBtn = document.getElementById('sm-tryagain-btn');
+      if (tryAgainBtn) {
+        tryAgainBtn.addEventListener('click', () => {
+          hideGameOverOverlay();
+          smInit();
+        });
       }
 
       const nameInput = document.getElementById('sm-player-name');
@@ -1013,6 +1543,19 @@
 
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
+          const resumeOverlay = document.getElementById('sm-resume-overlay');
+          if (resumeOverlay && !resumeOverlay.classList.contains('hidden')) {
+            // Prefer starting a new game rather than leaving the app inert.
+            resumePayload = null;
+            hideResumeOverlay();
+            void clearSavedRun().then(() => smInit());
+            return;
+          }
+          const gameoverOverlay = document.getElementById('sm-gameover-overlay');
+          if (gameoverOverlay && !gameoverOverlay.classList.contains('hidden')) {
+            // Don't allow closing game-over overlay with Escape to avoid leaving in limbo
+            return;
+          }
           const overlay = document.getElementById('sm-cert-overlay');
           if (overlay && !overlay.classList.contains('hidden')) smCloseCert();
         }
@@ -1038,7 +1581,26 @@
         });
       }
 
-      smInit();
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') queuePersistRun();
+      });
+
+      (async () => {
+        const local = loadLocalRun();
+        if (local) {
+          showResumeOverlay(local, 'Local');
+          return;
+        }
+        try {
+          const remote = await loadRemoteRun();
+          if (remote) {
+            showResumeOverlay(remote, 'Synced');
+            return;
+          }
+        } catch (_) {}
+
+        smInit();
+      })();
     });
 
     window.smCertPNG = smCertPNG;

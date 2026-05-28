@@ -1,662 +1,288 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matrix of Conscience - M45 Calibration</title>
-    <style>
-        :root {
-            /* Astronomical Color Palette */
-            --space-black: #000000;
-            --pleiades-blue: #00e5ff;
-            --pleiades-glow: rgba(0, 229, 255, 0.4);
-            --star-red: #ff3b30;
-            --star-red-glow: rgba(255, 59, 48, 0.5);
-            --amber-selected: #ffb000;
-        }
-
-        body {
-            background-color: var(--space-black);
-            color: var(--pleiades-blue);
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            overflow-x: hidden;
-            overflow-y: auto;
-        }
-
-        /* Keyboard Accessibility Indicator */
-        *:focus-visible {
-            outline: 3px solid var(--amber-selected);
-            outline-offset: 2px;
-        }
-
-        #game-container {
-            text-align: center;
-            border: 1px solid var(--pleiades-blue);
-            padding: 24px;
-            box-shadow: 0 0 30px var(--pleiades-glow);
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 10;
-            border-radius: 4px;
-            width: min(100%, 540px);
-            box-sizing: border-box;
-        }
-
-        h1 {
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 5px;
-            font-size: 1.4rem;
-            color: #ffffff;
-            text-shadow: 0 0 10px var(--pleiades-blue);
-        }
-
-        .subtitle {
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-            color: var(--pleiades-blue);
-            opacity: 0.8;
-            margin-bottom: 20px;
-        }
-
-        #scoreboard {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            border-bottom: 1px dashed rgba(0, 229, 255, 0.4);
-            padding-bottom: 12px;
-        }
-
-        /* Border-Only Grid: Clean Alignment without Visual Bloat */
-	        #grid {
-	            display: grid;
-	            grid-template-columns: repeat(7, 1fr);
-	            grid-template-rows: repeat(7, 1fr);
-	            gap: 4px;
-	            background-color: #000000;
-	            padding: 10px;
-	            border: 1px solid rgba(0, 229, 255, 0.2);
-	            border-radius: 4px;
-	            margin: 0 auto;
-	            width: 100%;
-	            max-width: 450px;
-	            box-sizing: border-box;
-	            touch-action: manipulation;
-	        }
-
-        /* Individual Star Node Formats */
-	        .tile {
-	            width: 100%;
-	            aspect-ratio: 1 / 1;
-	            background: #000000;
-	            border: 1px solid rgba(0, 229, 255, 0.3);
-	            border-radius: 4px;
-	            display: flex;
-	            align-items: center;
-	            justify-content: center;
-	            min-width: 0;
-	            font-size: clamp(1.1rem, 4vw, 1.6rem);
-	            line-height: 1;
-	            cursor: pointer;
-	            user-select: none;
-	            transition: transform 0.1s ease, border-color 0.2s ease;
-	        }
-
-        /* Accurate M45 Spectral Tuning */
-        .tile[data-type="blue"] { color: var(--pleiades-blue); text-shadow: 0 0 8px var(--pleiades-blue); }
-        .tile[data-type="red"] { color: var(--star-red); text-shadow: 0 0 8px var(--star-red); }
-
-        .tile:hover {
-            border-color: var(--pleiades-blue);
-            box-shadow: 0 0 8px var(--pleiades-glow);
-        }
-
-        .tile.selected {
-            border: 2px solid var(--amber-selected);
-            transform: scale(0.95);
-        }
-
-        .tile.is-dragging {
-            border: 2px solid var(--pleiades-blue);
-            box-shadow: 0 0 10px var(--pleiades-glow);
-        }
-
-        #controls {
-            margin-top: 24px;
-        }
-
-        .btn {
-            background-color: transparent;
-            color: #ffffff;
-            border: 1px solid var(--pleiades-blue);
-            padding: 12px 0;
-            width: calc(100% - 20px);
-            max-width: 300px;
-            font-family: inherit;
-            font-size: 16px;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.2s ease;
-        }
-
-        .btn:hover {
-            background-color: var(--pleiades-blue);
-            color: var(--space-black);
-            box-shadow: 0 0 15px var(--pleiades-blue);
-        }
-
-        /* Deep Ambient Star Field Canvas */
-        #bg-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 1;
-        }
-
-        /* Tri-Weave Bundle Canvas — sits above starfield, below game UI */
-        #weave-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 2;
-            pointer-events: none;
-        }
-
-        /* Mobile Optimization */
-	        @media (max-width: 400px) {
-	            #scoreboard {
-	                display: flex;
-	                justify-content: space-between;
-	                font-size: 14px;
-	            }
-	        }
-
-	        @media (max-width: 360px) {
-	            #scoreboard {
-	                flex-direction: column;
-	                gap: 6px;
-	                align-items: center;
-	            }
-	        }
-	    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matrix of Conscience — Duality Core</title>
+  <meta name="description" content="Duality Core console for Matrix of Conscience.">
+  <link rel="canonical" href="https://amazinggracehl.org/arcade/matrix-of-conscience/">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #020617;
+      --panel: #0b1224;
+      --panel-border: rgba(148, 163, 184, 0.25);
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #22d3ee;
+      --danger: #f43f5e;
+      --ok: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 20% 0%, rgba(34, 211, 238, 0.15), transparent 35%),
+        radial-gradient(circle at 80% 100%, rgba(244, 63, 94, 0.12), transparent 40%),
+        var(--bg);
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+    }
+    .console {
+      width: min(960px, 100%);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      background: rgba(11, 18, 36, 0.9);
+      backdrop-filter: blur(8px);
+      padding: 1rem;
+    }
+    h1 {
+      margin: 0 0 0.5rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 1.1rem;
+    }
+    p.sub {
+      margin: 0 0 1rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .metric {
+      border: 1px solid var(--panel-border);
+      border-radius: 10px;
+      padding: 0.65rem;
+      background: rgba(15, 23, 42, 0.85);
+    }
+    .metric-label { display: block; color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; }
+    .metric-value { display: block; font-weight: 700; margin-top: 0.15rem; }
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    #protocol-input {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid var(--panel-border);
+      background: #020817;
+      color: var(--text);
+      padding: 0.75rem;
+      min-height: 90px;
+      resize: vertical;
+    }
+    .button-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.5rem;
+    }
+    button {
+      border: 1px solid var(--panel-border);
+      border-radius: 10px;
+      background: #0f172a;
+      color: var(--text);
+      padding: 0.7rem 0.5rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    #btn-weave { border-color: rgba(34, 211, 238, 0.6); }
+    #btn-split { border-color: rgba(244, 63, 94, 0.6); }
+    #btn-merge { border-color: rgba(52, 211, 153, 0.6); }
+    #btn-collapse { border-color: rgba(250, 204, 21, 0.6); }
+    #prophecy-output {
+      border: 1px solid var(--panel-border);
+      border-radius: 10px;
+      min-height: 72px;
+      padding: 0.75rem;
+      background: #020817;
+    }
+    #glyph-log {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.75rem;
+    }
+    .glyph {
+      font-size: 0.75rem;
+      border: 1px solid var(--panel-border);
+      border-radius: 999px;
+      padding: 0.25rem 0.5rem;
+      color: var(--accent);
+    }
+    .glyph.anomaly { color: var(--danger); }
+    .route-link { display: inline-block; margin-top: 0.8rem; color: var(--muted); }
+    @media (max-width: 740px) {
+      .metrics, .button-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
 </head>
 <body>
-    <canvas id="bg-canvas"></canvas>
-    <canvas id="weave-canvas" aria-hidden="true"></canvas>
-    
-    <div id="game-container" role="application" aria-label="Matrix of Conscience M45 Engine">
-        <h1>Matrix of Conscience</h1>
-        <div class="subtitle">M45 Seven Sisters Alignment</div>
-                
-        <div id="scoreboard">
-            <div>Stellar Points: <span id="score-display">0</span></div>
-            <div>High Score: <span id="high-score-display">0</span></div>
-        </div>    
-    
-        <div id="grid" role="grid" aria-label="Sequence Alignment Grid"></div>
-        
-        <div id="controls">
-            <button class="btn" id="reset-btn" onclick="initGrid()">Reset Calibration</button>
-        </div>
-    </div>
+  <main class="console" aria-live="polite">
+    <h1>Matrix of Conscience — Duality Core</h1>
+    <p class="sub">Administrative telemetry-enabled control console.</p>
 
-    <script type="module">
-        import {
-          createInitialGrid,
-          canSwap,
-          applySwap,
-          findMatchesGrouped,
-          applyGravity
-        } from '../../js/matchmaker.js';
+    <section class="metrics" aria-label="Current metrics">
+      <div class="metric"><span class="metric-label">Identity</span><span id="metric-identity" class="metric-value">100</span></div>
+      <div class="metric"><span class="metric-label">Recursion</span><span id="metric-recursion" class="metric-value">5</span></div>
+      <div class="metric"><span class="metric-label">Coherence</span><span id="metric-coherence" class="metric-value">1.00</span></div>
+    </section>
 
-        // --- 1. Ambient Background Starfield (Deep Field Physics) ---
-        const canvas = document.getElementById('bg-canvas');
-        const ctx = canvas.getContext('2d');
-        
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+    <section class="controls">
+      <label for="protocol-input" class="metric-label">Protocol directive</label>
+      <textarea id="protocol-input" placeholder="Enter structural payload override..."></textarea>
+      <div class="button-row">
+        <button id="btn-weave" type="button">Weave</button>
+        <button id="btn-split" type="button">Split</button>
+        <button id="btn-merge" type="button">Merge</button>
+        <button id="btn-collapse" type="button">Collapse</button>
+      </div>
+    </section>
+
+    <div id="prophecy-output"><p>Duality core online. Awaiting command.</p></div>
+    <div id="glyph-log" aria-label="Glyph events"></div>
+    <a class="route-link" href="../">← Back to Arcade Hub</a>
+  </main>
+
+  <script>
+    const state = { identity: 100, recursion: 5, coherence: 1.0 };
+    const modes = { fateCollapse: false, collapseReversal: false, scarletDominion: false };
+
+    const input = document.getElementById('protocol-input');
+    const output = document.getElementById('prophecy-output');
+    const glyphLog = document.getElementById('glyph-log');
+
+    function updateDOMMetrics() {
+      document.getElementById('metric-identity').textContent = String(state.identity);
+      document.getElementById('metric-recursion').textContent = String(state.recursion);
+      document.getElementById('metric-coherence').textContent = state.coherence.toFixed(2);
+    }
+
+    function spawnGlyph(label, anomaly = false) {
+      const glyph = document.createElement('span');
+      glyph.className = `glyph${anomaly ? ' anomaly' : ''}`;
+      glyph.textContent = String(label);
+      glyphLog.prepend(glyph);
+      while (glyphLog.children.length > 12) {
+        glyphLog.removeChild(glyphLog.lastChild);
+      }
+    }
+
+    // --- Advanced Administrative Telemetry Protocol ---
+    const KEYMASTER_ENDPOINT = "https://script.google.com/macros/s/AKfycbz6FsG9ECKXBzwwk4suZj_N10cc3JE-RAvIQqJz9O61axQG7G45mjIWIxephN1Laj0/exec";
+    const PROTOCOL_KEY = "WHITE_RABBIT_LEADERBOARD_SECURE_2026";
+
+    /**
+     * Dispatches secure action metrics directly to the keyMaster sheet ledger
+     */
+    async function dispatchTelemetry(actionName, structuralPayload) {
+      const outputEl = document.getElementById('prophecy-output');
+
+      const telemetryData = {
+        missionKey: PROTOCOL_KEY,
+        action: "matrixTelemetry",
+        payload: {
+          action: actionName,
+          timestamp: new Date().toISOString(),
+          metrics: { ...state },
+          modes: { ...modes },
+          customScript: structuralPayload || "Default Protocol Execution"
         }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+      };
 
-        const starsCount = 120;
-        const starField = Array.from({ length: starsCount }).map(() => ({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            size: Math.random() * 1.5,
-            color: Math.random() > 0.12 ? '#00e5ff' : '#ff3b30', // Accurate spectrum classification split
-            alpha: Math.random()
-        }));
+      try {
+        // Fire-and-forget to prevent UI blocking, wrapped for safety
+        fetch(KEYMASTER_ENDPOINT, {
+          method: "POST",
+          mode: "no-cors", // Required for cross-domain Apps Script deployment execution
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(telemetryData)
+        });
 
-        function drawStarField() {
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            starField.forEach(star => {
-                ctx.save();
-                ctx.globalAlpha = star.alpha;
-                ctx.fillStyle = star.color;
-                ctx.beginPath();
-                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
-                
-                // Subtle organic shimmering loop
-                star.alpha += (Math.random() - 0.5) * 0.04;
-                if (star.alpha < 0) star.alpha = 0;
-                if (star.alpha > 1) star.alpha = 1;
-            });
-        }
-        setInterval(drawStarField, 100);
+        console.log(`Telemetry successfully pushed to ledger: ${actionName}`);
+      } catch (error) {
+        console.warn("Telemetry buffering failed:", error);
+      }
+    }
 
-        // --- Tri-Weave Bundle Engine ---
-        // Connects Arachne's Anchor Thread (screen center) to UI panels
-        // via braided psionic filaments driven by player stats.
+    // --- Overwriting Core Button Handlers with Telemetry Hooks ---
 
-        const weaveCanvas = document.getElementById('weave-canvas');
-        const weaveCtx = weaveCanvas.getContext('2d');
+    document.getElementById('btn-weave').onclick = () => {
+      state.identity = Math.min(150, state.identity + 12);
+      state.coherence = Math.min(1.0, state.coherence + 0.04);
 
-        function resizeWeaveCanvas() {
-            weaveCanvas.width = window.innerWidth;
-            weaveCanvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeWeaveCanvas);
-        resizeWeaveCanvas();
+      const promptValue = input.value.trim() || "Extended primary white identity filament.";
+      output.innerHTML = `<p>Weave action confirmed. Primordial identity filament extended. Telemetry dispatched.</p>`;
 
-        // Weave state — updated by updateThreadWeave(stats)
-        let weaveTick     = 0;
-        let weaveStrength  = 0.5;
-        let weaveClarity   = 0.8;
-        let weaveStability = 0.5;
-        window.currentCommunity = 0;
+      spawnGlyph("✶");
+      spawnGlyph("IDENTITY");
+      updateDOMMetrics();
 
-        // Community score needed to add each additional bundle
-        const COMMUNITY_BUNDLE_THRESHOLD = 50;
+      // Trigger Handshake
+      dispatchTelemetry("WEAVE_THREAD", promptValue);
+    };
 
-        // Weave stat scaling divisors (match the issue spec)
-        const WEAVE_KARMA_SCALE     = 150;
-        const WEAVE_WISDOM_SCALE    = 200;
-        const WEAVE_INTEGRITY_SCALE = 150;
+    document.getElementById('btn-split').onclick = () => {
+      state.recursion = Math.min(100, state.recursion + 18);
+      state.coherence = Math.max(0.2, state.coherence - 0.08);
+      if (state.recursion > 50) modes.fateCollapse = true;
 
-        // Score-to-stat divisors for game-driven weave feedback
-        const SCORE_TO_KARMA     = 5;
-        const SCORE_TO_WISDOM    = 8;
-        const SCORE_TO_INTEGRITY = 6;
-        const SCORE_TO_COMMUNITY = 10;
+      const promptValue = input.value.trim() || "Lattice timeline split recorded.";
+      output.innerHTML = `<p>Lattice timeline splitting initiated. Multi-vocal recursive anomalies logged.</p>`;
 
-        // Panel destinations: corners and cardinal edges for bundle endpoints
-        function getWeavePanels() {
-            const W = weaveCanvas.width;
-            const H = weaveCanvas.height;
-            return [
-                { x: 0,     y: 0     },  // top-left
-                { x: W,     y: 0     },  // top-right
-                { x: W,     y: H     },  // bottom-right
-                { x: 0,     y: H     },  // bottom-left
-                { x: W / 2, y: 0     },  // top-center
-                { x: W / 2, y: H     },  // bottom-center
-            ];
-        }
+      spawnGlyph("⟐", true);
+      spawnGlyph("SCARLET", true);
+      updateDOMMetrics();
 
-        /**
-         * Draw a single psionic filament in a braid.
-         * @param {number} x1 - Anchor x
-         * @param {number} y1 - Anchor y
-         * @param {number} x2 - Panel x
-         * @param {number} y2 - Panel y
-         * @param {number} offset - Lateral offset driven by bundle index and stability
-         * @param {number} phase  - Phase angle for this strand (120° apart per strand)
-         */
-        function drawTriWeaveStrand(x1, y1, x2, y2, offset, phase) {
-            const t = weaveTick;
+      // Trigger Handshake
+      dispatchTelemetry("SPLIT_TIMELINE", promptValue);
+    };
 
-            const cpX = (x1 + x2) / 2 +
-                Math.sin(t * weaveClarity + phase) * (60 + offset);
+    document.getElementById('btn-merge').onclick = () => {
+      const promptValue = input.value.trim() || "Superposition phase alignment consolidated.";
 
-            const cpY = (y1 + y2) / 2 +
-                Math.cos(t * weaveClarity + phase) * (60 + offset);
+      if (state.recursion > 10) {
+        state.recursion = Math.max(0, state.recursion - 15);
+        state.identity = Math.min(100, state.identity + 8);
+        state.coherence = Math.min(1.0, state.coherence + 0.05);
+        output.innerHTML = `<p>Phase convergence running. Recursive noise collapsed back into stable Janus core geometry.</p>`;
+        spawnGlyph("JANUS");
+        dispatchTelemetry("MERGE_CONTRADICTION", promptValue);
+      } else {
+        output.innerHTML = `<p>Contradiction bounds matching baseline vectors. Superposition holds perfectly.</p>`;
+      }
+      updateDOMMetrics();
+    };
 
-            const pulse = Math.sin(t * 4 + phase) * 0.1 * weaveStrength;
-            const alpha = 0.12 + weaveStrength * 0.25 + pulse;
+    document.getElementById('btn-collapse').onclick = () => {
+      modes.collapseReversal = true;
+      modes.fateCollapse = false;
+      modes.scarletDominion = false;
+      state.identity = 100;
+      state.recursion = 5;
+      state.coherence = 1.00;
 
-            weaveCtx.strokeStyle = `rgba(255, 215, 0, ${alpha})`;
-            weaveCtx.lineWidth = 1.4 + weaveStrength * 0.4;
+      const promptValue = input.value.trim() || "Global self-healing protocol deployed.";
+      output.innerHTML = `<p>Self-healing Collapse Reversal executed. All duplicate redirection pathways terminated.</p>`;
 
-            weaveCtx.beginPath();
-            weaveCtx.moveTo(x1, y1);
-            weaveCtx.quadraticCurveTo(cpX, cpY, x2, y2);
-            weaveCtx.stroke();
-        }
+      spawnGlyph("REVERSAL");
+      spawnGlyph("REBORN");
+      updateDOMMetrics();
 
-        /**
-         * Draw a tri-weave bundle (3 braided filaments) from anchor to panel.
-         * @param {number} x1 - Anchor x
-         * @param {number} y1 - Anchor y
-         * @param {number} x2 - Panel x
-         * @param {number} y2 - Panel y
-         * @param {number} bundleIndex  - Index of this bundle
-         * @param {number} totalBundles - Total bundles being drawn
-         */
-        function drawTriWeaveBundle(x1, y1, x2, y2, bundleIndex, totalBundles) {
-            const baseOffset = (bundleIndex - totalBundles / 2) * 40 * weaveStability;
+      // Trigger Handshake
+      dispatchTelemetry("COLLAPSE_REVERSAL", promptValue);
+    };
 
-            for (let strand = 0; strand < 3; strand++) {
-                const phase = strand * Math.PI * 0.66; // 120° apart
-                drawTriWeaveStrand(x1, y1, x2, y2, baseOffset, phase);
-            }
-        }
-
-        /**
-         * Update weave engine from player stats.
-         * @param {{ karma?: number, wisdom?: number, integrity?: number, community?: number }} stats
-         */
-        function updateThreadWeave(stats) {
-            weaveStrength  = 0.5 + (stats.karma     || 0) / WEAVE_KARMA_SCALE;
-            weaveClarity   = 0.8 + (stats.wisdom    || 0) / WEAVE_WISDOM_SCALE;
-            weaveStability = 0.5 + (stats.integrity || 0) / WEAVE_INTEGRITY_SCALE;
-
-            window.currentCommunity = stats.community || 0;
-        }
-
-        /**
-         * Trigger a golden flare across all braids (Arachne unifies minds).
-         * A pulse counter prevents overlapping setTimeout callbacks from
-         * decrementing weave values below their baseline.
-         */
-        let _pulseCount = 0;
-        function triWeavePulse() {
-            _pulseCount++;
-            weaveStrength += 1.5;
-            weaveClarity  += 0.4;
-            setTimeout(() => {
-                _pulseCount--;
-                weaveStrength -= 1.5;
-                weaveClarity  -= 0.4;
-                // Clamp to spec baseline values
-                weaveStrength  = Math.max(0.5, weaveStrength);
-                weaveClarity   = Math.max(0.8, weaveClarity);
-            }, 900);
-        }
-
-        /**
-         * Apply Red Queen corruption — frays braids and desyncs strands.
-         * @param {number} amount - Corruption intensity (0–1)
-         */
-        function corruptTriWeave(amount) {
-            weaveStability = Math.max(0.2, weaveStability - amount * 0.3);
-            weaveClarity   = Math.max(0.5, weaveClarity   - amount * 0.2);
-        }
-
-        // Expose weave API globally for integration with game stats
-        window.updateThreadWeave = updateThreadWeave;
-        window.triWeavePulse     = triWeavePulse;
-        window.corruptTriWeave   = corruptTriWeave;
-
-        function drawWeaveFrame() {
-            weaveTick += 0.012;
-            weaveCtx.clearRect(0, 0, weaveCanvas.width, weaveCanvas.height);
-
-            const coreX = weaveCanvas.width  / 2;
-            const coreY = weaveCanvas.height / 2;
-            const panels = getWeavePanels();
-
-            // Community-driven bundle count: 0–49 → 1, 50–99 → 2, …
-            const bundleCount = 1 + Math.floor((window.currentCommunity || 0) / COMMUNITY_BUNDLE_THRESHOLD);
-
-            panels.forEach(({ x: px, y: py }) => {
-                for (let b = 0; b < bundleCount; b++) {
-                    drawTriWeaveBundle(coreX, coreY, px, py, b, bundleCount);
-                }
-            });
-
-            requestAnimationFrame(drawWeaveFrame);
-        }
-        drawWeaveFrame();
-
-        // --- 2. Alignment Token Parameters (M45 Structural Nodes) ---
-        const starNodes = {
-            heart: { symbol: '★', type: 'blue' },
-            star:  { symbol: '⭐', type: 'blue' },
-            cross: { symbol: '🔷', type: 'blue' },
-            flame: { symbol: '♦', type: 'blue' },
-            drop:  { symbol: '⬢', type: 'red' }
-        };
-        
-        const gridSize = 7; // Unified with canonical engine
-        let score = 0;
-        let highScore = localStorage.getItem('matrix_high_score') || 0;
-        let gridData = [];
-        let selectedTile = null;
-        let isAnimating = false;
-        let isDragging = false;
-        let currentDragPath = [];
-        let dragOriginTile = null;
-        let dragTargetTile = null;
-        let shouldSuppressNextClick = false;
-        document.getElementById('high-score-display').innerText = highScore;
-
-        function initGrid() {
-            score = 0;
-            updateScore(0);
-            gridData = createInitialGrid();
-            renderGridFromData();
-        }
-
-        function createTileElement(r, c, kind) {
-            const gridElement = document.getElementById('grid');
-            const node = starNodes[kind] || starNodes.heart;
-            const tile = document.createElement('div');
-            tile.classList.add('tile');
-            tile.innerText = node.symbol;
-            tile.setAttribute('data-type', node.type);
-            tile.dataset.row = r;
-            tile.dataset.col = c;
-            
-            tile.setAttribute('role', 'gridcell');
-            tile.setAttribute('tabindex', '0');
-            tile.setAttribute('aria-label', `Row ${r + 1}, Column ${c + 1}: ${node.symbol}`);
-
-            tile.addEventListener('click', () => {
-                if (shouldSuppressNextClick) {
-                    shouldSuppressNextClick = false;
-                    return;
-                }
-                handleSelection(r, c, tile);
-            });
-            tile.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    handleSelection(r, c, tile);
-                }
-            });
-            tile.addEventListener('pointerdown', handlePointerDown);
-            tile.addEventListener('pointerenter', handlePointerEnter);
-            gridElement.appendChild(tile);
-        }
-
-        function getTileCoords(tile) {
-            return {
-                r: Number(tile.dataset.row),
-                c: Number(tile.dataset.col)
-            };
-        }
-
-        function clearDragSelection() {
-            isDragging = false;
-            currentDragPath = [];
-            dragOriginTile = null;
-            dragTargetTile = null;
-            document.querySelectorAll('.tile.is-dragging').forEach((tile) => {
-                tile.classList.remove('is-dragging');
-            });
-        }
-
-        async function processSwap(r1, c1, r2, c2) {
-            if (!canSwap(null, r1, c1, r2, c2)) return;
-
-            isAnimating = true;
-            gridData = applySwap(gridData, r1, c1, r2, c2);
-            renderGridFromData();
-
-            const matches = findMatchesGrouped(gridData);
-            if (matches.length === 0) {
-                // Revert
-                setTimeout(() => {
-                    gridData = applySwap(gridData, r1, c1, r2, c2);
-                    renderGridFromData();
-                    isAnimating = false;
-                }, 300);
-            } else {
-                await processMatches();
-            }
-        }
-
-        function handlePointerDown(event) {
-            if (isAnimating) return;
-
-            const tile = event.target.closest('.tile[data-row][data-col]');
-            if (!tile) return;
-
-            shouldSuppressNextClick = false;
-            if (event.pointerType !== 'mouse') {
-                event.preventDefault();
-            }
-            if (selectedTile) {
-                selectedTile.element.classList.remove('selected');
-                selectedTile = null;
-            }
-            clearDragSelection();
-
-            dragOriginTile = tile;
-            dragTargetTile = null;
-            isDragging = true;
-            currentDragPath = [getTileCoords(tile)];
-            tile.classList.add('is-dragging');
-        }
-
-        function handlePointerEnter(event) {
-            if (!isDragging || !dragOriginTile || isAnimating) return;
-
-            const tile = event.target.closest('.tile[data-row][data-col]');
-            if (!tile || tile === dragOriginTile || tile === dragTargetTile) return;
-
-            const origin = getTileCoords(dragOriginTile);
-            const target = getTileCoords(tile);
-            if (!canSwap(null, origin.r, origin.c, target.r, target.c)) return;
-
-            if (dragTargetTile) dragTargetTile.classList.remove('is-dragging');
-            dragTargetTile = tile;
-            currentDragPath = [origin, target];
-            tile.classList.add('is-dragging');
-        }
-
-        async function handlePointerUp() {
-            if (!isDragging || !dragOriginTile || isAnimating) return;
-
-            const origin = getTileCoords(dragOriginTile);
-            const target = dragTargetTile ? getTileCoords(dragTargetTile) : null;
-            clearDragSelection();
-
-            if (target) {
-                shouldSuppressNextClick = true;
-                await processSwap(origin.r, origin.c, target.r, target.c);
-            }
-        }
-
-        async function handleSelection(r, c, tileElement) {
-            if (isAnimating) return;
-
-            if (!selectedTile) {
-                selectedTile = { r, c, element: tileElement };
-                tileElement.classList.add('selected');
-            } else {
-                const prevTile = selectedTile;
-                const r1 = prevTile.r, c1 = prevTile.c;
-                const r2 = r, c2 = c;
-                
-                prevTile.element.classList.remove('selected');
-                selectedTile = null;
-                await processSwap(r1, c1, r2, c2);
-            }
-        }
-
-        async function processMatches() {
-            let matches = findMatchesGrouped(gridData);
-            if (matches.length === 0) {
-                isAnimating = false;
-                return;
-            }
-
-            const clearedCells = matches.flat();
-            updateScore(clearedCells.length * 10);
-            
-            clearedCells.forEach(({ r, c }) => {
-                gridData[r][c] = null;
-            });
-            renderGridFromData();
-
-            setTimeout(() => {
-                gridData = applyGravity(gridData);
-                renderGridFromData();
-                setTimeout(() => processMatches(), 250);
-            }, 250);
-        }
-
-        function renderGridFromData() {
-            const gridElement = document.getElementById('grid');
-            isDragging = false;
-            currentDragPath = [];
-            dragOriginTile = null;
-            dragTargetTile = null;
-            gridElement.innerHTML = '';
-            for (let r = 0; r < gridSize; r++) {
-                for (let c = 0; c < gridSize; c++) {
-                    if (gridData[r][c]) createTileElement(r, c, gridData[r][c]);
-                    else {
-                        const empty = document.createElement('div');
-                        empty.classList.add('tile');
-                        empty.style.opacity = '0';
-                        gridElement.appendChild(empty);
-                    }
-                }
-            }
-        }
-
-        function updateScore(points) {
-            score += points;
-            document.getElementById('score-display').innerText = score;
-            if (score > highScore) {
-                highScore = score;
-                localStorage.setItem('matrix_high_score', highScore);
-                document.getElementById('high-score-display').innerText = highScore;
-            }
-            // Drive Tri-Weave engine from accumulated score milestones
-            updateThreadWeave({
-                karma:     Math.min(score / SCORE_TO_KARMA,     WEAVE_KARMA_SCALE),
-                wisdom:    Math.min(score / SCORE_TO_WISDOM,    WEAVE_WISDOM_SCALE),
-                integrity: Math.min(score / SCORE_TO_INTEGRITY, WEAVE_INTEGRITY_SCALE),
-                community: Math.min(score / SCORE_TO_COMMUNITY, WEAVE_WISDOM_SCALE),
-            });
-            // Pulse the weave on every match score event
-            triWeavePulse();
-        }
-
-        window.addEventListener('pointerup', handlePointerUp);
-        window.addEventListener('pointercancel', clearDragSelection);
-        initGrid();
-        window.initGrid = initGrid;
-    </script>
+    updateDOMMetrics();
+  </script>
 </body>
 </html>
