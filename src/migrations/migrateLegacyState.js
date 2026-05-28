@@ -14,13 +14,25 @@ export function migrateLegacyState(oldState = {}) {
   };
 
   const state = { ...defaults, ...oldState };
+  /**
+   * Convert legacy percent-like values (0-100) into normalized decimals (0-1).
+   * Invalid inputs return 0 and valid values are clamped to bounds.
+   * @param {unknown} value
+   * @returns {number}
+   */
+  const percentToNormalizedDecimal = (value) => {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) return 0;
+    const normalized = numeric / 100;
+    return Math.min(1, Math.max(0, normalized));
+  };
 
   return {
-    scarletGrowth: state.corruption / 100,
-    whiteClarity: state.wisdom / 100,
+    scarletGrowth: percentToNormalizedDecimal(state.corruption),
+    whiteClarity: percentToNormalizedDecimal(state.wisdom),
     janus: {
-      stability: state.integrity / 100
+      stability: percentToNormalizedDecimal(state.integrity)
     },
-    convergencePotential: state.community / 100
+    convergencePotential: percentToNormalizedDecimal(state.community)
   };
 }
