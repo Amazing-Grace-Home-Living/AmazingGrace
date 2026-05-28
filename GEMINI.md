@@ -7,11 +7,6 @@
   - Core: `arcade/janus/js/JanusWeaveCore.js`.
   - Physics: Identity Gravity, Recursive Momentum, Harmonic Inversion, Prophetic Causality.
   - UI: Psionic glyph dialogue and fractal rendering.
-  - **State Migration:** Legacy Matrix states are auto-converted via `src/migrations/migrateLegacyState.js`.
-    - `corruption` → `scarletGrowth` (Momentum)
-    - `wisdom` → `whiteClarity` (Inversion)
-    - `integrity` → `janusStability` (Gravity)
-    - `community` → `convergencePotential` (Causality)
 
 ## Workflows
 - **Ella:** Unified operations for review suggestions and automated patches.
