@@ -359,6 +359,17 @@
       transition: color 0.2s, border-color 0.2s;
     }
     .cert-overlay-close:hover { color: #fff; border-color: rgba(255,255,255,0.35); }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
   </style>
 </head>
 <body>
@@ -416,7 +427,9 @@
     </div>
   </div>
 
-  <div id="sm-cert-overlay" class="cert-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="cert-title">
+  <div id="sm-cert-overlay" class="cert-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="sm-cert-dialog-title" aria-describedby="sm-cert-dialog-desc">
+    <h2 id="sm-cert-dialog-title" class="sr-only">Star Matrix Certificate Overlay</h2>
+    <p id="sm-cert-dialog-desc" class="sr-only">Review your Star Matrix certificate and use the available actions to download it or open your certificates page.</p>
     <button id="sm-cert-close" class="cert-overlay-close" aria-label="Close certificate overlay">×</button>
     
     <div id="sm-cert-phase" style="display:none; flex-direction:column; align-items:center; width:100%;">
@@ -491,6 +504,8 @@
     let persistTimer = null;
     let persistInFlight = false;
     let persistQueued = false;
+    // Keep certificate cache in-memory to avoid persisting certificate card IDs in clear-text local storage.
+    // Tradeoff: local certificate cache resets when the page is reloaded or closed.
     let localCertificatesCache = [];
 
     const SM_MUSIC_URL = new URL('../../assets/audio/storm.mp3', import.meta.url).href;
@@ -1134,11 +1149,11 @@
     }
 
     function loadLocalCertificates() {
-      return Array.isArray(localCertificatesCache) ? [...localCertificatesCache] : [];
+      return localCertificatesCache;
     }
 
     function saveLocalCertificates(certs) {
-      localCertificatesCache = Array.isArray(certs) ? [...certs] : [];
+      localCertificatesCache = certs;
     }
 
     function upsertLocalCert(cert) {
