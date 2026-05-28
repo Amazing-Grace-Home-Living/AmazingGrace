@@ -3,15 +3,7 @@
 ## Game Maintenance
 - **Star Matrix:** Match-3 puzzle using `js/matchmaker.js`.
   - Mapping: `heart` → `supernova`, `star` → `shooting`, `cross` → `gem`, `flame` → `rank`, `drop` → `cosmic`.
-- **Janus Continuum:** The successor to the Matrix of Conscience. A dual-phase metaphysical engine.
-  - Core: `arcade/janus/js/JanusWeaveCore.js`.
-  - Physics: Identity Gravity, Recursive Momentum, Harmonic Inversion, Prophetic Causality.
-  - UI: Psionic glyph dialogue and fractal rendering.
-  - **State Migration:** Legacy Matrix states are auto-converted via `src/migrations/migrateLegacyState.js`.
-    - `corruption` → `scarletGrowth` (Momentum)
-    - `wisdom` → `whiteClarity` (Inversion)
-    - `integrity` → `janusStability` (Gravity)
-    - `community` → `convergencePotential` (Causality)
+- **Matrix of Conscience:** Advanced Match-3 with Seven Calibration Levels.
 
 ## Workflows
 - **Ella:** Unified operations for review suggestions and automated patches.

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
@@ -308,7 +308,7 @@
 <body>
     <header class="site-header">
         <div class="nav-container">
-            <a href="../" class="logo" aria-label="Amazing Grace Home Living â€” Home">
+            <a href="../" class="logo" aria-label="Amazing Grace Home Living — Home">
                 <img src="../assets/logo.png" alt="Amazing Grace Home Living">
             </a>
 
@@ -325,7 +325,7 @@
     <main>
         <div id="game-lobby">
             <div class="arcade-header">
-                <h1>âš¡ Nexus Arcade</h1>
+                <h1>⚡ Nexus Arcade</h1>
                 <p>Play, learn, and grow through interactive faith-based games.</p>
                 <div class="arcade-links" aria-label="Arcade links">
                     <a class="accent" href="./star-matrix/">Play Star Matrix</a>
@@ -335,35 +335,27 @@
 
             <div class="game-grid">
                 <div class="game-card card-stars" role="button" tabindex="0" aria-label="Play The Mystery of the Seven Stars" onclick="launchGame('sevenstars')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();launchGame('sevenstars');}">
-                    <div class="game-card-icon">â­</div>
+                    <div class="game-card-icon">⭐</div>
                     <div class="game-card-title">Mystery of the Seven Stars</div>
                     <div class="game-card-desc">Journey through the seven churches of Asia Minor. Read their stories and test your biblical knowledge to collect all seven stars.</div>
                     <span class="game-card-badge badge-gold">Knowledge Quest</span>
-                    <button class="play-btn play-btn-gold" tabindex="-1">â–¶ Play Now</button>
+                    <button class="play-btn play-btn-gold" tabindex="-1">▶ Play Now</button>
                 </div>
 
                 <a href="./star-matrix/" class="game-card card-stars" style="text-decoration:none;" aria-label="Play Star Matrix">
-                    <div class="game-card-icon">ðŸŒŸ</div>
+                    <div class="game-card-icon">🌟</div>
                     <div class="game-card-title">Star Matrix</div>
-                    <div class="game-card-desc">Match star constellations on a 7Ã—7 board. Swipe adjacent stars, chain combos, and reach 1000 points to earn your certificate.</div>
-                    <span class="game-card-badge badge-gold">Live Â· Star Puzzle</span>
-                    <button class="play-btn play-btn-gold" tabindex="-1">â–¶ Play Now</button>
-                </a>
-
-                <a href="./matrix-of-conscience/" class="game-card card-matrix" style="text-decoration:none;" aria-label="Play Matrix of Conscience">
-                    <div class="game-card-icon">ðŸ§ </div>
-                    <div class="game-card-title">Matrix of Conscience</div>
-                    <div class="game-card-desc">Enter a mobile-friendly match-3 matrix. Swipe virtues, chain fragments, and climb through seven escalating calibration levels.</div>
-                    <span class="game-card-badge badge-purple">Live Â· Match 3</span>
-                    <button class="play-btn play-btn-violet" tabindex="-1">â–¶ Enter the Matrix</button>
+                    <div class="game-card-desc">Match star constellations on a 7×7 board. Swipe adjacent stars, chain combos, and reach 1000 points to earn your certificate.</div>
+                    <span class="game-card-badge badge-gold">Live · Star Puzzle</span>
+                    <button class="play-btn play-btn-gold" tabindex="-1">▶ Play Now</button>
                 </a>
 
                 <a href="./bible-study/" class="game-card card-stars" style="text-decoration:none;" aria-label="Play Bible Study Quiz">
-                    <div class="game-card-icon">ðŸ“–</div>
+                    <div class="game-card-icon">📖</div>
                     <div class="game-card-title">Bible Study Quiz</div>
                     <div class="game-card-desc">Answer Old and New Testament questions, build knowledge streaks, and strengthen scripture memory in a guided quiz journey.</div>
-                    <span class="game-card-badge badge-gold">Live Â· Knowledge Quiz</span>
-                    <button class="play-btn play-btn-gold" tabindex="-1">â–¶ Start Quiz</button>
+                    <span class="game-card-badge badge-gold">Live · Knowledge Quiz</span>
+                    <button class="play-btn play-btn-gold" tabindex="-1">▶ Start Quiz</button>
                 </a>
 
                 <a href="./matrix-of-conscience/" class="game-card card-stars" style="text-decoration:none;" aria-label="Open Matrix of Conscience">
@@ -377,7 +369,7 @@
         </div>
 
         <div id="stage-sevenstars" class="game-stage">
-            <button class="stage-back-btn" onclick="backToLobby()">â† Back to Arcade</button>
+            <button class="stage-back-btn" onclick="backToLobby()">← Back to Arcade</button>
 
             <div class="game-wrapper relative mx-auto">
                 <div class="game-header-bar">The Mystery of the Seven Stars</div>
@@ -430,11 +422,11 @@
         const churches = [
             { name: 'Ephesus', message: 'The church in Ephesus was known for its hard work and perseverance. However, Jesus warned them that they had abandoned their first love.', question: 'What had the church in Ephesus abandoned?', options: ['Their generosity', 'Their first love', 'Their church building', 'Their daily prayers'], answer: 'Their first love' },
             { name: 'Smyrna', message: 'The church in Smyrna faced tribulation and poverty, yet Jesus praised their faithfulness and told them not to fear suffering.', question: 'What did Jesus tell Smyrna not to fear?', options: ['False prophets', 'Poverty', 'Suffering', 'Travel'], answer: 'Suffering' },
-            { name: 'Pergamum', message: 'Pergamum held fast to Jesusâ€™ name in a difficult city, but some there were tolerating false teaching.', question: 'What problem did Pergamum tolerate?', options: ['False teaching', 'Silence', 'No worship songs', 'Lack of elders'], answer: 'False teaching' },
+            { name: 'Pergamum', message: 'Pergamum held fast to Jesus’ name in a difficult city, but some there were tolerating false teaching.', question: 'What problem did Pergamum tolerate?', options: ['False teaching', 'Silence', 'No worship songs', 'Lack of elders'], answer: 'False teaching' },
             { name: 'Thyatira', message: 'Thyatira was praised for love, faith, service, and perseverance, but rebuked for tolerating corruption.', question: 'What was Thyatira praised for?', options: ['Military power', 'Love and service', 'Wealth alone', 'Temple size'], answer: 'Love and service' },
             { name: 'Sardis', message: 'Sardis had a reputation for being alive, but Jesus said they were dead and needed to wake up.', question: 'What did Sardis need to do?', options: ['Build larger walls', 'Wake up', 'Move cities', 'Collect offerings'], answer: 'Wake up' },
-            { name: 'Philadelphia', message: 'Philadelphia had little strength, but kept Jesusâ€™ word and did not deny His name. An open door was set before them.', question: 'What was set before Philadelphia?', options: ['A closed gate', 'A golden crown', 'An open door', 'A mountain path'], answer: 'An open door' },
-            { name: 'Laodicea', message: 'Laodicea was called lukewarmâ€”neither hot nor coldâ€”and was warned against complacency.', question: 'How was Laodicea described?', options: ['Faithful', 'Bold', 'Lukewarm', 'Joyful'], answer: 'Lukewarm' }
+            { name: 'Philadelphia', message: 'Philadelphia had little strength, but kept Jesus’ word and did not deny His name. An open door was set before them.', question: 'What was set before Philadelphia?', options: ['A closed gate', 'A golden crown', 'An open door', 'A mountain path'], answer: 'An open door' },
+            { name: 'Laodicea', message: 'Laodicea was called lukewarm—neither hot nor cold—and was warned against complacency.', question: 'How was Laodicea described?', options: ['Faithful', 'Bold', 'Lukewarm', 'Joyful'], answer: 'Lukewarm' }
         ];
 
         function initSevenStars() {
@@ -473,7 +465,7 @@
                                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                                 </svg>
                                 <span style="font-weight:700;font-size:.9rem">${c.name}</span>
-                                <span style="font-size:.75rem;margin-top:.25rem;color:${completedStars.includes(c.name) ? '#22c55e' : '#64748b'}">${completedStars.includes(c.name) ? 'âœ” Collected' : 'Not yet collected'}</span>
+                                <span style="font-size:.75rem;margin-top:.25rem;color:${completedStars.includes(c.name) ? '#22c55e' : '#64748b'}">${completedStars.includes(c.name) ? '✔ Collected' : 'Not yet collected'}</span>
                             </div>`).join('')}
                     </div>`;
                 gameScreen.querySelectorAll('.map-item').forEach((item) => {
@@ -499,7 +491,7 @@
                         </div>
                         <p style="color:#cbd5e1;line-height:1.7;background:rgba(0,0,0,.3);padding:1rem;border-radius:.5rem;margin-bottom:1.5rem;font-style:italic">${c.message}</p>
                         <div id="quiz-area"></div>
-                        <button id="back-map" style="margin-top:1.25rem;background:none;border:none;color:#64748b;cursor:pointer;font-size:.875rem;font-weight:600">â† Return to Map</button>
+                        <button id="back-map" style="margin-top:1.25rem;background:none;border:none;color:#64748b;cursor:pointer;font-size:.875rem;font-weight:600">← Return to Map</button>
                     </div>`;
                 document.getElementById('back-map').addEventListener('click', renderMap);
                 if (!done) renderQuiz(i);
@@ -532,7 +524,7 @@
             function renderCompletion() {
                 gameScreen.innerHTML = `
                     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;max-width:520px;margin:0 auto;padding:2rem 1rem;gap:1rem;">
-                        <div style="font-size:3rem">ðŸ†</div>
+                        <div style="font-size:3rem">🏆</div>
                         <h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.6rem,4vw,2.3rem);color:#FFD700;margin:0">Journey Complete</h2>
                         <p style="color:#94a3b8;line-height:1.7;">You discovered all seven stars and completed the messages to the churches. This experience is live and working, so it remains listed in the arcade.</p>
                         <button class="game-btn" id="restart-sevenstars">Play Again</button>
@@ -545,4 +537,3 @@
     </script>
 </body>
 </html>
-
