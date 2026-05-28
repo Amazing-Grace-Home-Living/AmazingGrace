@@ -18,6 +18,9 @@
       --deep-space: #020617;
       --mc-tint-rgb: 188 19 254;
       --mc-tint-opacity: 0.06;
+      --sm-shell-max: min(96vw, 920px);
+      --sm-grid-max: min(94vw, 740px);
+      --sm-grid-gap: clamp(3px, 0.55vw, 8px);
     }
     * { box-sizing: border-box; }
     body {
@@ -29,7 +32,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      touch-action: none;
+      touch-action: pan-x pan-y;
     }
     .orbitron { font-family: 'Orbitron', sans-serif; }
 
@@ -54,7 +57,7 @@
 
     .game-header {
       width: 100%;
-      max-width: 580px;
+      max-width: var(--sm-shell-max);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -104,7 +107,7 @@
 
     .hud {
       width: 100%;
-      max-width: 580px;
+      max-width: var(--sm-shell-max);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -121,7 +124,7 @@
     }
     .hud-value {
       font-family: 'Orbitron', monospace;
-      font-size: 1rem;
+      font-size: clamp(1rem, 2.2vw, 1.25rem);
       font-weight: 700;
       color: var(--neon-purple);
     }
@@ -130,31 +133,34 @@
 
     .board-wrapper {
       width: 100%;
-      max-width: 580px;
+      max-width: var(--sm-shell-max);
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 16px 12px 28px;
+      padding: 18px 12px 32px;
     }
     .star-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 3px;
+      gap: var(--sm-grid-gap);
       width: 100%;
-      max-width: 490px;
+      max-width: var(--sm-grid-max);
       aspect-ratio: 1;
+      touch-action: none;
+      overscroll-behavior: contain;
     }
     .star-cell {
-      border-radius: 10px;
+      border-radius: clamp(10px, 1.2vw, 16px);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: clamp(1.2rem, 4vw, 1.8rem);
+      font-size: clamp(1.4rem, 3.6vw, 2.4rem);
       cursor: pointer;
       border: 2px solid transparent;
       transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
       position: relative;
       user-select: none;
+      -webkit-user-select: none;
       -webkit-tap-highlight-color: transparent;
       padding: 0;
       font-family: inherit;
@@ -162,6 +168,7 @@
       appearance: none;
       -webkit-appearance: none;
       background: rgba(15, 23, 42, 0.72);
+      touch-action: none;
     }
     .star-cell:focus-visible {
       outline: 2px solid var(--neon-blue);
@@ -172,6 +179,12 @@
       transform: scale(1.08);
       box-shadow: 0 0 18px var(--neon-blue);
       z-index: 10;
+    }
+    .star-cell.drag-target {
+      border-color: rgba(0, 242, 255, 0.85);
+      box-shadow: 0 0 18px rgba(0, 242, 255, 0.35);
+      transform: scale(1.04);
+      z-index: 9;
     }
     .star-cell.matched {
       animation: matchPop 0.35s ease forwards;
@@ -188,7 +201,7 @@
 
     .progress-wrap {
       width: 100%;
-      max-width: 490px;
+      max-width: var(--sm-grid-max);
       margin-top: 12px;
     }
     .progress-label {
@@ -229,7 +242,7 @@
       gap: 8px;
       justify-content: center;
       margin-top: 12px;
-      max-width: 490px;
+      max-width: var(--sm-grid-max);
     }
     .legend-item {
       display: flex;
@@ -545,6 +558,7 @@
     let isProcessing = false;
     let dragStartTile = null;
     let dragTargetTile = null;
+    let lastDragTargetTile = null;
     let activePointerId = null;
     let dragStartX = 0;
     let dragStartY = 0;
@@ -584,6 +598,11 @@
         localStorage.setItem(STORAGE.soundKey, enabled ? 'on' : 'off');
       } catch (_) {}
       smRenderSoundToggle();
+      if (enabled) {
+        smArmMusicStartOnGesture();
+      } else {
+        smStopMusic();
+      }
     }
 
     function smRenderSoundToggle() {
@@ -733,6 +752,83 @@
       document.getElementById('sm-page-bg').inert = false;
     }
 
+    const SM_MUSIC_URL = new URL('../../assets/audio/storm.mp3', import.meta.url).href;
+    let smMusic = null;
+    let musicArmActive = false;
+
+    async function smStartMusic() {
+      if (!smMusic) {
+        smMusic = new Audio(SM_MUSIC_URL);
+        smMusic.loop = true;
+        smMusic.preload = 'none';
+        smMusic.volume = 0.28;
+      }
+      try {
+        await smMusic.play();
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function smStopMusic() {
+      if (!smMusic) return;
+      try {
+        smMusic.pause();
+        smMusic.currentTime = 0;
+      } catch (_) {}
+    }
+
+    function smArmMusicStartOnGesture() {
+      if (musicArmActive) return;
+      musicArmActive = true;
+
+      const startOnFirstGesture = async () => {
+        musicArmActive = false;
+        if (!isSoundEnabled()) return;
+        const ok = await smStartMusic();
+        if (!ok) {
+          try {
+            localStorage.setItem(STORAGE.soundKey, 'off');
+          } catch (_) {}
+          smRenderSoundToggle();
+        }
+      };
+
+      document.addEventListener('pointerdown', startOnFirstGesture, { once: true, capture: true });
+      document.addEventListener('keydown', startOnFirstGesture, { once: true, capture: true });
+    }
+
+    function parseTileRC(tile) {
+      if (!tile) return null;
+      const row = Number.parseInt(tile.dataset.row, 10);
+      const col = Number.parseInt(tile.dataset.col, 10);
+      if (![row, col].every(Number.isFinite)) return null;
+      return { row, col };
+    }
+
+    function isAdjacentTiles(tileA, tileB) {
+      const a = parseTileRC(tileA);
+      const b = parseTileRC(tileB);
+      if (!a || !b) return false;
+      return (
+        (Math.abs(a.row - b.row) === 1 && a.col === b.col) ||
+        (Math.abs(a.col - b.col) === 1 && a.row === b.row)
+      );
+    }
+
+    function setDragTarget(tile) {
+      const nextTarget = tile && tile !== dragStartTile && isAdjacentTiles(dragStartTile, tile) ? tile : null;
+      dragTargetTile = nextTarget;
+      if (lastDragTargetTile && lastDragTargetTile !== nextTarget) {
+        lastDragTargetTile.classList.remove('drag-target');
+      }
+      if (nextTarget && lastDragTargetTile !== nextTarget) {
+        nextTarget.classList.add('drag-target');
+      }
+      lastDragTargetTile = nextTarget;
+    }
+
     function smCreateStarGrid() {
       const grid = [];
       const starIds = STAR_TYPES.map(t => t.id);
@@ -825,14 +921,17 @@
       dragStartY = e.clientY;
       tile.classList.add('selected');
       tile.setAttribute('aria-selected', 'true');
+      if (e.cancelable) e.preventDefault();
       e.currentTarget.setPointerCapture(e.pointerId);
     }
 
     function onPointerMove(e) {
       if (e.pointerId !== activePointerId) return;
       if (!dragStartTile) return;
+      if (e.cancelable) e.preventDefault();
       const elementAtPoint = document.elementFromPoint(e.clientX, e.clientY);
-      dragTargetTile = elementAtPoint ? elementAtPoint.closest('.star-cell') : null;
+      const tile = elementAtPoint ? elementAtPoint.closest('.star-cell') : null;
+      setDragTarget(tile);
     }
 
     function onPointerUp(e) {
@@ -856,7 +955,8 @@
       if (!dragStartTile) return null;
       const deltaX = e.clientX - dragStartX;
       const deltaY = e.clientY - dragStartY;
-      const swipeThreshold = 20;
+      const rect = dragStartTile.getBoundingClientRect();
+      const swipeThreshold = Math.max(18, Math.min(48, Math.round(Math.min(rect.width, rect.height) * 0.35)));
       if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) < swipeThreshold) return null;
 
       const row = Number.parseInt(dragStartTile.dataset.row, 10);
@@ -885,8 +985,10 @@
         dragStartTile.classList.remove('selected');
         dragStartTile.setAttribute('aria-selected', 'false');
       }
+      if (lastDragTargetTile) lastDragTargetTile.classList.remove('drag-target');
       dragStartTile = null;
       dragTargetTile = null;
+      lastDragTargetTile = null;
       activePointerId = null;
       dragStartX = 0;
       dragStartY = 0;
@@ -1232,6 +1334,7 @@
         soundToggle.addEventListener('click', () => setSoundEnabled(!isSoundEnabled()));
       }
       smRenderSoundToggle();
+      if (isSoundEnabled()) smArmMusicStartOnGesture();
 
       const resumeBtn = document.getElementById('sm-resume-btn');
       const newBtn = document.getElementById('sm-new-btn');
