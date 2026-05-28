@@ -18,6 +18,7 @@ export default defineConfig({
         arcade:            resolve(__dirname, "arcade/index.html"),
         arcadeStarMatrix:   resolve(__dirname, "arcade/star-matrix/index.html"),
         arcadeSevenStars:   resolve(__dirname, "arcade/seven-stars/index.html"),
+        arcadeMatrixExperience: resolve(__dirname, "arcade/matrix/index.html"),
         arcadeMatrix:      resolve(__dirname, "arcade/matrix-of-conscience/index.html"),
         matrixConscienceIndex: resolve(__dirname, "matrix-of-conscience/index.html"),
         arcadeCertificates: resolve(__dirname, "arcade/certificates/index.html"),
