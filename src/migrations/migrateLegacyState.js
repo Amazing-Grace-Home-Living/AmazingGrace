@@ -1,52 +1,38 @@
 /**
  * migrateLegacyState.js
- * Convert legacy Matrix of Conscience save fields to Janus-Weave schema.
- *
- * ES module version.
+ * (c) 2026 NicholaiMadias — MIT License
+ * 
+ * Maps legacy Matrix of Conscience stats to the new Janus-Weave Duality Engine schema.
  */
 
-/**
- * Migrate legacy save state into the Janus-Weave schema.
- *
- * Legacy -> New mapping:
- * - corruption        -> scarletGrowth (0..1)
- * - wisdom            -> whiteClarity (0..1)
- * - integrity         -> janus.stability (0..1)
- * - community         -> convergencePotential (0..1)
- *
- * Any missing legacy fields are replaced with sensible defaults.
- *
- * @param {Object} legacy - The legacy save object.
- * @param {number} [legacy.corruption] - 0..100
- * @param {number} [legacy.wisdom] - 0..100
- * @param {number} [legacy.integrity] - 0..100
- * @param {number} [legacy.community] - 0..100
- * @returns {Object} migrated - New Janus-Weave compatible state.
- * @returns {number} migrated.scarletGrowth - 0..1
- * @returns {number} migrated.whiteClarity - 0..1
- * @returns {Object} migrated.janus - Janus substate
- * @returns {number} migrated.janus.stability - 0..1
- * @returns {number} migrated.convergencePotential - 0..1
- */
-export function migrateLegacyState(legacy = {}) {
-  const clamp01 = (v) => {
-    if (typeof v !== 'number' || Number.isNaN(v)) return 0;
-    return Math.max(0, Math.min(1, v / 100));
+export function migrateLegacyState(oldState = {}) {
+  const defaults = {
+    corruption: 0,
+    wisdom: 0,
+    integrity: 0,
+    community: 0
   };
 
-  const scarletGrowth = clamp01(legacy.corruption);
-  const whiteClarity = clamp01(legacy.wisdom);
-  const janusStability = clamp01(legacy.integrity);
-  const convergencePotential = clamp01(legacy.community);
+  const state = { ...defaults, ...oldState };
+  /**
+   * Convert legacy percent-like values (0-100) into normalized decimals (0-1).
+   * Invalid inputs return 0 and valid values are clamped to bounds.
+   * @param {unknown} value
+   * @returns {number}
+   */
+  const percentToNormalizedDecimal = (value) => {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) return 0;
+    const normalized = numeric / 100;
+    return Math.min(1, Math.max(0, normalized));
+  };
 
   return {
-    scarletGrowth,
-    whiteClarity,
+    scarletGrowth: percentToNormalizedDecimal(state.corruption),
+    whiteClarity: percentToNormalizedDecimal(state.wisdom),
     janus: {
-      stability: janusStability,
-      // preserved / computed fields for backward compatibility
-      lastMigrationAt: Date.now()
+      stability: percentToNormalizedDecimal(state.integrity)
     },
-    convergencePotential
+    convergencePotential: percentToNormalizedDecimal(state.community)
   };
 }

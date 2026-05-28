@@ -4,7 +4,7 @@ import { copyFileSync, mkdirSync } from "fs";
 
 export default defineConfig({
   // Use relative asset paths so the site works on GitHub Pages PR previews
-  // (pr-<number>/ subdirectory URLs) as well as on the production domain.
+  // (pr-<number>/ subdirectory URLs) as well as on the production domain. 
   base: "./",
   build: {
     outDir: "dist",
@@ -17,6 +17,8 @@ export default defineConfig({
         matrix:            resolve(__dirname, "matrix.html"),
         arcade:            resolve(__dirname, "arcade/index.html"),
         arcadeStarMatrix:   resolve(__dirname, "arcade/star-matrix/index.html"),
+        arcadeNexusMatrix:  resolve(__dirname, "arcade/nexus-matrix/index.html"),
+        arcadeJanus:       resolve(__dirname, "arcade/janus/index.html"),
         arcadeMatrix:      resolve(__dirname, "arcade/matrix-of-conscience/index.html"),
         matrixConscienceIndex: resolve(__dirname, "matrix-of-conscience/index.html"),
         arcadeCertificates: resolve(__dirname, "arcade/certificates/index.html"),
