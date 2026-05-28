@@ -160,6 +160,7 @@ class NexusMatrix {
         grid.appendChild(cell);
       }
     }
+    if (this.input) this.input.updateSelectionClasses();
   }
 
   updateHUD() {
