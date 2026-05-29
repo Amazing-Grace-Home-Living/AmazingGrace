@@ -16,14 +16,15 @@ describe('matrix alignment integration', () => {
 
     expect(html).toContain('import {');
     expect(html).toContain("from '../../js/matchmaker.js'");
-    expect(html).toContain('function handleSelection(r, c, tileElement)');
+    expect(html).toContain('function handleSelection(startTile, endTile)');
     expect(html).toContain("tile.addEventListener('pointerdown', handlePointerDown);");
     expect(html).toContain("tile.addEventListener('pointerenter', handlePointerEnter);");
     expect(html).toContain('let currentDragPath = [];');
     expect(html).toContain('.tile.is-dragging');
     expect(html).toContain('touch-action: manipulation;');
     expect(html).toContain("window.addEventListener('pointerup', handlePointerUp);");
-    expect(html).toContain('findMatchesGrouped(gridData)');
+    expect(html).toContain('const swappedGrid = applySwap(gridData, start.row, start.col, end.row, end.col);');
+    expect(html).toContain('const { resolvedGrid, clearedCells } = resolveBoard(swappedGrid);');
     expect(html).toContain('matrix_high_score');
   });
 });
