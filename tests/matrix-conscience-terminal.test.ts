@@ -25,6 +25,15 @@ describe('Matrix of Conscience Terminal', () => {
     expect(html).toContain('rendered successfully');
   });
 
+  it('uses named constants for improved code clarity', () => {
+    const html = fs.readFileSync('arcade/matrix-of-conscience-terminal/index.html', 'utf8');
+
+    expect(html).toContain('const QUANTUM_RENDER_DELAY_MS = 2000');
+    expect(html).toContain('QUANTUM_RENDER_DELAY_MS');
+    expect(html).toContain('let gridState =');
+    expect(html).toContain('symbols[gridState[i]]');
+  });
+
   it('includes a 4x4 grid game display', () => {
     const html = fs.readFileSync('arcade/matrix-of-conscience-terminal/index.html', 'utf8');
 

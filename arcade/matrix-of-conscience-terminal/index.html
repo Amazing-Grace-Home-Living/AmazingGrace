@@ -222,6 +222,22 @@
       color: var(--text);
     }
 
+    #backBtn {
+      padding: 0.5rem 1rem;
+      background: rgba(0, 217, 255, 0.2);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      cursor: pointer;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.875rem;
+      transition: all 150ms;
+    }
+
+    #backBtn:hover {
+      background: rgba(0, 217, 255, 0.3);
+    }
+
     /* Scrollbar styling */
     .terminal-content::-webkit-scrollbar {
       width: 8px;
@@ -281,17 +297,7 @@
     <!-- Game View -->
     <div class="game-view" id="gameView">
       <div class="game-grid" id="gameGrid"></div>
-      <button id="backBtn" style="
-        padding: 0.5rem 1rem;
-        background: rgba(0, 217, 255, 0.2);
-        border: 1px solid var(--border);
-        color: var(--accent);
-        cursor: pointer;
-        border-radius: 4px;
-        font-family: 'Courier New', monospace;
-        font-size: 0.875rem;
-        transition: all 150ms;
-      " onmouseover="this.style.background='rgba(0, 217, 255, 0.3)'" onmouseout="this.style.background='rgba(0, 217, 255, 0.2)'">Return to Terminal</button>
+      <button id="backBtn">Return to Terminal</button>
     </div>
 
     <!-- Input -->
@@ -322,6 +328,7 @@
     const GENERATE_CMD = 'generate';
     let gridState = Array.from({ length: GRID_SIZE }, () => Math.floor(Math.random() * SYMBOL_COUNT));
     const symbols = ['✓', '◆', '○', '★'];
+    const QUANTUM_RENDER_DELAY_MS = 2000;
 
     function addLine(text, className = 'terminal-line') {
       const line = document.createElement('div');
@@ -355,7 +362,7 @@
         addLine('SYSTEM: Quantum rendering...', 'terminal-line image');
         setTimeout(() => {
           addLine(`IMAGE: ${prompt} rendered successfully.`, 'terminal-line image');
-        }, 2000);
+        }, QUANTUM_RENDER_DELAY_MS);
       } else {
         addLine('ERROR: Command not found.', 'terminal-line');
       }
