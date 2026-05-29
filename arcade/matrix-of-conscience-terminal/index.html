@@ -275,7 +275,7 @@
     <!-- Content Area -->
     <div class="terminal-content" id="terminalContent">
       <div class="terminal-line prompt">PS C:\Trinity> System online.</div>
-      <div class="terminal-line prompt">PS C:\Trinity> Commands: Start, Oracle &lt;q&gt;, Generate &lt;desc&gt;</div>
+      <div class="terminal-line prompt">PS C:\Trinity> Commands: Start, Oracle &lt;query&gt;, Generate &lt;desc&gt;</div>
     </div>
 
     <!-- Game View -->
@@ -318,7 +318,9 @@
     let isGameMode = false;
     const GRID_SIZE = 16;
     const SYMBOL_COUNT = 4;
-    let gameGridData = Array.from({ length: GRID_SIZE }, () => Math.floor(Math.random() * SYMBOL_COUNT));
+    const ORACLE_CMD = 'oracle';
+    const GENERATE_CMD = 'generate';
+    let gridState = Array.from({ length: GRID_SIZE }, () => Math.floor(Math.random() * SYMBOL_COUNT));
     const symbols = ['✓', '◆', '○', '★'];
 
     function addLine(text, className = 'terminal-line') {
@@ -341,14 +343,14 @@
         terminalContent.style.display = 'none';
         addLine('SYSTEM: Launching Match-3 Matrix...', 'terminal-line system');
         renderGame();
-      } else if (lower.startsWith('oracle')) {
-        const query = lower.substring(6).trim();
+      } else if (lower.startsWith(ORACLE_CMD)) {
+        const query = lower.substring(ORACLE_CMD.length).trim();
         const response = query 
           ? `ORACLE: The answer to "${query}" lies in the balance of the grid.`
           : 'ORACLE: Seek the balance within the grid.';
         addLine(response, 'terminal-line oracle');
-      } else if (lower.startsWith('generate')) {
-        const desc = lower.substring(8).trim();
+      } else if (lower.startsWith(GENERATE_CMD)) {
+        const desc = lower.substring(GENERATE_CMD.length).trim();
         const prompt = desc || 'quantum artifact';
         addLine('SYSTEM: Quantum rendering...', 'terminal-line image');
         setTimeout(() => {
@@ -364,11 +366,11 @@
       for (let i = 0; i < GRID_SIZE; i++) {
         const tile = document.createElement('div');
         tile.className = 'game-tile';
-        tile.textContent = symbols[gameGridData[i]];
+        tile.textContent = symbols[gridState[i]];
         tile.dataset.index = i;
         tile.addEventListener('click', () => {
-          gameGridData[i] = (gameGridData[i] + 1) % SYMBOL_COUNT;
-          tile.textContent = symbols[gameGridData[i]];
+          gridState[i] = (gridState[i] + 1) % SYMBOL_COUNT;
+          tile.textContent = symbols[gridState[i]];
         });
         gameGrid.appendChild(tile);
       }

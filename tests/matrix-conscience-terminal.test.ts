@@ -15,9 +15,12 @@ describe('Matrix of Conscience Terminal', () => {
     const html = fs.readFileSync('arcade/matrix-of-conscience-terminal/index.html', 'utf8');
 
     expect(html).toContain('Commands: Start, Oracle');
+    expect(html).toContain('&lt;query&gt;');
     expect(html).toContain("if (lower === 'start')");
-    expect(html).toContain("if (lower.startsWith('oracle'))");
-    expect(html).toContain("if (lower.startsWith('generate'))");
+    expect(html).toContain("const ORACLE_CMD = 'oracle'");
+    expect(html).toContain("const GENERATE_CMD = 'generate'");
+    expect(html).toContain("lower.startsWith(ORACLE_CMD)");
+    expect(html).toContain("lower.startsWith(GENERATE_CMD)");
     expect(html).toContain('The answer to');
     expect(html).toContain('rendered successfully');
   });
