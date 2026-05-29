@@ -424,7 +424,6 @@
                 <div class="subtitle">Matrix of Conscience</div>
             </div>
         </div>
-        <div style="flex: 1;"></div>
         <a href="../" style="color: var(--blue); text-decoration: none; font-weight: bold;" aria-label="Back to Arcade">← Back</a>
     </header>
 
@@ -626,11 +625,12 @@
 
         function processMatches() {
             let gained = 0;
-            let moved = true;
+            let hasMatches = true;
             
-            while (moved) {
+            while (hasMatches) {
                 const matches = findMatches(gameState.grid);
-                if (matches.length === 0) break;
+                hasMatches = matches.length > 0;
+                if (!hasMatches) break;
                 
                 gained += matches.length * 10;
                 matches.forEach(m => { gameState.grid[m.r][m.c] = null; });
@@ -776,9 +776,10 @@
 
         function submitScore() {
             const leaderboard = loadLeaderboard();
+            const scoreToSubmit = gameState.totalScore || gameState.currentScore;
             const newEntry = {
                 name: gameState.guardianName,
-                score: gameState.totalScore,
+                score: scoreToSubmit,
                 level: gameState.level,
                 date: new Date().toISOString()
             };
@@ -786,6 +787,9 @@
             leaderboard.push(newEntry);
             leaderboard.sort((a, b) => b.score - a.score);
             saveLeaderboard(leaderboard.slice(0, 100));
+            
+            gameState.totalScore = scoreToSubmit;
+            saveGameState();
             
             nav('leaderboard');
             renderLeaderboard();
