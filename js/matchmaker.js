@@ -180,9 +180,10 @@ function classifyShapes(basicMatches) {
     // BFS connected component
     const comp = [];
     const queue = [cell];
+    let queueIndex = 0;
     visited.add(key);
-    while (queue.length) {
-      const cur = queue.shift();
+    while (queueIndex < queue.length) {
+      const cur = queue[queueIndex++];
       comp.push(cur);
       for (const n of cur.neighbors) {
         const nk = `${n.row},${n.col}`;
@@ -248,9 +249,10 @@ export function findMatchesGrouped(grid) {
     if (visited.has(key)) continue;
     const group = [];
     const queue = [key];
+    let queueIndex = 0;
     visited.add(key);
-    while (queue.length > 0) {
-      const cur = queue.shift();
+    while (queueIndex < queue.length) {
+      const cur = queue[queueIndex++];
       const [r, c] = cur.split(',').map(Number);
       group.push({ r, c });
       for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
