@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Star Matrix — Swap adjacent star constellations on a 7×7 board and chain combos. Amazing Grace Home Living.">
+  <meta name="theme-color" content="#000000">
+  <link rel="canonical" href="https://amazinggracehl.org/arcade/star-matrix/">
+  <link rel="icon" type="image/png" href="../../assets/logo.png">
+  <title>Star Matrix | Amazing Grace Arcade</title>
+  <script src="../../assets/vendor/hosted-only.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #000000;
+      --blue: #4fc3f7;
+      --gold: #ffd700;
+      --text: #c8e6ff;
+      --muted: #7ba8c8;
+      --border: rgba(79, 195, 247, 0.22);
+    }
+
+    html, body {
+      background: var(--black);
+      color: var(--text);
+      font-family: 'Courier New', Courier, monospace;
+      min-height: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    header {
+      width: min(100%, 520px);
+      text-align: center;
+      padding: 1.25rem 0 0.75rem;
+    }
+
+    header h1 {
+      font-size: clamp(1.3rem, 5vw, 1.9rem);
+      color: var(--gold);
+      letter-spacing: 0.06em;
+      margin-bottom: 0.25rem;
+    }
+
+    header p {
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    /* ── SCOREBOARD ── */
+    #sm-scoreboard {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      width: min(100%, 520px);
+      padding: 0.5rem 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      margin: 0.5rem 0;
+    }
+
+    .sm-score-item { text-align: center; }
+
+    .sm-score-label {
+      font-size: 0.62rem;
+      color: var(--muted);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .sm-score-value {
+      font-size: 1.2rem;
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    /* ── GAME SHELL ── */
+    #sm-shell {
+      width: min(100%, 520px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    /* ── STAR BOARD ── */
+    #sm-board {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-template-rows: repeat(7, 1fr);
+      gap: 3px;
+      width: 100%;
+      max-width: 440px;
+      box-sizing: border-box;
+      padding: 5px;
+      background: rgba(79, 195, 247, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    /* ── STAR CELL ── */
+    .star-cell {
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(1rem, 3.5vw, 1.5rem);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(79, 195, 247, 0.1);
+      border-radius: 4px;
+      cursor: pointer;
+      touch-action: manipulation;
+      user-select: none;
+      transition: background 0.12s, transform 0.1s;
+      position: relative;
+    }
+
+    .star-cell[aria-selected="true"],
+    .star-cell.selected {
+      background: rgba(255, 215, 0, 0.2);
+      border-color: var(--gold);
+      transform: scale(0.9);
+    }
+
+    .star-cell.matched {
+      animation: sm-pop 0.28s ease-out forwards;
+    }
+
+    @keyframes sm-pop {
+      0%   { transform: scale(1);    opacity: 1; }
+      50%  { transform: scale(1.2);  opacity: 0.7; }
+      100% { transform: scale(0);    opacity: 0; }
+    }
+
+    /* ── CONTROLS ── */
+    #sm-controls {
+      width: min(100%, 520px);
+      display: flex;
+      justify-content: center;
+    }
+
+    #sm-reset {
+      width: calc(100% - 20px);
+      max-width: 280px;
+      padding: 11px 0;
+      font-size: 15px;
+      font-family: 'Courier New', Courier, monospace;
+      color: var(--gold);
+      background: transparent;
+      border: 1px solid var(--gold);
+      border-radius: 6px;
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: background 0.18s;
+    }
+
+    #sm-reset:hover { background: rgba(255, 215, 0, 0.08); }
+
+    @media (max-width: 400px) {
+      #sm-scoreboard { gap: 1rem; font-size: 14px; }
+    }
+
+    @media (max-width: 360px) {
+      #sm-scoreboard { flex-direction: column; align-items: center; gap: 0.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Star Matrix</h1>
+    <p>Seven Sisters · Match Constellations · Chain Combos</p>
+  </header>
+
+  <div id="sm-scoreboard" role="status" aria-live="polite">
+    <div class="sm-score-item">
+      <div class="sm-score-label">Score</div>
+      <div class="sm-score-value" id="sm-score">0</div>
+    </div>
+    <div class="sm-score-item">
+      <div class="sm-score-label">High Score</div>
+      <div class="sm-score-value" id="sm-hi">0</div>
+    </div>
+  </div>
+
+  <div id="sm-shell">
+    <div id="sm-board" role="grid" aria-label="Star Matrix 7×7 board"></div>
+    <div id="sm-controls">
+      <button id="sm-reset" type="button">New Game</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { GRID_SIZE, createInitialGrid, applySwap, findMatchesGrouped, applyMatches, applyGravity } from '../../js/matchmaker.js';
+
+    function smSwap(rowA, colA, rowB, colB) {
+      grid = applySwap(grid, rowA, colA, rowB, colB);
+    }
+
+    /* ── SYMBOLS ── */
+    const SYMBOLS = {
+      heart: '❤️', star: '⭐', cross: '✝️', flame: '🔥', drop: '💧'
+    };
+
+    /* ── STATE ── */
+    let grid = createInitialGrid();
+    let smScore = 0;
+    const SM_HI_KEY = 'sm_high_score';
+
+    function loadHi() { try { return parseInt(localStorage.getItem(SM_HI_KEY) || '0', 10) || 0; } catch { return 0; } }
+    function saveHi(v) { try { localStorage.setItem(SM_HI_KEY, String(v)); } catch { /* noop */ } }
+
+    /* ── DRAG STATE ── */
+    let dragStartTile = null;
+    let dragTargetTile = null;
+    let activePointerId = null;
+
+    function resetDragState() {
+      if (dragStartTile) {
+        dragStartTile.classList.remove('selected');
+        dragStartTile.setAttribute('aria-selected', 'false');
+      }
+      dragStartTile = null;
+      dragTargetTile = null;
+      activePointerId = null;
+    }
+
+    /* ── POINTER HANDLERS ── */
+    function onPointerDown(e) {
+      if (dragStartTile || activePointerId !== null) return;
+      e.preventDefault();
+      dragStartTile = e.currentTarget;
+      activePointerId = e.pointerId;
+      dragStartTile.classList.add('selected');
+      dragStartTile.setAttribute('aria-selected', 'true');
+      dragStartTile.setPointerCapture(e.pointerId);
+    }
+
+    function onPointerMove(e) {
+      if (e.pointerId !== activePointerId) return;
+      const elementAtPoint = document.elementFromPoint(e.clientX, e.clientY);
+      dragTargetTile = elementAtPoint ? elementAtPoint.closest('.star-cell') : null;
+    }
+
+    function onPointerUp(e) {
+      if (e.pointerId !== activePointerId) return;
+      const elementAtPoint = document.elementFromPoint(e.clientX, e.clientY);
+      const dragEndTile = (elementAtPoint ? elementAtPoint.closest('.star-cell') : null) || dragTargetTile || inferSwipeNeighbor(e);
+
+      if (dragEndTile && dragEndTile !== dragStartTile) {
+        attemptSwap(dragStartTile, dragEndTile);
+      }
+      resetDragState();
+    }
+
+    function onPointerCancel() {
+      resetDragState();
+    }
+
+    function inferSwipeNeighbor(e) {
+      if (!dragStartTile) return null;
+      const rect = dragStartTile.getBoundingClientRect();
+      const dx = e.clientX - (rect.left + rect.width / 2);
+      const dy = e.clientY - (rect.top + rect.height / 2);
+      if (Math.abs(dx) < 5 && Math.abs(dy) < 5) return null;
+      const rowA = parseInt(dragStartTile.dataset.row, 10);
+      const colA = parseInt(dragStartTile.dataset.col, 10);
+      let rowB = rowA, colB = colA;
+      if (Math.abs(dx) > Math.abs(dy)) {
+        colB = dx > 0 ? colA + 1 : colA - 1;
+      } else {
+        rowB = dy > 0 ? rowA + 1 : rowA - 1;
+      }
+      return document.querySelector(`.star-cell[data-row="${rowB}"][data-col="${colB}"]`) || null;
+    }
+
+    /* ── SWAP VALIDATION ── */
+    function attemptSwap(tileA, tileB) {
+      if (!tileA || !tileB) return;
+      const rowA = parseInt(tileA.dataset.row, 10);
+      const colA = parseInt(tileA.dataset.col, 10);
+      const rowB = parseInt(tileB.dataset.row, 10);
+      const colB = parseInt(tileB.dataset.col, 10);
+
+      if (![rowA, colA, rowB, colB].every(Number.isFinite)) return;
+
+      const isAdjacent =
+        (Math.abs(rowA - rowB) === 1 && colA === colB) ||
+        (Math.abs(colA - colB) === 1 && rowA === rowB);
+
+      if (!isAdjacent) return;
+
+      smSwap(rowA, colA, rowB, colB);
+      const matchResult = findMatchesGrouped(grid);
+      if (matchResult && matchResult.matches && matchResult.matches.length > 0) {
+        const pts = matchResult.matches.reduce((acc, m) => acc + m.length * 10, 0);
+        smScore += pts;
+        grid = applyMatches(grid, matchResult);
+        grid = applyGravity(grid);
+        updateScore();
+      }
+      renderBoard();
+    }
+
+    /* ── RENDER ── */
+    const boardEl = document.getElementById('sm-board');
+
+    function renderBoard() {
+      boardEl.innerHTML = '';
+      for (let r = 0; r < GRID_SIZE; r++) {
+        for (let c = 0; c < GRID_SIZE; c++) {
+          const gem = grid[r][c];
+          const kind = typeof gem === 'string' ? gem : gem?.kind ?? 'star';
+          const cell = document.createElement('div');
+          cell.className = 'star-cell';
+          cell.dataset.row = r;
+          cell.dataset.col = c;
+          cell.setAttribute('role', 'gridcell');
+          cell.setAttribute('aria-selected', 'false');
+          cell.setAttribute('aria-label', `${kind} at row ${r + 1}, column ${c + 1}`);
+          cell.textContent = SYMBOLS[kind] ?? '⭐';
+
+          cell.addEventListener('pointerdown', onPointerDown);
+          cell.addEventListener('pointermove', onPointerMove);
+          cell.addEventListener('pointerup', onPointerUp);
+          cell.addEventListener('pointercancel', onPointerCancel);
+
+          boardEl.appendChild(cell);
+        }
+      }
+    }
+
+    /* ── SCORE ── */
+    const scoreEl  = document.getElementById('sm-score');
+    const hiEl     = document.getElementById('sm-hi');
+
+    function updateScore() {
+      scoreEl.textContent = String(smScore);
+      const hi = loadHi();
+      if (smScore > hi) saveHi(smScore);
+      hiEl.textContent = String(Math.max(smScore, hi));
+    }
+
+    /* ── RESET ── */
+    document.getElementById('sm-reset').addEventListener('click', () => {
+      grid = createInitialGrid();
+      smScore = 0;
+      resetDragState();
+      updateScore();
+      renderBoard();
+    });
+
+    /* ── INIT ── */
+    hiEl.textContent = String(loadHi());
+    renderBoard();
+  </script>
+
+</body>
+</html>
