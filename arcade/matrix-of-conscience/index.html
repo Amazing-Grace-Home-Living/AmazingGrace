@@ -1,489 +1,362 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="M45 Seven Sisters Alignment — Matrix of Conscience arcade game. Align the Pleiades on a pure black canvas. Amazing Grace Home Living.">
-  <meta name="theme-color" content="#000000">
-  <link rel="canonical" href="https://amazinggracehl.org/arcade/matrix-of-conscience/">
-  <meta property="og:url" content="https://amazinggracehl.org/arcade/matrix-of-conscience/">
-  <meta property="og:title" content="Matrix of Conscience | M45 Seven Sisters Alignment">
-  <link rel="icon" type="image/png" href="../../assets/logo.png">
-  <title>Matrix of Conscience | M45 Seven Sisters Alignment</title>
-  <script src="../../assets/vendor/hosted-only.js"></script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --black: #000000;
-      --blue-star: #4fc3f7;
-      --red-target: #ef5350;
-      --text: #c8e6ff;
-      --muted: #7ba8c8;
-      --border: rgba(79, 195, 247, 0.25);
-    }
-
-    html, body {
-      background: var(--black);
-      color: var(--text);
-      font-family: 'Courier New', Courier, monospace;
-      height: 100%;
-      overflow-x: hidden;
-    }
-
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      padding: 1rem;
-    }
-
-    /* ── HEADER ── */
-    header {
-      width: min(100%, 540px);
-      text-align: center;
-      padding: 1.5rem 0 1rem;
-      box-sizing: border-box;
-    }
-
-    header h1 {
-      font-size: clamp(1.4rem, 5vw, 2rem);
-      color: var(--blue-star);
-      letter-spacing: 0.08em;
-      margin-bottom: 0.3rem;
-    }
-
-    header p {
-      font-size: 0.75rem;
-      color: var(--muted);
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-    }
-
-    /* ── M45 SVG CONSTELLATION MAP ── */
-    #m45-map {
-      width: min(100%, 540px);
-      margin: 0.5rem auto 1rem;
-      box-sizing: border-box;
-    }
-
-    #m45-map svg {
-      display: block;
-      width: 100%;
-      height: auto;
-    }
-
-    /* ── SCOREBOARD ── */
-    #scoreboard {
-      display: flex;
-      gap: 1.5rem;
-      justify-content: center;
-      width: min(100%, 540px);
-      box-sizing: border-box;
-      padding: 0.5rem 0;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 0.75rem;
-    }
-
-    .score-item {
-      text-align: center;
-      font-family: 'Courier New', Courier, monospace;
-    }
-
-    .score-label {
-      font-size: 0.65rem;
-      color: var(--muted);
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-    }
-
-    .score-value {
-      font-size: 1.3rem;
-      color: var(--blue-star);
-      font-weight: 700;
-    }
-
-    /* ── GAME SHELL ── */
-    #game-shell {
-      width: min(100%, 540px);
-      box-sizing: border-box;
-      overflow-x: hidden;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    /* ── GRID ── */
-    #grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      grid-template-rows: repeat(7, 1fr);
-      gap: 3px;
-      width: 100%;
-      max-width: 450px;
-      box-sizing: border-box;
-      padding: 6px;
-      background: rgba(79, 195, 247, 0.04);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-    }
-
-    /* ── TILE ── */
-    .tile {
-      aspect-ratio: 1 / 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(79, 195, 247, 0.12);
-      border-radius: 4px;
-      cursor: pointer;
-      touch-action: manipulation;
-      font-size: clamp(1.1rem, 4vw, 1.6rem);
-      user-select: none;
-      transition: background 0.15s, transform 0.1s;
-      position: relative;
-    }
-
-    .tile:hover {
-      background: rgba(79, 195, 247, 0.12);
-    }
-
-    .tile.selected {
-      background: rgba(79, 195, 247, 0.25);
-      border-color: var(--blue-star);
-      transform: scale(0.92);
-    }
-
-    .tile.is-dragging {
-      background: rgba(79, 195, 247, 0.35);
-      border-color: var(--blue-star);
-      transform: scale(0.88);
-      z-index: 10;
-    }
-
-    .tile.matched {
-      animation: pop 0.3s ease-out forwards;
-    }
-
-    @keyframes pop {
-      0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.25); opacity: 0.8; }
-      100% { transform: scale(0); opacity: 0; }
-    }
-
-    /* ── CONTROLS ── */
-    #controls {
-      display: flex;
-      justify-content: center;
-      width: min(100%, 540px);
-      box-sizing: border-box;
-    }
-
-    #reset-btn {
-      width: calc(100% - 20px);
-      max-width: 300px;
-      padding: 12px 0;
-      font-size: 16px;
-      font-family: 'Courier New', Courier, monospace;
-      letter-spacing: 0.1em;
-      color: var(--blue-star);
-      background: transparent;
-      border: 1px solid var(--blue-star);
-      border-radius: 6px;
-      cursor: pointer;
-      text-transform: uppercase;
-      transition: background 0.2s;
-    }
-
-    #reset-btn:hover {
-      background: rgba(79, 195, 247, 0.1);
-    }
-
-    /* ── RESPONSIVE: 400px ── */
-    @media (max-width: 400px) {
-      #scoreboard {
-        gap: 0.75rem;
-        font-size: 14px;
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Matrix of Conscience — a mobile-friendly match-3 matrix with M45 Seven Sisters Alignment." />
+    <meta name="theme-color" content="#02040e" />
+    <link rel="icon" type="image/png" href="../../assets/logo.png" />
+    <title>Matrix of Conscience | Amazing Grace</title>
+    <style>
+      :root {
+        --bg: #02040e;
+        --panel: rgba(10, 12, 24, 0.90);
+        --border: rgba(0, 255, 160, 0.22);
+        --text: #d7fbe8;
+        --muted: rgba(215, 251, 232, 0.75);
+        --green: #00ff00;
       }
 
-      .score-label {
-        font-size: 0.6rem;
-      }
-    }
+      *, *::before, *::after { box-sizing: border-box; }
 
-    /* ── RESPONSIVE: 360px ── */
-    @media (max-width: 360px) {
-      #scoreboard {
-        flex-direction: column;
+      body, html {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        background: #000;
+        font-family: 'Courier New', Courier, monospace;
+        color: var(--green);
+      }
+
+      body {
+        background: radial-gradient(circle at 50% 15%, rgba(0,255,160,0.10), transparent 55%), var(--bg);
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+
+      .shell {
+        width: min(100%, 540px);
+        box-sizing: border-box;
+        overflow-x: hidden;
+        overflow-y: auto;
+        margin: 0 auto;
+        padding: 1.25rem 0.75rem 2rem;
+      }
+
+      h1 {
+        margin: 0.25rem 0 0.25rem;
+        text-align: center;
+        font-size: clamp(1.6rem, 4.6vw, 2.4rem);
+        letter-spacing: 0.10em;
+      }
+
+      .subhead {
+        margin: 0 0 1rem;
+        text-align: center;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .scoreboard {
+        display: flex;
+        gap: 0.6rem;
+        justify-content: space-between;
         align-items: center;
+        flex-wrap: wrap;
+        padding: 0.75rem;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        color: var(--text);
+        margin-bottom: 1rem;
+      }
+
+      .scoreboard strong { color: #fff; }
+
+      @media (max-width: 400px) {
+        .scoreboard { font-size: 14px; }
+      }
+
+      @media (max-width: 360px) {
+        .scoreboard { flex-direction: column; }
+      }
+
+      #grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        grid-template-rows: repeat(7, 1fr);
+        gap: 8px;
+        width: 100%;
+        max-width: 450px;
+        margin: 0 auto;
+        padding: 10px;
+        box-sizing: border-box;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(0,255,160,0.18);
+        border-radius: 18px;
+      }
+
+      .tile {
+        aspect-ratio: 1 / 1;
+        display: grid;
+        place-items: center;
+        border-radius: 14px;
+        border: 1px solid rgba(0,255,160,0.18);
+        background: rgba(0,0,0,0.25);
+        font-size: clamp(1.1rem, 4vw, 1.6rem);
+        color: var(--text);
+        user-select: none;
+        touch-action: manipulation;
+        transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+      }
+
+      .tile:focus-visible { outline: 3px solid rgba(0,255,160,0.55); outline-offset: 2px; }
+      .tile.selected { border-color: rgba(0,255,160,0.9); background: rgba(0,255,160,0.10); transform: translateY(-1px); }
+      .tile.is-dragging { background: rgba(0,255,160,0.08); }
+
+      .btn-row {
+        margin-top: 1rem;
+        display: grid;
+        place-items: center;
         gap: 0.5rem;
       }
-    }
-  </style>
-</head>
-<body>
 
-  <!-- HEADER -->
-  <header>
-    <h1>Matrix of Conscience</h1>
-    <p>M45 Seven Sisters Alignment &nbsp;·&nbsp; Pleiades Protocol</p>
-  </header>
+      button {
+        width: calc(100% - 20px);
+        max-width: 300px;
+        padding: 12px 0;
+        font-size: 16px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(0,255,160,0.12);
+        color: var(--text);
+        cursor: pointer;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        min-height: 44px;
+      }
+      button:hover { background: rgba(0,255,160,0.18); }
 
-  <!-- M45 INLINE SVG CONSTELLATION MAP (7 Blue Stars + 1 Enhanced Red Spectral Target) -->
-  <div id="m45-map" aria-label="M45 Pleiades constellation map">
-    <svg viewBox="0 0 320 120" xmlns="http://www.w3.org/2000/svg"
-         role="img" aria-label="M45 Seven Sisters constellation with Enhanced Red Spectral Target">
-      <title>M45 Pleiades — Seven Blue Sisters + Enhanced Red Spectral Target</title>
+      .status {
+        text-align: center;
+        color: var(--muted);
+        min-height: 1.25rem;
+        margin-top: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <h1>Matrix of Conscience</h1>
+      <p class="subhead">M45 Seven Sisters Alignment — calibrate through matches and chain reactions.</p>
 
-      <!-- Constellation lines connecting the Seven Sisters -->
-      <g stroke="#4fc3f7" stroke-width="0.6" opacity="0.35">
-        <line x1="60"  y1="55"  x2="90"  y2="35"/>
-        <line x1="90"  y1="35"  x2="130" y2="45"/>
-        <line x1="130" y1="45" x2="160" y2="30"/>
-        <line x1="160" y1="30" x2="200" y2="50"/>
-        <line x1="200" y1="50" x2="230" y2="40"/>
-        <line x1="230" y1="40" x2="260" y2="60"/>
-        <line x1="130" y1="45" x2="160" y2="75"/>
-      </g>
+      <section class="scoreboard" aria-label="Scoreboard">
+        <div>Stellar Points: <strong id="score">0</strong></div>
+        <div>High Score: <strong id="high">0</strong></div>
+      </section>
 
-      <!-- Blue Star 1 — Alcyone (brightest) -->
-      <g transform="translate(160,30)">
-        <circle r="7" fill="#4fc3f7" opacity="0.9"/>
-        <circle r="12" fill="none" stroke="#4fc3f7" stroke-width="0.8" opacity="0.3"/>
-        <text y="22" text-anchor="middle" font-size="7" fill="#4fc3f7" opacity="0.7"
-              font-family="'Courier New',Courier,monospace">Alcyone</text>
-      </g>
+      <div id="grid" aria-label="M45 Seven Sisters Alignment grid" role="grid"></div>
 
-      <!-- Blue Star 2 — Atlas -->
-      <g transform="translate(60,55)">
-        <circle r="5" fill="#4fc3f7" opacity="0.85"/>
-        <circle r="9" fill="none" stroke="#4fc3f7" stroke-width="0.6" opacity="0.25"/>
-        <text y="20" text-anchor="middle" font-size="6.5" fill="#4fc3f7" opacity="0.65"
-              font-family="'Courier New',Courier,monospace">Atlas</text>
-      </g>
+      <div class="btn-row">
+        <button id="reset" type="button">Reset Calibration</button>
+        <div id="status" class="status" aria-live="polite"></div>
+      </div>
+    </main>
 
-      <!-- Blue Star 3 — Electra -->
-      <g transform="translate(90,35)">
-        <circle r="5" fill="#4fc3f7" opacity="0.85"/>
-        <circle r="9" fill="none" stroke="#4fc3f7" stroke-width="0.6" opacity="0.25"/>
-        <text y="20" text-anchor="middle" font-size="6.5" fill="#4fc3f7" opacity="0.65"
-              font-family="'Courier New',Courier,monospace">Electra</text>
-      </g>
+    <script type="module">
+      import {
+        GRID_SIZE,
+        createGrid,
+        applySwap,
+        findMatches,
+        applyMatches,
+        applyGravity,
+        findMatchesGrouped,
+        isAdjacent
+      } from '../../js/matchmaker.js';
 
-      <!-- Blue Star 4 — Maia -->
-      <g transform="translate(130,45)">
-        <circle r="5.5" fill="#4fc3f7" opacity="0.85"/>
-        <circle r="10" fill="none" stroke="#4fc3f7" stroke-width="0.6" opacity="0.25"/>
-        <text y="22" text-anchor="middle" font-size="6.5" fill="#4fc3f7" opacity="0.65"
-              font-family="'Courier New',Courier,monospace">Maia</text>
-      </g>
+      const ICONS = {
+        heart: '💚',
+        star: '⭐',
+        cross: '✝️',
+        flame: '🔥',
+        drop: '💧'
+      };
 
-      <!-- Blue Star 5 — Merope -->
-      <g transform="translate(160,75)">
-        <circle r="4.5" fill="#4fc3f7" opacity="0.8"/>
-        <circle r="8" fill="none" stroke="#4fc3f7" stroke-width="0.6" opacity="0.2"/>
-        <text y="19" text-anchor="middle" font-size="6.5" fill="#4fc3f7" opacity="0.65"
-              font-family="'Courier New',Courier,monospace">Merope</text>
-      </g>
+      const gridEl = document.getElementById('grid');
+      const scoreEl = document.getElementById('score');
+      const highEl = document.getElementById('high');
+      const statusEl = document.getElementById('status');
+      const resetBtn = document.getElementById('reset');
 
-      <!-- Blue Star 6 — Taygeta -->
-      <g transform="translate(200,50)">
-        <circle r="5" fill="#4fc3f7" opacity="0.85"/>
-        <circle r="9" fill="none" stroke="#4fc3f7" stroke-width="0.6" opacity="0.25"/>
-        <text y="20" text-anchor="middle" font-size="6.5" fill="#4fc3f7" opacity="0.65"
-              font-family="'Courier New',Courier,monospace">Taygeta</text>
-      </g>
+      let gridData = createGrid();
+      let score = 0;
+      let highScore = Number(localStorage.getItem('matrix_high_score') || 0);
+      highEl.textContent = String(highScore);
 
-      <!-- Blue Star 7 — Celaeno -->
-      <g transform="translate(230,40)">
-        <circle r="4.5" fill="#4fc3f7" opacity="0.8"/>
-        <circle r="8" fill="none" stroke="#4fc3f7" stroke-width="0.6" opacity="0.2"/>
-        <text y="19" text-anchor="middle" font-size="6.5" fill="#4fc3f7" opacity="0.65"
-              font-family="'Courier New',Courier,monospace">Celaeno</text>
-      </g>
+      let selected = null;
+      let isDragging = false;
+      let currentDragPath = [];
+      let activePointerId = null;
 
-      <!-- Enhanced Red Spectral Target — Sterope (M45 emission nebula marker) -->
-      <g transform="translate(260,60)">
-        <circle r="6" fill="#ef5350" opacity="0.9"/>
-        <circle r="11" fill="none" stroke="#ef5350" stroke-width="1" opacity="0.5"/>
-        <circle r="16" fill="none" stroke="#ef5350" stroke-width="0.5" opacity="0.25"/>
-        <!-- Cross-hair indicator for spectral target -->
-        <line x1="-4" y1="0" x2="4" y2="0" stroke="#ef5350" stroke-width="1" opacity="0.8"/>
-        <line x1="0" y1="-4" x2="0" y2="4" stroke="#ef5350" stroke-width="1" opacity="0.8"/>
-        <text y="27" text-anchor="middle" font-size="6.5" fill="#ef5350" opacity="0.8"
-              font-family="'Courier New',Courier,monospace">Sterope ★</text>
-      </g>
+      const tiles = [];
 
-      <!-- M45 label -->
-      <text x="160" y="112" text-anchor="middle" font-size="8" fill="#4fc3f7" opacity="0.45"
-            font-family="'Courier New',Courier,monospace" letter-spacing="0.15em">
-        M45 · PLEIADES · 444 LY
-      </text>
-    </svg>
-  </div>
+      function kindOf(cell) {
+        if (!cell) return null;
+        return typeof cell === 'string' ? cell : cell.kind;
+      }
 
-  <!-- SCOREBOARD -->
-  <div id="scoreboard" role="status" aria-live="polite">
-    <div class="score-item">
-      <div class="score-label">Stellar Points</div>
-      <div class="score-value" id="score-display">0</div>
-    </div>
-    <div class="score-item">
-      <div class="score-label">High Score</div>
-      <div class="score-value" id="high-score-display">0</div>
-    </div>
-    <div class="score-item">
-      <div class="score-label">Level</div>
-      <div class="score-value" id="level-display">1</div>
-    </div>
-  </div>
-
-  <!-- GAME SHELL -->
-  <div id="game-shell">
-
-    <!-- 7×7 ALIGNMENT GRID -->
-    <div id="grid" role="grid" aria-label="M45 alignment matrix"></div>
-
-    <!-- CONTROLS -->
-    <div id="controls">
-      <button id="reset-btn" type="button">Reset Calibration</button>
-    </div>
-
-  </div>
-
-  <script type="module">
-    import { GRID_SIZE, createInitialGrid, findMatchesGrouped, applyMatches, applyGravity } from '../../js/matchmaker.js';
-
-    /* ── STAR SYMBOLS for the 7×7 grid ── */
-    const STAR_SYMBOLS = ['⭐', '🌟', '💫', '✨', '🔵', '🔷', '🟣'];
-
-    /* ── STATE ── */
-    let gridData = createInitialGrid();
-    let score = 0;
-    let level = 1;
-    let currentDragPath = [];
-    let dragActive = false;
-
-    const HIGH_SCORE_KEY = 'matrix_high_score';
-
-    function loadHighScore() {
-      try { return parseInt(localStorage.getItem(HIGH_SCORE_KEY) || '0', 10) || 0; } catch { return 0; }
-    }
-
-    function saveHighScore(val) {
-      try { localStorage.setItem(HIGH_SCORE_KEY, String(val)); } catch { /* noop */ }
-    }
-
-    /* ── DOM REFERENCES ── */
-    const gridEl        = document.getElementById('grid');
-    const scoreEl       = document.getElementById('score-display');
-    const highScoreEl   = document.getElementById('high-score-display');
-    const levelEl       = document.getElementById('level-display');
-    const resetBtn      = document.getElementById('reset-btn');
-
-    /* ── RENDER ── */
-    function renderGrid() {
-      gridEl.innerHTML = '';
-      for (let r = 0; r < GRID_SIZE; r++) {
-        for (let c = 0; c < GRID_SIZE; c++) {
-          const gem = gridData[r][c];
-          const kind = typeof gem === 'string' ? gem : gem?.kind ?? 'star';
-          const symbolIndex = ['heart','star','cross','flame','drop'].indexOf(kind);
-          const symbol = STAR_SYMBOLS[symbolIndex >= 0 ? symbolIndex : 1];
-
-          const tile = document.createElement('div');
-          tile.className = 'tile';
-          tile.textContent = symbol;
-          tile.dataset.row = r;
-          tile.dataset.col = c;
-          tile.setAttribute('role', 'gridcell');
-          tile.setAttribute('aria-label', `${kind} at row ${r + 1}, column ${c + 1}`);
-
-          tile.addEventListener('pointerdown', handlePointerDown);
-          tile.addEventListener('pointerenter', handlePointerEnter);
-
-          gridEl.appendChild(tile);
+      function render() {
+        for (let r = 0; r < GRID_SIZE; r++) {
+          for (let c = 0; c < GRID_SIZE; c++) {
+            const idx = r * GRID_SIZE + c;
+            const tile = tiles[idx];
+            const kind = kindOf(gridData[r][c]);
+            tile.dataset.r = String(r);
+            tile.dataset.c = String(c);
+            tile.textContent = ICONS[kind] || '·';
+            tile.classList.toggle('selected', selected?.r === r && selected?.c === c);
+          }
         }
       }
-    }
 
-    /* ── SELECTION / DRAG ── */
-    function handleSelection(r, c, tileElement) {
-      const match = findMatchesGrouped(gridData);
-      if (match && match.matches && match.matches.length > 0) {
-        const pts = match.matches.reduce((acc, m) => acc + m.length * 10, 0) * level;
-        score += pts;
-        gridData = applyMatches(gridData, match);
-        gridData = applyGravity(gridData);
-        updateScore();
-        renderGrid();
+      function setScore(nextScore) {
+        score = nextScore;
+        scoreEl.textContent = String(score);
+        if (score > highScore) {
+          highScore = score;
+          localStorage.setItem('matrix_high_score', String(highScore));
+          highEl.textContent = String(highScore);
+        }
       }
-    }
 
-    function handlePointerDown(e) {
-      e.preventDefault();
-      const tile = e.currentTarget;
-      currentDragPath = [tile];
-      dragActive = true;
-      tile.classList.add('is-dragging');
-      tile.setPointerCapture(e.pointerId);
-    }
+      function clearSelection() {
+        selected = null;
+        currentDragPath = [];
+        activePointerId = null;
+      }
 
-    function handlePointerEnter(e) {
-      if (!dragActive) return;
-      const tile = e.currentTarget;
-      if (!currentDragPath.includes(tile)) {
-        currentDragPath.push(tile);
+      function resolveMatchesFrom(grid) {
+        let next = grid;
+        let combo = 1;
+        let gained = 0;
+
+        // Legacy grouping kept for M45 alignment scoring/sequence logic.
+        const groups = findMatchesGrouped(gridData);
+        if (groups.length) {
+          gained += groups.reduce((sum, g) => sum + g.length, 0) * 5;
+        }
+
+        while (true) {
+          const res = findMatches(next);
+          if (!res.matches.length) break;
+          gained += res.matches.length * 10 * combo;
+          next = applyMatches(next, res, combo);
+          next = applyGravity(next);
+          combo++;
+        }
+
+        return { next, gained };
+      }
+
+      function handleSelection(r, c, tileElement) {
+        if (!selected) {
+          selected = { r, c };
+          tileElement.classList.add('selected');
+          return;
+        }
+
+        const { r: sr, c: sc } = selected;
+        if (!isAdjacent(sr, sc, r, c)) return;
+
+        const swapped = applySwap(gridData, sr, sc, r, c);
+        const first = findMatches(swapped);
+        if (!first.matches.length) {
+          statusEl.textContent = 'No alignment — choose an adjacent swap.';
+          clearSelection();
+          render();
+          return;
+        }
+
+        const { next, gained } = resolveMatchesFrom(swapped);
+        gridData = next;
+        setScore(score + gained);
+        statusEl.textContent = gained ? `+${gained} stellar points` : '';
+        clearSelection();
+        render();
+      }
+
+      function handlePointerDown(e) {
+        if (activePointerId !== null) return;
+        const tile = e.currentTarget;
+        if (!(tile instanceof HTMLElement)) return;
+        const r = Number(tile.dataset.r);
+        const c = Number(tile.dataset.c);
+        if (![r, c].every(Number.isFinite)) return;
+
+        activePointerId = e.pointerId;
+        isDragging = true;
+        currentDragPath = [{ r, c }];
+        tile.setPointerCapture(e.pointerId);
         tile.classList.add('is-dragging');
+        handleSelection(r, c, tile);
       }
-    }
 
-    function handlePointerUp(e) {
-      if (!dragActive) return;
-      dragActive = false;
-      currentDragPath.forEach(t => t.classList.remove('is-dragging'));
+      function handlePointerEnter(e) {
+        if (!isDragging) return;
+        const tile = e.currentTarget;
+        if (!(tile instanceof HTMLElement)) return;
+        const r = Number(tile.dataset.r);
+        const c = Number(tile.dataset.c);
+        if (![r, c].every(Number.isFinite)) return;
 
-      if (currentDragPath.length >= 2) {
-        const first = currentDragPath[0];
-        const r = parseInt(first.dataset.row, 10);
-        const c = parseInt(first.dataset.col, 10);
-        handleSelection(r, c, first);
+        const last = currentDragPath[currentDragPath.length - 1];
+        if (last && last.r === r && last.c === c) return;
+        currentDragPath.push({ r, c });
+
+        handleSelection(r, c, tile);
       }
-      currentDragPath = [];
-    }
 
-    window.addEventListener('pointerup', handlePointerUp);
+      function handlePointerUp(e) {
+        if (activePointerId === null) return;
+        if (e.pointerId !== activePointerId) return;
+        isDragging = false;
+        tiles.forEach((t) => t.classList.remove('is-dragging'));
+        clearSelection();
+        render();
+      }
 
-    /* ── SCORE ── */
-    function updateScore() {
-      scoreEl.textContent = String(score);
-      const hi = loadHighScore();
-      if (score > hi) saveHighScore(score);
-      highScoreEl.textContent = String(Math.max(score, hi));
-      level = 1 + Math.floor(score / 200);
-      levelEl.textContent = String(level);
-    }
+      function init() {
+        gridEl.innerHTML = '';
+        tiles.length = 0;
+        for (let r = 0; r < GRID_SIZE; r++) {
+          for (let c = 0; c < GRID_SIZE; c++) {
+            const tile = document.createElement('div');
+            tile.className = 'tile';
+            tile.setAttribute('role', 'gridcell');
+            tile.tabIndex = 0;
 
-    /* ── RESET ── */
-    resetBtn.addEventListener('click', () => {
-      gridData = createInitialGrid();
-      score = 0;
-      level = 1;
-      currentDragPath = [];
-      dragActive = false;
-      updateScore();
-      renderGrid();
-    });
+            tile.addEventListener('pointerdown', handlePointerDown);
+            tile.addEventListener('pointerenter', handlePointerEnter);
 
-    /* ── INIT ── */
-    highScoreEl.textContent = String(loadHighScore());
-    renderGrid();
-  </script>
+            tiles.push(tile);
+            gridEl.appendChild(tile);
+          }
+        }
 
-</body>
+        window.addEventListener('pointerup', handlePointerUp);
+        render();
+      }
+
+      resetBtn.addEventListener('click', () => {
+        gridData = createGrid();
+        setScore(0);
+        statusEl.textContent = '';
+        clearSelection();
+        render();
+      });
+
+      init();
+    </script>
+  </body>
 </html>
