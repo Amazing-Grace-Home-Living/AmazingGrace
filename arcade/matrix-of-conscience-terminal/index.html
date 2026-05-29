@@ -316,7 +316,9 @@
     const backBtn = document.getElementById('backBtn');
 
     let isGameMode = false;
-    let gameGridData = Array.from({ length: 16 }, () => Math.floor(Math.random() * 4));
+    const GRID_SIZE = 16;
+    const SYMBOL_COUNT = 4;
+    let gameGridData = Array.from({ length: GRID_SIZE }, () => Math.floor(Math.random() * SYMBOL_COUNT));
     const symbols = ['✓', '◆', '○', '★'];
 
     function addLine(text, className = 'terminal-line') {
@@ -352,8 +354,6 @@
         setTimeout(() => {
           addLine(`IMAGE: ${prompt} rendered successfully.`, 'terminal-line image');
         }, 2000);
-      } else if (lower === '') {
-        // Empty command, ignore
       } else {
         addLine('ERROR: Command not found.', 'terminal-line');
       }
@@ -361,13 +361,13 @@
 
     function renderGame() {
       gameGrid.innerHTML = '';
-      for (let i = 0; i < 16; i++) {
+      for (let i = 0; i < GRID_SIZE; i++) {
         const tile = document.createElement('div');
         tile.className = 'game-tile';
         tile.textContent = symbols[gameGridData[i]];
         tile.dataset.index = i;
         tile.addEventListener('click', () => {
-          gameGridData[i] = (gameGridData[i] + 1) % 4;
+          gameGridData[i] = (gameGridData[i] + 1) % SYMBOL_COUNT;
           tile.textContent = symbols[gameGridData[i]];
         });
         gameGrid.appendChild(tile);

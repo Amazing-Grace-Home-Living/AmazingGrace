@@ -26,7 +26,9 @@ describe('Matrix of Conscience Terminal', () => {
     const html = fs.readFileSync('arcade/matrix-of-conscience-terminal/index.html', 'utf8');
 
     expect(html).toContain('grid-template-columns: repeat(4, 1fr)');
-    expect(html).toContain("Array.from({ length: 16 }");
+    expect(html).toContain('const GRID_SIZE = 16');
+    expect(html).toContain('const SYMBOL_COUNT = 4');
+    expect(html).toContain("Array.from({ length: GRID_SIZE }");
     expect(html).toContain('.game-grid');
     expect(html).toContain('.game-tile');
   });
