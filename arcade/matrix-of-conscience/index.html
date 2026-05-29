@@ -357,7 +357,7 @@
   </div>
 
   <script type="module">
-    import { GRID_SIZE, createInitialGrid, findMatchesGrouped, applyMatches, applyGravity } from '../../js/matchmaker.js';
+    import { GRID_SIZE, createInitialGrid, applySwap, findMatches, applyMatches, applyGravity } from '../../js/matchmaker.js';
 
     /* ── STAR SYMBOLS for the 7×7 grid ── */
     const STAR_SYMBOLS = ['⭐', '🌟', '💫', '✨', '🔵', '🔷', '🟣'];
@@ -386,6 +386,40 @@
     const levelEl       = document.getElementById('level-display');
     const resetBtn      = document.getElementById('reset-btn');
 
+    function parseTileCoords(tile) {
+      if (!tile) return null;
+      const row = Number.parseInt(tile.dataset.row ?? '', 10);
+      const col = Number.parseInt(tile.dataset.col ?? '', 10);
+      if (!Number.isFinite(row) || !Number.isFinite(col)) return null;
+      return { row, col };
+    }
+
+    function areAdjacentTiles(tileA, tileB) {
+      const start = parseTileCoords(tileA);
+      const end = parseTileCoords(tileB);
+      if (!start || !end) return false;
+
+      return (
+        (Math.abs(start.row - end.row) === 1 && start.col === end.col) ||
+        (Math.abs(start.col - end.col) === 1 && start.row === end.row)
+      );
+    }
+
+    function resolveBoard(nextGrid) {
+      let resolvedGrid = nextGrid;
+      let clearedCells = 0;
+
+      while (true) {
+        const matchResult = findMatches(resolvedGrid);
+        if (matchResult.matches.length === 0) break;
+        clearedCells += matchResult.matches.length;
+        resolvedGrid = applyMatches(resolvedGrid, matchResult);
+        resolvedGrid = applyGravity(resolvedGrid);
+      }
+
+      return { resolvedGrid, clearedCells };
+    }
+
     /* ── RENDER ── */
     function renderGrid() {
       gridEl.innerHTML = '';
@@ -413,16 +447,21 @@
     }
 
     /* ── SELECTION / DRAG ── */
-    function handleSelection(r, c, tileElement) {
-      const match = findMatchesGrouped(gridData);
-      if (match && match.matches && match.matches.length > 0) {
-        const pts = match.matches.reduce((acc, m) => acc + m.length * 10, 0) * level;
-        score += pts;
-        gridData = applyMatches(gridData, match);
-        gridData = applyGravity(gridData);
-        updateScore();
-        renderGrid();
-      }
+    function handleSelection(startTile, endTile) {
+      if (!startTile || !endTile || startTile === endTile || !areAdjacentTiles(startTile, endTile)) return;
+
+      const start = parseTileCoords(startTile);
+      const end = parseTileCoords(endTile);
+      if (!start || !end) return;
+
+      const swappedGrid = applySwap(gridData, start.row, start.col, end.row, end.col);
+      const { resolvedGrid, clearedCells } = resolveBoard(swappedGrid);
+      if (clearedCells === 0) return;
+
+      score += clearedCells * 10 * level;
+      gridData = resolvedGrid;
+      updateScore();
+      renderGrid();
     }
 
     function handlePointerDown(e) {
@@ -449,10 +488,7 @@
       currentDragPath.forEach(t => t.classList.remove('is-dragging'));
 
       if (currentDragPath.length >= 2) {
-        const first = currentDragPath[0];
-        const r = parseInt(first.dataset.row, 10);
-        const c = parseInt(first.dataset.col, 10);
-        handleSelection(r, c, first);
+        handleSelection(currentDragPath[0], currentDragPath[currentDragPath.length - 1]);
       }
       currentDragPath = [];
     }

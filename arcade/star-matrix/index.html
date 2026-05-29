@@ -203,10 +203,25 @@
   </div>
 
   <script type="module">
-    import { GRID_SIZE, createInitialGrid, applySwap, findMatchesGrouped, applyMatches, applyGravity } from '../../js/matchmaker.js';
+    import { GRID_SIZE, createInitialGrid, applySwap, findMatches, applyMatches, applyGravity } from '../../js/matchmaker.js';
 
     function smSwap(rowA, colA, rowB, colB) {
       grid = applySwap(grid, rowA, colA, rowB, colB);
+    }
+
+    function resolveBoard(nextGrid) {
+      let resolvedGrid = nextGrid;
+      let clearedCells = 0;
+
+      while (true) {
+        const matchResult = findMatches(resolvedGrid);
+        if (matchResult.matches.length === 0) break;
+        clearedCells += matchResult.matches.length;
+        resolvedGrid = applyMatches(resolvedGrid, matchResult);
+        resolvedGrid = applyGravity(resolvedGrid);
+      }
+
+      return { resolvedGrid, clearedCells };
     }
 
     /* ── SYMBOLS ── */
@@ -303,12 +318,12 @@
       if (!isAdjacent) return;
 
       smSwap(rowA, colA, rowB, colB);
-      const matchResult = findMatchesGrouped(grid);
-      if (matchResult && matchResult.matches && matchResult.matches.length > 0) {
-        const pts = matchResult.matches.reduce((acc, m) => acc + m.length * 10, 0);
-        smScore += pts;
-        grid = applyMatches(grid, matchResult);
-        grid = applyGravity(grid);
+      const { resolvedGrid, clearedCells } = resolveBoard(grid);
+      if (clearedCells === 0) {
+        smSwap(rowA, colA, rowB, colB);
+      } else {
+        smScore += clearedCells * 10;
+        grid = resolvedGrid;
         updateScore();
       }
       renderBoard();
