@@ -776,7 +776,7 @@
 
         function submitScore() {
             const leaderboard = loadLeaderboard();
-            const scoreToSubmit = gameState.totalScore || gameState.currentScore;
+            const scoreToSubmit = gameState.totalScore ?? gameState.currentScore;
             const newEntry = {
                 name: gameState.guardianName,
                 score: scoreToSubmit,
