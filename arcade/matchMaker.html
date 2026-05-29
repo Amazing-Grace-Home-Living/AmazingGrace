@@ -2,715 +2,269 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Trinity: Matrix of Conscience</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Matrix: Alignment Protocol</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
-        
         :root {
-            --bg-color: #050505;
-            --tile-bg: #0a0a0a;
-            --accent-blue: #3b82f6;
+            --bg-color: #0a0b10;
+            --grid-bg: #121420;
+            --accent-blue: #00e5ff;
+            --accent-purple: #bd00ff;
+            --text-main: #ffffff;
+            --text-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
             background-color: var(--bg-color);
-            color: #e5e5e5;
-            font-family: sans-serif;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            height: 100vh;
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            background: radial-gradient(circle at center, #111827 0%, #000000 100%);
-            touch-action: none; /* Prevents bounce scroll on mobile */
-        }
-
-        .orbitron { font-family: 'Orbitron', sans-serif; }
-
-        .app-view {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
-            overflow-y: auto;
-            animation: fadeIn 0.4s ease-out forwards;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .hidden { display: none !important; }
-
-        #game-board {
-            display: grid;
-            gap: 3px;
-            padding: 6px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            user-select: none;
-            touch-action: none;
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            margin: auto;
-            box-shadow: 0 0 30px rgba(59, 130, 246, 0.1);
-        }
-
-        .tile {
-            background-color: var(--tile-bg);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 6px;
-            aspect-ratio: 1/1;
-            display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            box-shadow: inset 0 2px 4px rgba(255,255,255,0.05);
-            touch-action: none; 
-            cursor: pointer;
+            overflow: hidden;
         }
 
-        .tile i, .tile svg {
-            width: 75%;
-            height: 75%;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-            pointer-events: none; 
+        .game-container {
+            width: 100vw;
+            height: 100vh;
+            max-width: 600px;
+            max-height: 900px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2rem;
         }
 
-        .tile.selected {
-            border-color: var(--accent-blue);
-            transform: scale(0.9);
-            box-shadow: 0 0 15px var(--accent-blue), inset 0 2px 4px rgba(255,255,255,0.1);
-            z-index: 10;
-        }
-
-        /* Sovereign Store Items */
-        .store-item {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
+        header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            width: 100%;
         }
 
-        @keyframes floatUp {
-            0% { opacity: 1; transform: translate(-50%, 0) scale(0.8); }
-            50% { transform: translate(-50%, -20px) scale(1.2); }
-            100% { opacity: 0; transform: translate(-50%, -40px) scale(1); }
-        }
-        
-        .float-text {
-            position: absolute;
-            color: #60a5fa;
-            font-weight: bold;
+        .title {
             font-size: 1.5rem;
-            pointer-events: none;
-            animation: floatUp 1s ease-out forwards;
-            text-shadow: 0px 2px 10px rgba(255, 255, 255, 0.8);
-            z-index: 100;
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--accent-blue); border-radius: 10px; }
+        .stats {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 1rem;
+        }
+
+        .stat-box {
+            background: var(--grid-bg);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .grid-container {
+            aspect-ratio: 1;
+            width: 100%;
+            background: var(--grid-bg);
+            border-radius: 16px;
+            padding: 12px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .cell {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+        }
+
+        .cell:hover {
+            transform: scale(1.02);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .cell.selected {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+            background: rgba(0, 229, 255, 0.1);
+        }
+
+        .cell.matched {
+            animation: pulse 0.5s ease-out;
+            visibility: hidden;
+        }
+
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            border-color: var(--text-main);
+            color: var(--text-main);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); background: var(--accent-purple); opacity: 1; }
+            100% { transform: scale(1.2); background: transparent; opacity: 0; }
+        }
     </style>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const apiKey = ""; 
-
-        // --- EDM/CHIPTUNE AUDIO ENGINE ---
-        const SoundEngine = {
-            ctx: null,
-            muted: false,
-            bgmNode: null,
-            nextNoteTime: 0,
-            currentNote: 0,
-            isPlayingBGM: false,
-            sequence: [220, 220, 261.63, 220, 329.63, 220, 293.66, 261.63], 
-
-            init() {
-                if (!this.ctx) { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
-                if (this.ctx.state === 'suspended') { this.ctx.resume(); }
-                if (!this.isPlayingBGM) {
-                    this.isPlayingBGM = true;
-                    this.nextNoteTime = this.ctx.currentTime + 0.1;
-                    this.scheduleBGM();
-                }
-            },
-            
-            scheduleBGM() {
-                if (!this.isPlayingBGM) return;
-                while (this.nextNoteTime < this.ctx.currentTime + 0.1) {
-                    this.playSynthNote(this.sequence[this.currentNote], this.nextNoteTime);
-                    this.nextNoteTime += 0.15; 
-                    this.currentNote = (this.currentNote + 1) % this.sequence.length;
-                }
-                this.bgmNode = requestAnimationFrame(() => this.scheduleBGM());
-            },
-
-            playSynthNote(freq, time) {
-                if (this.muted) return;
-                const osc = this.ctx.createOscillator();
-                const filter = this.ctx.createBiquadFilter();
-                const gain = this.ctx.createGain();
-                
-                osc.type = 'square';
-                osc.frequency.value = freq / 2;
-
-                filter.type = 'lowpass';
-                filter.Q.value = 5;
-                filter.frequency.setValueAtTime(400, time);
-                filter.frequency.exponentialRampToValueAtTime(100, time + 0.1);
-
-                gain.gain.setValueAtTime(0.05, time);
-                gain.gain.exponentialRampToValueAtTime(0.001, time + 0.1);
-
-                osc.connect(filter);
-                filter.connect(gain);
-                gain.connect(this.ctx.destination);
-                
-                osc.start(time);
-                osc.stop(time + 0.1);
-            },
-
-            playSFX(freq, type, dur, vol) {
-                if (this.muted || !this.ctx) return;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = type;
-                osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-                gain.gain.setValueAtTime(vol, this.ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + dur);
-                osc.connect(gain); gain.connect(this.ctx.destination);
-                osc.start(); osc.stop(this.ctx.currentTime + dur);
-            },
-            swap() { this.playSFX(400, 'triangle', 0.1, 0.08); },
-            click() { this.playSFX(800, 'sine', 0.05, 0.05); },
-            match(comboCount = 3) {
-                const baseFreq = 523.25 + (comboCount - 3) * 130.81;
-                this.playSFX(baseFreq, 'square', 0.15, 0.05); 
-                setTimeout(() => this.playSFX(baseFreq * 1.25, 'square', 0.2, 0.05), 80);
-            },
-            bonus() {
-                [880, 1108.73, 1318.51, 1760].forEach((f, i) => {
-                    setTimeout(() => this.playSFX(f, 'square', 0.1, 0.08), i * 50);
-                });
-            },
-            win() {
-                [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
-                    setTimeout(() => this.playSFX(f, 'square', 0.4, 0.1), i * 150);
-                });
-            },
-            toggleMute() {
-                this.muted = !this.muted;
-                return this.muted;
-            }
-        };
-
-        window.toggleMute = () => {
-            const isMuted = SoundEngine.toggleMute();
-            const icon = document.getElementById('mute-icon');
-            if(icon) {
-                icon.setAttribute('data-lucide', isMuted ? 'volume-x' : 'volume-2');
-                lucide.createIcons();
-            }
-        };
-
-        // --- SVGS ---
-        const pinkHeartSVG = `<svg viewBox="0 0 24 24" fill="#ec4899" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
-        const shieldCrossSVG = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="#9ca3af"/><path d="M11 7h2v3h3v2h-3v5h-2v-5H8v-2h3V7z" fill="#0a0a0a"/></svg>`;
-        
-        const geminiStarSVG = `<svg viewBox="0 0 24 24" fill="#ffffff" xmlns="http://www.w3.org/2000/svg"><path d="M12 2 C12 2 12 10 20 12 C12 14 12 22 12 22 C12 22 12 14 4 12 C12 10 12 2 12 2 Z" stroke="#e0f2fe" stroke-width="1"/></svg>`;
-        
-        const rubySVG = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><polygon points="12,12 12,2 14.4,8.8" fill="#fca5a5"/><polygon points="12,12 14.4,8.8 21.5,8.9" fill="#ef4444"/><polygon points="12,12 21.5,8.9 15.8,13.2" fill="#dc2626"/><polygon points="12,12 15.8,13.2 17.9,20.1" fill="#b91c1c"/><polygon points="12,12 17.9,20.1 12,16" fill="#991b1b"/><polygon points="12,12 12,16 6.1,20.1" fill="#7f1d1d"/><polygon points="12,12 6.1,20.1 8.2,13.2" fill="#991b1b"/><polygon points="12,12 8.2,13.2 2.5,8.9" fill="#b91c1c"/><polygon points="12,12 2.5,8.9 9.6,8.8" fill="#dc2626"/><polygon points="12,12 9.6,8.8 12,2" fill="#ef4444"/></svg>`;
-        
-        const blueDavidSVG = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><polygon points="12,2 22,17 2,17" fill="rgba(37,99,235,0.8)" stroke="#60a5fa" stroke-width="1"/><polygon points="12,22 2,7 22,7" fill="rgba(59,130,246,0.8)" stroke="#93c5fd" stroke-width="1"/></svg>`;
-        
-        const gold8PointSVG = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="goldGrad" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fef08a"/><stop offset="50%" stop-color="#eab308"/><stop offset="100%" stop-color="#854d0e"/></radialGradient></defs><polygon points="12,1 14.5,8.5 21,5 15.5,10.5 23,12 15.5,13.5 21,19 14.5,15.5 12,23 9.5,15.5 3,19 8.5,13.5 1,12 8.5,10.5 3,5 9.5,8.5" fill="url(#goldGrad)" stroke="#fef08a" stroke-width="0.5"/></svg>`;
-
-        const STARS = [
-            { id: 'blue_david', color: '', icon: blueDavidSVG, type: 'svg' },
-            { id: 'pink_heart', color: '', icon: pinkHeartSVG, type: 'svg' },
-            { id: 'red_ruby', color: '', icon: rubySVG, type: 'svg' },
-            { id: 'gold_8pt', color: '', icon: gold8PointSVG, type: 'svg' },
-            { id: 'purple_brain', color: 'text-purple-500', icon: 'brain', type: 'lucide' },
-            { id: 'silver_shield', color: '', icon: shieldCrossSVG, type: 'svg' },
-            { id: 'white_gemini', color: '', icon: geminiStarSVG, type: 'svg' }
-        ];
-
-        const LEVEL_STATS = [
-            { size: 6, goal: 500 },
-            { size: 6, goal: 1000 },
-            { size: 7, goal: 1500 },
-            { size: 7, goal: 2000 },
-            { size: 7, goal: 3000 },
-            { size: 8, goal: 4500 },
-            { size: 8, goal: 6000 }
-        ];
-
-        let state = {
-            view: 'start', level: 1, score: 0, balance: 0,
-            board: [], selected: null, playerName: localStorage.getItem('playerName') || 'Anonymous',
-            assistant: false, lastMatch: Date.now()
-        };
-
-        const elements = {
-            board: document.getElementById('game-board'),
-            header: document.getElementById('main-header'),
-            hud: document.getElementById('main-hud'),
-            valLevel: document.getElementById('v-level'),
-            valGoal: document.getElementById('v-goal'),
-            valBal: document.getElementById('v-balance'),
-            loading: document.getElementById('loading-overlay')
-        };
-
-        const showView = (id) => {
-            document.querySelectorAll('.app-view').forEach(v => v.classList.add('hidden'));
-            document.getElementById(`view-${id}`).classList.remove('hidden');
-            state.view = id;
-            
-            if (id === 'game') {
-                elements.header.classList.add('hidden');
-                elements.hud.classList.remove('hidden');
-                elements.hud.classList.add('flex');
-                if (state.board.length === 0) initBoard();
-            } else {
-                elements.header.classList.remove('hidden');
-                elements.hud.classList.add('hidden');
-                elements.hud.classList.remove('flex');
-            }
-        };
-
-        const initBoard = () => {
-            const stats = LEVEL_STATS[state.level - 1];
-            state.score = 0;
-            state.board = [];
-            elements.board.style.gridTemplateColumns = `repeat(${stats.size}, 1fr)`;
-            for (let i = 0; i < stats.size * stats.size; i++) {
-                state.board.push(Math.floor(Math.random() * STARS.length));
-            }
-            state.lastMatch = Date.now();
-            updateUI();
-            renderBoard();
-            setTimeout(checkMatches, 600);
-        };
-
-        // --- DRAG AND DROP MECHANICS ---
-        let startX = 0, startY = 0, dragIdx = null;
-
-        const handlePointerDown = (e, i) => {
-            e.preventDefault(); 
-            e.target.setPointerCapture(e.pointerId);
-            startX = e.clientX; startY = e.clientY; dragIdx = i;
-        };
-
-        const handlePointerUp = (e, i) => {
-            if (dragIdx === null) return;
-            e.target.releasePointerCapture(e.pointerId);
-            const diffX = e.clientX - startX, diffY = e.clientY - startY;
-            const stats = LEVEL_STATS[state.level - 1];
-            let targetIdx = null;
-
-            if (Math.abs(diffX) > 25 || Math.abs(diffY) > 25) {
-                // Swipe Action
-                if (Math.abs(diffX) > Math.abs(diffY)) {
-                    if (diffX > 0 && (dragIdx % stats.size !== stats.size - 1)) targetIdx = dragIdx + 1;
-                    else if (diffX < 0 && (dragIdx % stats.size !== 0)) targetIdx = dragIdx - 1;
-                } else {
-                    if (diffY > 0 && Math.floor(dragIdx / stats.size) < stats.size - 1) targetIdx = dragIdx + stats.size;
-                    else if (diffY < 0 && Math.floor(dragIdx / stats.size) > 0) targetIdx = dragIdx - stats.size;
-                }
-                if (targetIdx !== null) executeSwap(dragIdx, targetIdx);
-            } else {
-                // Click Action
-                if (state.selected === null) {
-                    state.selected = dragIdx;
-                    SoundEngine.click();
-                    renderBoard();
-                } else {
-                    const r1 = Math.floor(state.selected / stats.size), c1 = state.selected % stats.size;
-                    const r2 = Math.floor(dragIdx / stats.size), c2 = dragIdx % stats.size;
-                    if (Math.abs(r1 - r2) + Math.abs(c1 - c2) === 1) { 
-                        executeSwap(state.selected, dragIdx); 
-                    } else { 
-                        state.selected = dragIdx; SoundEngine.click(); renderBoard(); 
-                    }
-                }
-            }
-            dragIdx = null;
-        };
-
-        const executeSwap = (idx1, idx2) => {
-            [state.board[idx1], state.board[idx2]] = [state.board[idx2], state.board[idx1]];
-            state.selected = null;
-            SoundEngine.swap();
-            renderBoard();
-            checkMatches();
-        };
-
-        const renderBoard = () => {
-            elements.board.innerHTML = '';
-            state.board.forEach((sIdx, i) => {
-                const s = STARS[sIdx];
-                const btn = document.createElement('button');
-                btn.className = `tile ${state.selected === i ? 'selected' : ''}`;
-                btn.innerHTML = s.type === 'lucide' ? `<i data-lucide="${s.icon}" class="${s.color}"></i>` : `<div class="${s.color} flex items-center justify-center w-[75%] h-[75%] drop-shadow-md">${s.icon}</div>`;
-                btn.onpointerdown = (e) => handlePointerDown(e, i);
-                btn.onpointerup = (e) => handlePointerUp(e, i);
-                btn.ondragstart = () => false; 
-                elements.board.appendChild(btn);
-            });
-            lucide.createIcons();
-        };
-
-        const showFloatingPoints = (pts, index) => {
-            const tile = elements.board.children[index];
-            if (!tile) return;
-            const rect = tile.getBoundingClientRect();
-            const floatEl = document.createElement('div');
-            floatEl.className = 'float-text orbitron';
-            floatEl.innerText = `+${pts}`;
-            floatEl.style.left = `${rect.left + rect.width / 2}px`;
-            floatEl.style.top = `${rect.top}px`;
-            document.body.appendChild(floatEl);
-            setTimeout(() => floatEl.remove(), 1000);
-        };
-
-        const checkMatches = () => {
-            const stats = LEVEL_STATS[state.level - 1];
-            let matched = new Set();
-            
-            for (let r = 0; r < stats.size; r++) {
-                for (let c = 0; c < stats.size - 2; c++) {
-                    let i = r * stats.size + c;
-                    if (state.board[i] === state.board[i+1] && state.board[i] === state.board[i+2]) {
-                        matched.add(i); matched.add(i+1); matched.add(i+2);
-                    }
-                }
-            }
-            for (let c = 0; c < stats.size; c++) {
-                for (let r = 0; r < stats.size - 2; r++) {
-                    let i = r * stats.size + c, i2 = (r+1) * stats.size + c, i3 = (r+2) * stats.size + c;
-                    if (state.board[i] === state.board[i2] && state.board[i] === state.board[i3]) {
-                        matched.add(i); matched.add(i2); matched.add(i3);
-                    }
-                }
-            }
-            
-            if (matched.size > 0) {
-                let pts = matched.size * 10;
-                if (matched.size >= 3) pts += 50; 
-                if (matched.size > 3) { pts += (matched.size - 3) * 20; SoundEngine.bonus(); } 
-                else { SoundEngine.match(matched.size); }
-
-                state.score += pts; 
-                state.balance += pts;
-                state.lastMatch = Date.now();
-
-                showFloatingPoints(pts, Array.from(matched)[0]);
-
-                matched.forEach(i => {
-                    const btn = elements.board.children[i];
-                    if (btn) btn.classList.add('scale-110', 'brightness-150', 'z-20');
-                    state.board[i] = Math.floor(Math.random() * STARS.length);
-                });
-
-                updateUI();
-                setTimeout(() => { renderBoard(); checkMatches(); }, 400);
-            } else if (state.score >= stats.goal) {
-                win();
-            }
-        };
-
-        const updateUI = () => {
-            const stats = LEVEL_STATS[state.level - 1];
-            if(elements.valLevel) elements.valLevel.innerText = state.level;
-            if(elements.valGoal) elements.valGoal.innerText = `${state.score}/${stats.goal}`;
-            if(elements.valBal) elements.valBal.innerText = state.balance.toLocaleString();
-        };
-
-        const win = () => {
-            SoundEngine.win();
-            if (state.level < 7) {
-                state.level++;
-                initBoard();
-            } else {
-                playTTS("The Red Queen is defeated. The Matrix is secure.");
-                showView('complete');
-            }
-        };
-
-        const playTTS = async (text) => {
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Say in warm resonant voice no quotes: ${text.replace(/['"]+/g, '')}` }] }],
-                        generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } } },
-                        model: "gemini-2.5-flash-preview-tts"
-                    })
-                });
-                const data = await response.json();
-                const pcm = data.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-                if (pcm) {
-                    const buffer = Uint8Array.from(atob(pcm), c => c.charCodeAt(0)).buffer;
-                    const wavHeader = new ArrayBuffer(44);
-                    const view = new DataView(wavHeader);
-                    view.setUint32(0, 0x46464952, true); view.setUint32(4, 36 + buffer.byteLength, true);
-                    view.setUint32(8, 0x45564157, true); view.setUint32(12, 0x20746d66, true);
-                    view.setUint32(16, 16, true); view.setUint16(20, 1, true);
-                    view.setUint16(22, 1, true); view.setUint32(24, 24000, true);
-                    view.setUint32(28, 48000, true); view.setUint16(32, 2, true);
-                    view.setUint16(34, 16, true); view.setUint32(36, 0x61746164, true);
-                    view.setUint32(40, buffer.byteLength, true);
-                    const blob = new Blob([wavHeader, buffer], { type: 'audio/wav' });
-                    new Audio(URL.createObjectURL(blob)).play();
-                }
-            } catch (e) {}
-        };
-
-        window.start = () => {
-            SoundEngine.init(); 
-            SoundEngine.click();
-
-            // Request Fullscreen Default
-            const elem = document.documentElement;
-            if (elem.requestFullscreen) { elem.requestFullscreen().catch(e => {}); } 
-            else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen().catch(e => {}); }
-
-            const name = document.getElementById('name-in').value.trim();
-            if (name) { state.playerName = name; localStorage.setItem('playerName', name); }
-            showView('game');
-        };
-
-        window.buy = (item) => {
-            SoundEngine.click();
-            if (item === 'guide' && state.balance >= 1000 && !state.assistant) {
-                state.balance -= 1000; state.assistant = true;
-                document.getElementById('buy-guide-btn').innerText = "Active";
-                document.getElementById('buy-guide-btn').disabled = true;
-                playTTS("Spirit guide deployed to the matrix.");
-            } else if (item === 'burst' && state.balance >= 500) {
-                state.balance -= 500; state.score += 250;
-                SoundEngine.bonus();
-                checkMatches();
-            } else if (item === 'shift' && state.balance >= 300) {
-                state.balance -= 300; 
-                SoundEngine.swap();
-                initBoard();
-            }
-            updateUI();
-        };
-
-        window.redeem = () => {
-            SoundEngine.click();
-            const codeInput = document.getElementById('promo-in');
-            const code = codeInput.value.trim().toUpperCase();
-            if (!code) return;
-
-            if (code === 'NIMBUS') {
-                state.balance += 1000;
-                SoundEngine.bonus();
-            } else if (code === 'GRACE') {
-                if (!state.assistant) {
-                    state.assistant = true;
-                    document.getElementById('buy-guide-btn').innerText = "Active";
-                    document.getElementById('buy-guide-btn').disabled = true;
-                    SoundEngine.bonus();
-                }
-            } else if (code === 'SEVEN') {
-                state.score += 500;
-                state.balance += 500;
-                SoundEngine.bonus();
-                checkMatches();
-            }
-            codeInput.value = '';
-            updateUI();
-        };
-
-        onAuthStateChanged(auth, async (u) => {
-            if (!u) {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token);
-                else await signInAnonymously(auth);
-            } else {
-                elements.loading.classList.add('hidden');
-                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'leaderboard'), (snap) => {
-                    const data = snap.docs.map(d => d.data()).sort((a,b) => b.score - a.score).slice(0,10);
-                    document.getElementById('ldr-list').innerHTML = data.map((e,i) => `
-                        <div class="flex justify-between p-3 border-b border-white/5">
-                            <span class="orbitron text-blue-400">#0${i+1}</span>
-                            <span class="font-bold uppercase text-xs">${e.name}</span>
-                            <span class="font-mono text-green-400 text-xs">${e.score.toLocaleString()}</span>
-                        </div>
-                    `).join('');
-                });
-            }
-        });
-
-        setInterval(() => {
-            if (state.view === 'game' && state.assistant && Date.now() - state.lastMatch > 120000) {
-                const el = elements.board.children[Math.floor(Math.random() * elements.board.children.length)];
-                if (el) {
-                    el.classList.add('ring-4', 'ring-yellow-400', 'animate-bounce');
-                    setTimeout(() => el.classList.remove('ring-4', 'ring-yellow-400', 'animate-bounce'), 3000);
-                }
-                state.lastMatch = Date.now();
-            }
-        }, 10000);
-
-        window.nav = (id) => { SoundEngine.click(); showView(id); };
-        window.submit = async () => {
-            SoundEngine.click();
-            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'leaderboard'), { name: state.playerName, score: state.balance, timestamp: Date.now() });
-            showView('leaderboard');
-        };
-
-    </script>
 </head>
 <body>
 
-    <div id="loading-overlay" class="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center space-y-4">
-        <div class="w-16 h-16 animate-pulse drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
-            <svg class="w-full h-full" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <g fill="#ffffff"><g transform="translate(12, 6) scale(0.45)"><polygon points="0,-12 2.7,-3.8 11.4,-3.8 4.4,1.3 7.1,10 0,5 -7.1,10 -4.4,1.3 -11.4,-3.8 -2.7,-3.8" /></g><g transform="translate(6, 17) scale(0.45)"><polygon points="0,-12 2.7,-3.8 11.4,-3.8 4.4,1.3 7.1,10 0,5 -7.1,10 -4.4,1.3 -11.4,-3.8 -2.7,-3.8" /></g><g transform="translate(18, 17) scale(0.45)"><polygon points="0,-12 2.7,-3.8 11.4,-3.8 4.4,1.3 7.1,10 0,5 -7.1,10 -4.4,1.3 -11.4,-3.8 -2.7,-3.8" /></g></g>
-            </svg>
-        </div>
-        <p class="orbitron text-blue-400 text-xs tracking-widest uppercase">Booting Matrix</p>
+    <div class="game-container">
+        <header>
+            <div class="title">STAR MATRIX</div>
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-label">Score</div>
+                    <div id="score">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Moves</div>
+                    <div id="moves">0</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid-container" id="grid"></div>
+
+        <footer>
+            <a href="/arcade" class="nav-btn">← Arcade Lobby</a>
+            <button class="nav-btn" onclick="initGame()">Reset System</button>
+        </footer>
     </div>
 
-    <header id="main-header" class="p-6 flex items-center justify-center border-b border-white/5 transition-all bg-black/50">
-        <div class="flex items-center gap-3">
-            <div class="p-2 bg-zinc-900 border border-white/10 rounded-lg shadow-[0_0_15px_rgba(255,255,255,0.2)] w-10 h-10 flex items-center justify-center">
-                <svg class="w-full h-full" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <g fill="#ffffff"><g transform="translate(12, 6) scale(0.45)"><polygon points="0,-12 2.7,-3.8 11.4,-3.8 4.4,1.3 7.1,10 0,5 -7.1,10 -4.4,1.3 -11.4,-3.8 -2.7,-3.8" /></g><g transform="translate(6, 17) scale(0.45)"><polygon points="0,-12 2.7,-3.8 11.4,-3.8 4.4,1.3 7.1,10 0,5 -7.1,10 -4.4,1.3 -11.4,-3.8 -2.7,-3.8" /></g><g transform="translate(18, 17) scale(0.45)"><polygon points="0,-12 2.7,-3.8 11.4,-3.8 4.4,1.3 7.1,10 0,5 -7.1,10 -4.4,1.3 -11.4,-3.8 -2.7,-3.8" /></g></g>
-                </svg>
-            </div>
-            <h1 class="orbitron text-lg font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 uppercase">Trinity</h1>
-        </div>
-    </header>
+    <script>
+        const symbols = ['✦', '▲', '■', '◆', '●', '✖', '▼', '✶'];
+        let gridItems = [...symbols, ...symbols];
+        let selectedCells = [];
+        let score = 0;
+        let moves = 0;
 
-    <main class="flex-1 relative overflow-hidden flex flex-col">
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
 
-        <!-- START VIEW -->
-        <div id="view-start" class="app-view p-8 flex flex-col justify-center space-y-8">
-            <div class="text-center">
-                <div class="w-24 h-24 mx-auto animate-pulse mb-4 drop-shadow-[0_0_25px_rgba(255,255,255,0.4)]">
-                    <svg class="w-full h-full" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <g fill="#ffffff"><g transform="translate(12, 6) scale(0.45)"><polygon points="0,-12 2.7,-3.8 11.4,-3.8 4.4,1.3 7.1,10 0,5 -7.1,10 -4.4,1.3 -11.4,-3.8 -2.7,-3.8" /></g><g transform="translate(6, 17) scale(0.45)"><polygon points="0,-12 2.7,-3.8 11.4,-3.8 4.4,1.3 7.1,10 0,5 -7.1,10 -4.4,1.3 -11.4,-3.8 -2.7,-3.8" /></g><g transform="translate(18, 17) scale(0.45)"><polygon points="0,-12 2.7,-3.8 11.4,-3.8 4.4,1.3 7.1,10 0,5 -7.1,10 -4.4,1.3 -11.4,-3.8 -2.7,-3.8" /></g></g>
-                    </svg>
-                </div>
-                <h2 class="orbitron text-2xl md:text-3xl font-bold uppercase mt-4">Trinity V1.0</h2>
-                <p class="text-blue-400 font-bold text-xs uppercase mt-2 tracking-widest">The Matrix of Conscience</p>
-                <p class="text-zinc-500 text-xs mt-4 italic max-w-sm mx-auto">Connect the virtues of the Seven Sisters to charge the Ozone Shield.</p>
-            </div>
-            <div class="space-y-4">
-                <input type="text" id="name-in" placeholder="Enter Guardian Name" class="w-full bg-white/5 border border-blue-500/30 p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-center uppercase orbitron text-xs text-white">
-                <button onclick="start()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 p-5 rounded-2xl font-bold uppercase orbitron shadow-[0_0_20px_rgba(59,130,246,0.5)] tracking-widest text-sm active:scale-95 transition-transform">Initialize Connection</button>
-            </div>
-        </div>
+        function initGame() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            selectedCells = [];
+            score = 0;
+            moves = 0;
+            document.getElementById('score').innerText = score;
+            document.getElementById('moves').innerText = moves;
 
-        <!-- GAME VIEW -->
-        <div id="view-game" class="app-view hidden flex-col justify-center items-center p-2 w-full h-full pb-16">
-            <div id="game-board"></div>
-        </div>
+            shuffle(gridItems);
 
-        <!-- COMPLETE VIEW -->
-        <div id="view-complete" class="app-view hidden p-8 justify-center space-y-8 text-center">
-            <i data-lucide="shield-check" class="w-20 h-20 text-blue-400 mx-auto drop-shadow-[0_0_20px_rgba(59,130,246,0.8)]"></i>
-            <h2 class="orbitron text-2xl md:text-3xl font-bold uppercase text-white">Matrix Secured</h2>
-            <p class="text-zinc-400 italic text-sm">You have channeled the Seven Sisters. The Ozone Shield holds strong.</p>
-            <div class="flex flex-col gap-4">
-                <button onclick="submit()" class="bg-blue-600 p-4 rounded-xl font-bold uppercase orbitron text-xs">Upload to Leaderboard</button>
-                <button onclick="location.reload()" class="bg-zinc-800 p-4 rounded-xl font-bold uppercase orbitron text-xs border border-white/10">Re-enter Matrix</button>
-            </div>
-        </div>
+            gridItems.forEach((symbol, index) => {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.symbol = symbol;
+                cell.dataset.index = index;
+                cell.innerText = '•'; // Hidden state format
+                cell.addEventListener('click', handleCellClick);
+                grid.appendChild(cell);
+            });
+        }
 
-        <!-- STORE VIEW -->
-        <div id="view-shop" class="app-view hidden p-6 space-y-6">
-            <h2 class="orbitron text-xl font-bold uppercase text-center text-yellow-400 mt-4">Virtue Upgrades</h2>
+        function handleCellClick(e) {
+            const cell = e.currentTarget;
             
-            <div class="bg-white/5 p-4 rounded-2xl flex items-center gap-2 border border-white/10">
-                <input type="text" id="promo-in" placeholder="Access Code" class="flex-1 bg-black/50 border border-white/10 p-3 rounded-xl focus:outline-none focus:border-blue-500 text-center uppercase orbitron text-xs text-white">
-                <button onclick="redeem()" class="bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3 rounded-xl font-bold uppercase orbitron text-[10px] shadow-lg active:scale-95 transition-transform">Run</button>
-            </div>
+            if (cell.classList.contains('matched') || cell.classList.contains('selected') || selectedCells.length >= 2) {
+                return;
+            }
 
-            <div class="flex-1 space-y-3">
-                <div class="store-item">
-                    <div>
-                        <p class="orbitron font-bold text-xs md:text-sm">Summon Guardian</p>
-                        <p class="text-[9px] md:text-[10px] text-zinc-500">Highlights algorithmic weak points</p>
-                    </div>
-                    <button id="buy-guide-btn" onclick="buy('guide')" class="bg-blue-600 px-3 py-2 rounded-lg orbitron text-[9px] font-bold">1,000 Pwr</button>
-                </div>
-                <div class="store-item">
-                    <div>
-                        <p class="orbitron font-bold text-xs md:text-sm">Integrity Burst</p>
-                        <p class="text-[9px] md:text-[10px] text-zinc-500">+250 toward Ozone Shield</p>
-                    </div>
-                    <button onclick="buy('burst')" class="bg-blue-600 px-3 py-2 rounded-lg orbitron text-[9px] font-bold">500 Pwr</button>
-                </div>
-                <div class="store-item">
-                    <div>
-                        <p class="orbitron font-bold text-xs md:text-sm">Matrix Reshuffle</p>
-                        <p class="text-[9px] md:text-[10px] text-zinc-500">Resets the board state</p>
-                    </div>
-                    <button onclick="buy('shift')" class="bg-blue-600 px-3 py-2 rounded-lg orbitron text-[9px] font-bold">300 Pwr</button>
-                </div>
-            </div>
-            <button onclick="nav('game')" class="w-full bg-zinc-900 border border-white/10 p-4 rounded-xl font-bold uppercase orbitron text-[10px]">Return to Matrix</button>
-        </div>
+            cell.innerText = cell.dataset.symbol;
+            cell.classList.add('selected');
+            selectedCells.push(cell);
 
-        <!-- LEADERBOARD VIEW -->
-        <div id="view-leaderboard" class="app-view hidden p-6 space-y-6">
-            <h2 class="orbitron text-xl font-bold uppercase text-center mt-4">Top Guardians</h2>
-            <div id="ldr-list" class="flex-1 bg-white/5 rounded-2xl overflow-y-auto border border-white/5 max-h-[60vh]"></div>
-            <button onclick="location.reload()" class="w-full bg-zinc-900 border border-white/10 p-4 rounded-xl font-bold uppercase orbitron text-[10px]">Restart Journey</button>
-        </div>
+            if (selectedCells.length === 2) {
+                moves++;
+                document.getElementById('moves').innerText = moves;
+                checkMatch();
+            }
+        }
 
-    </main>
+        function checkMatch() {
+            const [cell1, cell2] = selectedCells;
 
-    <!-- HUD (Only visible during game) -->
-    <footer id="main-hud" class="fixed bottom-0 w-full bg-black/95 backdrop-blur-md border-t border-white/10 hidden z-50 pb-[env(safe-area-inset-bottom)]">
-        <div class="flex items-center justify-between px-4 py-2 w-full max-w-[600px] mx-auto">
-            <div class="flex gap-4 text-xs md:text-sm orbitron items-center">
-                <div class="flex flex-col items-center">
-                    <span class="text-[8px] text-zinc-500">LVL</span>
-                    <span id="v-level" class="text-blue-400 font-bold">1</span>
-                </div>
-                <div class="flex flex-col items-center">
-                    <span class="text-[8px] text-zinc-500">GOAL</span>
-                    <span id="v-goal" class="text-white font-bold">0/500</span>
-                </div>
-                <div class="flex flex-col items-center">
-                    <span class="text-[8px] text-zinc-500">PWR</span>
-                    <span id="v-balance" class="text-green-400 font-bold">0</span>
-                </div>
-            </div>
-            <div class="flex gap-2">
-                <button onclick="toggleMute()" class="p-2 bg-white/5 rounded-lg active:scale-95 transition-transform">
-                    <i data-lucide="volume-2" id="mute-icon" class="w-4 h-4 text-zinc-400"></i>
-                </button>
-                <button onclick="nav('shop')" class="p-2 bg-white/5 rounded-lg active:scale-95 transition-transform">
-                    <i data-lucide="zap" class="w-4 h-4 text-yellow-500"></i>
-                </button>
-            </div>
-        </div>
-    </footer>
+            if (cell1.dataset.symbol === cell2.dataset.symbol) {
+                setTimeout(() => {
+                    cell1.classList.add('matched');
+                    cell2.classList.add('matched');
+                    score += 100;
+                    document.getElementById('score').innerText = score;
+                    selectedCells = [];
+                    checkWin();
+                }, 400);
+            } else {
+                setTimeout(() => {
+                    cell1.classList.remove('selected');
+                    cell2.classList.remove('selected');
+                    cell1.innerText = '•';
+                    cell2.innerText = '•';
+                    selectedCells = [];
+                }, 800);
+            }
+        }
 
+        function checkWin() {
+            const matchedCount = document.querySelectorAll('.cell.matched').length;
+            if (matchedCount === gridItems.length) {
+                setTimeout(() => {
+                    alert(`Matrix Aligned Successfully!\nFinal Score: ${score}\nMoves: ${moves}`);
+                    initGame();
+                }, 500);
+            }
+        }
+
+        initGame();
+    </script>
 </body>
 </html>
