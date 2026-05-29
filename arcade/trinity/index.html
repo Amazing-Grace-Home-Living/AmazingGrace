@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Trinity Match — a self-contained gem puzzle in the Amazing Grace Nexus Arcade.">
-    <title>Trinity Match | Amazing Grace Nexus Arcade</title>
+    <meta name="description" content="Trinity V1.0 — The Matrix of Conscience. A self-contained match-3 puzzle using localStorage persistence.">
+    <title>Trinity V1.0 | Amazing Grace</title>
     <link rel="icon" type="image/png" href="../../assets/logo.png">
     <style>
         :root {
@@ -13,144 +13,695 @@
             --border: #334155;
             --accent: #7effd8;
             --gold: #ffd700;
+            --blue: #3b82f6;
+            --indigo: #4f46e5;
             --text: #e2e8f0;
             --muted: #94a3b8;
         }
 
         * { box-sizing: border-box; }
-
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; }
+        
         body {
-            margin: 0;
-            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background: var(--bg);
             color: var(--text);
-            min-height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
-        .site-header {
-            background: var(--bg);
+        #main-header {
+            padding: 1rem;
             border-bottom: 1px solid var(--border);
-            padding: 1rem 1.25rem;
+            background: rgba(15, 23, 42, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .header-icon {
+            width: 32px;
+            height: 32px;
+            padding: 0.5rem;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            background: linear-gradient(90deg, #3b82f6, #4f46e5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .app-view {
+            display: none;
+            flex: 1;
+            padding: 1.5rem 1rem;
+            overflow-y: auto;
+        }
+
+        .app-view.active {
+            display: flex;
+        }
+
+        #view-start {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .start-icon {
+            width: 80px;
+            height: 80px;
+            font-size: 4rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        .start-content h2 {
+            margin: 0 0 0.5rem;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .start-content p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            width: min(100%, 320px);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        input[type="text"] {
+            padding: 0.75rem;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.95rem;
+            text-align: center;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        input[type="text"]::placeholder {
+            color: var(--muted);
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--blue);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        button {
+            appearance: none;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: linear-gradient(90deg, var(--blue), var(--indigo));
+            color: white;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            letter-spacing: 0.03em;
+            transition: transform 150ms, opacity 150ms;
+            min-height: 44px;
+        }
+
+        button:hover { opacity: 0.9; }
+        button:active { transform: scale(0.95); }
+
+        #view-game {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-bottom: 8rem;
+        }
+
+        #game-board {
+            width: min(100%, 420px);
+            max-width: 420px;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            width: 100%;
+        }
+
+        .game-tile {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 2rem;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 100ms, background 100ms;
+        }
+
+        .game-tile:hover {
+            background: rgba(30, 41, 59, 0.95);
+        }
+
+        .game-tile.selected {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: var(--blue);
+            transform: scale(0.95);
+        }
+
+        #view-complete {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            text-align: center;
+        }
+
+        .complete-icon {
+            font-size: 4rem;
+        }
+
+        #view-complete h2 {
+            margin: 0;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        #view-complete p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            width: min(100%, 280px);
+        }
+
+        .secondary-button {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .secondary-button:hover {
+            background: rgba(30, 41, 59, 0.7);
+        }
+
+        #view-shop {
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 420px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        #view-shop h2 {
+            margin: 0;
+            text-align: center;
+            font-size: 1.25rem;
+            color: var(--gold);
+        }
+
+        .promo-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.75rem;
+            border-radius: 8px;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .promo-section input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 0.85rem;
+        }
+
+        .promo-section button {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .store-item {
+            background: rgba(30, 41, 59, 0.5);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 1rem;
         }
 
-        .logo {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.6rem;
-            text-decoration: none;
-            color: #fff;
-            font-weight: 700;
-            letter-spacing: 0.02em;
-        }
-
-        .logo img { height: 32px; width: auto; border-radius: 4px; }
-
-        .nav-link {
-            text-decoration: none;
-            color: #bfdbfe;
-            border: 1px solid var(--border);
-            background: #1e3a8a;
-            border-radius: 8px;
-            padding: 0.45rem 0.9rem;
-            font-weight: 600;
-        }
-
-        .nav-link:hover { background: #2563eb; color: #fff; }
-
-        main {
+        .store-item div {
             flex: 1;
-            padding: 1.25rem;
-            display: grid;
-            place-items: center;
         }
 
-        .game-shell {
-            width: min(92vw, 540px);
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 1rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        .store-item p {
+            margin: 0;
         }
 
-        h1 {
-            margin: 0 0 0.5rem;
-            text-align: center;
-            color: var(--gold);
-            font-size: clamp(1.4rem, 4vw, 2rem);
+        .store-item p:first-child {
+            font-weight: 700;
+            font-size: 0.95rem;
         }
 
-        .lead {
-            margin: 0 0 1rem;
-            text-align: center;
+        .store-item p:last-child {
             color: var(--muted);
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        .store-item button {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        #view-leaderboard {
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 420px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        #view-leaderboard h2 {
+            margin: 0;
+            text-align: center;
+            font-size: 1.25rem;
+        }
+
+        #ldr-list {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+
+        .leaderboard-entry {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             font-size: 0.9rem;
         }
 
-        #matrix-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 0.5rem;
-            padding: 0.5rem;
-            border-radius: 12px;
-            background: rgba(30, 41, 59, 0.5);
+        .leaderboard-entry:last-child {
+            border-bottom: none;
         }
 
-        .tile {
-            aspect-ratio: 1;
-            display: grid;
-            place-items: center;
-            font-size: clamp(1.2rem, 4vw, 1.6rem);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            background: rgba(30, 41, 59, 0.8);
-            user-select: none;
+        .entry-rank {
+            font-weight: 700;
+            color: var(--gold);
+            min-width: 30px;
         }
 
-        footer {
-            border-top: 1px solid var(--border);
-            text-align: center;
+        .entry-info {
+            flex: 1;
+            padding: 0 1rem;
+        }
+
+        .entry-score {
+            font-weight: 700;
+            color: var(--blue);
+        }
+
+        #main-hud {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
             padding: 1rem;
+            background: rgba(15, 23, 42, 0.9);
+            border-top: 1px solid var(--border);
+            display: none;
+        }
+
+        #main-hud.active {
+            display: block;
+        }
+
+        .hud-content {
+            width: min(100%, 600px);
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .hud-stat {
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.03em;
+        }
+
+        .hud-stat span {
+            color: var(--blue);
+        }
+
+        .hud-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .hud-btn {
+            width: 36px;
+            height: 36px;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 6px;
             color: var(--muted);
-            font-size: 0.8rem;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .hud-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
     </style>
 </head>
 <body>
-    <header class="site-header">
-        <a href="../../" class="logo" aria-label="Amazing Grace Home Living — Home">
-            <img src="../../assets/logo.png" alt="Amazing Grace Home Living Logo">
-        </a>
-        <a href="../" class="nav-link">← Back to Arcade</a>
+    <header id="main-header">
+        <div class="header-icon">✨</div>
+        <h1>Trinity V1.0</h1>
     </header>
 
     <main>
-        <section class="game-shell" aria-label="Trinity Match puzzle board">
-            <h1>🔺 Trinity Match</h1>
-            <p class="lead">Self-contained replacement for the previous Match Maker route.</p>
-            <div id="matrix-grid" role="grid" aria-label="Trinity Match board"></div>
-        </section>
+        <!-- START VIEW -->
+        <div id="view-start" class="app-view active">
+            <div class="start-icon">🔺</div>
+            <div class="start-content">
+                <h2>Trinity V1.0</h2>
+                <p>The Matrix of Conscience</p>
+                <p style="margin-top: 1rem; color: #94a3b8; font-size: 0.85rem;">Connect the virtues of the Seven Stars to charge the Ozone Shield.</p>
+            </div>
+            <form class="form-group" onsubmit="handleStartGame(event)">
+                <input type="text" id="name-in" placeholder="Enter Guardian Name" required>
+                <button type="submit">Initialize Connection</button>
+            </form>
+        </div>
+
+        <!-- GAME VIEW -->
+        <div id="view-game" class="app-view">
+            <div id="game-board"></div>
+        </div>
+
+        <!-- COMPLETE VIEW -->
+        <div id="view-complete" class="app-view">
+            <div class="complete-icon">🛡️</div>
+            <h2>Matrix Secured</h2>
+            <p>You have channeled the Seven Sisters. The Ozone Shield holds strong.</p>
+            <div class="button-group">
+                <button onclick="submitScore()">Upload to Leaderboard</button>
+                <button class="secondary-button" onclick="location.reload()">Re-enter Matrix</button>
+            </div>
+        </div>
+
+        <!-- SHOP VIEW -->
+        <div id="view-shop" class="app-view">
+            <h2>Virtue Upgrades</h2>
+            <div class="promo-section">
+                <input type="text" id="promo-in" placeholder="Access Code">
+                <button onclick="redeem()">Run</button>
+            </div>
+            <div style="flex: 1; overflow-y: auto;">
+                <div class="store-item">
+                    <div>
+                        <p>Summon Guardian</p>
+                        <p>Highlights algorithmic weak points</p>
+                    </div>
+                    <button onclick="buy('guide')">1,000 Pwr</button>
+                </div>
+                <div class="store-item">
+                    <div>
+                        <p>Integrity Burst</p>
+                        <p>+250 toward Ozone Shield</p>
+                    </div>
+                    <button onclick="buy('burst')">500 Pwr</button>
+                </div>
+                <div class="store-item">
+                    <div>
+                        <p>Matrix Reshuffle</p>
+                        <p>Resets the board state</p>
+                    </div>
+                    <button onclick="buy('shift')">300 Pwr</button>
+                </div>
+            </div>
+            <button class="secondary-button" onclick="nav('game')" style="width: 100%;">Return to Matrix</button>
+        </div>
+
+        <!-- LEADERBOARD VIEW -->
+        <div id="view-leaderboard" class="app-view">
+            <h2>Top Guardians</h2>
+            <div id="ldr-list"></div>
+            <button class="secondary-button" onclick="location.reload()" style="width: 100%;">Restart Journey</button>
+        </div>
     </main>
 
-    <footer>&copy; 2026 Amazing Grace Home Living — amazinggracehl.org</footer>
+    <footer id="main-hud">
+        <div class="hud-content">
+            <div class="hud-stat">LVL <span id="v-level">1</span></div>
+            <div class="hud-stat"><span id="v-goal">0/500</span></div>
+            <div class="hud-stat">PWR <span id="v-balance">0</span></div>
+            <div class="hud-buttons">
+                <button class="hud-btn" onclick="toggleMute()" title="Toggle Sound">🔊</button>
+                <button class="hud-btn" onclick="nav('shop')" title="Shop">⚡</button>
+            </div>
+        </div>
+    </footer>
 
     <script>
-        const SYMBOLS = ['⭐', '☀️', '💎', '🔮', '🌌', '✨'];
-        const GRID_SIZE = 6;
-        const gridEl = document.getElementById('matrix-grid');
+        const ICONS = {
+            '💚': 'heart',
+            '⭐': 'star',
+            '✝️': 'cross',
+            '🔥': 'flame',
+            '💧': 'drop'
+        };
 
-        for (let i = 0; i < GRID_SIZE * GRID_SIZE; i += 1) {
-            const tile = document.createElement('div');
-            tile.className = 'tile';
-            tile.textContent = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-            gridEl.appendChild(tile);
+        const ICON_MAP = {
+            'heart': '💚',
+            'star': '⭐',
+            'cross': '✝️',
+            'flame': '🔥',
+            'drop': '💧'
+        };
+
+        const GEM_TYPES = ['heart', 'star', 'cross', 'flame', 'drop'];
+        const GRID_SIZE = 5;
+        const TARGET_SCORE = 500;
+        const LEADERBOARD_KEY = 'trinity_leaderboard';
+        const PLAYER_SCORE_KEY = 'trinity_player_score';
+        const PLAYER_NAME_KEY = 'trinity_player_name';
+
+        let currentPlayer = null;
+        let currentScore = 0;
+        let currentBalance = 0;
+        let grid = [];
+        let isMuted = false;
+
+        function randomGem() {
+            return GEM_TYPES[Math.floor(Math.random() * GEM_TYPES.length)];
         }
+
+        function createGrid() {
+            const newGrid = [];
+            for (let r = 0; r < GRID_SIZE; r++) {
+                newGrid[r] = [];
+                for (let c = 0; c < GRID_SIZE; c++) {
+                    newGrid[r][c] = randomGem();
+                }
+            }
+            return newGrid;
+        }
+
+        function renderBoard() {
+            const board = document.getElementById('game-board');
+            board.innerHTML = '';
+            
+            const boardDiv = document.createElement('div');
+            boardDiv.className = 'game-grid';
+            
+            for (let r = 0; r < GRID_SIZE; r++) {
+                for (let c = 0; c < GRID_SIZE; c++) {
+                    const tile = document.createElement('div');
+                    tile.className = 'game-tile';
+                    tile.textContent = ICON_MAP[grid[r][c]];
+                    tile.dataset.r = r;
+                    tile.dataset.c = c;
+                    tile.onclick = () => handleTileClick(r, c);
+                    boardDiv.appendChild(tile);
+                }
+            }
+            
+            board.appendChild(boardDiv);
+        }
+
+        function handleStartGame(e) {
+            e.preventDefault();
+            const name = document.getElementById('name-in').value.trim();
+            if (!name) return;
+            
+            currentPlayer = name;
+            currentScore = 0;
+            currentBalance = 100;
+            grid = createGrid();
+            
+            updateUI();
+            showView('game');
+            renderBoard();
+            
+            localStorage.setItem(PLAYER_NAME_KEY, name);
+            localStorage.setItem(PLAYER_SCORE_KEY, '0');
+        }
+
+        function handleTileClick(r, c) {
+            // Simple scoring: add random points and check if target reached
+            const points = Math.floor(Math.random() * 50) + 10;
+            currentScore += points;
+            currentBalance += points;
+            
+            localStorage.setItem(PLAYER_SCORE_KEY, String(currentScore));
+            updateUI();
+            
+            if (currentScore >= TARGET_SCORE) {
+                showView('complete');
+            }
+        }
+
+        function updateUI() {
+            const level = Math.floor(currentScore / 100) + 1;
+            const goalProgress = (currentScore % 500);
+            
+            document.getElementById('v-level').textContent = String(level);
+            document.getElementById('v-goal').textContent = `${goalProgress}/500`;
+            document.getElementById('v-balance').textContent = String(currentBalance);
+        }
+
+        function submitScore() {
+            if (!currentPlayer) return;
+            
+            const leaderboard = JSON.parse(localStorage.getItem(LEADERBOARD_KEY) || '[]');
+            leaderboard.push({
+                name: currentPlayer,
+                score: currentScore,
+                date: new Date().toISOString()
+            });
+            leaderboard.sort((a, b) => b.score - a.score);
+            leaderboard = leaderboard.slice(0, 10);
+            
+            localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(leaderboard));
+            
+            showView('leaderboard');
+            renderLeaderboard();
+        }
+
+        function renderLeaderboard() {
+            const list = document.getElementById('ldr-list');
+            const leaderboard = JSON.parse(localStorage.getItem(LEADERBOARD_KEY) || '[]');
+            
+            list.innerHTML = '';
+            leaderboard.forEach((entry, i) => {
+                const div = document.createElement('div');
+                div.className = 'leaderboard-entry';
+                div.innerHTML = `
+                    <span class="entry-rank">#${i + 1}</span>
+                    <span class="entry-info">${entry.name}</span>
+                    <span class="entry-score">${entry.score}</span>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function buy(item) {
+            alert(`Purchased: ${item}`);
+        }
+
+        function redeem() {
+            const code = document.getElementById('promo-in').value;
+            alert(`Redeeming code: ${code}`);
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            document.getElementById('main-header').style.opacity = isMuted ? '0.5' : '1';
+        }
+
+        function nav(view) {
+            showView(view);
+        }
+
+        function showView(view) {
+            document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(`view-${view}`).classList.add('active');
+            
+            const hud = document.getElementById('main-hud');
+            if (view === 'game') {
+                hud.classList.add('active');
+            } else {
+                hud.classList.remove('active');
+            }
+        }
+
+        // Initialize
+        window.handleStartGame = handleStartGame;
+        window.submitScore = submitScore;
+        window.buy = buy;
+        window.redeem = redeem;
+        window.toggleMute = toggleMute;
+        window.nav = nav;
     </script>
 </body>
 </html>
