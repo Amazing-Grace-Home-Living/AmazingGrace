@@ -388,8 +388,8 @@
 
     function parseTileCoords(tile) {
       if (!tile) return null;
-      const row = Number.parseInt(tile.dataset.row ?? '', 10);
-      const col = Number.parseInt(tile.dataset.col ?? '', 10);
+      const row = Number.parseInt(tile.dataset.row, 10);
+      const col = Number.parseInt(tile.dataset.col, 10);
       if (!Number.isFinite(row) || !Number.isFinite(col)) return null;
       return { row, col };
     }
@@ -448,7 +448,9 @@
 
     /* ── SELECTION / DRAG ── */
     function handleSelection(startTile, endTile) {
-      if (!startTile || !endTile || startTile === endTile || !areAdjacentTiles(startTile, endTile)) return;
+      if (!startTile || !endTile) return;
+      if (startTile === endTile) return;
+      if (!areAdjacentTiles(startTile, endTile)) return;
 
       const start = parseTileCoords(startTile);
       const end = parseTileCoords(endTile);
