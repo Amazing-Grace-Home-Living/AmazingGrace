@@ -18,13 +18,15 @@ describe('Matrix of Conscience Terminal', () => {
     expect(html).toContain("if (lower === 'start')");
     expect(html).toContain("if (lower.startsWith('oracle'))");
     expect(html).toContain("if (lower.startsWith('generate'))");
+    expect(html).toContain('The answer to');
+    expect(html).toContain('rendered successfully');
   });
 
   it('includes a 4x4 grid game display', () => {
     const html = fs.readFileSync('arcade/matrix-of-conscience-terminal/index.html', 'utf8');
 
     expect(html).toContain('grid-template-columns: repeat(4, 1fr)');
-    expect(html).toContain("Array(16).fill(0)");
+    expect(html).toContain("Array.from({ length: 16 }");
     expect(html).toContain('.game-grid');
     expect(html).toContain('.game-tile');
   });

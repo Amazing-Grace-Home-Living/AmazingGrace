@@ -316,7 +316,7 @@
     const backBtn = document.getElementById('backBtn');
 
     let isGameMode = false;
-    let gameGridData = Array(16).fill(0).map(() => Math.floor(Math.random() * 4));
+    let gameGridData = Array.from({ length: 16 }, () => Math.floor(Math.random() * 4));
     const symbols = ['✓', '◆', '○', '★'];
 
     function addLine(text, className = 'terminal-line') {
@@ -341,12 +341,16 @@
         renderGame();
       } else if (lower.startsWith('oracle')) {
         const query = lower.substring(6).trim();
-        addLine('ORACLE: Seek the balance within the grid.', 'terminal-line oracle');
+        const response = query 
+          ? `ORACLE: The answer to "${query}" lies in the balance of the grid.`
+          : 'ORACLE: Seek the balance within the grid.';
+        addLine(response, 'terminal-line oracle');
       } else if (lower.startsWith('generate')) {
         const desc = lower.substring(8).trim();
+        const prompt = desc || 'quantum artifact';
         addLine('SYSTEM: Quantum rendering...', 'terminal-line image');
         setTimeout(() => {
-          addLine('IMAGE: Artifact rendered.', 'terminal-line image');
+          addLine(`IMAGE: ${prompt} rendered successfully.`, 'terminal-line image');
         }, 2000);
       } else if (lower === '') {
         // Empty command, ignore
