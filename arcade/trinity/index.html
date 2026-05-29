@@ -425,7 +425,7 @@
             </div>
         </div>
         <div style="flex: 1;"></div>
-        <a href="../" style="color: var(--blue); text-decoration: none; font-weight: bold;">← Back</a>
+        <a href="../" style="color: var(--blue); text-decoration: none; font-weight: bold;" aria-label="Back to Arcade">← Back</a>
     </header>
 
     <main>
@@ -657,7 +657,8 @@
         function startGame() {
             const nameInput = document.getElementById('name-in').value.trim();
             if (!nameInput) {
-                alert('Enter a guardian name');
+                document.getElementById('name-in').style.borderColor = 'rgba(255, 0, 0, 0.5)';
+                document.getElementById('name-in').placeholder = 'Guardian name required!';
                 return;
             }
             
@@ -751,7 +752,7 @@
         function buy(item) {
             const costs = { guide: 1000, burst: 500, shift: 300 };
             if (gameState.power < costs[item]) {
-                alert('Insufficient Power');
+                document.getElementById('game-status').textContent = '⚠️ Insufficient Power — return to the matrix to gain more.';
                 return;
             }
             
