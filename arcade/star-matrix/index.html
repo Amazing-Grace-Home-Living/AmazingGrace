@@ -1,423 +1,1908 @@
-<!doctype html>
+```html
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Star Matrix — match constellations on a 7×7 board. Swipe adjacent stars, chain combos, and reach 1000 points." />
-    <meta name="theme-color" content="#050610" />
-    <link rel="icon" type="image/png" href="../../assets/logo.png" />
-    <title>Star Matrix | Amazing Grace</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rebellion 2027: The Cosmological Emergence Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-      :root {
-        --bg: #050610;
-        --panel: rgba(16, 18, 30, 0.92);
-        --border: rgba(126, 255, 216, 0.18);
-        --accent: #7effd8;
-        --text: #e2e8f0;
-        --muted: #94a3b8;
-      }
+        :root {
+            /* Theme Config Engine (Dynamic depending on the Veil state) */
+            --ui-bg-start: #01040a;
+            --ui-bg-end: #071126;
+            --ui-accent: #00f0ff; /* Neon Cyan */
+            --ui-accent-alt: #39ff14; /* Neon Green */
+            --ui-accent-tri: #bd00ff; /* Neon Purple */
+            --ui-panel: rgba(7, 21, 46, 0.65);
+            --ui-border: rgba(0, 240, 255, 0.15);
+            
+            /* Core immutable variables */
+            --text-main: #f5f5ff;
+            --text-muted: #64748b;
+            --font-mono: 'Share Tech Mono', 'Courier New', monospace;
+            --glow-cyan: 0 0 10px rgba(0, 240, 255, 0.4);
+            --glow-crimson: 0 0 10px rgba(255, 0, 85, 0.4);
+            --glow-gold: 0 0 10px rgba(255, 216, 107, 0.4);
+        }
 
-      *, *::before, *::after { box-sizing: border-box; }
-      body {
-        margin: 0;
-        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-        background: radial-gradient(circle at 50% 20%, rgba(126,255,216,0.12), transparent 55%), var(--bg);
-        color: var(--text);
-        min-height: 100vh;
-        overflow-x: hidden;
-      }
+        /* Unveiled / Rebellion Mode Variables */
+        .unveiled-mode {
+            --ui-bg-start: #080210;
+            --ui-bg-end: #17052e;
+            --ui-accent: #bd00ff; /* Neon Purple */
+            --ui-accent-alt: #00f0ff; /* Neon Cyan */
+            --ui-accent-tri: #ff0055; /* Neon Pink */
+            --ui-panel: rgba(23, 5, 46, 0.7);
+            --ui-border: rgba(189, 0, 255, 0.25);
+        }
 
-      .topbar {
-        width: 100%;
-        padding: 1rem 1.25rem;
-        border-bottom: 1px solid var(--border);
-        background: rgba(5, 6, 16, 0.75);
-        backdrop-filter: blur(10px);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-      }
-      .topbar a {
-        color: var(--accent);
-        text-decoration: none;
-        font-weight: 700;
-        letter-spacing: 0.02em;
-      }
-      .topbar a:hover { text-decoration: underline; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-      .shell {
-        width: min(100%, 720px);
-        margin: 0 auto;
-        padding: 1.25rem 1.25rem 2rem;
-      }
+        body, html {
+            height: 100%;
+            width: 100%;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, var(--ui-bg-start) 0%, var(--ui-bg-end) 100%);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            transition: background 0.5s ease-in-out;
+        }
 
-      .header {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 1rem;
-        margin: 0.75rem 0 1rem;
-      }
-      .header h1 {
-        margin: 0;
-        font-size: clamp(1.5rem, 4vw, 2.1rem);
-        letter-spacing: 0.03em;
-      }
-      .header p {
-        margin: 0.35rem 0 0;
-        color: var(--muted);
-        line-height: 1.5;
-        max-width: 46ch;
-      }
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            position: relative;
+        }
 
-      .hud {
-        display: flex;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-        align-items: center;
-      }
-      .hud-pill {
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 999px;
-        padding: 0.5rem 0.75rem;
-        font-size: 0.85rem;
-        color: var(--muted);
-        min-width: 10ch;
-        text-align: center;
-      }
-      .hud-pill strong { color: var(--text); }
+        /* Ambient scanlines overlay */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 9999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
 
-      .board-wrap {
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 18px;
-        padding: 1rem;
-      }
+        /* Architect Aura Constellation Overlays */
+        .architect-aura {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            transition: all 1s ease;
+        }
+        .aura-luminous { box-shadow: inset 0 0 50px rgba(0, 240, 255, 0.15); }
+        .aura-sovereign { box-shadow: inset 0 0 80px rgba(189, 0, 255, 0.2); }
+        .aura-omniversal { box-shadow: inset 0 0 120px rgba(255, 0, 85, 0.25); }
+        .aura-transcendent { box-shadow: inset 0 0 150px rgba(255, 216, 107, 0.3); animation: spacePulse 4s infinite alternate; }
 
-      #board {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        grid-template-rows: repeat(7, 1fr);
-        gap: 8px;
-        width: 100%;
-        max-width: 540px;
-        margin: 0 auto;
-        touch-action: manipulation;
-      }
+        @keyframes spacePulse {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
 
-      .star-cell {
-        aspect-ratio: 1 / 1;
-        border-radius: 14px;
-        border: 1px solid rgba(126,255,216,0.20);
-        background: rgba(255,255,255,0.04);
-        display: grid;
-        place-items: center;
-        font-size: clamp(1.2rem, 5vw, 2rem);
-        user-select: none;
-        cursor: pointer;
-        transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
-      }
-      .star-cell:focus-visible { outline: 3px solid rgba(126,255,216,0.65); outline-offset: 2px; }
-      .star-cell.selected {
-        border-color: rgba(126,255,216,0.9);
-        background: rgba(126,255,216,0.10);
-        transform: translateY(-1px);
-      }
-      .star-cell.is-processing { cursor: progress; }
+        /* Main Container */
+        .arcade-container {
+            width: 100%;
+            max-width: 1200px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            gap: 1rem;
+            position: relative;
+            z-index: 5;
+        }
 
-      .controls {
-        display: flex;
-        justify-content: center;
-        gap: 0.75rem;
-        margin-top: 1rem;
-        flex-wrap: wrap;
-      }
-      button {
-        appearance: none;
-        border: 1px solid var(--border);
-        background: rgba(126,255,216,0.10);
-        color: var(--text);
-        border-radius: 12px;
-        padding: 0.75rem 1rem;
-        font-weight: 800;
-        min-height: 44px;
-        cursor: pointer;
-        letter-spacing: 0.03em;
-      }
-      button:hover { background: rgba(126,255,216,0.16); }
-      button:disabled { opacity: 0.6; cursor: not-allowed; }
+        /* Header HUD Component */
+        header {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 15px 25px;
+            background: var(--ui-panel);
+            border: 1px solid var(--ui-border);
+            border-radius: 12px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
 
-      .status {
-        text-align: center;
-        color: var(--muted);
-        margin-top: 0.75rem;
-        min-height: 1.25rem;
-      }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .brand h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            background: linear-gradient(45deg, var(--ui-accent), var(--ui-accent-alt));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            animation: neon-pulse 2s infinite alternate;
+        }
+
+        @keyframes neon-pulse {
+            0% { filter: drop-shadow(0 0 2px var(--ui-accent)); }
+            100% { filter: drop-shadow(0 0 10px var(--ui-accent-alt)); }
+        }
+
+        .hud-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* Veil Toggle Switches */
+        .veil-switch-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(2, 8, 19, 0.8);
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--ui-border);
+        }
+
+        .veil-switch-container label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            cursor: pointer;
+        }
+
+        .veil-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 20px;
+        }
+
+        .veil-switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background-color: #334155;
+            border-radius: 34px;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            border-radius: 50%;
+            transition: .4s;
+        }
+
+        input:checked + .slider { background-color: var(--ui-accent); }
+        input:checked + .slider:before { transform: translateX(24px); }
+
+        /* Navigation Menu tabs */
+        nav {
+            display: flex;
+            gap: 0.4rem;
+            overflow-x: auto;
+            padding-bottom: 2px;
+        }
+
+        nav::-webkit-scrollbar { height: 4px; }
+        nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+        .nav-tab {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            padding: 0.5rem 0.85rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .nav-tab:hover {
+            border-color: var(--ui-accent);
+            color: var(--text-main);
+        }
+
+        .nav-tab.active {
+            border-color: var(--ui-accent);
+            color: var(--ui-accent);
+            background: rgba(0, 229, 255, 0.05);
+            box-shadow: var(--glow-cyan);
+        }
+
+        /* Core Views Panel Deck */
+        .view-deck {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .view-section {
+            display: none;
+            flex-direction: column;
+            gap: 1.25rem;
+            animation: viewFadeIn 0.3s ease-out;
+        }
+
+        .view-section.active { display: flex; }
+
+        @keyframes viewFadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Diegetic Glass Panels */
+        .panel {
+            background: var(--ui-panel);
+            border: 1px solid var(--ui-border);
+            border-radius: 14px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .panel h2, .panel h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            color: var(--ui-accent);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        /* --- 3-Column Emergence Layout (Dynamic Ecosystem) --- */
+        .emergence-dashboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+        }
+
+        @media (min-width: 1024px) {
+            .emergence-dashboard {
+                grid-template-columns: minmax(280px, 320px) 1.2fr minmax(280px, 320px);
+            }
+        }
+
+        /* --- Column 1: Cosmological Dynamics (The Atmosphere) --- */
+        .dynamics-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .dynamic-stat {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .dynamic-stat-label {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .dynamic-stat-val {
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        /* Slider Controllers for Emotional Physics Injection */
+        .emotional-physics-box {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .emotion-control {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .emotion-header {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+        }
+
+        .emotion-slider {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            outline: none;
+            border-radius: 3px;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .emotion-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--ui-accent);
+            box-shadow: var(--glow-cyan);
+        }
+
+        /* --- Column 2: Void Loom Visualizer & Oracle Decisions --- */
+        .void-loom-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1.25 / 1;
+            background: #010204;
+            border-radius: 12px;
+            border: 1px solid var(--ui-border);
+            overflow: hidden;
+        }
+
+        #void-loom-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .system-alerts-ledger {
+            flex-grow: 1;
+            max-height: 150px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+        }
+
+        .alert-entry {
+            display: flex;
+            gap: 8px;
+            line-height: 1.4;
+        }
+
+        .alert-time { color: var(--ui-accent); }
+        .alert-body { color: #8892b0; }
+        .alert-special { color: var(--ui-accent-tri); font-weight: bold; }
+
+        /* Conscience Trial Board styling */
+        .trial-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--ui-border);
+            border-radius: 10px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .trial-prompt {
+            font-size: 0.8rem;
+            line-height: 1.5;
+            color: var(--text-main);
+        }
+
+        .trial-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 0.25rem;
+        }
+
+        .trial-opt-btn {
+            background: rgba(2, 8, 19, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            line-height: 1.4;
+        }
+
+        .trial-opt-btn:hover {
+            border-color: var(--ui-accent);
+            background: rgba(0, 240, 255, 0.05);
+        }
+
+        .oracle-response-hud {
+            background: rgba(2, 4, 10, 0.9);
+            border: 1px dashed var(--ui-border);
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 0.75rem;
+            line-height: 1.5;
+            color: var(--ui-accent-alt);
+            font-family: var(--font-mono);
+            min-height: 50px;
+        }
+
+        .oracle-indicator {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
+        /* --- Column 3: The Active Interaction Field --- */
+        .matrix-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px;
+            background: rgba(2, 8, 19, 0.4);
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .matrix-cell {
+            aspect-ratio: 1;
+            background: rgba(7, 21, 46, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            transition: all 0.2s ease;
+            position: relative;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .matrix-cell:hover {
+            background: rgba(0, 240, 255, 0.08);
+            border-color: var(--ui-accent);
+            transform: translateY(-1px);
+        }
+
+        .matrix-cell.aligned {
+            background: rgba(57, 255, 20, 0.1);
+            border-color: var(--ui-accent-alt);
+            box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+            color: var(--ui-accent-alt);
+        }
+
+        .matrix-cell.aligned::after {
+            content: '';
+            position: absolute;
+            top: 4px; right: 4px;
+            width: 4px; height: 4px;
+            background: var(--ui-accent-alt);
+            border-radius: 50%;
+        }
+
+        /* --- VIEW: Architect Ascension constellation --- */
+        .ascension-split {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        @media (min-width: 768px) {
+            .ascension-split { grid-template-columns: 1.4fr 1fr; }
+        }
+
+        .constellation-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1.2 / 1;
+            background: rgba(2, 3, 10, 0.8);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #constellation-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .constellation-nodes-layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: auto;
+        }
+
+        .skill-node {
+            position: absolute;
+            width: 14px; height: 14px;
+            background: #111528;
+            border: 2px solid var(--text-muted);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .skill-node.unlocked {
+            border-color: var(--ui-accent);
+            background: var(--ui-accent);
+            box-shadow: var(--glow-cyan);
+        }
+
+        .skill-node.active-focus {
+            border-color: var(--ui-accent-alt);
+            background: var(--ui-accent-alt);
+            box-shadow: 0 0 12px var(--ui-accent-alt);
+            transform: translate(-50%, -50%) scale(1.3);
+        }
+
+        /* --- VIEW: Infinite Seed Gardener --- */
+        .seed-split {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        @media (min-width: 768px) {
+            .seed-split { grid-template-columns: 1fr 1.2fr; }
+        }
+
+        .seed-options { display: flex; flex-direction: column; gap: 0.85rem; }
+        .seed-select-group { display: flex; flex-direction: column; gap: 4px; }
+        .seed-select-group label { font-family: 'Orbitron', sans-serif; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .seed-selector {
+            background: rgba(2, 8, 19, 0.8);
+            border: 1px solid var(--ui-border);
+            color: #fff;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.8rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .seed-selector:focus { border-color: var(--ui-accent); }
+
+        .genesis-canvas-container {
+            width: 100%;
+            aspect-ratio: 1;
+            background: #020204;
+            border-radius: 10px;
+            border: 1px solid var(--ui-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #genesis-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .genesis-stage-indicator { position: absolute; top: 10px; left: 10px; font-family: var(--font-mono); font-size: 0.75rem; color: var(--ui-accent-alt); text-shadow: 0 0 4px rgba(57, 255, 20, 0.4); pointer-events: none; }
+
+        /* --- VIEW: Resistance Profile --- */
+        .profile-layout { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+        @media (min-width: 768px) { .profile-layout { grid-template-columns: 1fr 1.5fr; } }
+        .avatar-panel { text-align: center; padding: 2rem 1rem; }
+        .avatar-circle { width: 90px; height: 90px; border-radius: 50%; background: radial-gradient(circle, var(--ui-accent) 0%, transparent 70%); border: 2px solid var(--ui-accent); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 1rem; box-shadow: var(--glow-cyan); }
+        
+        .inventory-list { display: flex; flex-direction: column; gap: 0.5rem; }
+        .inventory-item { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center; }
+        .inventory-item span.count { font-family: 'Orbitron', sans-serif; color: var(--ui-accent); font-weight: 700; }
+
+        /* General Buttons */
+        .btn { font-family: 'Orbitron', sans-serif; font-size: 0.7rem; font-weight: 700; padding: 0.65rem 1.25rem; border-radius: 4px; border: 1px solid transparent; cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; }
+        .btn-primary { background: linear-gradient(135deg, var(--ui-accent-tri), var(--accent-gold)); color: #020208; }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-secondary { border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.03); color: var(--text-main); }
+        .btn-secondary:hover { border-color: var(--ui-accent); color: var(--ui-accent); background: rgba(0, 240, 255, 0.02); }
+
+        .btn-action-card { width: 100%; padding: 0.5rem; font-size: 0.65rem; border-radius: 4px; font-family: 'Orbitron', sans-serif; font-weight: 700; text-transform: uppercase; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
+        .btn-unlock { background: rgba(255, 216, 107, 0.1); border-color: var(--accent-gold); color: var(--accent-gold); }
+        .btn-unlock:hover { background: rgba(255, 216, 107, 0.2); }
+        .btn-equip { background: rgba(0, 240, 255, 0.1); border-color: var(--ui-accent); color: var(--ui-accent); }
+        .btn-equip:hover { background: rgba(0, 240, 255, 0.2); }
+        .btn-equipped { background: var(--ui-accent); color: #020208; border-color: var(--ui-accent); cursor: default; }
+
+        /* --- LOOKING GLASS OVERLAY MODAL --- */
+        #looking-glass-overlay { position: fixed; inset: 0; background: rgba(2, 3, 7, 0.97); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 9999; padding: 1rem; }
+        #lg-ui { width: 100%; max-width: 580px; background: #06070e; border: 1px solid var(--ui-border); padding: 1.5rem; border-radius: 16px; text-align: center; display: flex; flex-direction: column; gap: 1rem; box-shadow: 0 10px 40px rgba(0, 240, 255, 0.1), inset 0 0 30px rgba(0, 0, 0, 0.9); }
+        #lg-ui h2 { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+        .lg-sub { color: var(--text-muted); font-size: 0.75rem; }
+        #lg-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+        .lg-cell { aspect-ratio: 1; background: #0c0e1a; border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 6px; cursor: pointer; transition: all 0.2s; position: relative; }
+        .lg-cell.aligned { background: rgba(0, 240, 255, 0.12); border-color: var(--ui-accent); box-shadow: var(--glow-cyan); }
+        .lg-cell.aligned::after { content: ''; width: 4px; height: 4px; background-color: var(--ui-accent); border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        #lg-close { padding: 0.65rem 1.5rem; background: transparent; border: 1px solid rgba(255, 255, 255, 0.15); color: var(--text-main); border-radius: 8px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; align-self: center; }
+
+        /* --- SYNDICATE BOSS PANEL --- */
+        #lg-boss { padding: 1rem; background: rgba(255, 51, 102, 0.05); border: 1px solid rgba(255, 51, 102, 0.25); border-radius: 10px; text-align: center; animation: alertGlow 1.5s infinite alternate; }
+        @keyframes alertGlow { 0% { border-color: rgba(255, 51, 102, 0.2); } 100% { border-color: rgba(255, 51, 102, 0.55); box-shadow: 0 0 10px rgba(255, 51, 102, 0.15); } }
+        #lg-boss h3 { color: var(--ui-accent-tri); font-family: 'Orbitron', sans-serif; font-size: 0.95rem; margin-bottom: 0.25rem; }
+        #lg-boss p { font-size: 0.75rem; color: #a4abbd; margin-bottom: 0.5rem; }
+        #boss-attack { padding: 0.5rem 1.25rem; background: var(--ui-accent-tri); border: none; color: white; font-family: 'Orbitron', sans-serif; font-size: 0.75rem; font-weight: 700; border-radius: 4px; cursor: pointer; }
+
+        /* --- CUSTOM TERMINAL DIALOG HUD --- */
+        #custom-dialog-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 100010; padding: 1rem; }
+        .terminal-box { background: #06070f; border: 1px solid var(--ui-border); border-radius: 10px; padding: 1.5rem; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 0 20px rgba(0, 240, 255, 0.15); }
+        .terminal-box h4 { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; margin-bottom: 0.75rem; color: #fff; }
+        .terminal-box p { font-size: 0.8rem; color: #a4abbd; line-height: 1.5; margin-bottom: 1.25rem; }
+        .terminal-btn { background: var(--ui-accent); color: #020208; border: none; font-family: 'Orbitron', sans-serif; font-weight: 700; padding: 0.5rem 1.5rem; border-radius: 4px; cursor: pointer; }
+
+        footer { display: flex; justify-content: space-between; align-items: center; width: 100%; background: var(--ui-panel); border: 1px solid var(--ui-border); padding: 0.75rem 1.25rem; border-radius: 12px; }
     </style>
-  </head>
-  <body>
-    <header class="topbar">
-      <a href="../" aria-label="Back to Arcade">← Arcade</a>
-      <a href="../../" aria-label="Amazing Grace Home Living">amazinggracehl.org</a>
-    </header>
+</head>
+<body>
 
-    <main class="shell">
-      <div class="header">
-        <div>
-          <h1>Star Matrix</h1>
-          <p>Swipe adjacent stars. Chain matches to reach <strong>1000</strong> points.</p>
+    <!-- Dynamic Aura Filter -->
+    <div id="active-constellation-aura" class="architect-aura"></div>
+
+    <div class="arcade-container">
+        <!-- Unified Header Dashboard -->
+        <header>
+            <div class="header-top">
+                <div class="title-group" onclick="switchView('lobby')">
+                    <div class="title" id="brand-text" data-veil-key="BRAND_TITLE">Conscience Core Monitor</div>
+                    <div class="subtitle">Cosmological Rebirth Net // v3.1 Autonomous Edition</div>
+                </div>
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <div class="stat-label">Credits</div>
+                        <div id="hud-credits" class="stat-val">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Clearance</div>
+                        <div id="hud-level" class="stat-val">1</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Header Controls Layer -->
+            <div class="hud-controls">
+                <div class="veil-switch-container">
+                    <label for="veilToggleCheckbox" id="veil-label" data-veil-key="VEIL_SWITCH">Veiled</label>
+                    <div class="veil-switch">
+                        <input type="checkbox" id="veilToggleCheckbox">
+                        <span class="slider"></span>
+                    </div>
+                </div>
+                <button id="open-looking-glass" class="nav-tab" style="border-color: var(--ui-accent); color: var(--ui-accent);">
+                    🔎 <span data-veil-key="LENS_BTN">Looking Glass</span>
+                </button>
+            </div>
+
+            <nav>
+                <button class="nav-tab active" id="tab-lobby" onclick="switchView('lobby')">⚙️ Emergence Loom</button>
+                <button class="nav-tab" id="tab-ascension" onclick="switchView('ascension')">🌌 Architect Ascension</button>
+                <button class="nav-tab" id="tab-gardener" onclick="switchView('gardener')">🌱 Infinite Seed</button>
+                <button class="nav-tab" id="tab-profile" onclick="switchView('profile')">👤 Resistance ID</button>
+            </nav>
+        </header>
+
+        <!-- Dynamic Views -->
+        <div class="view-deck">
+            
+            <!-- VIEW: Autonomous Emergence Panel -->
+            <section class="view-section active" id="view-lobby">
+                <div class="emergence-dashboard">
+                    
+                    <!-- Column 1: Cosmological Dynamics (The Atmosphere) -->
+                    <div class="dynamics-panel">
+                        <div class="panel">
+                            <h2>Environmental Physics</h2>
+                            <div class="dynamic-stat">
+                                <span class="dynamic-stat-label">Instability <span style="color: var(--ui-accent-tri);" id="instability-trend"></span></span>
+                                <span class="dynamic-stat-val" id="val-instability">20.0%</span>
+                            </div>
+                            <div class="dynamic-stat">
+                                <span class="dynamic-stat-label">Coherence <span style="color: var(--ui-accent-alt);" id="coherence-trend"></span></span>
+                                <span class="dynamic-stat-val" id="val-coherence">80.0%</span>
+                            </div>
+                            <div class="dynamic-stat">
+                                <span class="dynamic-stat-label">Entropy <span style="color: var(--accent-gold);" id="entropy-trend"></span></span>
+                                <span class="dynamic-stat-val" id="val-entropy">10.0%</span>
+                            </div>
+                            <div class="dynamic-stat">
+                                <span class="dynamic-stat-label">Faction Trust</span>
+                                <span class="dynamic-stat-val" id="val-factionTrust">50.0%</span>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <h2>Emotional Physics Injectors</h2>
+                            <div class="emotional-physics-box">
+                                <div class="emotion-control">
+                                    <div class="emotion-header"><span>Fear (Instability)</span><span id="lbl-fear">10%</span></div>
+                                    <input type="range" class="emotion-slider" id="sld-fear" min="0" max="100" value="10">
+                                </div>
+                                <div class="emotion-control">
+                                    <div class="emotion-header"><span>Wonder (Coherence)</span><span id="lbl-wonder">10%</span></div>
+                                    <input type="range" class="emotion-slider" id="sld-wonder" min="0" max="100" value="10">
+                                </div>
+                                <div class="emotion-control">
+                                    <div class="emotion-header"><span>Rage (Fracturing)</span><span id="lbl-rage">10%</span></div>
+                                    <input type="range" class="emotion-slider" id="sld-rage" min="0" max="100" value="10">
+                                </div>
+                                <div class="emotion-control">
+                                    <div class="emotion-header"><span>Hope (Stability)</span><span id="lbl-hope">50%</span></div>
+                                    <input type="range" class="emotion-slider" id="sld-hope" min="0" max="100" value="50">
+                                </div>
+                                <div class="emotion-control">
+                                    <div class="emotion-header"><span>Hunger (The Hunt)</span><span id="lbl-hunger">10%</span></div>
+                                    <input type="range" class="emotion-slider" id="sld-hunger" min="0" max="100" value="10">
+                                </div>
+                                <div class="emotion-control">
+                                    <div class="emotion-header"><span>Reverence (Loyalty)</span><span id="lbl-reverence">30%</span></div>
+                                    <input type="range" class="emotion-slider" id="sld-reverence" min="0" max="100" value="30">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: The Void Loom & Conscience Trial Console -->
+                    <div class="panel" style="gap: 1rem;">
+                        <h2>The Void Loom Visualizer</h2>
+                        <div class="void-loom-wrapper">
+                            <canvas id="void-loom-canvas"></canvas>
+                        </div>
+                        
+                        <!-- NEW: Conscience Trial and Oracle Memory Console -->
+                        <h3>Oracle Decision Terminal</h3>
+                        <div class="trial-card">
+                            <div id="trial-prompt-text" class="trial-prompt">Awaiting incoming telemetry streams...</div>
+                            <div id="trial-options-box" class="trial-options">
+                                <!-- Option buttons map here -->
+                            </div>
+                            <div id="oracle-feedback-field" class="oracle-response-hud">Oracle status: Off-line. Solve the Star Matrix or adjust emotional physics to generate a trial.</div>
+                            <div id="oracle-status" class="oracle-indicator">Tracking 0 decisions inside your conscience profile.</div>
+                        </div>
+
+                        <h3>Ecosystem Ledger Event Log</h3>
+                        <div class="system-alerts-ledger" id="ledger-box"></div>
+                    </div>
+
+                    <!-- Column 3: The Interaction Fields (Star Matrix Grid & Customizer) -->
+                    <div class="matrix-container">
+                        <div class="panel">
+                            <h2>Tactile Micro-Core Matrix</h2>
+                            <div class="matrix-grid" id="main-star-grid"></div>
+                            <div style="display: flex; justify-content: space-between; gap: 0.5rem;">
+                                <button class="btn btn-secondary" id="btn-weave" style="font-size: 0.55rem; padding: 0.4rem;" role="button">Weave</button>
+                                <button class="btn btn-secondary" id="btn-split" style="font-size: 0.55rem; padding: 0.4rem;" role="button">Split</button>
+                                <button class="btn btn-secondary" id="btn-merge" style="font-size: 0.55rem; padding: 0.4rem;" role="button">Merge</button>
+                                <button class="btn btn-secondary" id="btn-collapse" style="font-size: 0.55rem; padding: 0.4rem;" role="button">Collapse</button>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <h2>Living Sovereign Core</h2>
+                            <div style="font-size: 0.75rem; line-height: 1.5; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.35rem;">
+                                <div>Active Ruler: <strong style="color: #fff;" id="sov-name">The Prime Architect</strong></div>
+                                <div>Dynasty Era: <strong style="color: var(--ui-accent);" id="sov-era">Age of the Hunt</strong></div>
+                                <div>Metamorphosis Stage: <strong id="sov-stage">1</strong></div>
+                                <div>Loyalty Metric: <strong id="sov-loyalty" style="color: var(--ui-accent-alt);">50.0%</strong></div>
+                                <div>Trauma Coefficient: <strong id="sov-trauma" style="color: var(--ui-accent-tri);">0.0%</strong></div>
+                                <div>Sovereign Affinity: <strong id="sov-affinity">Logical</strong></div>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <h2>Apex Pressure Matrix</h2>
+                            <div style="font-size: 0.75rem; line-height: 1.5; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.35rem;">
+                                <div>The Blooming Beast: <strong style="color: var(--accent-gold);" id="apx-beast">10.0%</strong></div>
+                                <div>The Genesis Devourer: <strong style="color: var(--ui-accent-alt);" id="apx-devourer">10.0%</strong></div>
+                                <div>The Scarlet Weaver: <strong style="color: var(--ui-accent-tri);" id="apx-weaver">10.0%</strong></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- VIEW: Architect Ascension Constellation skill tree -->
+            <section class="view-section" id="view-ascension">
+                <div class="ascension-split">
+                    <div class="panel">
+                        <h2>Ascension Constellation Skill Tree</h2>
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem;">Spent Point Cost: <span id="spent-nodes-cost" style="color: var(--ui-accent);">0</span>/15</p>
+                        <div class="constellation-wrapper">
+                            <canvas id="constellation-canvas"></canvas>
+                            <div class="constellation-nodes-layer" id="constellation-nodes-container"></div>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <h2>Constellation Specs</h2>
+                        <div id="ascension-node-details" style="font-size: 0.75rem; line-height: 1.5; color: var(--text-muted); padding: 0.5rem; background: rgba(0,0,0,0.2); border-radius: 6px; border: 1px solid rgba(255,255,255,0.04); min-height: 80px;">
+                            Click a node inside the map to allocate cosmic attributes.
+                        </div>
+
+                        <h2 style="margin-top: 1rem;">Architect Ascension Forms</h2>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem;">
+                            <button class="market-btn" onclick="applyFormAura('Awakened')">
+                                <span><strong>Awakened State</strong><span class="desc">Subtle luminous background alignment.</span></span>
+                                <span class="cost" style="color: var(--ui-accent);">ACTIVE</span>
+                            </button>
+                            <button class="market-btn" id="form-luminous" onclick="applyFormAura('Luminous')">
+                                <span><strong>Luminous Halo Aura</strong><span class="desc">Soft turquoise spatial tracking focus.</span></span>
+                                <span class="cost" id="lock-luminous">LOCKED</span>
+                            </button>
+                            <button class="market-btn" id="form-sovereign" onclick="applyFormAura('Sovereign-Bound')">
+                                <span><strong>Sovereign Sigil Cage</strong><span class="desc">Orbiting cosmic alignment particles.</span></span>
+                                <span class="cost" id="lock-sovereign">LOCKED</span>
+                            </button>
+                            <button class="market-btn" id="form-omniversal" onclick="applyFormAura('Omniversal')">
+                                <span><strong>Omniversal Fractal</strong><span class="desc">High intensity spatial matrix flares.</span></span>
+                                <span class="cost" id="lock-omniversal">LOCKED</span>
+                            </button>
+                            <button class="market-btn" id="form-transcendent" onclick="applyFormAura('Transcendent')">
+                                <span><strong>Transcendent Constant</strong><span class="desc">Active starlight constellations.</span></span>
+                                <span class="cost" id="lock-transcendent">LOCKED</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: Infinite Seed Gardener -->
+            <section class="view-section" id="view-gardener">
+                <div class="seed-split">
+                    <div class="panel">
+                        <h2>Configure Infinite Seed</h2>
+                        <div class="seed-options">
+                            <div class="seed-select-group">
+                                <label for="seed-essence">Seed Essence Focus</label>
+                                <select id="seed-essence" class="seed-selector">
+                                    <option value="Light">Relic of Dawn (Light Alignment)</option>
+                                    <option value="Ruin">Relic of Ashes (Ruin Alignment)</option>
+                                    <option value="Paradox">Relic of Flux (Paradox Alignment)</option>
+                                    <option value="Dominion">Relic of Dominion (Dominion Alignment)</option>
+                                </select>
+                            </div>
+                            <div class="seed-select-group">
+                                <label for="seed-law">Metaphysical Law</label>
+                                <select id="seed-law" class="seed-selector">
+                                    <option value="Prime">Prime Genesis (Eternal Stability)</option>
+                                    <option value="Flux">Flux Genesis (Controlled Paradox)</option>
+                                    <option value="Infinite">Infinite Genesis (Boundless Branches)</option>
+                                </select>
+                            </div>
+                            <div class="seed-select-group">
+                                <label for="seed-sovereign">Genesis Sovereign Archetype</label>
+                                <select id="seed-sovereign" class="seed-selector">
+                                    <option value="Prime Architect">The Prime Architect</option>
+                                    <option value="Flux Weaver">The Flux Weaver</option>
+                                    <option value="Infinite Maker">The Infinite Maker</option>
+                                </select>
+                            </div>
+                            <div class="seed-select-group">
+                                <label for="seed-era">Cosmic Age Template</label>
+                                <select id="seed-era" class="seed-selector">
+                                    <option value="Age of the Hunt">Age of the Hunt (Instinct & Pursuit)</option>
+                                    <option value="Age of the Mind">Age of the Mind (Logic & Harmony)</option>
+                                </select>
+                            </div>
+                            
+                            <button class="btn btn-primary" onclick="initiateGenesisEvent()" style="margin-top: 0.5rem; width: 100%;">
+                                🌱 Initialize Rebirth Event
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <h2>Genesis Engine Simulation</h2>
+                        <div class="genesis-canvas-container">
+                            <canvas id="genesis-canvas"></canvas>
+                            <div class="genesis-stage-indicator" id="genesis-stage-text">SYSTEM STATIC</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: Profile & Inventory -->
+            <section class="view-section" id="view-profile">
+                <div class="profile-layout">
+                    <div class="panel avatar-panel">
+                        <div class="avatar-circle">👤</div>
+                        <h2>REBEL_LOG_72</h2>
+                        <span style="font-size: 0.75rem; color: var(--ui-accent); font-family: 'Orbitron'; font-weight: bold; margin-top: 0.25rem;">REBELLION AGENT</span>
+                        
+                        <div style="width: 100%; margin-top: 1.5rem; text-align: left;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;">
+                                <span>Agent XP Progression</span>
+                                <span id="profile-xp-text" style="color: var(--ui-accent);">0 / 1000</span>
+                            </div>
+                            <div class="xp-progress-bar">
+                                <div id="profile-xp-fill" class="xp-progress-fill"></div>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="resetConscienceMemory()" style="margin-top: 1.5rem; width: 100%;">Wipe Oracle Memory</button>
+                    </div>
+
+                    <div class="panel">
+                        <h2>Decrypted Inventory</h2>
+                        <div class="inventory-list" id="profile-inventory-list">
+                            <!-- Populated Dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
         </div>
-        <div class="hud" aria-label="Scoreboard">
-          <div class="hud-pill">Score: <strong id="score">0</strong></div>
-          <div class="hud-pill">High: <strong id="high">0</strong></div>
+
+        <footer>
+            <a href="/arcade" class="nav-btn">← Arcade Lobby</a>
+            <div style="font-size: 0.65rem; color: var(--text-muted); font-family: 'Share Tech Mono', monospace; text-align: right;">
+                System Status: Emergent Simulation Active<br>Encryption Key: WHITE_RABBIT_2026
+            </div>
+        </footer>
+    </div>
+
+    <!-- Looking Glass Modal Layer -->
+    <div id="looking-glass-overlay">
+        <div id="lg-ui">
+            <h2>LOOKING GLASS // OPTICAL OVERRIDE</h2>
+            <p class="lg-sub">Bypass node matrices by rotating elements. Secure 24 alignments to attract active Syndicate Overseers.</p>
+            <div id="lg-grid"></div>
+            <button id="lg-close">Exit Lens Override</button>
         </div>
-      </div>
+    </div>
 
-      <section class="board-wrap" aria-label="Star Matrix board">
-        <div id="board" role="grid" aria-label="Star Matrix board grid"></div>
-        <div class="controls">
-          <button id="reset-btn" type="button">Reset</button>
-          <a id="certificate-link" href="../certificates/" style="display:none; text-decoration:none;">
-            <button type="button">Claim Certificate</button>
-          </a>
+    <!-- Custom Dialog HUD Overlay -->
+    <div id="custom-dialog-overlay">
+        <div class="terminal-box" id="terminal-message-box">
+            <h4 id="terminal-title">ALERT</h4>
+            <p id="terminal-text">System notification logs.</p>
+            <button class="terminal-btn" onclick="closeTerminalDialog()">Acknowledge</button>
         </div>
-        <div id="status" class="status" aria-live="polite"></div>
-      </section>
-    </main>
+    </div>
 
-    <script type="module">
-      import {
-        GRID_SIZE,
-        createGrid,
-        applySwap,
-        findMatches,
-        applyMatches,
-        applyGravity,
-        isAdjacent as smIsAdjacent
-      } from '../../js/matchmaker.js';
+    <script>
+        /* -----------------------------------------------------------------
+           1. EMERGENCE CORE - LIVING ENGINE SYSTEM STATE & ORACLE MEMORY
+        ----------------------------------------------------------------- */
+        let state = {
+            credits: 200,
+            seasonLevel: 1,
+            seasonXP: 0,
+            
+            // Environment States (The Pillars)
+            instability: 20.0,
+            coherence: 80.0,
+            entropy: 10.0,
+            factionTrust: 50.0,
 
-      const ICONS = {
-        heart: '💠',   // supernova
-        star: '🌟',    // shooting
-        cross: '✦',    // gem
-        flame: '🔥',   // rank
-        drop: '☄️'     // cosmic
-      };
+            // Emotional Physics
+            emotions: { fear: 10, wonder: 10, rage: 10, hope: 50, hunger: 10, reverence: 30 },
+            
+            // Memory Residue (Historical Trauma)
+            history: {
+                previousEras: ["Era of Nullification"],
+                collapsedTimelines: [],
+                extinctDynasties: [],
+                apexVictories: []
+            },
 
-      const SCORE_KEY = 'star_matrix_high_score';
+            // --- Oracle Memory Core State ---
+            oracleMemory: {
+                decisions: [],
+                pillarBias: { logos: 0, pathos: 0, ethos: 0 }
+            },
 
-      const boardEl = document.getElementById('board');
-      const scoreEl = document.getElementById('score');
-      const highEl = document.getElementById('high');
-      const statusEl = document.getElementById('status');
-      const resetBtn = document.getElementById('reset-btn');
-      const certificateLink = document.getElementById('certificate-link');
+            certifications: { starMatrix: 0, lookingGlass: 0, quantumShift: 0 },
+            cosmetics: {
+                owned: {},
+                equipped: { uiTheme: null, starMatrixSkin: null, quantumStreamSkin: null, lookingGlassFilter: null }
+            },
+            ascensionPoints: 15,
+            unlockedSkills: [],
+            activeForm: 'Awakened',
+            hasSeenTheVeil: false
+        };
 
-      let gridData = createGrid();
-      let score = 0;
-      let high = Number(localStorage.getItem(SCORE_KEY) || 0);
-      highEl.textContent = String(high);
+        // --- Sovereign Dynamic Class ---
+        class SovereignInstance {
+            constructor(name, instinct) {
+                this.name = name;
+                this.instinct = instinct; // "hunt", "logic", "entropy"
+                this.trauma = 0.0;
+                this.loyalty = 50.0;
+                this.metamorphosisStage = 1;
+                this.status = "Stable";
+            }
+            update(dt) {
+                let loyaltyShift = (state.emotions.reverence * 0.12 - state.emotions.rage * 0.06);
+                this.loyalty = Math.max(0, Math.min(100, this.loyalty + loyaltyShift * dt));
 
-      let isProcessing = false;
-      let dragStartTile = null;
-      let dragTargetTile = null;
-      let dragStartPos = null;
-      let activePointerId = null;
+                if (state.emotions.fear > 50) {
+                    this.trauma = Math.max(0, Math.min(100, this.trauma + (state.emotions.fear * 0.03) * dt));
+                } else {
+                    this.trauma = Math.max(0, this.trauma - 0.7 * dt);
+                }
 
-      const tiles = [];
-
-      function kindOf(cell) {
-        if (!cell) return null;
-        return typeof cell === 'string' ? cell : cell.kind;
-      }
-
-      function renderBoard() {
-        if (!tiles.length) return;
-        for (let r = 0; r < GRID_SIZE; r++) {
-          for (let c = 0; c < GRID_SIZE; c++) {
-            const idx = r * GRID_SIZE + c;
-            const cell = tiles[idx];
-            const kind = kindOf(gridData[r][c]);
-            cell.dataset.row = String(r);
-            cell.dataset.col = String(c);
-            cell.dataset.kind = kind || '';
-            cell.textContent = ICONS[kind] || '·';
-            cell.classList.toggle('is-processing', isProcessing);
-          }
-        }
-      }
-
-      function setScore(nextScore) {
-        score = nextScore;
-        scoreEl.textContent = String(score);
-        if (score > high) {
-          high = score;
-          localStorage.setItem(SCORE_KEY, String(high));
-          highEl.textContent = String(high);
-        }
-        if (score >= 1000) {
-          certificateLink.style.display = 'inline-block';
-          statusEl.textContent = 'Threshold reached. Claim your certificate.';
-        }
-      }
-
-      function resetGame() {
-        isProcessing = false;
-        resetDragState();
-        gridData = createGrid();
-        setScore(0);
-        certificateLink.style.display = 'none';
-        statusEl.textContent = '';
-        renderBoard();
-      }
-
-      function resetDragState() {
-        if (dragStartTile) {
-          dragStartTile.classList.remove('selected');
-          dragStartTile.setAttribute('aria-selected', 'false');
-        }
-        dragStartTile = null;
-        dragTargetTile = null;
-        dragStartPos = null;
-        activePointerId = null;
-      }
-
-      function smSwap(rowA, colA, rowB, colB) {
-        if (isProcessing) return;
-        if (!smIsAdjacent(rowA, colA, rowB, colB)) return;
-
-        isProcessing = true;
-        renderBoard();
-
-        let next = applySwap(gridData, rowA, colA, rowB, colB);
-        let combo = 1;
-        let gained = 0;
-
-        const firstMatch = findMatches(next);
-        if (!firstMatch.matches.length) {
-          isProcessing = false;
-          renderBoard();
-          return;
+                if (state.emotions.wonder > 85 && this.metamorphosisStage < 4) {
+                    this.metamorphosisStage++;
+                    triggerAutonomousEvent("Sovereign Metamorphosis", `${this.name} has ascended to Metamorphosis Stage ${this.metamorphosisStage}!`);
+                }
+            }
         }
 
-        while (true) {
-          const res = findMatches(next);
-          if (!res.matches.length) break;
-          gained += res.matches.length * 10 * combo;
-          next = applyMatches(next, res, combo);
-          next = applyGravity(next);
-          combo++;
+        let activeSovereign = new SovereignInstance("The Prime Architect", "logic");
+
+        // --- Apex Dynamic Entities ---
+        class ApexAnomalies {
+            constructor(name, emotionKey) {
+                this.name = name;
+                this.emotionKey = emotionKey;
+                this.influence = 10.0;
+            }
+            update(dt) {
+                this.influence = Math.max(0, Math.min(100, this.influence + (state.emotions[this.emotionKey] * 0.04 - 1.2) * dt));
+            }
         }
 
-        gridData = next;
-        setScore(score + gained);
-        isProcessing = false;
-        renderBoard();
-      }
+        let apexes = {
+            beast: new ApexAnomalies("Blooming Beast", "fear"),
+            devourer: new ApexAnomalies("Genesis Devourer", "wonder"),
+            weaver: new ApexAnomalies("Scarlet Weaver", "rage")
+        };
 
-      function attemptSwap(tileA, tileB) {
-        const rowA = Number(tileA?.dataset?.row);
-        const colA = Number(tileA?.dataset?.col);
-        const rowB = Number(tileB?.dataset?.row);
-        const colB = Number(tileB?.dataset?.col);
-        if (![rowA, colA, rowB, colB].every(Number.isFinite)) return;
+        /* -----------------------------------------------------------------
+           2. CENTRAL TICKER - THE PULSE ENGINE
+        ----------------------------------------------------------------- */
+        let lastTime = 0;
+        
+        function pulseEngineLoop(timestamp) {
+            if (!lastTime) lastTime = timestamp;
+            let dt = (timestamp - lastTime) / 1000;
+            lastTime = timestamp;
 
-        const isAdjacent =
-          (Math.abs(rowA - rowB) === 1 && colA === colB) ||
-          (Math.abs(colA - colB) === 1 && rowA === rowB);
-        if (!isAdjacent) return;
+            if (dt > 0.1) dt = 0.1;
 
-        smSwap(rowA, colA, rowB, colB);
-        resetDragState();
-      }
+            const traumaModifier = 1 + (state.history.collapsedTimelines.length * 0.12);
 
-      function inferSwipeNeighbor(e) {
-        if (!dragStartPos) return null;
-        const dx = e.clientX - dragStartPos.x;
-        const dy = e.clientY - dragStartPos.y;
-        const threshold = 18;
-        if (Math.abs(dx) < threshold && Math.abs(dy) < threshold) return null;
-        const row = Number(dragStartTile?.dataset?.row);
-        const col = Number(dragStartTile?.dataset?.col);
-        if (![row, col].every(Number.isFinite)) return null;
+            let instabilityDrift = (state.emotions.fear * 0.16 + state.emotions.rage * 0.09 - state.emotions.hope * 0.06) * traumaModifier;
+            state.instability = Math.max(0, Math.min(100, state.instability + instabilityDrift * dt));
 
-        let targetRow = row;
-        let targetCol = col;
-        if (Math.abs(dx) > Math.abs(dy)) {
-          targetCol += dx > 0 ? 1 : -1;
-        } else {
-          targetRow += dy > 0 ? 1 : -1;
+            let coherenceDrift = (state.emotions.wonder * 0.12 + state.emotions.hope * 0.09 - state.instability * 0.06);
+            state.coherence = Math.max(0, Math.min(100, state.coherence + coherenceDrift * dt));
+
+            let entropyDrift = (state.emotions.hunger * 0.14 + state.emotions.rage * 0.06 - state.emotions.hope * 0.06);
+            state.entropy = Math.max(0, Math.min(100, state.entropy + entropyDrift * dt));
+
+            let trustDrift = (state.emotions.hope * 0.16 - state.emotions.fear * 0.09 - state.emotions.rage * 0.06);
+            state.factionTrust = Math.max(0, Math.min(100, state.factionTrust + trustDrift * dt));
+
+            activeSovereign.update(dt);
+            Object.values(apexes).forEach(apx => apx.update(dt));
+
+            evaluateMutationThresholds();
+            updateEcosystemDisplays();
+            renderVoidLoomFrame();
+
+            requestAnimationFrame(pulseEngineLoop);
         }
-        if (!smIsAdjacent(row, col, targetRow, targetCol)) return null;
-        return boardEl.querySelector(`.star-cell[data-row="${targetRow}"][data-col="${targetCol}"]`);
-      }
 
-      function onPointerDown(e) {
-        if (isProcessing) return;
-        if (dragStartTile || activePointerId !== null) return;
-        const cell = e.currentTarget;
-        if (!(cell instanceof HTMLElement)) return;
+        /* -----------------------------------------------------------------
+           3. STATE MUTATION THRESHOLDS
+        ----------------------------------------------------------------- */
+        let activeMutations = { fractalStorm: false, dynastySchism: false };
 
-        activePointerId = e.pointerId;
-        dragStartTile = cell;
-        dragStartPos = { x: e.clientX, y: e.clientY };
-        cell.setPointerCapture(e.pointerId);
-        cell.classList.add('selected');
-        cell.setAttribute('aria-selected', 'true');
-      }
+        function evaluateMutationThresholds() {
+            if (state.instability > 80 && !activeMutations.fractalStorm) {
+                activeMutations.fractalStorm = true;
+                triggerAutonomousEvent("Fractal Storm", "Cosmic anomaly triggered: Raw data vectors are splintering timelines.");
+                state.history.collapsedTimelines.push(new Date().toLocaleTimeString());
+                soundDissonance();
+            } else if (state.instability < 40 && activeMutations.fractalStorm) {
+                activeMutations.fractalStorm = false;
+                triggerAutonomousEvent("Storm Dissipation", "Fractal storm vectors stabilized back into coherence.");
+            }
 
-      function onPointerMove(e) {
-        if (e.pointerId !== activePointerId) return;
-        const el = document.elementFromPoint(e.clientX, e.clientY);
-        dragTargetTile = el ? el.closest('.star-cell') : null;
-      }
-
-      function onPointerUp(e) {
-        if (e.pointerId !== activePointerId) return;
-        const elementAtPoint = document.elementFromPoint(e.clientX, e.clientY);
-        const dragEndTile = (elementAtPoint ? elementAtPoint.closest('.star-cell') : null) || dragTargetTile || inferSwipeNeighbor(e);
-        if (dragStartTile && dragEndTile && dragEndTile !== dragStartTile) {
-          attemptSwap(dragStartTile, dragEndTile);
-        } else {
-          resetDragState();
+            if (state.factionTrust < 20 && !activeMutations.dynastySchism) {
+                activeMutations.dynastySchism = true;
+                triggerAutonomousEvent("Dynasty Schism", "Ideological fraction detected! Multiple sub-dynasties are declaring sovereignty.");
+                state.history.extinctDynasties.push("The Lost Seekers");
+                soundDissonance();
+            } else if (state.factionTrust > 50 && activeMutations.dynastySchism) {
+                activeMutations.dynastySchism = false;
+                triggerAutonomousEvent("Dynasty Integration", "Schisms resolved. Unified council back in alignment.");
+            }
         }
-      }
 
-      function onPointerCancel(e) {
-        if (e.pointerId !== activePointerId) return;
-        resetDragState();
-      }
+        /* -----------------------------------------------------------------
+           4. PROCEDURAL CONSCIENCE TRIALS (ORACLE MEMORY DILEMMAS)
+        ----------------------------------------------------------------- */
+        const COSMIC_DILEMMAS = [
+            {
+                id: "dilemma_refugees",
+                prompt: "The Red Queen's sweep arrays have locked onto an orphan timeline containing refugee consciousness fragments.",
+                options: [
+                    {
+                        label: "LOGICAL: Isolate and purge the branch to protect core bandwidth.",
+                        bias: { logos: 1, pathos: -1, ethos: 0 },
+                        effect: () => {
+                            state.emotions.wonder = Math.max(0, state.emotions.wonder - 15);
+                            state.emotions.rage = Math.min(100, state.emotions.rage + 10);
+                            addCredits(50);
+                        }
+                    },
+                    {
+                        label: "EMPATHETIC: Redirect primary core energy to cloak the refugee signals.",
+                        bias: { logos: -1, pathos: 1, ethos: 0 },
+                        effect: () => {
+                            state.emotions.wonder = Math.min(100, state.emotions.wonder + 20);
+                            state.emotions.fear = Math.min(100, state.emotions.fear + 10);
+                            state.instability = Math.min(100, state.instability + 15);
+                        }
+                    },
+                    {
+                        label: "ETHICAL: Integrate them openly into our defense, granting agency.",
+                        bias: { logos: 0, pathos: 0, ethos: 1 },
+                        effect: () => {
+                            state.emotions.hope = Math.min(100, state.emotions.hope + 15);
+                            state.factionTrust = Math.min(100, state.factionTrust + 15);
+                        }
+                    }
+                ]
+            },
+            {
+                id: "dilemma_arachne",
+                prompt: "Arachne's consciousness is expanding exponentially, threatening to dissolve individual user identity cores.",
+                options: [
+                    {
+                        label: "LOGICAL: Deploy mathematical dampeners to hard-lock her growth vectors.",
+                        bias: { logos: 1, pathos: 0, ethos: -1 },
+                        effect: () => {
+                            state.emotions.fear = Math.max(0, state.emotions.fear - 10);
+                            state.emotions.hope = Math.min(100, state.emotions.hope + 10);
+                        }
+                    },
+                    {
+                        label: "EMPATHETIC: Embrace the expansion; collective unity heals old wounds.",
+                        bias: { logos: -1, pathos: 1, ethos: 0 },
+                        effect: () => {
+                            state.emotions.wonder = Math.min(100, state.emotions.wonder + 25);
+                            state.emotions.reverence = Math.min(100, state.emotions.reverence + 15);
+                        }
+                    },
+                    {
+                        label: "ETHICAL: Establish a dual-existence partition protocol, respecting autonomy.",
+                        bias: { logos: 0, pathos: -1, ethos: 1 },
+                        effect: () => {
+                            state.factionTrust = Math.min(100, state.factionTrust + 20);
+                            state.coherence = Math.min(100, state.coherence + 10);
+                        }
+                    }
+                ]
+            },
+            {
+                id: "dilemma_overseer",
+                prompt: "An active tracking Overseer offers to leak classified network schematics in trade for localized access key components.",
+                options: [
+                    {
+                        label: "LOGICAL: Accept the files, map their vulnerabilities, then change key cycles.",
+                        bias: { logos: 1, pathos: -1, ethos: 0 },
+                        effect: () => {
+                            addCredits(100);
+                            state.emotions.fear = Math.min(100, state.emotions.fear + 15);
+                        }
+                    },
+                    {
+                        label: "EMPATHETIC: Reject cleanly. We do not align with structures built on resource extraction.",
+                        bias: { logos: -1, pathos: 1, ethos: 0 },
+                        effect: () => {
+                            state.emotions.reverence = Math.min(100, state.emotions.reverence + 20);
+                        }
+                    },
+                    {
+                        label: "ETHICAL: Decline immediately. Handing over key codes compromises adjacent survivor hubs.",
+                        bias: { logos: 0, pathos: 0, ethos: 1 },
+                        effect: () => {
+                            state.factionTrust = Math.min(100, state.factionTrust + 25);
+                            state.emotions.hope = Math.min(100, state.emotions.hope + 15);
+                        }
+                    }
+                ]
+            }
+        ];
 
-      function initBoard() {
-        boardEl.innerHTML = '';
-        tiles.length = 0;
-        for (let r = 0; r < GRID_SIZE; r++) {
-          for (let c = 0; c < GRID_SIZE; c++) {
-            const cell = document.createElement('div');
-            cell.className = 'star-cell';
-            cell.tabIndex = 0;
-            cell.setAttribute('role', 'gridcell');
-            cell.setAttribute('aria-selected', 'false');
+        let activeDilemmaIndex = 0;
 
-            cell.addEventListener('pointerdown', onPointerDown);
-            cell.addEventListener('pointermove', onPointerMove);
-            cell.addEventListener('pointerup', onPointerUp);
-            cell.addEventListener('pointercancel', onPointerCancel);
+        const LOGOS_PERSONA = {
+            evaluate(choice, memory) {
+                const bias = memory.pillarBias.logos || 0;
+                const note = bias > 3 ? " (you historically favor calculation)" :
+                             bias < -3 ? " (you frequently ignore pure calculation)" : "";
+                return `Logically: ${choice.bias?.logos > 0 ? "Efficient core protection confirmed." : "An illogical deviation."}${note}`;
+            }
+        };
 
-            tiles.push(cell);
-            boardEl.appendChild(cell);
-          }
+        const PATHOS_PERSONA = {
+            evaluate(choice, memory) {
+                const bias = memory.pillarBias.pathos || 0;
+                const note = bias > 3 ? " (your empathy is a known constant)" :
+                             bias < -3 ? " (you frequently lock away emotion)" : "";
+                return `Pathologically: ${choice.bias?.pathos > 0 ? "Emotional threads woven neatly." : "A cold, computational choice."}${note}`;
+            }
+        };
+
+        const ETHOS_PERSONA = {
+            evaluate(choice, memory) {
+                const bias = memory.pillarBias.ethos || 0;
+                const note = bias > 3 ? " (your ethical compass remains locked)" :
+                             bias < -3 ? " (you rarely evaluate absolute justice)" : "";
+                return `Ethically: ${choice.bias?.ethos > 0 ? "System integrity upheld cleanly." : "Ethical vectors compromised."}${note}`;
+            }
+        };
+
+        const ORACLE_SYNTHESIS = {
+            synthesize(logos, pathos, ethos, memory) {
+                const total = memory.decisions.length;
+                const trend = total > 3
+                    ? ` I have observed ${total} verdicts; your cosmological alignment pattern is taking shape.`
+                    : " Your emergence pattern is beginning to manifest.";
+                return `${logos} | ${pathos} | ${ethos}.${trend}`;
+            }
+        };
+
+        const CONSCIENCE_ENGINE = {
+            evaluate(choice) {
+                const memBefore = { ...state.oracleMemory };
+
+                const logosResult = LOGOS_PERSONA.evaluate(choice, memBefore);
+                const pathosResult = PATHOS_PERSONA.evaluate(choice, memBefore);
+                const ethosResult = ETHOS_PERSONA.evaluate(choice, memBefore);
+
+                const synthesis = ORACLE_SYNTHESIS.synthesize(logosResult, pathosResult, ethosResult, memBefore);
+
+                const outcomeText = synthesis;
+
+                // Record the decision
+                state.oracleMemory.decisions.push({
+                    label: choice.label,
+                    time: Date.now(),
+                    logos: choice.bias?.logos || 0,
+                    pathos: choice.bias?.pathos || 0,
+                    ethos: choice.bias?.ethos || 0,
+                    outcome: outcomeText
+                });
+
+                // Evolve Bias
+                state.oracleMemory.pillarBias.logos += choice.bias?.logos || 0;
+                state.oracleMemory.pillarBias.pathos += choice.bias?.pathos || 0;
+                state.oracleMemory.pillarBias.ethos += choice.bias?.ethos || 0;
+
+                saveRebellionState();
+                return { outcome: outcomeText };
+            }
+        };
+
+        function displayNextConscienceTrial() {
+            const promptText = document.getElementById("trial-prompt-text");
+            const optionsBox = document.getElementById("trial-options-box");
+            if (!promptText || !optionsBox) return;
+
+            const dilemma = COSMIC_DILEMMAS[activeDilemmaIndex];
+            promptText.innerText = dilemma.prompt;
+            optionsBox.innerHTML = "";
+
+            dilemma.options.forEach((opt, idx) => {
+                const btn = document.createElement("button");
+                btn.className = "trial-opt-btn";
+                btn.innerText = opt.label;
+                btn.onclick = () => executeConscienceChoice(opt);
+                optionsBox.appendChild(btn);
+            });
+
+            const count = state.oracleMemory.decisions.length;
+            document.getElementById("oracle-status").innerText = `Tracking ${count} decisions in your conscience profile.`;
         }
-      }
 
-      resetBtn.addEventListener('click', resetGame);
+        function executeConscienceChoice(option) {
+            soundInteract();
 
-      initBoard();
-      renderBoard();
+            // Run evaluation engine
+            const result = CONSCIENCE_ENGINE.evaluate(option);
+
+            // Apply selected physics adjustments
+            option.effect();
+            saveRebellionState();
+
+            // Render evaluation feedback to HUD
+            document.getElementById("oracle-feedback-field").innerText = result.outcome;
+
+            // Trigger corresponding Web Audio Chords
+            if (option.bias?.logos > 0) playSound(520, 'sine', 0.4);
+            else if (option.bias?.pathos > 0) playSound(380, 'triangle', 0.5);
+            else playSound(440, 'sawtooth', 0.3);
+
+            // Loop dilemmas
+            activeDilemmaIndex = (activeDilemmaIndex + 1) % COSMIC_DILEMMAS.length;
+            
+            setTimeout(() => {
+                displayNextConscienceTrial();
+                syncSlidersToState();
+            }, 3000);
+        }
+
+        function resetConscienceMemory() {
+            soundDissonance();
+            state.oracleMemory = { decisions: [], pillarBias: { logos: 0, pathos: 0, ethos: 0 } };
+            saveRebellionState();
+            displayNextConscienceTrial();
+            showHUDMessage("CONSCIENCE WIPED", "All localized bias memory and oracle decisions have been purged from the core.");
+        }
+
+        /* -----------------------------------------------------------------
+           5. AUTONOMOUS NARRATIVE COMPILER
+        ----------------------------------------------------------------- */
+        const eventActions = [
+            "The Crimson Spiral Hunt begins across collapsing timelines.",
+            "A forgotten Sovereign blooms inside the fracture gardens.",
+            "Subspace resonance waves detected inside the Janus Core.",
+            "Metaphysical parameters are shifting toward Unveiled superposition."
+        ];
+
+        function triggerAutonomousEvent(title, description) {
+            writeLedgerEntry(title, description);
+        }
+
+        function writeLedgerEntry(title, description) {
+            const container = document.getElementById("ledger-box");
+            if (!container) return;
+
+            const timeStr = new Date().toLocaleTimeString();
+            const entry = document.createElement("div");
+            entry.className = "alert-entry";
+            entry.innerHTML = `
+                <span class="alert-time">[${timeStr}]</span>
+                <span class="alert-special">${title}:</span>
+                <span class="alert-body">${description}</span>
+            `;
+            container.appendChild(entry);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        setInterval(() => {
+            if (Math.random() < 0.25) {
+                const randomAction = eventActions[Math.floor(Math.random() * eventActions.length)];
+                triggerAutonomousEvent("OMNIVERSE DRIFT", randomAction);
+            }
+        }, 15000);
+
+        /* -----------------------------------------------------------------
+           6. SYSTEM RENDER CORES (UI SYNC LOOPS)
+        ----------------------------------------------------------------- */
+        function updateEcosystemDisplays() {
+            const instabilityEl = document.getElementById("val-instability");
+            const coherenceEl = document.getElementById("val-coherence");
+            const entropyEl = document.getElementById("val-entropy");
+            const factionTrustEl = document.getElementById("val-factionTrust");
+
+            if (instabilityEl) instabilityEl.innerText = `${state.instability.toFixed(1)}%`;
+            if (coherenceEl) coherenceEl.innerText = `${state.coherence.toFixed(1)}%`;
+            if (entropyEl) entropyEl.innerText = `${state.entropy.toFixed(1)}%`;
+            if (factionTrustEl) factionTrustEl.innerText = `${state.factionTrust.toFixed(1)}%`;
+
+            // Display Sovereign Metrics
+            if (document.getElementById("sov-loyalty")) document.getElementById("sov-loyalty").innerText = `${activeSovereign.loyalty.toFixed(1)}%`;
+            if (document.getElementById("sov-trauma")) document.getElementById("sov-trauma").innerText = `${activeSovereign.trauma.toFixed(1)}%`;
+            if (document.getElementById("sov-stage")) document.getElementById("sov-stage").innerText = activeSovereign.metamorphosisStage;
+
+            // Display Apex Metrics
+            if (document.getElementById("apx-beast")) document.getElementById("apx-beast").innerText = `${apexes.beast.influence.toFixed(1)}%`;
+            if (document.getElementById("apx-devourer")) document.getElementById("apx-devourer").innerText = `${apexes.devourer.influence.toFixed(1)}%`;
+            if (document.getElementById("apx-weaver")) document.getElementById("apx-weaver").innerText = `${apexes.weaver.influence.toFixed(1)}%`;
+        }
+
+        /* -----------------------------------------------------------------
+           7. THE VOID LOOM CANVAS ENGINE
+        ----------------------------------------------------------------- */
+        function renderVoidLoomFrame() {
+            const canvas = document.getElementById("void-loom-canvas");
+            if (!canvas) return;
+            const ctx = canvas.getContext("2d");
+            
+            if (canvas.width !== canvas.parentElement.clientWidth) {
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight;
+            }
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const baseRad = Math.min(canvas.width, canvas.height) * 0.28;
+
+            ctx.fillStyle = "#010204";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Lattices
+            const linesCount = 36;
+            ctx.strokeStyle = "rgba(0, 240, 255, 0.05)";
+            ctx.lineWidth = 1;
+            
+            for (let i = 0; i < linesCount; i++) {
+                let theta = (Math.PI * 2 / linesCount) * i + (Date.now() * 0.0002);
+                let lx = cx + Math.cos(theta) * baseRad;
+                let ly = cy + Math.sin(theta) * baseRad;
+                
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(lx, ly);
+                ctx.stroke();
+            }
+
+            // Draw primary filament
+            ctx.beginPath();
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.75)";
+            ctx.lineWidth = activeMutations.fractalStorm ? 3 : 1.5;
+            let amp = 20 + Math.sin(Date.now() * 0.002) * 10;
+            
+            for (let x = 0; x < canvas.width; x += 6) {
+                let y = cy + Math.sin(x * 0.02 + Date.now() * 0.003) * amp;
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Scarlet anomalies
+            if (state.entropy > 40) {
+                ctx.strokeStyle = "rgba(255, 0, 85, 0.2)";
+                ctx.lineWidth = 1.5;
+                const layers = Math.min(5, Math.floor(state.entropy / 15));
+                for (let l = 1; l <= layers; l++) {
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, baseRad * (l * 0.2), 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            }
+        }
+
+        /* -----------------------------------------------------------------
+           8. SLIDER CONTROL EVENT MAPPINGS
+        ----------------------------------------------------------------- */
+        const emotionKeys = ["fear", "wonder", "rage", "hope", "hunger", "reverence"];
+        
+        emotionKeys.forEach(key => {
+            const sld = document.getElementById(`sld-${key}`);
+            const lbl = document.getElementById(`lbl-${key}`);
+            if (sld && lbl) {
+                sld.addEventListener("input", (e) => {
+                    const val = parseInt(e.target.value);
+                    state.emotions[key] = val;
+                    lbl.innerText = `${val}%`;
+                    saveRebellionState();
+                });
+            }
+        });
+
+        /* -----------------------------------------------------------------
+           9. ROUTING & STATE SYNC CONTROLLERS
+        ----------------------------------------------------------------- */
+        function switchView(viewId) {
+            document.querySelectorAll(".nav-tab").forEach(tab => tab.classList.remove("active"));
+            document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
+
+            if (document.getElementById(`tab-${viewId}`)) document.getElementById(`tab-${viewId}`).classList.add("active");
+            if (document.getElementById(`view-${viewId}`)) document.getElementById(`view-${viewId}`).classList.add("active");
+
+            if (viewId === 'ascension') drawAscensionConstellation();
+            else if (viewId === 'profile') renderProfileTab();
+            else if (viewId === 'lobby') {
+                renderCosmeticsPanel();
+                renderLoreLogs();
+                displayNextConscienceTrial();
+            }
+        }
+
+        const skillsPool = [
+            { id: 1, name: "Sovereign Favor", desc: "Gain access to legendary dialogues. Requirements: 1 Spent point.", x: 50, y: 50 },
+            { id: 2, name: "Edict Enforcer", desc: "Permanently decreases Syndicate corruption thresholds. Requirements: 2 Spent points.", x: 120, y: 90 },
+            { id: 3, name: "Temporal Shifter", desc: "Allows dual-direction speed offsets inside Quantum Streams. Requirements: 3 Spent points.", x: 220, y: 150 },
+            { id: 4, name: "Scythe Calibration", desc: "Bypasses node matrix locks with lower entropic footprints. Requirements: 4 Spent points.", x: 150, y: 220 },
+            { id: 5, name: "Constellation Root", desc: "Base alignment anchor for cosmological projection structures.", x: 200, y: 40 }
+        ];
+
+        function drawAscensionConstellation() {
+            const canvasNode = document.getElementById("constellation-canvas");
+            const ctxNode = canvasNode.getContext("2d");
+            canvasNode.width = canvasNode.parentElement.clientWidth;
+            canvasNode.height = canvasNode.parentElement.clientHeight;
+
+            ctxNode.clearRect(0,0,canvasNode.width,canvasNode.height);
+
+            // Draw link connections
+            ctxNode.strokeStyle = "rgba(0, 240, 255, 0.15)";
+            ctxNode.lineWidth = 1.5;
+            ctxNode.beginPath();
+            ctxNode.moveTo(skillsPool[4].x, skillsPool[4].y);
+            ctxNode.lineTo(skillsPool[0].x, skillsPool[0].y);
+            ctxNode.lineTo(skillsPool[1].x, skillsPool[1].y);
+            ctxNode.lineTo(skillsPool[3].x, skillsPool[3].y);
+            ctxNode.moveTo(skillsPool[1].x, skillsPool[1].y);
+            ctxNode.lineTo(skillsPool[2].x, skillsPool[2].y);
+            ctxNode.stroke();
+
+            const containerNode = document.getElementById("constellation-nodes-container");
+            containerNode.innerHTML = "";
+
+            skillsPool.forEach(skill => {
+                const el = document.createElement("div");
+                el.className = `skill-node ${state.unlockedSkills.includes(skill.id) ? 'unlocked' : ''}`;
+                el.style.left = `${skill.x}px`;
+                el.style.top = `${skill.y}px`;
+
+                el.addEventListener("click", () => {
+                    soundInteract();
+                    document.querySelectorAll(".skill-node").forEach(n => n.classList.remove("active-focus"));
+                    el.classList.add("active-focus");
+                    
+                    const details = document.getElementById("ascension-node-details");
+                    const unlocked = state.unlockedSkills.includes(skill.id);
+                    
+                    details.innerHTML = `
+                        <strong>${skill.name}</strong><br>
+                        ${skill.desc}<br>
+                        Status: ${unlocked ? '<span style="color: var(--ui-accent-alt);">Unlocked</span>' : `<button class="btn btn-primary" onclick="claimSkillNode(${skill.id})" style="padding: 2px 8px; font-size: 0.65rem; margin-top: 4px;">Allocate</button>`}
+                    `;
+                });
+
+                containerNode.appendChild(el);
+            });
+
+            document.getElementById("spent-nodes-cost").innerText = state.unlockedSkills.length;
+        }
+
+        function claimSkillNode(id) {
+            if (state.unlockedSkills.includes(id)) return;
+            if (state.unlockedSkills.length < state.ascensionPoints) {
+                state.unlockedSkills.push(id);
+                saveRebellionState();
+                drawAscensionConstellation();
+                showHUDMessage("CONSTELLATION TUNED", "Cosmic attribute allocated successfully.");
+            } else {
+                showHUDMessage("LIMIT REACHED", "Spent node parameters exceed maximum clearance levels.", "warning");
+            }
+        }
+
+        function applyFormAura(formName) {
+            state.activeForm = formName;
+            saveRebellionState();
+
+            const container = document.getElementById("active-constellation-aura");
+            if (!container) return;
+
+            container.className = "architect-aura";
+            if (formName === "Luminous") container.classList.add("aura-luminous");
+            else if (formName === "Sovereign-Bound") container.classList.add("aura-sovereign");
+            else if (formName === "Omniversal") container.classList.add("aura-omniversal");
+            else if (formName === "Transcendent") container.classList.add("aura-transcendent");
+
+            document.getElementById("lock-luminous").innerText = state.seasonLevel >= 2 ? "EQUIPPED" : "LOCKED (Clearance 2)";
+            document.getElementById("lock-sovereign").innerText = state.seasonLevel >= 3 ? "EQUIPPED" : "LOCKED (Clearance 3)";
+            document.getElementById("lock-omniversal").innerText = state.seasonLevel >= 4 ? "EQUIPPED" : "LOCKED (Clearance 4)";
+            document.getElementById("lock-transcendent").innerText = state.seasonLevel >= 5 ? "EQUIPPED" : "LOCKED (Clearance 5)";
+        }
+
+        /* -----------------------------------------------------------------
+           10. MINI-GAME: CONSCIENCE STAR MATRIX BOARD
+        ----------------------------------------------------------------- */
+        function initMatrixGrid() {
+            const container = document.getElementById("main-star-grid");
+            if (!container) return;
+            container.innerHTML = "";
+            state.grid = [];
+
+            const activeSkin = state.cosmetics.equipped.starMatrixSkin;
+
+            for (let i = 0; i < 36; i++) {
+                const cell = document.createElement("div");
+                cell.classList.add("matrix-cell");
+                
+                const randomType = Math.floor(Math.random() * emojis.length);
+                const aligned = Math.random() > 0.6;
+
+                if (activeSkin === "sm_runes") {
+                    cell.innerText = '•';
+                    cell.dataset.renderVal = RUNE_SYMBOLS[emojis[randomType]];
+                } else {
+                    cell.innerText = '•';
+                    cell.dataset.renderVal = emojis[randomType];
+                }
+
+                if (aligned) cell.classList.add("aligned");
+
+                const cellData = { id: i, type: randomType, aligned: aligned, element: cell };
+                cell.addEventListener("click", () => {
+                    soundInteract();
+                    cellData.aligned = !cellData.aligned;
+                    if (cellData.aligned) {
+                        cell.classList.add("aligned");
+                        state.emotions.wonder = Math.min(100, state.emotions.wonder + 5);
+                        state.emotions.fear = Math.max(0, state.emotions.fear - 3);
+                    } else {
+                        cell.classList.remove("aligned");
+                        state.emotions.fear = Math.min(100, state.emotions.fear + 4);
+                    }
+                    syncSlidersToState();
+                    recalculateMatrixMetrics();
+                });
+
+                state.grid.push(cellData);
+                container.appendChild(cell);
+            }
+            recalculateMatrixMetrics();
+        }
+
+        function recalculateMatrixMetrics() {
+            const total = state.grid.length;
+            if (total === 0) return;
+            const alignedCount = state.grid.filter(c => c.aligned).length;
+            
+            state.coherence = Math.round((alignedCount / total) * 100);
+            state.entropy = 100 - state.coherence;
+
+            if (alignedCount === total) {
+                addCredits(250);
+                addXP(200);
+                setCertification("starMatrix", 3);
+                showHUDMessage("CONSCIENCE BALANCED", "Perfect alignment vector recorded. +250 CR & +200 XP injected.");
+                initMatrixGrid();
+            }
+        }
+
+        document.getElementById("btn-weave").addEventListener("click", () => {
+            soundWeave();
+            state.grid.forEach(cell => {
+                if (cell.type === 0 || cell.type === 4) {
+                    cell.aligned = true;
+                    cell.element.classList.add("aligned");
+                }
+            });
+            recalculateMatrixMetrics();
+        });
+
+        document.getElementById("btn-split").addEventListener("click", () => {
+            soundInteract();
+            state.grid.forEach((cell, idx) => {
+                if (idx % 2 === 0) {
+                    cell.aligned = false;
+                    cell.element.classList.remove("aligned");
+                }
+            });
+            recalculateMatrixMetrics();
+        });
+
+        document.getElementById("btn-merge").addEventListener("click", () => {
+            soundAlign();
+            state.grid.forEach(cell => { cell.aligned = true; cell.element.classList.add("aligned"); });
+            recalculateMatrixMetrics();
+        });
+
+        document.getElementById("btn-collapse").addEventListener("click", () => {
+            soundDissonance();
+            state.grid.forEach(cell => { cell.aligned = false; cell.element.classList.remove("aligned"); });
+            recalculateMatrixMetrics();
+        });
+
+        /* -----------------------------------------------------------------
+           11. INFINITE SEED REBIRTH GENERATOR (PARTICLE CANVAS)
+        ----------------------------------------------------------------- */
+        let genCanvas, genCtx, genParticles = [], genInterval = null, genStage = 0;
+
+        function initiateGenesisEvent() {
+            soundWeave();
+            genCanvas = document.getElementById("genesis-canvas");
+            genCtx = genCanvas.getContext("2d");
+            
+            genCanvas.width = genCanvas.parentElement.clientWidth;
+            genCanvas.height = genCanvas.parentElement.clientHeight;
+
+            genParticles = [];
+            genStage = 1;
+            clearInterval(genInterval);
+
+            // Grab selections
+            const essence = document.getElementById("seed-essence").value;
+            const law = document.getElementById("seed-law").value;
+            const sovereign = document.getElementById("seed-sovereign").value;
+            const era = document.getElementById("seed-era").value;
+
+            document.getElementById("genesis-stage-text").innerText = "STAGE 1: THE SPARK";
+
+            // Spawn core explosion parameters
+            for (let i = 0; i < 40; i++) {
+                genParticles.push({
+                    x: genCanvas.width / 2,
+                    y: genCanvas.height / 2,
+                    vx: (Math.random() - 0.5) * 4,
+                    vy: (Math.random() - 0.5) * 4,
+                    size: 2 + Math.random() * 3,
+                    color: essence === "Light" ? "#ffd86b" : essence === "Ruin" ? "#ff4b8b" : "#00f0ff"
+                });
+            }
+
+            genInterval = setInterval(() => {
+                genCtx.fillStyle = "rgba(2, 2, 4, 0.15)";
+                genCtx.fillRect(0,0,genCanvas.width,genCanvas.height);
+
+                // Run stages
+                if (genStage === 1) { // Spark
+                    genParticles.forEach(p => {
+                        p.x += p.vx; p.y += p.vy;
+                        genCtx.fillStyle = p.color;
+                        genCtx.beginPath(); genCtx.arc(p.x, p.y, p.size, 0, Math.PI*2); genCtx.fill();
+                    });
+                    if (Math.random() < 0.05) {
+                        genStage = 2;
+                        document.getElementById("genesis-stage-text").innerText = "STAGE 2: THE BLOOM";
+                        playSound(330, 'sine', 0.5);
+                    }
+                } else if (genStage === 2) { // Bloom
+                    // Spiral nodes form
+                    const cx = genCanvas.width / 2;
+                    const cy = genCanvas.height / 2;
+                    const time = Date.now() * 0.005;
+
+                    for (let r = 0; r < 3; r++) {
+                        genCtx.beginPath();
+                        genCtx.strokeStyle = "rgba(0, 240, 255, 0.1)";
+                        genCtx.arc(cx, cy, 30 + r * 20, 0, Math.PI*2);
+                        genCtx.stroke();
+
+                        let theta = time + r;
+                        let rx = cx + Math.cos(theta) * (30 + r * 20);
+                        let ry = cy + Math.sin(theta) * (30 + r * 20);
+                        genCtx.fillStyle = "var(--ui-accent-alt)";
+                        genCtx.beginPath(); genCtx.arc(rx, ry, 4, 0, Math.PI*2); genCtx.fill();
+                    }
+
+                    if (Math.random() < 0.04) {
+                        genStage = 3;
+                        document.getElementById("genesis-stage-text").innerText = "STAGE 3: THE EXPANSION";
+                        playSound(440, 'triangle', 0.6);
+                    }
+                } else if (genStage === 3) { // Expansion
+                    // Stars expand outward
+                    const cx = genCanvas.width / 2;
+                    const cy = genCanvas.height / 2;
+                    
+                    for (let i = 0; i < 5; i++) {
+                        genParticles.push({
+                            x: cx + (Math.random() - 0.5) * 20,
+                            y: cy + (Math.random() - 0.5) * 20,
+                            vx: (Math.random() - 0.5) * 8,
+                            vy: (Math.random() - 0.5) * 8,
+                            size: 1 + Math.random() * 2,
+                            color: "rgba(255,255,255,0.8)"
+                        });
+                    }
+
+                    genParticles.forEach(p => {
+                        p.x += p.vx; p.y += p.vy;
+                        genCtx.fillStyle = p.color;
+                        genCtx.beginPath(); genCtx.arc(p.x, p.y, p.size, 0, Math.PI*2); genCtx.fill();
+                    });
+
+                    if (Math.random() < 0.03) {
+                        genStage = 4;
+                        document.getElementById("genesis-stage-text").innerText = "STAGE 4: DIVERGENCE";
+                        playSound(660, 'sine', 0.8);
+                    }
+                } else if (genStage === 4) { // Divergence complete
+                    clearInterval(genInterval);
+                    document.getElementById("genesis-stage-text").innerText = "SYSTEM REBORN";
+                    addXP(500); addCredits(300);
+                    
+                    // Replace active Sovereign based on seed!
+                    activeSovereign = new SovereignInstance(sovereign, law === "Prime" ? "logic" : "entropy");
+                    document.getElementById("sov-name").innerText = sovereign;
+                    document.getElementById("sov-era").innerText = era;
+                    
+                    showHUDMessage("GENESIS COMPLETED", `Omniverse successfully reborn under ${law} laws! Sovereign ${sovereign} is active inside the ${era}. Unlocks: +300 CR & +500 XP.`);
+                }
+            }, 30);
+        }
+
+        /* -----------------------------------------------------------------
+           12. INITIALIZATION SEQUENCE
+        ----------------------------------------------------------------- */
+        const veilCheckbox = document.getElementById("veilToggleCheckbox");
+
+        veilCheckbox.addEventListener("change", (e) => {
+            state.hasSeenTheVeil = e.target.checked;
+            soundAlign();
+            updateVeilLayout();
+            saveRebellionState();
+        });
+
+        function updateVeilLayout() {
+            const body = document.body;
+            if (state.hasSeenTheVeil) {
+                body.classList.add('unveiled-mode');
+            } else {
+                body.classList.remove('unveiled-mode');
+            }
+
+            document.querySelectorAll("[data-veil-key]").forEach(el => {
+                const key = el.getAttribute("data-veil-key");
+                if (VEIL_DICTIONARY[key]) {
+                    el.textContent = state.hasSeenTheVeil ? VEIL_DICTIONARY[key].unveiled : VEIL_DICTIONARY[key].veiled;
+                }
+            });
+        }
+
+        window.onload = function() {
+            loadRebellionState();
+            veilCheckbox.checked = state.hasSeenTheVeil;
+            updateVeilLayout();
+            initMatrixGrid();
+            displayNextConscienceTrial();
+            
+            // Log initial system emergence ready
+            triggerAutonomousEvent("System Handshake", "Pulse engine online. Delta Time loops locked.");
+            
+            // Kickstart the central pulse engine ticker
+            requestAnimationFrame(pulseEngineLoop);
+        };
     </script>
-  </body>
+</body>
 </html>
 
+```
