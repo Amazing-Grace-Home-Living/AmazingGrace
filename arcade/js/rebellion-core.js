@@ -23,6 +23,10 @@
       return base;
     }
 
+    if (!base || typeof base !== 'object') {
+      return incoming;
+    }
+
     const merged = { ...base };
     for (const [key, value] of Object.entries(incoming)) {
       const baseValue = base[key];
