@@ -4,6 +4,7 @@ import fs from 'node:fs';
 describe('workflow cleanup', () => {
   it('has the expected workflows in the repository', () => {
     expect(fs.readdirSync('.github/workflows').sort()).toEqual([
+      'README.md',
       'ci.yml',
       'deploy.yml',
       'ella.yml',
