@@ -67,8 +67,8 @@ describe('story route cleanup', () => {
   it('does not reference missing story image assets from the Rebellion hero background', () => {
     const rebellionStoryHtml = fs.readFileSync('stories/expose-the-matrix/Rebellion.html', 'utf8');
     const rebellionStoryNormalized = rebellionStoryHtml.replace(/\s+/g, ' ');
-    expect(rebellionStoryHtml).not.toContain('../../assets/story/rebellion.jpg');
-    expect(rebellionStoryHtml).not.toContain('assets/story/');
+    expect(rebellionStoryNormalized).not.toContain('../../assets/story/rebellion.jpg');
+    expect(rebellionStoryNormalized).not.toContain('assets/story/');
     expect(rebellionStoryNormalized).toContain('.story-hero {');
     expect(rebellionStoryNormalized).toContain('background: linear-gradient(');
   });
