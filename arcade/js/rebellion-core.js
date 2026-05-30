@@ -15,6 +15,51 @@
     inventory: {
       quantumCore: 0,
       rebellionKey: 0
+    },
+    activeWeakpoints: {
+      starMatrix: null,
+      lookingGlass: null,
+      quantumShift: null,
+      syndicateSiege: null
+    },
+    bossMutations: [],
+    bossMemory: {
+      matchSpeed: 0,
+      perfectAlignments: 0,
+      hazardDodges: 0,
+      towerDamage: 0,
+      weakpointsClearedQuickly: false,
+      preferredGame: null
+    },
+    bossPersonality: {
+      aggression: 0,
+      cunning: 0,
+      cruelty: 0,
+      pride: 0,
+      fear: 0
+    },
+    bossPersonalityHistory: [],
+    bossEmotion: {
+      anger: 0,
+      fear: 0,
+      obsession: 0,
+      despair: 0,
+      respect: 0
+    },
+    bossEmotionHistory: [],
+    bossRedemption: {
+      light: 0,
+      dark: 0
+    },
+    bossReincarnation: {
+      level: 0,
+      deaths: 0,
+      lastDeath: null,
+      path: null
+    },
+    finalChoice: null,
+    cosmetics: {
+      owned: {}
     }
   };
 
