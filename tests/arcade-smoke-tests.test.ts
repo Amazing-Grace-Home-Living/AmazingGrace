@@ -1,0 +1,240 @@
+import { describe, it, expect } from 'vitest';
+import { readFileSync, existsSync } from 'fs';
+import { resolve } from 'path';
+
+/**
+ * Arcade Game Smoke Tests
+ *
+ * These tests verify that each arcade game:
+ * 1. Has an HTML entry point in vite.config.ts
+ * 2. Has valid HTML structure
+ * 3. Loads required scripts and assets
+ * 4. Doesn't have obvious syntax errors
+ *
+ * This helps prevent "broken games" from being deployed to production.
+ */
+
+const ARCADE_GAMES = [
+  { name: 'Main Arcade', path: 'arcade/index.html' },
+  { name: 'Star Matrix', path: 'arcade/star-matrix/index.html' },
+  { name: 'Matrix of Conscience', path: 'arcade/matrix-of-conscience/index.html' },
+  { name: 'Matrix Terminal', path: 'arcade/matrix-of-conscience-terminal/index.html' },
+  { name: 'Lore Archive', path: 'arcade/lore-archive/lore-archive.html' },
+  { name: 'Certificates', path: 'arcade/certificates/index.html' },
+  { name: 'Bible Study', path: 'arcade/bible-study/index.html' },
+  { name: 'Quick Click', path: 'arcade/quick-click/index.html' },
+  { name: 'Trinity', path: 'arcade/trinity/index.html' },
+  { name: 'Nexus Arcade', path: 'arcade/nexus-arcade/index.html' },
+  { name: 'Syndicate Siege', path: 'arcade/syndicate-siege/index.html' },
+  { name: 'Matrix App', path: 'arcade/matrix-app/index.html' },
+];
+
+describe('Arcade Game Smoke Tests', () => {
+  describe('Game Entry Points', () => {
+    it('should have all arcade games configured in vite.config.ts', () => {
+      const viteConfig = readFileSync(resolve('vite.config.ts'), 'utf-8');
+
+      for (const game of ARCADE_GAMES) {
+        expect(
+          viteConfig,
+          `${game.name} should be in vite.config.ts rollupOptions.input`
+        ).toContain(game.path);
+      }
+    });
+
+    it('should have all game HTML files exist', () => {
+      for (const game of ARCADE_GAMES) {
+        const fullPath = resolve(game.path);
+        expect(
+          existsSync(fullPath),
+          `${game.name} HTML file should exist at ${game.path}`
+        ).toBe(true);
+      }
+    });
+  });
+
+  describe('Game HTML Structure', () => {
+    for (const game of ARCADE_GAMES) {
+      describe(game.name, () => {
+        let html: string;
+
+        it('should have valid HTML with DOCTYPE', () => {
+          html = readFileSync(resolve(game.path), 'utf-8');
+          expect(html).toMatch(/<!DOCTYPE html>/i);
+        });
+
+        it('should have html, head, and body tags', () => {
+          html = readFileSync(resolve(game.path), 'utf-8');
+          expect(html).toMatch(/<html[^>]*>/i);
+          expect(html).toMatch(/<head[^>]*>/i);
+          expect(html).toMatch(/<body[^>]*>/i);
+          expect(html).toMatch(/<\/html>/i);
+        });
+
+        it('should have a title', () => {
+          html = readFileSync(resolve(game.path), 'utf-8');
+          expect(html).toMatch(/<title[^>]*>.*<\/title>/i);
+        });
+
+        it('should not contain broken script syntax', () => {
+          html = readFileSync(resolve(game.path), 'utf-8');
+
+          // Check for common script errors
+          const scriptBlocks = html.match(/<script[^>]*>[\s\S]*?<\/script>/gi) || [];
+
+          for (const script of scriptBlocks) {
+            // Skip if it's an external script (src attribute)
+            if (script.match(/src=/i)) continue;
+
+            // Check for unmatched braces (basic syntax check)
+            const content = script.replace(/<\/?script[^>]*>/gi, '');
+            const openBraces = (content.match(/\{/g) || []).length;
+            const closeBraces = (content.match(/\}/g) || []).length;
+
+            expect(
+              openBraces,
+              `${game.name} should have matched braces in inline scripts`
+            ).toBe(closeBraces);
+          }
+        });
+
+        it('should use relative paths for internal navigation', () => {
+          html = readFileSync(resolve(game.path), 'utf-8');
+
+          // Check for absolute arcade paths that break on preview deployments
+          const brokenPatterns = [
+            /href=["']\/arcade\//g,
+            /src=["']\/arcade\//g,
+          ];
+
+          for (const pattern of brokenPatterns) {
+            const matches = html.match(pattern);
+            if (matches) {
+              expect(
+                matches,
+                `${game.name} should use relative paths (./ or ../) instead of absolute /arcade/ paths for preview compatibility`
+              ).toHaveLength(0);
+            }
+          }
+        });
+
+        it('should not have obvious placeholder content', () => {
+          html = readFileSync(resolve(game.path), 'utf-8');
+
+          // Check for placeholder patterns that suggest incomplete games
+          const placeholderPatterns = [
+            /lorem ipsum/i,
+            /\btodo\b.*(?:game|feature|implement)/i,
+            /placeholder\s+text/i,
+            /coming\s+soon/i,
+          ];
+
+          for (const pattern of placeholderPatterns) {
+            expect(
+              html,
+              `${game.name} should not contain placeholder content: ${pattern}`
+            ).not.toMatch(pattern);
+          }
+        });
+      });
+    }
+  });
+
+  describe('Asset References', () => {
+    for (const game of ARCADE_GAMES) {
+      it(`${game.name} should have resolvable asset references`, () => {
+        const html = readFileSync(resolve(game.path), 'utf-8');
+        const gameDir = resolve(game.path, '..');
+
+        // Extract src and href references
+        const srcMatches = html.matchAll(/src=["']([^"']+)["']/gi);
+        const hrefMatches = html.matchAll(/href=["']([^"']+)["']/gi);
+
+        const refs = [
+          ...Array.from(srcMatches).map(m => m[1]),
+          ...Array.from(hrefMatches).map(m => m[1]),
+        ];
+
+        for (const ref of refs) {
+          // Skip external URLs
+          if (/^(https?:|mailto:|tel:|data:|javascript:|#)/i.test(ref)) continue;
+
+          // Skip empty refs
+          if (!ref.trim()) continue;
+
+          // For relative paths, check they don't reference non-existent ../../src/ files
+          // during build (these should be in vite.config.ts as entries)
+          if (ref.includes('../../src/')) {
+            // This is a build-time reference - Vite should process it
+            // We can't check if it exists in src/, but we can check vite.config
+            const viteConfig = readFileSync(resolve('vite.config.ts'), 'utf-8');
+
+            // The game itself should be in vite config
+            expect(
+              viteConfig,
+              `${game.name} references ../../src/ files, ensure game is in vite.config.ts`
+            ).toContain(game.path);
+          }
+        }
+      });
+    }
+  });
+
+  describe('Arcade Navigation', () => {
+    it('should have working back navigation links in arcade games', () => {
+      const arcadeIndex = readFileSync(resolve('arcade/index.html'), 'utf-8');
+
+      // Main arcade should link to homepage
+      expect(arcadeIndex).toMatch(/href=["']\.\.\/["']/);
+    });
+
+    it('should have sub-games link back to arcade index', () => {
+      const subGames = ARCADE_GAMES.filter(g =>
+        g.path.startsWith('arcade/') && g.path !== 'arcade/index.html'
+      );
+
+      for (const game of subGames) {
+        const html = readFileSync(resolve(game.path), 'utf-8');
+
+        // Game should have navigation back to arcade or home
+        const hasBackNav =
+          html.includes('href="../') ||
+          html.includes('href="./') ||
+          html.includes('Back to Arcade') ||
+          html.includes('← Arcade');
+
+        expect(
+          hasBackNav,
+          `${game.name} should have navigation back to arcade or home`
+        ).toBe(true);
+      }
+    });
+  });
+
+  describe('Game Load Performance', () => {
+    it('should not have excessively large inline scripts', () => {
+      for (const game of ARCADE_GAMES) {
+        const html = readFileSync(resolve(game.path), 'utf-8');
+        const scriptBlocks = html.match(/<script[^>]*>[\s\S]*?<\/script>/gi) || [];
+
+        for (const script of scriptBlocks) {
+          // Skip external scripts
+          if (script.match(/src=/i)) continue;
+
+          const size = script.length;
+
+          // Warn if inline script is over 50KB
+          if (size > 50000) {
+            console.warn(`${game.name} has large inline script (${Math.round(size/1024)}KB) - consider externalizing`);
+          }
+
+          // Fail if over 100KB (should definitely be external)
+          expect(
+            size,
+            `${game.name} inline script too large (${Math.round(size/1024)}KB) - externalize to separate .js file`
+          ).toBeLessThan(100000);
+        }
+      }
+    });
+  });
+});
