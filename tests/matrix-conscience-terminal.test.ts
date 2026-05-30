@@ -62,7 +62,7 @@ describe('Matrix of Conscience Terminal', () => {
     expect(html).toContain('renderResistanceUnlocks');
     expect(html).toContain('Lore Archive Unlocked');
     expect(html).toContain('../lore-archive/lore-archive.html');
-    expect(html).toContain('Lore Archive: Requires ★★ in all games');
+    expect(html).toContain('Lore Archive: Requires ★★ in Star Matrix, Looking Glass, and Quantum Shift');
   });
 
   it('includes terminal-style command input and history', () => {

@@ -1,4 +1,5 @@
 loadRebellionState();
+const activeDecryptions = new Map();
 
 function formatUnlockHint(requirements = {}) {
   const hints = [];
@@ -50,19 +51,27 @@ function checkLoreUnlock(requirements = {}) {
   return true;
 }
 
-function decryptFile(element, text) {
+function decryptFile(fileId, element, text) {
+  const existingInterval = activeDecryptions.get(fileId);
+  if (existingInterval) {
+    clearInterval(existingInterval);
+  }
+
   element.style.display = 'block';
   element.textContent = '';
 
   let i = 0;
-  const interval = setInterval(() => {
+  const intervalId = setInterval(() => {
     element.textContent = text.slice(0, i);
     i += 1;
 
     if (i > text.length) {
-      clearInterval(interval);
+      clearInterval(intervalId);
+      activeDecryptions.delete(fileId);
     }
   }, 15);
+
+  activeDecryptions.set(fileId, intervalId);
 }
 
 function renderLoreArchive() {
@@ -99,7 +108,16 @@ function renderLoreArchive() {
     fileEl.append(title, decryptLabel, content);
 
     if (unlocked) {
-      fileEl.addEventListener('click', () => decryptFile(content, file.content));
+      const runDecrypt = () => decryptFile(file.id, content, file.content);
+      fileEl.setAttribute('role', 'button');
+      fileEl.setAttribute('tabindex', '0');
+      fileEl.addEventListener('click', runDecrypt);
+      fileEl.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          runDecrypt();
+        }
+      });
     }
 
     filesRoot.appendChild(fileEl);
@@ -109,11 +127,12 @@ function renderLoreArchive() {
 
   const status = document.getElementById('syndicate-ai');
   if (status) {
-    status.innerHTML = `
-      <div>Syndicate AI: Tracking Archive breach attempts...</div>
-      <div>Unlocked files: ${unlockedCount}/${LORE_FILES.length}</div>
-      ${status.innerHTML}
-    `;
+    status.textContent = '';
+    const aiLine = document.createElement('div');
+    aiLine.textContent = 'Syndicate AI: Tracking Archive breach attempts...';
+    const unlockedLine = document.createElement('div');
+    unlockedLine.textContent = `Unlocked files: ${unlockedCount}/${LORE_FILES.length}`;
+    status.append(aiLine, unlockedLine);
   }
 }
 

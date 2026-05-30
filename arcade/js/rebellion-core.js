@@ -48,7 +48,8 @@
       const raw = global.localStorage.getItem(STORAGE_KEY);
       const parsed = raw ? JSON.parse(raw) : {};
       global.rebellionState = mergeDeep(defaultState, parsed);
-    } catch {
+    } catch (error) {
+      console.warn('Failed to load rebellion state, using defaults.', error);
       global.rebellionState = { ...defaultState };
     }
 
@@ -68,24 +69,51 @@
   }
 
   function updateHUD() {
-    const root = global.document && global.document.getElementById('syndicate-ai');
+    const root = global.document && (
+      global.document.getElementById('rebellion-hud') ||
+      global.document.getElementById('syndicate-ai')
+    );
     if (!root || !global.rebellionState) {
       return;
     }
 
     const { certifications = {}, dailyMissions = {}, threat = 100, inventory = {} } = global.rebellionState;
+    const inventoryEntries = Object.entries(inventory).filter(([, amount]) => Number(amount) > 0);
+    const inventorySummary = inventoryEntries.length
+      ? inventoryEntries.map(([name, amount]) => `${name}: ${amount}`).join(', ')
+      : 'empty';
 
-    root.innerHTML = [
-      `<div>Threat Level: ${threat}</div>`,
-      `<div>Daily Missions: ${dailyMissions.completed || 0} completed</div>`,
-      `<div>Inventory: ${Object.keys(inventory).length ? 'synced' : 'empty'}</div>`,
-      `<div>Stars — Matrix:${certifications.starMatrix || 0} Looking Glass:${certifications.lookingGlass || 0} Quantum Shift:${certifications.quantumShift || 0} Siege:${certifications.syndicateSiege || 0}</div>`
-    ].join('');
+    const rows = [
+      `Threat Level: ${threat}`,
+      `Daily Missions: ${dailyMissions.completed || 0} completed`,
+      `Inventory: ${inventorySummary}`,
+      `Stars — Matrix: ${certifications.starMatrix || 0}`,
+      `Stars — Looking Glass: ${certifications.lookingGlass || 0}`,
+      `Stars — Quantum Shift: ${certifications.quantumShift || 0}`,
+      `Stars — Siege: ${certifications.syndicateSiege || 0}`
+    ];
+
+    root.textContent = '';
+    rows.forEach((rowText) => {
+      const row = global.document.createElement('div');
+      row.textContent = rowText;
+      root.appendChild(row);
+    });
+  }
+
+  function isLoreArchiveUnlocked(state = global.rebellionState) {
+    const certs = (state && state.certifications) || {};
+    return (
+      (certs.starMatrix || 0) >= 2 &&
+      (certs.lookingGlass || 0) >= 2 &&
+      (certs.quantumShift || 0) >= 2
+    );
   }
 
   global.loadRebellionState = loadRebellionState;
   global.saveRebellionState = saveRebellionState;
   global.updateHUD = updateHUD;
+  global.isLoreArchiveUnlocked = isLoreArchiveUnlocked;
 
   if (!global.rebellionState) {
     loadRebellionState();

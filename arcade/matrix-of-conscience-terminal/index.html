@@ -410,21 +410,28 @@
         });
         gameGrid.appendChild(tile);
       }
+    }
 
-      function renderResistanceUnlocks() {
-        const state = window.rebellionState || {};
-        const certs = state.certifications || {};
+    function renderResistanceUnlocks() {
+      const state = window.rebellionState || {};
+      terminalUnlocks.textContent = '';
+      const line = document.createElement('div');
+      const unlocked = typeof window.isLoreArchiveUnlocked === 'function'
+        ? window.isLoreArchiveUnlocked(state)
+        : false;
 
-        if (
-          (certs.starMatrix || 0) >= 2 &&
-          (certs.lookingGlass || 0) >= 2 &&
-          (certs.quantumShift || 0) >= 2
-        ) {
-          terminalUnlocks.innerHTML = '<div>📜 <a href="../lore-archive/lore-archive.html">Lore Archive Unlocked</a></div>';
-        } else {
-          terminalUnlocks.innerHTML = '<div class="rt-muted">Lore Archive: Requires ★★ in all games</div>';
-        }
+      if (unlocked) {
+        line.textContent = '📜 ';
+        const link = document.createElement('a');
+        link.href = '../lore-archive/lore-archive.html';
+        link.textContent = 'Lore Archive Unlocked';
+        line.appendChild(link);
+      } else {
+        line.className = 'rt-muted';
+        line.textContent = 'Lore Archive: Requires ★★ in Star Matrix, Looking Glass, and Quantum Shift';
       }
+
+      terminalUnlocks.appendChild(line);
     }
 
     function exitGame() {

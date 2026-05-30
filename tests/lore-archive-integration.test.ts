@@ -45,6 +45,8 @@ describe('Lore Archive integration', () => {
     expect(script).toContain('requirements.stars');
     expect(script).toContain('requirements.items');
     expect(script).toContain('requirements.threatBelow');
+    expect(script).toContain("setAttribute('role', 'button')");
+    expect(script).toContain("setAttribute('tabindex', '0')");
     expect(script).toContain('renderLoreArchive()');
   });
 

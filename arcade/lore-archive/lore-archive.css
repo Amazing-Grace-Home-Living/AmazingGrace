@@ -56,3 +56,13 @@
   display: grid;
   gap: 0.35rem;
 }
+
+#rebellion-hud {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  background: rgba(0, 229, 255, 0.08);
+  display: grid;
+  gap: 0.35rem;
+}
