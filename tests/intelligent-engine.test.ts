@@ -27,6 +27,15 @@ describe('intelligent engine', () => {
     });
   });
 
+  it('preserves explicit zero overrides for defaulted numeric fields', () => {
+    const sovereign = createSovereign({ loyalty: 0, metamorphosisStage: 0 });
+    const state = createInitialIntelligentEngineState({ factionTrust: 0 });
+
+    expect(sovereign.loyalty).toBe(0);
+    expect(sovereign.metamorphosisStage).toBe(0);
+    expect(state.factionTrust).toBe(0);
+  });
+
   it('applies weighted drift in micro-cycles with deltaTime', () => {
     const currentState = createInitialIntelligentEngineState({ worldAlignment: 10 });
 
@@ -92,9 +101,16 @@ describe('intelligent engine', () => {
     });
 
     const result = runIntelligentEngineCycle(currentState, {}, 1);
+    const halfTickResult = runIntelligentEngineCycle(currentState, {}, 0.5);
 
     expect(result.state.apexPressure.bloomingBeast.influence).toBeGreaterThan(5);
     expect(result.state.apexPressure.genesisDevourer.influence).toBeGreaterThan(5);
+    expect(halfTickResult.state.apexPressure.bloomingBeast.influence).toBeLessThan(
+      result.state.apexPressure.bloomingBeast.influence,
+    );
+    expect(halfTickResult.state.apexPressure.genesisDevourer.influence).toBeLessThan(
+      result.state.apexPressure.genesisDevourer.influence,
+    );
     expect(result.event.headline.length).toBeGreaterThan(0);
   });
 

@@ -10,6 +10,11 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
+function toFiniteNumber(value, defaultValue = 0) {
+  const numericValue = Number(value);
+  return Number.isFinite(numericValue) ? numericValue : defaultValue;
+}
+
 function cloneHistory(history = {}) {
   return {
     previousEras: Array.isArray(history.previousEras) ? [...history.previousEras] : [],
@@ -52,23 +57,23 @@ export function createSovereign(overrides = {}) {
   return {
     name: overrides.name || 'Unnamed Sovereign',
     instinct: overrides.instinct || 'hunt',
-    trauma: Number(overrides.trauma) || 0,
-    loyalty: Number(overrides.loyalty) || 50,
-    metamorphosisStage: Number(overrides.metamorphosisStage) || 1,
+    trauma: toFiniteNumber(overrides.trauma, 0),
+    loyalty: toFiniteNumber(overrides.loyalty, 50),
+    metamorphosisStage: toFiniteNumber(overrides.metamorphosisStage, 1),
     desire: overrides.desire || 'preserve-order',
     ideologicalMemory: Array.isArray(overrides.ideologicalMemory) ? [...overrides.ideologicalMemory] : [],
-    adaptation: Number(overrides.adaptation) || 0,
-    corruption: Number(overrides.corruption) || 0,
-    fear: Number(overrides.fear) || 0,
+    adaptation: toFiniteNumber(overrides.adaptation, 0),
+    corruption: toFiniteNumber(overrides.corruption, 0),
+    fear: toFiniteNumber(overrides.fear, 0),
     status: overrides.status || 'active',
   };
 }
 
 export function createInitialIntelligentEngineState(overrides = {}) {
   return {
-    worldAlignment: Number(overrides.worldAlignment) || 0,
-    timelineInstability: Number(overrides.timelineInstability) || 0,
-    factionTrust: Number(overrides.factionTrust) || 50,
+    worldAlignment: toFiniteNumber(overrides.worldAlignment, 0),
+    timelineInstability: toFiniteNumber(overrides.timelineInstability, 0),
+    factionTrust: toFiniteNumber(overrides.factionTrust, 50),
     sovereignAffinity: cloneSovereignAffinity(overrides.sovereignAffinity),
     emotions: cloneEmotions(overrides.emotions),
     history: cloneHistory(overrides.history),
@@ -94,15 +99,15 @@ function calculateMemoryBias(history) {
   };
 }
 
-function updateApexPressure(apexPressure, emotions) {
+function updateApexPressure(apexPressure, emotions, deltaTime) {
   const bloomingBeastInfluence = clamp(
-    apexPressure.bloomingBeast.influence + emotions.fear * 0.2 + emotions.hunger * 0.15,
+    apexPressure.bloomingBeast.influence + (emotions.fear * 0.2 + emotions.hunger * 0.15) * deltaTime,
     SYSTEM_MIN,
     SYSTEM_MAX,
   );
 
   const genesisDevourerInfluence = clamp(
-    apexPressure.genesisDevourer.influence + emotions.wonder * 0.3 + emotions.rage * 0.1,
+    apexPressure.genesisDevourer.influence + (emotions.wonder * 0.3 + emotions.rage * 0.1) * deltaTime,
     SYSTEM_MIN,
     SYSTEM_MAX,
   );
@@ -281,7 +286,7 @@ export function runIntelligentEngineCycle(currentState, pressures = {}, deltaTim
     SYSTEM_MAX,
   );
 
-  state.apexPressure = updateApexPressure(state.apexPressure, emotions);
+  state.apexPressure = updateApexPressure(state.apexPressure, emotions, safeDeltaTime);
 
   const dominantApex =
     state.apexPressure.bloomingBeast.influence >= state.apexPressure.genesisDevourer.influence
