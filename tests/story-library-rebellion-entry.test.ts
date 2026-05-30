@@ -20,16 +20,11 @@ describe('The 2027 Rebellion library integration', () => {
 
     const html = fs.readFileSync(storyPath, 'utf8');
     expect(html).toContain('<h1 class="hero-title" id="story-title">The 2027 Rebellion</h1>');
-<<<<<<< HEAD
-=======
-    expect(html).toContain('https://github.com/user-attachments/assets/6b019c5e-20a0-4bd5-bee7-e08eb8d73d92');
->>>>>>> origin/main
     expect(html).toContain('href="../nexus-prime-2087/"');
     expect(html).toContain('href="../our-covenant-of-new-beginnings/"');
     expect(html).toContain('href="../../arcade/matrix-of-conscience/"');
   });
 
-<<<<<<< HEAD
   it('includes the story page in Vite multi-page build inputs', () => {
     const viteConfig = fs.readFileSync('vite.config.ts', 'utf8');
     expect(viteConfig).toContain('stories/rebellion2027/index.html');
@@ -48,11 +43,4 @@ describe('The 2027 Rebellion library integration', () => {
     expect(html).toContain('<meta http-equiv="refresh" content="0; url=../rebellion2027/">');
     expect(html).toContain('href="../rebellion2027/"');
   });
-=======
-  it('includes the story page and legacy redirect page in Vite multi-page build inputs', () => {
-    const viteConfig = fs.readFileSync('vite.config.ts', 'utf8');
-    expect(viteConfig).toContain('stories/rebellion2027/index.html');
-    expect(viteConfig).toContain('stories/blog/rebellion.html');
-  });
->>>>>>> origin/main
 });
