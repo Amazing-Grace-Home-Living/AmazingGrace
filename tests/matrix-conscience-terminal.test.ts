@@ -55,6 +55,16 @@ describe('Matrix of Conscience Terminal', () => {
     expect(html).toContain('exitGame');
   });
 
+  it('integrates Resistance Terminal unlock messaging for Lore Archive', () => {
+    const html = fs.readFileSync('arcade/matrix-of-conscience-terminal/index.html', 'utf8');
+
+    expect(html).toContain('id="terminalUnlocks"');
+    expect(html).toContain('renderResistanceUnlocks');
+    expect(html).toContain('Lore Archive Unlocked');
+    expect(html).toContain('../lore-archive/lore-archive.html');
+    expect(html).toContain('Lore Archive: Requires ★★ in Star Matrix, Looking Glass, and Quantum Shift');
+  });
+
   it('includes terminal-style command input and history', () => {
     const html = fs.readFileSync('arcade/matrix-of-conscience-terminal/index.html', 'utf8');
 

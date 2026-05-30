@@ -19,6 +19,7 @@ export default defineConfig({
         arcadeStarMatrix:   resolve(__dirname, "arcade/star-matrix/index.html"),
         arcadeMatrix:      resolve(__dirname, "arcade/matrix-of-conscience/index.html"),
         arcadeMatrixTerminal: resolve(__dirname, "arcade/matrix-of-conscience-terminal/index.html"),
+        arcadeLoreArchive: resolve(__dirname, "arcade/lore-archive/lore-archive.html"),
         matrixConscienceIndex: resolve(__dirname, "matrix-of-conscience/index.html"),
         arcadeCertificates: resolve(__dirname, "arcade/certificates/index.html"),
         arcadeBibleStudy:  resolve(__dirname, "arcade/bible-study/index.html"),
@@ -32,7 +33,7 @@ export default defineConfig({
         ministriesSevenStarCanon: resolve(__dirname, "ministries/seven-star-canon.html"),
         stories:           resolve(__dirname, "stories/index.html"),
         storiesBlogArchitecturalSynthesis: resolve(__dirname, "stories/blog/architectural-js-synthesis.html"),
-        storiesBlogRebellionRedirect: resolve(__dirname, "stories/blog/rebellion.html"),
+        storiesBlogRebellion: resolve(__dirname, "stories/blog/rebellion.html"),
         storiesExposeMatrix: resolve(__dirname, "stories/expose-the-matrix/index.html"),
         storiesMatrix:      resolve(__dirname, "stories/matrix.html"),
         storiesNoahAndTheArk: resolve(__dirname, "stories/noah-and-the-ark/index.html"),
@@ -58,7 +59,6 @@ export default defineConfig({
         support:           resolve(__dirname, "support/index.html"),
         privacy:           resolve(__dirname, "privacy.html"),
         arcadeRedirect:    resolve(__dirname, "arcade.html"),
-        arcadeSyndicateSiege: resolve(__dirname, "arcade/syndicate-siege/index.html"),
       },
       output: {
         manualChunks(id) {
