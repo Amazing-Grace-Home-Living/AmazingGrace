@@ -5,9 +5,7 @@ describe('workflow cleanup', () => {
   it('has the expected workflows in the repository', () => {
     expect(fs.readdirSync('.github/workflows').sort()).toEqual([
       'deploy.yml',
-      'ella.yml',
       'firebase.yml',
-      'sync-secrets-from-matrix.yml',
     ]);
   });
 
