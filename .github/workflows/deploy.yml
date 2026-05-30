@@ -59,6 +59,9 @@ jobs:
       - name: Validate internal navigation and asset links
         run: node scripts/validate-dist-links.mjs
 
+      - name: Validate arcade navigation and asset links
+        run: node scripts/validate-arcade-dist-links.mjs
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
         with:

@@ -137,6 +137,19 @@
       }
       button:hover { background: rgba(0,255,160,0.18); }
 
+      .back-link {
+        display: inline-block;
+        color: var(--muted);
+        text-decoration: none;
+        margin-bottom: 1rem;
+        padding: 0.5rem 0;
+        font-weight: 600;
+      }
+      .back-link:hover {
+        color: var(--text);
+        text-decoration: underline;
+      }
+
       .status {
         text-align: center;
         color: var(--muted);
@@ -147,6 +160,7 @@
   </head>
   <body>
     <main class="shell">
+      <a href="../" class="back-link">← Back to Arcade</a>
       <h1>Matrix of Conscience</h1>
       <p class="subhead">M45 Seven Sisters Alignment — calibrate through matches and chain reactions.</p>
 

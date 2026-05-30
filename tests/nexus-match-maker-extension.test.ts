@@ -57,6 +57,10 @@ describe("Nexus Match-Maker extension scaffold", () => {
     expect(svg).toContain('id="mm-gem-cross"');
     expect(svg).toContain('id="mm-gem-flame"');
     expect(svg).toContain('id="mm-gem-drop"');
+    expect(svg).toContain('fill="url(#mm-grad-star)"');
+    expect(svg).toContain('fill="url(#mm-grad-heart)"');
+    expect(svg).toContain('fill="url(#mm-grad-cross)"');
+    expect(svg).toContain('fill="url(#mm-grad-flame)"');
+    expect(svg).toContain('fill="url(#mm-grad-drop)"');
   });
 });
-
