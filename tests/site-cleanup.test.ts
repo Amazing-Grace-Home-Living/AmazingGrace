@@ -26,6 +26,13 @@ describe('site cleanup', () => {
     expect(fs.existsSync('arcade/relic')).toBe(false);
   });
 
+  it('removes broken arcade prototype files', () => {
+    expect(fs.existsSync('arcade/matchMaker.html')).toBe(false);
+    expect(fs.existsSync('arcade/matrix.HTML')).toBe(false);
+    expect(fs.existsSync('arcade/The Star Matrix.js')).toBe(false);
+    expect(fs.existsSync('arcade/Enter the Matrix of Conscience')).toBe(false);
+  });
+
   it('removes gallery routes from config, sitemap, and cross-site navigation', () => {
     const input = Object.values(viteConfig.build?.rollupOptions?.input as Record<string, string>).map(String);
     const sitemap = fs.readFileSync('public/sitemap.xml', 'utf8');
