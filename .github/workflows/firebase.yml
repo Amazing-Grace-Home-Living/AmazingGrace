@@ -41,6 +41,9 @@ jobs:
           test -d dist
           test -f dist/index.html
 
+      - name: Validate arcade navigation and asset links
+        run: node scripts/validate-arcade-dist-links.mjs
+
       - name: Verify critical pages exist
         run: |
           test -f dist/index.html
