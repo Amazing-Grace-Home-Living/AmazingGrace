@@ -6,12 +6,9 @@
 - **Matrix of Conscience:** Advanced Match-3 with Seven Calibration Levels.
 
 ## Workflows
-- **Ella:** Unified operations for review suggestions and automated patches.
-  - Marker: `<!-- ella:apply -->` in a review body triggers a full repo diff apply via `scripts/ella-auto-apply-review.js`.
-  - Marker: ` ```suggestion` in a comment applies inline suggestions.
+- **Deploy:** Builds and deploys to GitHub Pages on push to `main`.
 - **Firebase:** Build, validate, and deploy to Hosting.
   - Automatically triggered on push to `main`.
-- **Sync Secrets:** repository_dispatch `key_rotation_event` updates GitHub secrets via `sync-secrets-from-matrix.yml`.
 
 ## Firebase Configuration
 - Root: `.`
