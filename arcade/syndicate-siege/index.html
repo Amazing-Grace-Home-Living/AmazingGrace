@@ -98,8 +98,66 @@
       transition: background 0.2s;
     }
 
-    .enemy.elite { background: #ff9900; box-shadow: 0 0 8px rgba(255,153,0,0.8); }
-    .enemy.boss  { background: #bd00ff; width: 90%; height: 90%; top: 5%; left: 5%; box-shadow: 0 0 14px rgba(189,0,255,0.9); }
+    .enemy.elite { background: #ff9900; box-shadow: 0 0 8px rgba(255,153,0,0.8); animation: elitePulse 1.4s ease-in-out infinite; }
+    .enemy.boss  { background: #bd00ff; width: 90%; height: 90%; top: 5%; left: 5%; box-shadow: 0 0 14px rgba(189,0,255,0.9); animation: bossFlicker 0.7s ease-in-out infinite; }
+
+    /* ── Elite Animation Keyframes ── */
+    @keyframes killFlash {
+      0%   { background: rgba(255,255,255,0.6); }
+      100% { background: transparent; }
+    }
+    @keyframes eliteKillFlash {
+      0%   { background: rgba(255,153,0,0.7); box-shadow: 0 0 18px rgba(255,153,0,0.9); }
+      100% { background: transparent; box-shadow: none; }
+    }
+    @keyframes bossKillFlash {
+      0%   { background: rgba(189,0,255,0.8); box-shadow: 0 0 28px rgba(189,0,255,1); }
+      50%  { background: rgba(255,75,139,0.6); box-shadow: 0 0 24px rgba(255,75,139,0.9); }
+      100% { background: transparent; box-shadow: none; }
+    }
+    @keyframes elitePulse {
+      0%, 100% { box-shadow: 0 0 8px rgba(255,153,0,0.8); }
+      50%       { box-shadow: 0 0 18px rgba(255,153,0,1); transform: scale(1.08); }
+    }
+    @keyframes bossFlicker {
+      0%, 100% { background: #bd00ff; box-shadow: 0 0 14px rgba(189,0,255,0.9); }
+      40%       { background: #ff4b8b; box-shadow: 0 0 20px rgba(255,75,139,1); }
+      70%       { background: #00e5ff; box-shadow: 0 0 16px rgba(0,229,255,0.9); }
+    }
+    @keyframes phaseShift {
+      0%   { outline: 3px solid transparent; }
+      30%  { outline: 3px solid #ff4b8b; box-shadow: 0 0 20px rgba(255,75,139,0.9); }
+      60%  { outline: 3px solid #00e5ff; box-shadow: 0 0 18px rgba(0,229,255,0.8); }
+      100% { outline: 3px solid transparent; box-shadow: none; }
+    }
+    @keyframes towerFire {
+      0%   { filter: brightness(1); }
+      40%  { filter: brightness(2.2) saturate(1.5); }
+      100% { filter: brightness(1); }
+    }
+    @keyframes weakpoint {
+      0%, 100% { outline: none; }
+      50%       { outline: 2px solid #ff3366; box-shadow: inset 0 0 8px rgba(255,51,102,0.6); }
+    }
+    @keyframes eliteModeOn {
+      0%   { box-shadow: none; }
+      60%  { box-shadow: 0 0 0 3px var(--accent-crimson); }
+      100% { box-shadow: none; }
+    }
+    @keyframes eliteModeOff {
+      0%   { box-shadow: 0 0 0 2px var(--accent-cyan); }
+      100% { box-shadow: none; }
+    }
+
+    /* Animation trigger classes */
+    .anim-kill-flash   { animation: killFlash 0.4s ease-out forwards !important; }
+    .anim-elite-kill   { animation: eliteKillFlash 0.4s ease-out forwards !important; }
+    .anim-boss-kill    { animation: bossKillFlash 0.4s ease-out forwards !important; }
+    .anim-phase-shift  { animation: phaseShift 0.6s ease-out forwards !important; }
+    .anim-tower-fire   { animation: towerFire 0.3s ease-out forwards !important; }
+    .anim-weakpoint    { animation: weakpoint 0.5s ease-in-out forwards !important; }
+    .anim-elite-mode-on  { animation: eliteModeOn 0.5s ease-out forwards !important; }
+    .anim-elite-mode-off { animation: eliteModeOff 0.5s ease-out forwards !important; }
 
     /* ── Controls ── */
     #controls {
@@ -225,6 +283,7 @@
 
   <script src="../js/rebellion-core.js"></script>
   <script src="../js/cosmetics.js"></script>
+  <script src="../js/elite-animations.js"></script>
   <script>
     /* ════════════════════════════════════════════
        INIT
@@ -433,6 +492,10 @@
         const dot = document.createElement("div");
         dot.className = "enemy" + (e.type === "elite" ? " elite" : e.type === "boss" ? " boss" : "");
         cell.appendChild(dot);
+        /* Weakpoint flash when elite/boss drops below 50% hp */
+        if ((e.type === "elite" || e.type === "boss") && e.hp <= Math.floor(e.maxHp / 2)) {
+          triggerWeakpointFlash(cell);
+        }
       });
 
       /* Towers attack */
@@ -442,11 +505,15 @@
         const target = enemies.find(e => e.alive && e.delay <= 0 && inRange(t, e));
         if (!target) return;
         target.hp -= t.damage;
+        triggerTowerFire(t.cellEl);
         t.cooldown = t.level === 2 ? 2 : 3;
         if (target.hp <= 0) {
           target.alive = false;
           const xp = target.type === "boss" ? 50 : target.type === "elite" ? 30 : 15;
           const cr = target.type === "boss" ? 60 : target.type === "elite" ? 30 : 20;
+          const killCell = target.pathIndex < PATH.length ? getCell(...PATH[target.pathIndex]) : null;
+          triggerKillAnimation(killCell, target.type);
+          if (target.type === "boss") triggerPhaseTransition(killCell);
           addCredits(cr);
           addSeasonXP(xp);
           if (eliteMode && target.type === "elite") {
@@ -566,6 +633,7 @@
       const btn = document.getElementById("btn-elite-toggle");
       btn.textContent = eliteMode ? "Elite Mode: ON" : "Elite Mode: OFF";
       btn.classList.toggle("elite-on", eliteMode);
+      triggerEliteModeTransition(eliteMode);
       logMsg(eliteMode ? "⚔ Elite Mode activated — harder waves, better rewards." : "Elite Mode deactivated.", eliteMode ? "elite" : "");
     };
 
