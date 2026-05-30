@@ -231,39 +231,13 @@
         </div>
     </footer>
 
-    <script>
+    <script type="module">
+        import { createOmniversalRuntime } from '../js/omniversal-runtime.js';
+
         (() => {
-            const CO_APEX_BEAST_WEIGHT = 0.55;
-            const CO_APEX_DEVOURER_WEIGHT = 0.45;
-            const LOCK_DURATION_MS = 30_000;
             const AUTO_UPDATE_INTERVAL_MS = 1400;
-            const AFFINITY_ALIGNMENT_THRESHOLD = 20;
-            const HIGH_THRESHOLD = 65;
-            const LOW_THRESHOLD = 35;
-            const metrics = {
-                worldAlignment: 0,
-                factionTrust: 50,
-                timelineInstability: 50,
-                sovereignAffinity: 0
-            };
-            const minMax = {
-                worldAlignment: [-100, 100],
-                factionTrust: [0, 100],
-                timelineInstability: [0, 100],
-                sovereignAffinity: [-100, 100]
-            };
-            const locks = {};
-            const bindings = {
-                worldAlignment: { apex: 'none', timeline: 'free' },
-                factionTrust: { apex: 'none', timeline: 'free' },
-                timelineInstability: { apex: 'none', timeline: 'free' },
-                sovereignAffinity: { apex: 'none', timeline: 'free' }
-            };
-            const coApexGravity = {
-                bloomingBeast: { worldAlignment: 1.1, factionTrust: -0.5, timelineInstability: 0.8, sovereignAffinity: 0.9 },
-                genesisDevourer: { worldAlignment: -1.1, factionTrust: 0.7, timelineInstability: -0.5, sovereignAffinity: -0.9 }
-            };
-            let autoUpdateEnabled = true;
+            const runtime = createOmniversalRuntime();
+            const coApexGravity = runtime.coApexGravity;
 
             const worldValueEl = document.getElementById('world-alignment-value');
             const worldStateEl = document.getElementById('world-alignment-state');
@@ -280,128 +254,37 @@
             const apexEl = document.getElementById('apex-bind');
             const timelineEl = document.getElementById('timeline-bind');
 
-            const clamp = (value, [min, max]) => Math.min(max, Math.max(min, value));
-            const isLocked = (key) => typeof locks[key] === 'number' && locks[key] > Date.now();
-
-            const updateMetric = (key, delta, reason, force = false) => {
-                if (!force && isLocked(key)) {
-                    if (lastEventEl) lastEventEl.textContent = `${reason} (blocked: ${key} is locked)`;
-                    return;
-                }
-                metrics[key] = clamp(metrics[key] + delta, minMax[key]);
-                if (lastEventEl) lastEventEl.textContent = reason;
-            };
-
-            const applyFeedbackLoop = () => {
-                updateMetric('factionTrust', (metrics.worldAlignment < 0 ? 0.6 : -0.6) + (metrics.sovereignAffinity > 0 ? -0.3 : 0.3), 'Feedback loop: alignment reshapes trust');
-                updateMetric('timelineInstability', ((50 - metrics.factionTrust) / 100) * 1.8, 'Feedback loop: trust reshapes timeline');
-                updateMetric('sovereignAffinity', ((metrics.timelineInstability - 50) / 100) * 2, 'Feedback loop: timeline reshapes affinity');
-                updateMetric('worldAlignment', (metrics.sovereignAffinity / 100) * 1.4, 'Feedback loop: affinity reshapes alignment');
-            };
-
-            const applyBindings = () => {
-                for (const key of Object.keys(bindings)) {
-                    const bind = bindings[key];
-                    if (bind.apex !== 'none') {
-                        updateMetric(key, coApexGravity[bind.apex][key] * 0.6, `Bound Co‑Apex gravity applied to ${key}`);
-                    }
-                    if (bind.timeline === 'bloom') updateMetric(key, key === 'timelineInstability' ? -0.8 : 0.5, `Timeline bloom influences ${key}`);
-                    if (bind.timeline === 'fracture') updateMetric(key, key === 'timelineInstability' ? 1.2 : -0.4, `Timeline fracture influences ${key}`);
-                    if (bind.timeline === 'collapse') updateMetric(key, key === 'timelineInstability' ? 1.6 : -0.6, `Timeline collapse influences ${key}`);
-                }
-            };
-
-            const applyCoApexGravity = () => {
-                for (const key of Object.keys(metrics)) {
-                    const influence = (coApexGravity.bloomingBeast[key] * CO_APEX_BEAST_WEIGHT) + (coApexGravity.genesisDevourer[key] * CO_APEX_DEVOURER_WEIGHT);
-                    updateMetric(key, influence * 0.25, `Co‑Apex gravity oscillation: ${key}`);
-                }
-            };
-
-            const eventHandlers = {
-                predator: () => {
-                    updateMetric('worldAlignment', 12, 'Predator event: Hunt rises');
-                    updateMetric('factionTrust', -5, 'Predator event: trust fractures');
-                },
-                creation: () => {
-                    updateMetric('worldAlignment', -12, 'Creation burst: Genesis rises');
-                    updateMetric('timelineInstability', -4, 'Creation burst: time blooms');
-                },
-                'co-apex': () => {
-                    updateMetric('worldAlignment', 3, 'Co‑Apex intervention: Blooming Beast surges');
-                    updateMetric('sovereignAffinity', -3, 'Co‑Apex intervention: Genesis Devourer answers');
-                },
-                timeline: () => {
-                    updateMetric('timelineInstability', 9, 'Timeline behavior spike: temporal split');
-                    updateMetric('sovereignAffinity', 3, 'Timeline behavior spike: affinity drift');
-                },
-                sovereign: () => {
-                    updateMetric('sovereignAffinity', (Math.random() > 0.5 ? 1 : -1) * 8, 'Sovereign action: allegiance shift');
-                },
-                faction: () => {
-                    updateMetric('factionTrust', (Math.random() > 0.5 ? 1 : -1) * 10, 'Faction victory: trust field altered');
-                },
-                fear: () => {
-                    updateMetric('timelineInstability', 10, 'Fear rises: time accelerates');
-                    updateMetric('factionTrust', -4, 'Fear rises: trust destabilizes');
-                },
-                singularity: () => {
-                    updateMetric('timelineInstability', 14, 'Singularities stir: temporal rupture');
-                    updateMetric('sovereignAffinity', 4, 'Singularities stir: sovereign drift');
-                },
-                emotional: () => {
-                    updateMetric('factionTrust', (Math.random() > 0.5 ? 1 : -1) * 7, 'Emotional physics spike: social field reweaves');
-                    updateMetric('sovereignAffinity', (Math.random() > 0.5 ? 1 : -1) * 7, 'Emotional physics spike: soul gravity shifts');
-                },
-                era: () => {
-                    updateMetric('sovereignAffinity', (Math.random() > 0.5 ? 1 : -1) * 9, 'New era begins: sovereign allegiance recalibrates');
-                    updateMetric('worldAlignment', (Math.random() > 0.5 ? 1 : -1) * 5, 'New era begins: world alignment tide turns');
-                }
-            };
-
-            const updateStates = () => {
-                if (!worldValueEl || !worldStateEl || !trustValueEl || !trustStateEl || !timelineValueEl || !timelineStateEl || !affinityValueEl || !affinityStateEl) return;
-
-                worldValueEl.textContent = Math.round(metrics.worldAlignment).toString();
-                worldStateEl.textContent = metrics.worldAlignment > AFFINITY_ALIGNMENT_THRESHOLD
-                    ? 'Hunt dominance: harsher and instinctual'
-                    : metrics.worldAlignment < -AFFINITY_ALIGNMENT_THRESHOLD
-                        ? 'Genesis dominance: fertile and expansive'
-                        : 'Balanced heartbeat';
-
-                trustValueEl.textContent = Math.round(metrics.factionTrust).toString();
-                trustStateEl.textContent = metrics.factionTrust >= HIGH_THRESHOLD
-                    ? 'High trust: dynasties unify'
-                    : metrics.factionTrust <= LOW_THRESHOLD
-                        ? 'Low trust: dynasties fracture'
-                        : 'Mixed trust: volatility';
-
-                timelineValueEl.textContent = Math.round(metrics.timelineInstability).toString();
-                timelineStateEl.textContent = metrics.timelineInstability >= HIGH_THRESHOLD
-                    ? 'High instability: fractal storms'
-                    : metrics.timelineInstability <= LOW_THRESHOLD
-                        ? 'Low instability: stable dual-flow web'
-                        : 'Temporal tension field';
-
-                affinityValueEl.textContent = Math.round(metrics.sovereignAffinity).toString();
-                affinityStateEl.textContent = metrics.sovereignAffinity >= AFFINITY_ALIGNMENT_THRESHOLD
-                    ? 'Hunt affinity: predatory sovereigns'
-                    : metrics.sovereignAffinity <= -AFFINITY_ALIGNMENT_THRESHOLD
-                        ? 'Genesis affinity: creative sovereigns'
-                        : 'Balanced affinity: hybrid sovereigns';
-            };
+            const coApexModes = Object.keys(coApexGravity);
 
             const readMagnitude = () => {
                 const value = Number(magnitudeEl?.value);
                 return Number.isFinite(value) ? value : 0;
             };
 
+            const updateStates = () => {
+                if (!worldValueEl || !worldStateEl || !trustValueEl || !trustStateEl || !timelineValueEl || !timelineStateEl || !affinityValueEl || !affinityStateEl) return;
+
+                const render = runtime.getRenderState();
+                worldValueEl.textContent = render.metrics.worldAlignment.toString();
+                worldStateEl.textContent = render.signals.worldAlignment;
+                trustValueEl.textContent = render.metrics.factionTrust.toString();
+                trustStateEl.textContent = render.signals.factionTrust;
+                timelineValueEl.textContent = render.metrics.timelineInstability.toString();
+                timelineStateEl.textContent = `${render.signals.timelineInstability} // ${render.signals.veilState}`;
+                affinityValueEl.textContent = render.metrics.sovereignAffinity.toString();
+                affinityStateEl.textContent = render.signals.sovereignAffinity;
+
+                if (lastEventEl) {
+                    lastEventEl.textContent = render.lastNarrative || render.lastEvent || 'Awaiting synthesis pulse...';
+                }
+            };
+
             document.querySelectorAll('.event-trigger').forEach((button) => {
                 button.addEventListener('click', () => {
                     const key = button.getAttribute('data-event');
-                    if (!key || !eventHandlers[key]) return;
-                    eventHandlers[key]();
-                    applyFeedbackLoop();
+                    if (!key) return;
+                    runtime.triggerEvent(key);
+                    runtime.applyFeedbackLoop();
                     updateStates();
                 });
             });
@@ -410,46 +293,17 @@
                 button.addEventListener('click', () => {
                     const action = button.getAttribute('data-action');
                     const target = targetEl?.value || 'worldAlignment';
-                    if (!Object.hasOwn(metrics, target) || !action) return;
-                    const magnitude = readMagnitude();
+                    if (!action) return;
 
-                    if (action === 'nudge') {
-                        updateMetric(target, magnitude, `Architect nudge on ${target}`);
-                        if (overrideStatusEl) overrideStatusEl.textContent = `Architect nudged ${target} by ${magnitude}.`;
-                    }
+                    const result = runtime.applyOverride(action, {
+                        target,
+                        magnitude: readMagnitude(),
+                        apex: coApexModes.includes(apexEl?.value || '') ? (apexEl?.value || 'none') : 'none',
+                        timelineMode: timelineEl?.value || 'free',
+                    });
 
-                    if (action === 'force') {
-                        metrics[target] = clamp(magnitude, minMax[target]);
-                        if (overrideStatusEl) overrideStatusEl.textContent = `Architect force-shifted ${target} to ${Math.round(metrics[target])}.`;
-                    }
-
-                    if (action === 'lock') {
-                        locks[target] = Date.now() + LOCK_DURATION_MS;
-                        if (overrideStatusEl) overrideStatusEl.textContent = `${target} locked for 30 seconds.`;
-                    }
-
-                    if (action === 'chaos') {
-                        for (const key of Object.keys(metrics)) {
-                            if (isLocked(key)) continue;
-                            const [min, max] = minMax[key];
-                            metrics[key] = Math.random() * (max - min) + min;
-                        }
-                        if (overrideStatusEl) overrideStatusEl.textContent = 'Architect unleashed controlled chaos.';
-                    }
-
-                    if (action === 'bindApex') {
-                        bindings[target].apex = apexEl?.value || 'none';
-                        if (overrideStatusEl) overrideStatusEl.textContent = `${target} bound to ${bindings[target].apex}.`;
-                    }
-
-                    if (action === 'bindTimeline') {
-                        bindings[target].timeline = timelineEl?.value || 'free';
-                        if (overrideStatusEl) overrideStatusEl.textContent = `${target} tied to timeline mode: ${bindings[target].timeline}.`;
-                    }
-
-                    if (action === 'wild') {
-                        autoUpdateEnabled = !autoUpdateEnabled;
-                        if (overrideStatusEl) overrideStatusEl.textContent = autoUpdateEnabled ? 'System running wild.' : 'System pulse paused for manual control.';
+                    if (overrideStatusEl) {
+                        overrideStatusEl.textContent = result.status;
                     }
 
                     updateStates();
@@ -459,12 +313,10 @@
             updateStates();
 
             setInterval(() => {
-                if (!autoUpdateEnabled) return;
-                applyCoApexGravity();
-                applyBindings();
-                applyFeedbackLoop();
+                runtime.tick();
                 updateStates();
             }, AUTO_UPDATE_INTERVAL_MS);
+
         })();
     </script>
 
