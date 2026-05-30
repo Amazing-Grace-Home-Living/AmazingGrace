@@ -8,6 +8,7 @@ describe('workflow cleanup', () => {
       'ella.yml',
       'firebase.yml',
       'sync-secrets-from-matrix.yml',
+      'webpack.yml',
     ]);
   });
 
