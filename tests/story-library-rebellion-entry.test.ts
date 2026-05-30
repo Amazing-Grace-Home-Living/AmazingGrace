@@ -25,8 +25,9 @@ describe('The 2027 Rebellion library integration', () => {
     expect(html).toContain('href="../../arcade/matrix-of-conscience/"');
   });
 
-  it('includes the story page in Vite multi-page build inputs', () => {
+  it('includes the story page and legacy redirect page in Vite multi-page build inputs', () => {
     const viteConfig = fs.readFileSync('vite.config.ts', 'utf8');
     expect(viteConfig).toContain('stories/rebellion2027/index.html');
+    expect(viteConfig).toContain('stories/blog/rebellion.html');
   });
 });
