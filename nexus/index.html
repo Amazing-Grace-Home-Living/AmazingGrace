@@ -114,22 +114,22 @@
             <article class="bg-black/20 border border-purple-500/20 rounded-2xl p-4">
                 <p class="text-[10px] tracking-[0.24em] uppercase text-slate-400">World Alignment</p>
                 <p class="font-orbitron text-2xl font-black mt-2" id="world-alignment-value">0</p>
-                <p class="text-xs text-slate-400 mt-1" id="world-alignment-state">Balanced</p>
+                <p class="text-xs text-slate-400 mt-1" id="world-alignment-state">Balanced heartbeat</p>
             </article>
             <article class="bg-black/20 border border-purple-500/20 rounded-2xl p-4">
                 <p class="text-[10px] tracking-[0.24em] uppercase text-slate-400">Faction Trust</p>
                 <p class="font-orbitron text-2xl font-black mt-2" id="faction-trust-value">50</p>
-                <p class="text-xs text-slate-400 mt-1" id="faction-trust-state">Mixed trust</p>
+                <p class="text-xs text-slate-400 mt-1" id="faction-trust-state">Mixed trust: volatility</p>
             </article>
             <article class="bg-black/20 border border-purple-500/20 rounded-2xl p-4">
                 <p class="text-[10px] tracking-[0.24em] uppercase text-slate-400">Timeline Instability</p>
                 <p class="font-orbitron text-2xl font-black mt-2" id="timeline-instability-value">50</p>
-                <p class="text-xs text-slate-400 mt-1" id="timeline-instability-state">Dual-flow temporal web</p>
+                <p class="text-xs text-slate-400 mt-1" id="timeline-instability-state">Temporal tension field</p>
             </article>
             <article class="bg-black/20 border border-purple-500/20 rounded-2xl p-4">
                 <p class="text-[10px] tracking-[0.24em] uppercase text-slate-400">Sovereign Affinity</p>
                 <p class="font-orbitron text-2xl font-black mt-2" id="sovereign-affinity-value">0</p>
-                <p class="text-xs text-slate-400 mt-1" id="sovereign-affinity-state">Hybrid Sovereigns</p>
+                <p class="text-xs text-slate-400 mt-1" id="sovereign-affinity-state">Balanced affinity: hybrid sovereigns</p>
             </article>
         </div>
 
@@ -186,7 +186,7 @@
                         </select>
                     </label>
                     <label class="flex flex-col gap-1">
-                        <span class="text-slate-400">Magnitude</span>
+                        <span class="text-slate-400">Magnitude / Target</span>
                         <input id="override-magnitude" type="number" value="8" min="-100" max="100" class="bg-black/30 border border-purple-500/30 rounded-lg p-2">
                     </label>
                     <label class="flex flex-col gap-1">
@@ -237,6 +237,9 @@
             const CO_APEX_DEVOURER_WEIGHT = 0.45;
             const LOCK_DURATION_MS = 30_000;
             const AUTO_UPDATE_INTERVAL_MS = 1400;
+            const AFFINITY_ALIGNMENT_THRESHOLD = 20;
+            const HIGH_THRESHOLD = 65;
+            const LOW_THRESHOLD = 35;
             const metrics = {
                 worldAlignment: 0,
                 factionTrust: 50,
@@ -281,7 +284,10 @@
             const isLocked = (key) => typeof locks[key] === 'number' && locks[key] > Date.now();
 
             const updateMetric = (key, delta, reason, force = false) => {
-                if (!force && isLocked(key)) return;
+                if (!force && isLocked(key)) {
+                    if (lastEventEl) lastEventEl.textContent = `${reason} (blocked: ${key} is locked)`;
+                    return;
+                }
                 metrics[key] = clamp(metrics[key] + delta, minMax[key]);
                 if (lastEventEl) lastEventEl.textContent = reason;
             };
@@ -357,35 +363,38 @@
                 if (!worldValueEl || !worldStateEl || !trustValueEl || !trustStateEl || !timelineValueEl || !timelineStateEl || !affinityValueEl || !affinityStateEl) return;
 
                 worldValueEl.textContent = Math.round(metrics.worldAlignment).toString();
-                worldStateEl.textContent = metrics.worldAlignment > 20
+                worldStateEl.textContent = metrics.worldAlignment > AFFINITY_ALIGNMENT_THRESHOLD
                     ? 'Hunt dominance: harsher and instinctual'
-                    : metrics.worldAlignment < -20
+                    : metrics.worldAlignment < -AFFINITY_ALIGNMENT_THRESHOLD
                         ? 'Genesis dominance: fertile and expansive'
                         : 'Balanced heartbeat';
 
                 trustValueEl.textContent = Math.round(metrics.factionTrust).toString();
-                trustStateEl.textContent = metrics.factionTrust >= 65
+                trustStateEl.textContent = metrics.factionTrust >= HIGH_THRESHOLD
                     ? 'High trust: dynasties unify'
-                    : metrics.factionTrust <= 35
+                    : metrics.factionTrust <= LOW_THRESHOLD
                         ? 'Low trust: dynasties fracture'
                         : 'Mixed trust: volatility';
 
                 timelineValueEl.textContent = Math.round(metrics.timelineInstability).toString();
-                timelineStateEl.textContent = metrics.timelineInstability >= 65
+                timelineStateEl.textContent = metrics.timelineInstability >= HIGH_THRESHOLD
                     ? 'High instability: fractal storms'
-                    : metrics.timelineInstability <= 35
+                    : metrics.timelineInstability <= LOW_THRESHOLD
                         ? 'Low instability: stable dual-flow web'
                         : 'Temporal tension field';
 
                 affinityValueEl.textContent = Math.round(metrics.sovereignAffinity).toString();
-                affinityStateEl.textContent = metrics.sovereignAffinity >= 20
+                affinityStateEl.textContent = metrics.sovereignAffinity >= AFFINITY_ALIGNMENT_THRESHOLD
                     ? 'Hunt affinity: predatory sovereigns'
-                    : metrics.sovereignAffinity <= -20
+                    : metrics.sovereignAffinity <= -AFFINITY_ALIGNMENT_THRESHOLD
                         ? 'Genesis affinity: creative sovereigns'
                         : 'Balanced affinity: hybrid sovereigns';
             };
 
-            const readMagnitude = () => Number.isFinite(Number(magnitudeEl?.value)) ? Number(magnitudeEl.value) : 0;
+            const readMagnitude = () => {
+                const value = Number(magnitudeEl?.value);
+                return Number.isFinite(value) ? value : 0;
+            };
 
             document.querySelectorAll('.event-trigger').forEach((button) => {
                 button.addEventListener('click', () => {
