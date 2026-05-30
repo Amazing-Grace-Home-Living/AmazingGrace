@@ -65,11 +65,10 @@ describe('story route cleanup', () => {
   });
 
   it('does not reference missing story image assets from the Rebellion hero background', () => {
-    const rebellionStory = fs.readFileSync('stories/expose-the-matrix/Rebellion.html', 'utf8');
-    expect(rebellionStory).not.toContain('../../assets/story/rebellion.jpg');
-    expect(rebellionStory).not.toContain('assets/story/');
-    expect(rebellionStory).toContain('.story-hero {');
-    expect(rebellionStory).toContain('linear-gradient(');
+    const rebellionStoryHtml = fs.readFileSync('stories/expose-the-matrix/Rebellion.html', 'utf8');
+    expect(rebellionStoryHtml).not.toContain('../../assets/story/rebellion.jpg');
+    expect(rebellionStoryHtml).not.toContain('assets/story/');
+    expect(rebellionStoryHtml).toMatch(/\.story-hero\s*\{[\s\S]*?background:\s*[\s\S]*?linear-gradient\(/);
   });
 
   it('ships a noah-and-the-ark story page', () => {
