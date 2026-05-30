@@ -8,6 +8,7 @@ import MatrixExchange from '@/modules/matrix/MatrixExchange';
 import StorybookHub from '@/modules/storybook/StorybookHub';
 import ReclaimMission from '@/modules/arcade/ReclaimMission';
 import AuthorsMandate from './components/AuthorsMandate';
+import MatrixOfConscience from './arcade/matrix-of-conscience/MatrixOfConscience';
 
 // Thematic Configuration (Nimbus Land / Voice of Jesus)
 const OS_THEME = {
@@ -61,6 +62,9 @@ export default function StellaraOS() {
             <button onClick={() => navigateTo('storybook')} className={`text-sm font-bold uppercase tracking-widest transition-colors ${activeView === 'storybook' ? 'text-purple-400' : 'text-gray-400 hover:text-white'}`}>
               Shell of Vision
             </button>
+            <button onClick={() => navigateTo('conscience')} className={`text-sm font-bold uppercase tracking-widest transition-colors ${activeView === 'conscience' ? 'text-[#ffd700]' : 'text-gray-400 hover:text-white'}`}>
+              Conscience Matrix
+            </button>
             <button onClick={() => navigateTo('mandate')} className={`text-sm font-bold uppercase tracking-widest transition-colors ${activeView === 'mandate' ? 'text-[#7effd8]' : 'text-gray-400 hover:text-white'}`}>
               Author's Mandate
             </button>
@@ -84,6 +88,7 @@ export default function StellaraOS() {
         <div className="md:hidden bg-[#050505] border-b border-purple-900/50 p-4 flex flex-col gap-4">
           <button onClick={() => navigateTo('hub')} className="text-left text-white font-bold uppercase tracking-widest">Telemetry Hub</button>
           <button onClick={() => navigateTo('storybook')} className="text-left text-white font-bold uppercase tracking-widest">Shell of Vision</button>
+          <button onClick={() => navigateTo('conscience')} className="text-left text-[#ffd700] font-bold uppercase tracking-widest">Conscience Matrix</button>
           <button onClick={() => navigateTo('mandate')} className="text-left text-[#7effd8] font-bold uppercase tracking-widest">Author's Mandate</button>
           <button onClick={() => navigateTo('exchange')} className="text-left text-white font-bold uppercase tracking-widest">Lumen Exchange</button>
         </div>
@@ -166,6 +171,13 @@ export default function StellaraOS() {
         return (
           <div className="animate-in fade-in duration-500">
             <MatrixExchange />
+          </div>
+        );
+
+      case 'conscience':
+        return (
+          <div className="animate-in fade-in duration-500">
+            <MatrixOfConscience />
           </div>
         );
 

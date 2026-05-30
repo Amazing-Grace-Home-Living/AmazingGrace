@@ -1,0 +1,227 @@
+:root {
+  --neon-blue: #00f2ff;
+  --neon-purple: #bc13fe;
+  --neon-gold: #fbbf24;
+  --space-dark: #020617;
+  --glass-bg: rgba(15, 23, 42, 0.45);
+  --glass-border: rgba(188, 19, 254, 0.15);
+}
+
+.mc-matrix-root {
+  width: 100%;
+  min-height: 100vh;
+  background: radial-gradient(circle at 50% 15%, #120524 0%, var(--space-dark) 70%);
+  color: #e2e8f0;
+  font-family: 'Inter', sans-serif;
+  padding: 3rem 1.5rem;
+  box-sizing: border-box;
+}
+
+.mc-container {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.mc-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.mc-badge {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.7rem;
+  color: var(--neon-blue);
+  letter-spacing: 0.3em;
+  margin: 0 0 0.5rem;
+}
+
+.mc-header h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  margin: 0 0 1.5rem;
+  text-shadow: 0 0 20px rgba(188, 19, 254, 0.35);
+}
+
+.mc-nav-row {
+  display: inline-flex;
+  gap: 0.5rem;
+  background: rgba(15, 23, 42, 0.8);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+}
+
+.mc-nav-btn {
+  background: none;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  color: #94a3b8;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mc-nav-btn.active {
+  background: rgba(188, 19, 254, 0.15);
+  color: #fff;
+  border: 1px solid rgba(188, 19, 254, 0.3);
+}
+
+.mc-main-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+  gap: 2rem;
+}
+
+.mc-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 2rem;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.mc-card h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.05rem;
+  margin: 0 0 1.5rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 0.75rem;
+}
+
+.mc-panel-desc {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 0 0 1.5rem;
+  line-height: 1.5;
+}
+
+.mc-bars-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.mc-metric-row { width: 100%; }
+
+.mc-row-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.mc-row-label { color: #94a3b8; }
+.mc-row-pct { font-family: 'Orbitron', monospace; font-weight: 700; }
+
+.mc-progress-outer {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.mc-progress-inner {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.mc-actions-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mc-actions-group button, .mc-action-anchor {
+  width: 100%;
+  padding: 0.85rem;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: #e2e8f0;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  text-decoration: none;
+  box-sizing: border-box;
+  display: block;
+  transition: all 0.2s;
+}
+
+.mc-actions-group button:hover, .mc-action-anchor:hover {
+  border-color: var(--neon-purple);
+  background: rgba(188, 19, 254, 0.1);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.mc-btn-danger {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: color 0.2s;
+}
+.mc-btn-danger:hover { color: #ef4444; }
+
+.mc-console-log {
+  background: rgba(2, 6, 23, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.mc-log-terminal {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.75rem;
+  color: #4ade80;
+  line-height: 1.5;
+  min-height: 40px;
+}
+
+.seven-stars-status-box {
+  background: rgba(2, 6, 23, 0.5);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.star-status-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #cbd5e1;
+}
+
+.star-status-item .status-tag {
+  color: var(--neon-gold);
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.text-center { text-align: center; }
