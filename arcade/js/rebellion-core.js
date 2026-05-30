@@ -25,7 +25,7 @@ const DEFAULT_STATE = {
   lore: {},
 };
 
-let rebellionState = { ...DEFAULT_STATE };
+let rebellionState = JSON.parse(JSON.stringify(DEFAULT_STATE));
 
 function loadRebellionState() {
   try {

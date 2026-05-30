@@ -356,7 +356,7 @@
 
       for (let i = 0; i < count; i++) {
         const hp = Math.floor(2 + wave * 0.5);
-        enemies.push({ pathIndex: 0, hp, maxHp: hp, alive: true, delay: i * 10, type: "normal" });
+        enemies.push({ pathIndex: 0, hp, maxHp: hp, alive: true, delay: i * 10, type: "normal", speed: 1 });
       }
 
       if (!loopId) loopId = setInterval(gameLoop, 200);
@@ -380,7 +380,7 @@
         if (tier >= 4) { speed = 2; }
         if (tier >= 5 && i === 0) { type = "elite"; hp = Math.floor(hp * 1.5); }
 
-        enemies.push({ pathIndex: 0, hp, maxHp: hp, alive: true, delay: i * 10, type, speed: speed || 1 });
+        enemies.push({ pathIndex: 0, hp, maxHp: hp, alive: true, delay: i * 10, type, speed });
       }
 
       /* Tier 5: spawn Overseer boss */
@@ -413,7 +413,7 @@
       enemies.forEach(e => {
         if (!e.alive) return;
         if (e.delay > 0) { e.delay--; return; }
-        e.pathIndex += (e.speed || 1);
+        e.pathIndex += e.speed;
         if (e.pathIndex >= PATH.length) {
           e.alive = false;
           const dmg = e.type === "boss" ? 3 : e.type === "elite" ? 2 : 1;
@@ -427,7 +427,7 @@
       /* Draw enemies */
       enemies.forEach(e => {
         if (!e.alive || e.delay > 0 || e.pathIndex >= PATH.length) return;
-        const [r, c] = PATH[Math.min(e.pathIndex, PATH.length - 1)];
+        const [r, c] = PATH[e.pathIndex];
         const cell = getCell(r, c);
         if (!cell) return;
         const dot = document.createElement("div");
