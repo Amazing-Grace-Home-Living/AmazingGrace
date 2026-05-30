@@ -2,6 +2,9 @@ const ALIGNMENT_MIN = -100;
 const ALIGNMENT_MAX = 100;
 const SYSTEM_MIN = 0;
 const SYSTEM_MAX = 100;
+export const TIMELINE_INTENSITY_DIVISOR = 12;
+const CORRUPTION_EXILE_THRESHOLD = 80;
+const FRACTAL_STORM_MUTATION = 'fractal-storm';
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
@@ -122,11 +125,11 @@ function evolveSovereigns(sovereigns, emotions, mutationNames) {
     }
 
     if (mutationNames.includes('predator-era-awakened')) {
-      next.metamorphosisStage = Math.max(1, (next.metamorphosisStage || 1) + 1);
+      next.metamorphosisStage = (next.metamorphosisStage || 1) + 1;
       next.instinct = 'hunt';
     }
 
-    if (next.corruption > 80) {
+    if (next.corruption > CORRUPTION_EXILE_THRESHOLD) {
       next.status = 'exiled';
     }
 
@@ -139,9 +142,9 @@ function triggerMutations(state, timestamp) {
 
   if (state.timelineInstability > 80) {
     mutations.push({
-      name: 'fractal-storm',
+      name: FRACTAL_STORM_MUTATION,
       at: timestamp,
-      detail: 'The Crimson Spiral Hunt begins across seven collapsing timelines.',
+      detail: 'The Crimson Spiral Hunt begins across collapsing timelines.',
     });
   }
 
@@ -164,6 +167,18 @@ function triggerMutations(state, timestamp) {
   return mutations;
 }
 
+function determineEventSource(firstMutation) {
+  if (!firstMutation) {
+    return 'ambientPressure';
+  }
+
+  if (firstMutation.name === FRACTAL_STORM_MUTATION) {
+    return 'timelineInstability';
+  }
+
+  return 'sovereignMutation';
+}
+
 export function generateAutonomousEvent({ source, intensity, emotion, dominantApex }) {
   const normalizedIntensity = Math.max(0, Math.round(Number(intensity) || 0));
 
@@ -173,7 +188,7 @@ export function generateAutonomousEvent({ source, intensity, emotion, dominantAp
       intensity: normalizedIntensity,
       emotion,
       dominantApex,
-      headline: `The Crimson Spiral Hunt begins across ${Math.max(1, Math.round(normalizedIntensity / 12))} collapsing timelines.`,
+      headline: `The Crimson Spiral Hunt begins across ${Math.max(1, Math.round(normalizedIntensity / TIMELINE_INTENSITY_DIVISOR))} collapsing timelines.`,
     };
   }
 
@@ -277,7 +292,7 @@ export function runIntelligentEngineCycle(currentState, pressures = {}, deltaTim
   const mutationNames = mutations.map((mutation) => mutation.name);
   state.sovereigns = evolveSovereigns(state.sovereigns, emotions, mutationNames);
 
-  if (mutationNames.includes('fractal-storm')) {
+  if (mutationNames.includes(FRACTAL_STORM_MUTATION)) {
     state.history.collapsedTimelines.push({ at: now, instability: state.timelineInstability });
   }
 
@@ -290,12 +305,8 @@ export function runIntelligentEngineCycle(currentState, pressures = {}, deltaTim
     state.history.apexVictories.push({ at: now, apex: dominantApex });
   }
 
-  const strongestMutation = mutations[0];
-  const eventSource = strongestMutation?.name === 'fractal-storm'
-    ? 'timelineInstability'
-    : strongestMutation
-      ? 'sovereignMutation'
-      : 'ambientPressure';
+  const firstMutation = mutations[0];
+  const eventSource = determineEventSource(firstMutation);
 
   const intensity = Math.max(
     state.timelineInstability,
@@ -303,10 +314,11 @@ export function runIntelligentEngineCycle(currentState, pressures = {}, deltaTim
     state.apexPressure.genesisDevourer.influence,
   );
 
-  const dominantEmotion = Object.entries(emotions).reduce(
+  const dominantEmotionEntry = Object.entries(emotions).reduce(
     (winner, [name, value]) => (value > winner.value ? { name, value } : winner),
-    { name: 'wonder', value: -Infinity },
-  ).name;
+    { name: 'wonder', value: 0 },
+  );
+  const dominantEmotion = dominantEmotionEntry.value > 0 ? dominantEmotionEntry.name : 'wonder';
 
   const generatedEvent = generateAutonomousEvent({
     source: eventSource,

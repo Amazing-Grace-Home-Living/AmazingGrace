@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  TIMELINE_INTENSITY_DIVISOR,
   createInitialIntelligentEngineState,
   createSovereign,
   generateAutonomousEvent,
@@ -116,7 +117,9 @@ describe('intelligent engine', () => {
       emotion: 'fear',
       dominantApex: 'Blooming Beast',
     });
+    const expectedTimelineCount = Math.max(1, Math.round(82 / TIMELINE_INTENSITY_DIVISOR));
 
     expect(generated.headline).toContain('Crimson Spiral Hunt');
+    expect(generated.headline).toContain(`${expectedTimelineCount} collapsing timelines`);
   });
 });
