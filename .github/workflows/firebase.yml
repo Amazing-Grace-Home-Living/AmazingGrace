@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 concurrency:
@@ -48,6 +51,17 @@ jobs:
         run: |
           test -f dist/index.html
           test -f dist/arcade/index.html
+          test -f dist/arcade/star-matrix/index.html
+          test -f dist/arcade/matrix-of-conscience/index.html
+          test -f dist/arcade/matrix-of-conscience-terminal/index.html
+          test -f dist/arcade/bible-study/index.html
+          test -f dist/arcade/syndicate-siege/index.html
+          test -f dist/arcade.html
+          test -f dist/arcade/js/rebellion-core.js
+          test -f dist/arcade/js/lore-archive.js
+          test -f dist/arcade/js/lore-files.js
+          test -f dist/arcade/js/cosmetics.js
+          test -f dist/arcade/js/elite-animations.js
           test -f dist/stories/index.html
           test -f dist/manifest.json
 

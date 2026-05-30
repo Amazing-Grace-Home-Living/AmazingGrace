@@ -86,9 +86,17 @@ export default defineConfig({
             resolve(__dirname, 'stories/library.json'),
             resolve(__dirname, 'dist/stories/library.json')
           );
+          // Preserve legacy non-module arcade runtime scripts required by
+          // syndicate-siege, lore-archive, and matrix-of-conscience-terminal pages.
+          cpSync(
+            resolve(__dirname, 'arcade/js'),
+            resolve(__dirname, 'dist/arcade/js'),
+            { recursive: true }
+          );
           console.log('✓ Copied stories/library.json to dist/stories/');
+          console.log('✓ Copied arcade runtime scripts to dist/arcade/js/');
         } catch (err) {
-          console.error('Failed to copy library.json:', err);
+          console.error('Failed to copy build artifacts:', err);
         }
 
         // Copy arcade runtime scripts that are loaded as classic scripts
