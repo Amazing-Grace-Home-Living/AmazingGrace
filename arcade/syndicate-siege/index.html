@@ -492,8 +492,9 @@
         const dot = document.createElement("div");
         dot.className = "enemy" + (e.type === "elite" ? " elite" : e.type === "boss" ? " boss" : "");
         cell.appendChild(dot);
-        /* Weakpoint flash when elite/boss drops below 50% hp */
-        if ((e.type === "elite" || e.type === "boss") && e.hp <= Math.floor(e.maxHp / 2)) {
+        /* Weakpoint flash once when elite/boss first drops below 50% hp */
+        if ((e.type === "elite" || e.type === "boss") && e.hp <= Math.floor(e.maxHp / 2) && !e.weakpointFlashed) {
+          e.weakpointFlashed = true;
           triggerWeakpointFlash(cell);
         }
       });

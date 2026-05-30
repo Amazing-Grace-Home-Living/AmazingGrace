@@ -74,6 +74,13 @@ describe('Elite Animations system', () => {
     expect(html).toContain('triggerEliteModeTransition(eliteMode)');
   });
 
+  it('triggers weakpoint flash only once per enemy by guarding with weakpointFlashed flag', () => {
+    const html = fs.readFileSync(htmlPath, 'utf8');
+
+    expect(html).toContain('e.weakpointFlashed');
+    expect(html).toContain('!e.weakpointFlashed');
+  });
+
   it('includes arcadeSyndicateSiege route in Vite build inputs', () => {
     const config = fs.readFileSync(configPath, 'utf8');
 

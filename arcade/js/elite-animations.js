@@ -7,7 +7,7 @@
  * removes it after the animation completes so it can fire again.
  */
 
-(function eliteAnimationsBootstrap(global) {
+(function initEliteAnimations(global) {
   /** Duration constants (ms) — must match the CSS keyframe durations below. */
   const DURATION_KILL       = 400;
   const DURATION_PHASE      = 600;
