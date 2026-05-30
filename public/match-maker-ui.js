@@ -5,7 +5,7 @@
  * (c) 2026 NicholaiMadias — MIT License
  */
 
-import { GRID_SIZE, createInitialGrid, canSwap, applySwap, findMatches, clearMatches, applyGravity } from './matchMakerState.js';
+import { GRID_SIZE, createInitialGrid, findMatches, clearMatches, applyGravity } from './matchMakerState.js';
 import { onLevelComplete } from './badges.js';
 import { saveGame, loadGame } from './saveSystem.js';
 import { getLevelConfig, checkLevelUp, MAX_LEVEL } from './levelSystem.js';
@@ -32,6 +32,18 @@ const GEM_DISPLAY = {
   flame: { emoji: '🔥', cls: 'gem-flame', label: 'Growth'  },
   drop:  { emoji: '💧', cls: 'gem-drop',  label: 'Grace'   },
 };
+
+function isAdjacent(r1, c1, r2, c2) {
+  const rowDiff = Math.abs(r1 - r2);
+  const colDiff = Math.abs(c1 - c2);
+  return (rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1);
+}
+
+function swapGridCells(currentGrid, r1, c1, r2, c2) {
+  const swapped = currentGrid.map((row) => row.slice());
+  [swapped[r1][c1], swapped[r2][c2]] = [swapped[r2][c2], swapped[r1][c1]];
+  return swapped;
+}
 
 let grid = [];
 let score = 0;
@@ -118,7 +130,7 @@ async function handleCellClick(r, c) {
     return;
   }
 
-  if (canSwap(grid, selected.r, selected.c, r, c)) {
+  if (isAdjacent(selected.r, selected.c, r, c)) {
     const r1 = selected.r, c1 = selected.c;
     selected = null;
     moves--;
@@ -131,14 +143,14 @@ async function handleCellClick(r, c) {
 
 async function executeMove(r1, c1, r2, c2) {
   locked = true;
-  grid = applySwap(grid, r1, c1, r2, c2);
+  grid = swapGridCells(grid, r1, c1, r2, c2);
   renderBoard();
 
   const matches = findMatches(grid);
   if (matches.length === 0) {
     // Revert
     setTimeout(() => {
-      grid = applySwap(grid, r1, c1, r2, c2);
+      grid = swapGridCells(grid, r1, c1, r2, c2);
       locked = false;
       renderBoard();
     }, 300);
