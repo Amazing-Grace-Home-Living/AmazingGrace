@@ -29,4 +29,18 @@ describe('The 2027 Rebellion library integration', () => {
     const viteConfig = fs.readFileSync('vite.config.ts', 'utf8');
     expect(viteConfig).toContain('stories/rebellion2027/index.html');
   });
+
+  it('includes the legacy redirect page in Vite build inputs to preserve old URL', () => {
+    const viteConfig = fs.readFileSync('vite.config.ts', 'utf8');
+    expect(viteConfig).toContain('stories/blog/rebellion.html');
+  });
+
+  it('emits the redirect page to preserve the legacy URL after deployment', () => {
+    const redirectPath = 'stories/blog/rebellion.html';
+    expect(fs.existsSync(redirectPath)).toBe(true);
+
+    const html = fs.readFileSync(redirectPath, 'utf8');
+    expect(html).toContain('<meta http-equiv="refresh" content="0; url=../rebellion2027/">');
+    expect(html).toContain('href="../rebellion2027/"');
+  });
 });
