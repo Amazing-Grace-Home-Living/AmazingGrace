@@ -130,6 +130,29 @@
       animation: pulse 1s infinite;
     }
 
+    .terminal-unlocks {
+      margin: 0.75rem 1rem 0;
+      padding: 0.65rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: rgba(0, 217, 255, 0.08);
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+
+    .terminal-unlocks a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .terminal-unlocks a:hover {
+      text-decoration: underline;
+    }
+
+    .rt-muted {
+      color: var(--muted);
+    }
+
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.6; }
@@ -293,6 +316,7 @@
       <div class="terminal-line prompt">PS C:\Trinity> System online.</div>
       <div class="terminal-line prompt">PS C:\Trinity> Commands: Start, Oracle &lt;query&gt;, Generate &lt;desc&gt;</div>
     </div>
+    <div class="terminal-unlocks" id="terminalUnlocks"></div>
 
     <!-- Game View -->
     <div class="game-view" id="gameView">
@@ -312,6 +336,7 @@
     </div>
   </div>
 
+  <script src="../js/rebellion-core.js"></script>
   <script>
     const terminalContent = document.getElementById('terminalContent');
     const commandInput = document.getElementById('commandInput');
@@ -320,6 +345,7 @@
     const gameView = document.getElementById('gameView');
     const gameGrid = document.getElementById('gameGrid');
     const backBtn = document.getElementById('backBtn');
+    const terminalUnlocks = document.getElementById('terminalUnlocks');
 
     let isGameMode = false;
     const GRID_SIZE = 16;
@@ -329,6 +355,9 @@
     let gridState = Array.from({ length: GRID_SIZE }, () => Math.floor(Math.random() * SYMBOL_COUNT));
     const symbols = ['✓', '◆', '○', '★'];
     const QUANTUM_RENDER_DELAY_MS = 2000;
+
+    loadRebellionState();
+    renderResistanceUnlocks();
 
     function addLine(text, className = 'terminal-line') {
       const line = document.createElement('div');
@@ -381,6 +410,28 @@
         });
         gameGrid.appendChild(tile);
       }
+    }
+
+    function renderResistanceUnlocks() {
+      const state = window.rebellionState || {};
+      terminalUnlocks.textContent = '';
+      const line = document.createElement('div');
+      const unlocked = typeof window.isLoreArchiveUnlocked === 'function'
+        ? window.isLoreArchiveUnlocked(state)
+        : false;
+
+      if (unlocked) {
+        line.textContent = '📜 ';
+        const link = document.createElement('a');
+        link.href = '../lore-archive/lore-archive.html';
+        link.textContent = 'Lore Archive Unlocked';
+        line.appendChild(link);
+      } else {
+        line.className = 'rt-muted';
+        line.textContent = 'Lore Archive: Requires ★★ in Star Matrix, Looking Glass, and Quantum Shift';
+      }
+
+      terminalUnlocks.appendChild(line);
     }
 
     function exitGame() {
