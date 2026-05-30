@@ -9,6 +9,8 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repository
@@ -49,8 +51,7 @@ jobs:
       - name: Build production bundle
         run: npm run build
 
-      - name: Rollback workspace if validation fails
+      - name: Enforce rollback gate on failure
         if: failure()
         run: |
-          git reset --hard HEAD
-          git clean -fd
+          echo "Rollback gate engaged: this failed status blocks promotion."

@@ -8,7 +8,7 @@ describe('workflow cleanup', () => {
     ]);
   });
 
-  it('runs unified validation checks for theme, arcade, games, instruction layer, and rollback', () => {
+  it('validates unified workflow structure and key checks', () => {
     const workflow = fs.readFileSync('.github/workflows/system-validation.yml', 'utf8');
 
     expect(workflow).toContain('branches: [main]');
@@ -19,7 +19,7 @@ describe('workflow cleanup', () => {
     expect(workflow).toContain('- name: Game health checks - Match Maker');
     expect(workflow).toContain('- name: Game health checks - Trinity');
     expect(workflow).toContain('- name: Instruction layer validation');
-    expect(workflow).toContain('- name: Rollback workspace if validation fails');
+    expect(workflow).toContain('- name: Enforce rollback gate on failure');
     expect(workflow).toContain('if: failure()');
   });
 });
