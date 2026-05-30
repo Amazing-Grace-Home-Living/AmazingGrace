@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
+import { execSync } from 'node:child_process';
 
 const libraryJson = JSON.parse(fs.readFileSync('stories/library.json', 'utf8'));
 
@@ -36,7 +37,10 @@ describe('The 2027 Rebellion library integration', () => {
   });
 
   it('emits the redirect page to preserve the legacy URL after deployment', () => {
-    const redirectPath = 'stories/blog/rebellion.html';
+    const redirectPath = 'dist/stories/blog/rebellion.html';
+    if (!fs.existsSync(redirectPath)) {
+      execSync('npm run build', { stdio: 'ignore' });
+    }
     expect(fs.existsSync(redirectPath)).toBe(true);
 
     const html = fs.readFileSync(redirectPath, 'utf8');
