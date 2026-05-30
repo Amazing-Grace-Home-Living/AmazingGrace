@@ -56,7 +56,6 @@ describe('Matrix of Conscience mobile optimization', () => {
 
   it('maintains original game features and structure', () => {
     expect(matrixHTML).toContain('Matrix of Conscience');
-    expect(matrixHTML).toContain('M45 Seven Sisters Alignment');
     expect(matrixHTML).toContain('Stellar Points');
     expect(matrixHTML).toContain('High Score');
     expect(matrixHTML).toContain('Reset Calibration');

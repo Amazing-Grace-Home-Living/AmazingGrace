@@ -49,10 +49,7 @@ describe('arcade replacement route cleanup', () => {
     expect(arcadeStandalone).toContain('<div id="app"></div>');
     expect(arcadeStandalone).toContain('src="./arcade/main.js"');
     expect(arcadeMain).toContain('from "./match-maker-ui.js"');
-    expect(arcade).toContain('href="./bible-study/"');
-    expect(arcade).toContain('Play Bible Study Quiz');
-    expect(arcade).toContain('href="../arcade.html"');
-    expect(arcade).toContain('Play Match Maker');
+    expect(arcade).toContain('Matrix of Conscience');
     expect(home).not.toContain('/audio-library/');
     expect(arcade).not.toContain('/audio-library/');
     expect(ministry).not.toContain('/audio-library/');

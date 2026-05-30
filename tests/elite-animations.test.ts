@@ -81,10 +81,10 @@ describe('Elite Animations system', () => {
     expect(html).toContain('!e.weakpointFlashed');
   });
 
-  it('includes arcadeSyndicateSiege route in Vite build inputs', () => {
+  it('elite-animations.js is preserved in the arcade/js runtime directory', () => {
     const config = fs.readFileSync(configPath, 'utf8');
 
-    expect(config).toContain('arcadeSyndicateSiege');
-    expect(config).toContain('arcade/syndicate-siege/index.html');
+    expect(config).toContain("resolve(__dirname, 'arcade/js')");
+    expect(config).toContain("resolve(__dirname, 'dist/arcade/js')");
   });
 });

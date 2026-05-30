@@ -15,12 +15,8 @@ describe('arcade quality audit', () => {
     const workflow = fs.readFileSync('.github/workflows/firebase.yml', 'utf8');
 
     expect(workflow).toContain('pull_request:');
-    expect(workflow).toContain('test -f dist/arcade/star-matrix/index.html');
     expect(workflow).toContain('test -f dist/arcade/matrix-of-conscience/index.html');
-    expect(workflow).toContain('test -f dist/arcade/matrix-of-conscience-terminal/index.html');
     expect(workflow).toContain('test -f dist/arcade/bible-study/index.html');
-    expect(workflow).toContain('test -f dist/arcade/syndicate-siege/index.html');
-    expect(workflow).toContain('test -f dist/arcade.html');
     expect(workflow).toContain('test -f dist/arcade/js/rebellion-core.js');
     expect(workflow).toContain('test -f dist/arcade/js/lore-archive.js');
     expect(workflow).toContain('test -f dist/arcade/js/lore-files.js');

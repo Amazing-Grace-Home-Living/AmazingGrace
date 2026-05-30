@@ -76,10 +76,8 @@ describe('Matrix of Conscience Terminal', () => {
     expect(html).toContain("id=\"sendBtn\"");
   });
 
-  it('is included in the vite.config.ts build', () => {
-    const config = fs.readFileSync('vite.config.ts', 'utf8');
-
-    expect(config).toContain('arcadeMatrixTerminal');
-    expect(config).toContain('arcade/matrix-of-conscience-terminal/index.html');
+  it('terminal file is preserved in the arcade directory for future re-activation', () => {
+    const fs = require('node:fs');
+    expect(fs.existsSync('arcade/matrix-of-conscience-terminal/index.html')).toBe(true);
   });
 });
