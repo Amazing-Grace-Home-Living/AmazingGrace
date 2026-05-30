@@ -19,7 +19,7 @@ describe('The 2027 Rebellion library integration', () => {
     expect(fs.existsSync(storyPath)).toBe(true);
 
     const html = fs.readFileSync(storyPath, 'utf8');
-    expect(html).toContain('<h1 class="hero-title">The 2027 Rebellion</h1>');
+    expect(html).toContain('<h1 class="hero-title" id="story-title">The 2027 Rebellion</h1>');
     expect(html).toContain('href="../nexus-prime-2087/"');
     expect(html).toContain('href="../our-covenant-of-new-beginnings/"');
     expect(html).toContain('href="../../arcade/matrix-of-conscience/"');
