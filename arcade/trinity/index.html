@@ -803,16 +803,30 @@
             leaderboard.slice(0, 50).forEach((entry, idx) => {
                 const div = document.createElement('div');
                 div.className = 'leaderboard-entry';
-                div.innerHTML = `
-                    <span class="entry-rank">#${idx + 1}</span>
-                    <span class="entry-name">${entry.name}</span>
-                    <span class="entry-score">${entry.score}</span>
-                `;
+
+                const rank = document.createElement('span');
+                rank.className = 'entry-rank';
+                rank.textContent = `#${idx + 1}`;
+
+                const name = document.createElement('span');
+                name.className = 'entry-name';
+                name.textContent = entry.name;
+
+                const score = document.createElement('span');
+                score.className = 'entry-score';
+                score.textContent = entry.score;
+
+                div.appendChild(rank);
+                div.appendChild(name);
+                div.appendChild(score);
                 ldrList.appendChild(div);
             });
             
             if (leaderboard.length === 0) {
-                ldrList.innerHTML = '<div class="leaderboard-entry">No scores yet. Be the first!</div>';
+                const empty = document.createElement('div');
+                empty.className = 'leaderboard-entry';
+                empty.textContent = 'No scores yet. Be the first!';
+                ldrList.appendChild(empty);
             }
         }
 
