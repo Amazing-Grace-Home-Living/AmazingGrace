@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 
 const libraryJson = JSON.parse(fs.readFileSync('stories/library.json', 'utf8'));
@@ -35,11 +36,12 @@ describe('The 2027 Rebellion library integration', () => {
     expect(viteConfig).toContain('stories/blog/rebellion.html');
   });
 
-  it('emits the redirect page to preserve the legacy URL after deployment', () => {
-    const redirectPath = 'dist/stories/blog/rebellion.html';
-    expect(fs.existsSync(redirectPath)).toBe(true);
+  it('emits the legacy redirect page to dist/ after build, preserving the old URL', () => {
+    execSync('npm run build', { stdio: 'pipe' });
 
-    const html = fs.readFileSync(redirectPath, 'utf8');
+    expect(fs.existsSync('dist/stories/blog/rebellion.html')).toBe(true);
+
+    const html = fs.readFileSync('dist/stories/blog/rebellion.html', 'utf8');
     expect(html).toContain('<meta http-equiv="refresh" content="0; url=../rebellion2027/">');
     expect(html).toContain('href="../rebellion2027/"');
   });
