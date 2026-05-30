@@ -233,6 +233,10 @@
 
     <script>
         (() => {
+            const CO_APEX_BEAST_WEIGHT = 0.55;
+            const CO_APEX_DEVOURER_WEIGHT = 0.45;
+            const LOCK_DURATION_MS = 30_000;
+            const AUTO_UPDATE_INTERVAL_MS = 1400;
             const metrics = {
                 worldAlignment: 0,
                 factionTrust: 50,
@@ -256,7 +260,7 @@
                 bloomingBeast: { worldAlignment: 1.1, factionTrust: -0.5, timelineInstability: 0.8, sovereignAffinity: 0.9 },
                 genesisDevourer: { worldAlignment: -1.1, factionTrust: 0.7, timelineInstability: -0.5, sovereignAffinity: -0.9 }
             };
-            let wildMode = true;
+            let autoUpdateEnabled = true;
 
             const worldValueEl = document.getElementById('world-alignment-value');
             const worldStateEl = document.getElementById('world-alignment-state');
@@ -302,10 +306,8 @@
             };
 
             const applyCoApexGravity = () => {
-                const beastWeight = 0.55;
-                const devourerWeight = 0.45;
                 for (const key of Object.keys(metrics)) {
-                    const influence = (coApexGravity.bloomingBeast[key] * beastWeight) + (coApexGravity.genesisDevourer[key] * devourerWeight);
+                    const influence = (coApexGravity.bloomingBeast[key] * CO_APEX_BEAST_WEIGHT) + (coApexGravity.genesisDevourer[key] * CO_APEX_DEVOURER_WEIGHT);
                     updateMetric(key, influence * 0.25, `Co‑Apex gravity oscillation: ${key}`);
                 }
             };
@@ -413,7 +415,7 @@
                     }
 
                     if (action === 'lock') {
-                        locks[target] = Date.now() + 30_000;
+                        locks[target] = Date.now() + LOCK_DURATION_MS;
                         if (overrideStatusEl) overrideStatusEl.textContent = `${target} locked for 30 seconds.`;
                     }
 
@@ -437,8 +439,8 @@
                     }
 
                     if (action === 'wild') {
-                        wildMode = !wildMode;
-                        if (overrideStatusEl) overrideStatusEl.textContent = wildMode ? 'System running wild.' : 'System pulse paused for manual control.';
+                        autoUpdateEnabled = !autoUpdateEnabled;
+                        if (overrideStatusEl) overrideStatusEl.textContent = autoUpdateEnabled ? 'System running wild.' : 'System pulse paused for manual control.';
                     }
 
                     updateStates();
@@ -448,12 +450,12 @@
             updateStates();
 
             setInterval(() => {
-                if (!wildMode) return;
+                if (!autoUpdateEnabled) return;
                 applyCoApexGravity();
                 applyBindings();
                 applyFeedbackLoop();
                 updateStates();
-            }, 1400);
+            }, AUTO_UPDATE_INTERVAL_MS);
         })();
     </script>
 
