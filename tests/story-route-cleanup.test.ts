@@ -64,6 +64,12 @@ describe('story route cleanup', () => {
     expect(viteConfig).toContain('stories/noah-and-the-ark/index.html');
   });
 
+  it('does not reference missing story image assets from the Rebellion hero background', () => {
+    const rebellionStory = fs.readFileSync('stories/expose-the-matrix/Rebellion.html', 'utf8');
+    expect(rebellionStory).not.toContain('../../assets/story/rebellion.jpg');
+    expect(rebellionStory).not.toContain('assets/story/');
+  });
+
   it('ships a noah-and-the-ark story page', () => {
     const storyPath = 'stories/noah-and-the-ark/index.html';
     expect(fs.existsSync(storyPath)).toBe(true);
