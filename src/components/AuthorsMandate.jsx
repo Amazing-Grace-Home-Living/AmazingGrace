@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, createContext, useContext } from 
 import "./authors-mandate.css";
 
 // Target Deployment Endpoint for the Janus Continuum Engine
-const APPS_SCRIPT_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyq6jzCVGtoOTcid-LzD_njmuuOOSwJrhktU3ya1GKXLZI9jp6yCMJzlrdvyNb1fpkb/exec";
+const APPS_SCRIPT_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxLWV71pwzoZIyxyur7ARSg_snoP25CtrLdPJOp9qD_69B830xUxDjDznC8jUw2Odda/exec";
 
 const DEFAULT_JANUS = { white: 0.72, scarlet: 0.64, coherence: 0.83 };
 const JanusContext = createContext(null);
