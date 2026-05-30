@@ -68,6 +68,8 @@ describe('story route cleanup', () => {
     const rebellionStory = fs.readFileSync('stories/expose-the-matrix/Rebellion.html', 'utf8');
     expect(rebellionStory).not.toContain('../../assets/story/rebellion.jpg');
     expect(rebellionStory).not.toContain('assets/story/');
+    expect(rebellionStory).toContain('.story-hero {');
+    expect(rebellionStory).toContain('linear-gradient(');
   });
 
   it('ships a noah-and-the-ark story page', () => {
