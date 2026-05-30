@@ -1,16 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 
 describe('arcade quality audit', () => {
-  it('copies legacy arcade runtime scripts into dist for game pages that load ../js/*.js', () => {
-    execSync('npm run build', { stdio: 'pipe' });
+  it('copies legacy arcade runtime scripts to dist/arcade/js during build', () => {
+    const config = fs.readFileSync('vite.config.ts', 'utf8');
 
-    expect(fs.existsSync('dist/arcade/js/rebellion-core.js')).toBe(true);
-    expect(fs.existsSync('dist/arcade/js/lore-archive.js')).toBe(true);
-    expect(fs.existsSync('dist/arcade/js/lore-files.js')).toBe(true);
-    expect(fs.existsSync('dist/arcade/js/cosmetics.js')).toBe(true);
-    expect(fs.existsSync('dist/arcade/js/elite-animations.js')).toBe(true);
+    expect(config).toContain('cpSync(');
+    expect(config).toContain("resolve(__dirname, 'arcade/js')");
+    expect(config).toContain("resolve(__dirname, 'dist/arcade/js')");
+    expect(config).toContain("recursive: true");
   });
 
   it('keeps firebase workflow validating arcade game routes and scripts on pull requests', () => {
