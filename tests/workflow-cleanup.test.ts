@@ -4,6 +4,7 @@ import fs from 'node:fs';
 describe('workflow cleanup', () => {
   it('has the expected workflows in the repository', () => {
     expect(fs.readdirSync('.github/workflows').sort()).toEqual([
+      'ci.yml',
       'deploy.yml',
       'ella.yml',
       'firebase.yml',
@@ -11,14 +12,16 @@ describe('workflow cleanup', () => {
     ]);
   });
 
-  it('keeps deploy focused on publishing the site from main without running tests', () => {
+  it('keeps deploy validating the site before publishing from main', () => {
     const deploy = fs.readFileSync('.github/workflows/deploy.yml', 'utf8');
 
     expect(deploy).toContain('branches: [main]');
     expect(deploy).toContain('npm ci');
+    expect(deploy).toContain('npm test -- --passWithNoTests');
+    expect(deploy).toContain('npm run typecheck');
     expect(deploy).toContain('npm run build');
+    expect(deploy).toContain('validate-arcade-dist-links.mjs');
     expect(deploy).toContain('actions/deploy-pages@v5');
-    expect(deploy).not.toContain('npm test');
   });
 
   it('keeps firebase deploy validation focused on real filler content', () => {
@@ -29,6 +32,8 @@ describe('workflow cleanup', () => {
     expect(firebase).toContain('normal HTML placeholder attributes do not fail deploy validation');
     expect(firebase).toContain("grep -RIniE --include='*.html'");
     expect(firebase).toContain('lorem ipsum|todo|placeholder text');
+    expect(firebase).toContain('- name: Validate arcade navigation and asset links');
+    expect(firebase).toContain('validate-arcade-dist-links.mjs');
     expect(firebase).toContain('- name: Validate internal navigation and asset links');
     expect(firebase).toContain('continue-on-error: true');
     expect(firebase).not.toContain('coming soon|todo|placeholder');
