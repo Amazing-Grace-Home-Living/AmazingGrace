@@ -76,6 +76,9 @@
     </style>
 </head>
 <body>
+    <audio id="bg-music" loop>
+        <source src="../../assets/audio/ending.mp3" type="audio/mpeg">
+    </audio>
     <div id="sevenstars-root" class="game-wrapper"></div>
     <script>
         const root = document.getElementById('sevenstars-root');
@@ -90,6 +93,16 @@
         ];
 
         let completed = JSON.parse(localStorage.getItem('aghl_sevenStarsCompleted') || '[]');
+
+        function playMusic() {
+            const bgm = document.getElementById('bg-music');
+            if (bgm && bgm.paused) {
+                bgm.volume = 0.3;
+                bgm.play().catch(e => console.log('Audio autoplay blocked'));
+            }
+            document.body.removeEventListener('click', playMusic);
+        }
+        document.body.addEventListener('click', playMusic);
 
         function renderTitle() {
             root.innerHTML = `

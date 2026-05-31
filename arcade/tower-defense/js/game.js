@@ -168,6 +168,8 @@ let enemiesToSpawn = 0;
 let spawnTimer = 0;
 let animationId = null;
 let particles = [];
+let floatingTexts = [];
+let screenShake = 0;
 let time = 0;
 
 function spawnParticles(x, y, color, count, speedFactor = 1) {
@@ -182,6 +184,10 @@ function spawnParticles(x, y, color, count, speedFactor = 1) {
             size: Math.random() * 3 + 1
         });
     }
+}
+
+function spawnText(x, y, text, color) {
+    floatingTexts.push({ x, y, text, color, life: 1.0, vy: -1 });
 }
 
 const TOWER_DEFS = {
@@ -204,6 +210,11 @@ document.querySelectorAll('.tower-option').forEach(opt => {
 
 document.getElementById('btn-play').addEventListener('click', () => {
     showScreen('game');
+    const bgm = document.getElementById('bg-music');
+    if (bgm) {
+        bgm.volume = 0.3;
+        bgm.play().catch(e => console.log('Audio play blocked'));
+    }
     startGame();
 });
 
@@ -457,14 +468,18 @@ function update() {
             // Apply Damage and Effects
             p.target.hp -= p.damage;
             spawnParticles(p.target.x, p.target.y, p.color, 5);
+            spawnText(p.target.x, p.target.y - 10, '-' + Math.floor(p.damage), p.color);
             
-            if (p.effect === 'slow') {p.target.slowTimer = 120; // 2 seconds slow
+            if (p.damage >= 50 || p.effect === 'splash') screenShake = Math.max(screenShake, 10);
+            
+            if (p.effect === 'slow') p.target.slowTimer = 120; // 2 seconds slow
             
             if (p.effect === 'splash') {
                 spawnParticles(p.target.x, p.target.y, p.color, 20, 2);
                 enemies.forEach(e => {
                     if (e !== p.target && Math.hypot(e.x - p.target.x, e.y - p.target.y) < 60) {
                         e.hp -= p.damage * 0.5; // 50% splash damage
+                        spawnText(e.x, e.y - 10, '-' + Math.floor(p.damage * 0.5), p.color);
                         checkEnemyDeath(e);
                     }
                 });
@@ -506,6 +521,17 @@ function update() {
         pt.life -= pt.decay;
         if (pt.life <= 0) particles.splice(i, 1);
     }
+    
+    // Process floating texts
+    for (let i = floatingTexts.length - 1; i >= 0; i--) {
+        const ft = floatingTexts[i];
+        ft.y += ft.vy;
+        ft.life -= 0.02;
+        if (ft.life <= 0) floatingTexts.splice(i, 1);
+    }
+    
+    if (screenShake > 0) screenShake--;
+    
     time += 0.05;
 }
 
@@ -521,6 +547,13 @@ function checkEnemyDeath(e) {
 }
 
 function draw() {
+    ctx.save();
+    if (screenShake > 0) {
+        const dx = (Math.random() - 0.5) * screenShake;
+        const dy = (Math.random() - 0.5) * screenShake;
+        ctx.translate(dx, dy);
+    }
+
     // Cyberpunk Dark Background
     ctx.fillStyle = '#020617';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -642,7 +675,19 @@ function draw() {
         ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2);
         ctx.fill();
     });
+    
+    // Draw Floating Texts
+    ctx.shadowBlur = 5;
+    ctx.font = 'bold 16px Courier';
+    ctx.textAlign = 'center';
+    floatingTexts.forEach(ft => {
+        ctx.shadowColor = ft.color;
+        ctx.fillStyle = `rgba(${hexToRgb(ft.color)}, ${ft.life})`;
+        ctx.fillText(ft.text, ft.x, ft.y);
+    });
+    
     ctx.shadowBlur = 0; // reset
+    ctx.restore();
 }
 
 function hexToRgb(hex) {

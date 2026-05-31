@@ -353,6 +353,9 @@
     </style>
 </head>
 <body>
+    <audio id="bg-music" loop>
+        <source src="../../assets/audio/victory.mp3" type="audio/mpeg">
+    </audio>
 
     <header class="site-header">
         <div class="nav-container">
@@ -637,6 +640,13 @@
         sessionCredits = 0;
         answered = false;
         updateHUD();
+        
+        const bgm = document.getElementById('bg-music');
+        if (bgm && bgm.paused) {
+            bgm.volume = 0.2;
+            bgm.play().catch(e => console.log('Audio autoplay blocked'));
+        }
+        
         showScreen('screen-quiz');
         renderQuestion();
     }
