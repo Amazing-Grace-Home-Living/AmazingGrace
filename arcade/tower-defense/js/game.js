@@ -1,4 +1,4 @@
-import { db } from '../../js/firebase.js';
+const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbys9acGtvMq-GgGUlS_COerw9vGyR7HRtqT5JXWkPedG4nC7M-dqWgKIOrEWqlN2xw6/exec';
 
 // --- State Management ---
 const META_KEY = 'aghl_td_meta';
@@ -56,20 +56,15 @@ async function loadLeaderboard() {
     const list = document.getElementById('lb-list');
     list.innerHTML = 'Fetching from Nexus Data Nodes...';
     try {
-        const snapshot = await db.ref('tower_defense/highscores').get();
-        if (snapshot.exists()) {
-            const data = snapshot.val();
-            let scores = [];
-            Object.keys(data).forEach(key => {
-                scores.push({ name: key, ...data[key] });
-            });
-            scores.sort((a, b) => b.score - a.score); // Highest first
+        const response = await fetch(SHEET_API_URL);
+        if (response.ok) {
+            const scores = await response.json();
             globalLeaderboard = scores;
 
             // Check our rank
             globalRank = null;
             if (metaState.playerName) {
-                const myIndex = scores.findIndex(s => s.name === metaState.playerName);
+                const myIndex = scores.findIndex(s => s.name.toUpperCase() === metaState.playerName.toUpperCase());
                 if (myIndex === 0) globalRank = 1;
                 else if (myIndex === 1) globalRank = 2;
             }
@@ -79,11 +74,15 @@ async function loadLeaderboard() {
             else if (globalRank === 2) discountMultiplier = 0.5; // 50% off
             else discountMultiplier = 1;
 
-            list.innerHTML = scores.slice(0, 10).map((s, i) => 
-                `<div class="lb-entry"><span>#${i+1} ${s.name}</span> <span>Wave: ${s.wave} | Score: ${s.score}</span></div>`
-            ).join('');
+            if (scores.length > 0) {
+                list.innerHTML = scores.slice(0, 10).map((s, i) => 
+                    `<div class="lb-entry"><span>#${i+1} ${s.name}</span> <span>Wave: ${s.wave} | Score: ${s.score}</span></div>`
+                ).join('');
+            } else {
+                list.innerHTML = 'No records found.';
+            }
         } else {
-            list.innerHTML = 'No records found.';
+            throw new Error('Network response was not ok.');
         }
     } catch (e) {
         list.innerHTML = 'Error fetching rankings.';
@@ -388,10 +387,15 @@ document.getElementById('player-name-input').addEventListener('keydown', (e) => 
 
 async function submitHighScore(name) {
     try {
-        await db.ref('tower_defense/highscores/' + name).update({
-            wave: wave,
-            score: score,
-            timestamp: Date.now()
+        await fetch(SHEET_API_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'submitScore',
+                name: name,
+                score: score,
+                wave: wave
+            })
+            // Deliberately avoiding Content-Type: application/json to bypass strict CORS preflight
         });
         loadLeaderboard(); // refresh background stats
     } catch(e) {
