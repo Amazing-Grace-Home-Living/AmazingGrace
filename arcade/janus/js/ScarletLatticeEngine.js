@@ -13,10 +13,10 @@ export class ScarletLatticeEngine {
       this.spawnRecursion();
     }
 
-    this.recursions.forEach((r, i) => {
+    this.recursions = this.recursions.filter(r => {
       r.scale += 0.05;
       r.alpha -= 0.02;
-      if (r.alpha <= 0) this.recursions.splice(i, 1);
+      return r.alpha > 0;
     });
   }
 

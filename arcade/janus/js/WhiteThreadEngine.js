@@ -14,9 +14,9 @@ export class WhiteThreadEngine {
       this.spawnFilament();
     }
 
-    this.filaments.forEach((f, i) => {
+    this.filaments = this.filaments.filter(f => {
       f.life -= 0.01;
-      if (f.life <= 0) this.filaments.splice(i, 1);
+      return f.life > 0;
     });
   }
 

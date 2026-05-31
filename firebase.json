@@ -42,10 +42,6 @@
     ],
     "rewrites": [
       {
-        "source": "**/arcade/**",
-        "destination": "/arcade/index.html"
-      },
-      {
         "source": "**",
         "destination": "/index.html"
       }

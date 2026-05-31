@@ -841,7 +841,15 @@
           cell.className = 'star-cell';
           cell.setAttribute('data-row', r);
           cell.setAttribute('data-col', c);
-          cell.setAttribute('data-type', star.id);
+          
+          const typeMapping = {
+            'heart': 'supernova',
+            'star': 'shooting',
+            'cross': 'gem',
+            'flame': 'rank',
+            'drop': 'cosmic'
+          };
+          cell.setAttribute('data-type', typeMapping[star.id] || star.id);
           cell.setAttribute('role', 'gridcell');
           cell.setAttribute('aria-label', star.id + ' star');
           cell.setAttribute('aria-selected', 'false');

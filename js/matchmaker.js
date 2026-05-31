@@ -337,7 +337,12 @@ export function applyMatches(grid, matchResult, comboLevel = 1) {
   // Capture pre-existing specials before clearing anything
   const preExistingSpecials = matches
     .filter((m) => typeof next[m.row][m.col] === 'object' && next[m.row][m.col]?.special)
-    .map((m) => ({ row: m.row, col: m.col, kind: next[m.row][m.col].special }));
+    .map((m) => ({
+      row: m.row,
+      col: m.col,
+      kind: next[m.row][m.col].special,
+      gemKind: gemType(next[m.row][m.col])
+    }));
 
   // Place newly-created special gems (remove from clear list so they persist)
   for (const s of specials) {
@@ -362,7 +367,7 @@ export function applyMatches(grid, matchResult, comboLevel = 1) {
 
   // Trigger ONLY pre-existing specials that were part of the match
   for (const ps of preExistingSpecials) {
-    triggerSpecial(next, ps.row, ps.col, ps.kind, comboLevel);
+    triggerSpecial(next, ps.row, ps.col, ps.kind, comboLevel, ps.gemKind);
   }
 
   return next;
@@ -376,8 +381,9 @@ export function applyMatches(grid, matchResult, comboLevel = 1) {
  * @param {number} col
  * @param {string} kind - 'lineH' | 'lineV' | 'bomb' | 'supernova'
  * @param {number} [comboLevel=1]
+ * @param {string|null} [targetType=null] - Pre-captured gem type for supernovas.
  */
-export function triggerSpecial(grid, row, col, kind, _comboLevel = 1) {
+export function triggerSpecial(grid, row, col, kind, _comboLevel = 1, targetType = null) {
   const rows = grid.length;
   const cols = grid[0].length;
 
@@ -397,11 +403,11 @@ export function triggerSpecial(grid, row, col, kind, _comboLevel = 1) {
       }
     }
   } else if (kind === 'supernova') {
-    const targetType = gemType(grid[row][col]);
-    if (!targetType) return;
+    const actualTargetType = targetType || gemType(grid[row][col]);
+    if (!actualTargetType) return;
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
-        if (gemType(grid[r][c]) === targetType) mark(r, c);
+        if (gemType(grid[r][c]) === actualTargetType) mark(r, c);
       }
     }
   }
