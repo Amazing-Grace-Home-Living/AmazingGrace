@@ -167,6 +167,22 @@ let waveActive = false;
 let enemiesToSpawn = 0;
 let spawnTimer = 0;
 let animationId = null;
+let particles = [];
+let time = 0;
+
+function spawnParticles(x, y, color, count, speedFactor = 1) {
+    for (let i = 0; i < count; i++) {
+        particles.push({
+            x, y,
+            vx: (Math.random() - 0.5) * 6 * speedFactor,
+            vy: (Math.random() - 0.5) * 6 * speedFactor,
+            life: 1.0,
+            decay: Math.random() * 0.05 + 0.02,
+            color,
+            size: Math.random() * 3 + 1
+        });
+    }
+}
 
 const TOWER_DEFS = {
     basic:  { cost: 50,  range: 100, damage: 15, cooldown: 30, color: '#00f2ff', label: 'B' },
@@ -238,6 +254,8 @@ function startGame() {
     enemies = [];
     towers = [];
     projectiles = [];
+    particles = [];
+    time = 0;
     gameActive = true;
     waveActive = false;
     document.getElementById('overlay').classList.add('hidden');
@@ -279,8 +297,10 @@ canvas.addEventListener('click', (e) => {
             cooldown: baseDef.cooldown,
             color: baseDef.color,
             label: baseDef.label,
-            effect: baseDef.effect
+            effect: baseDef.effect,
+            angle: 0
         });
+        spawnParticles(towers[towers.length-1].x, towers[towers.length-1].y, baseDef.color, 15);
         updateHUD();
     }
 });
@@ -401,6 +421,7 @@ function update() {
             });
 
             if (closest) {
+                t.angle = Math.atan2(closest.y - t.y, closest.x - t.x);
                 projectiles.push({
                     x: t.x, y: t.y,
                     target: closest,
@@ -435,10 +456,12 @@ function update() {
         if (dist <= p.speed) {
             // Apply Damage and Effects
             p.target.hp -= p.damage;
+            spawnParticles(p.target.x, p.target.y, p.color, 5);
             
-            if (p.effect === 'slow') p.target.slowTimer = 120; // 2 seconds slow
+            if (p.effect === 'slow') {p.target.slowTimer = 120; // 2 seconds slow
             
             if (p.effect === 'splash') {
+                spawnParticles(p.target.x, p.target.y, p.color, 20, 2);
                 enemies.forEach(e => {
                     if (e !== p.target && Math.hypot(e.x - p.target.x, e.y - p.target.y) < 60) {
                         e.hp -= p.damage * 0.5; // 50% splash damage
@@ -474,10 +497,21 @@ function update() {
             p.y += (dy / dist) * p.speed;
         }
     }
+
+    // Process particles
+    for (let i = particles.length - 1; i >= 0; i--) {
+        const pt = particles[i];
+        pt.x += pt.vx;
+        pt.y += pt.vy;
+        pt.life -= pt.decay;
+        if (pt.life <= 0) particles.splice(i, 1);
+    }
+    time += 0.05;
 }
 
 function checkEnemyDeath(e) {
     if (e.hp <= 0 && enemies.includes(e)) {
+        spawnParticles(e.x, e.y, '#ff0040', 30, 1.5);
         money += 5;
         score += 10;
         updateHUD();
@@ -487,54 +521,138 @@ function checkEnemyDeath(e) {
 }
 
 function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Cyberpunk Dark Background
+    ctx.fillStyle = '#020617';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw path
-    ctx.fillStyle = '#1e293b';
+    // Draw glowing data-stream path
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = '#0f172a';
+    ctx.fillStyle = '#0f172a';
     path.forEach(p => {
-        ctx.fillRect(p.x * CELL_SIZE, p.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+        ctx.fillRect(p.x * CELL_SIZE + 2, p.y * CELL_SIZE + 2, CELL_SIZE - 4, CELL_SIZE - 4);
+    });
+
+    // Draw animated data flow over path
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = '#38bdf8';
+    ctx.fillStyle = `rgba(56, 189, 248, ${0.1 + Math.sin(time) * 0.1})`;
+    path.forEach((p, i) => {
+        if ((i + Math.floor(time * 5)) % 5 === 0) {
+            ctx.fillRect(p.x * CELL_SIZE + 8, p.y * CELL_SIZE + 8, CELL_SIZE - 16, CELL_SIZE - 16);
+        }
     });
 
     // Draw towers
     towers.forEach(t => {
+        ctx.save();
+        ctx.translate(t.x, t.y);
+        
+        // Base
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = t.color;
+        ctx.strokeStyle = t.color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(0, 0, CELL_SIZE / 2 - 6, 0, Math.PI * 2);
+        ctx.stroke();
+        
+        // Core glow
+        ctx.fillStyle = `rgba(${hexToRgb(t.color)}, 0.3)`;
+        ctx.fill();
+
+        // Rotating Barrel
+        ctx.rotate(t.angle);
         ctx.fillStyle = t.color;
-        ctx.fillRect(t.col * CELL_SIZE + 4, t.row * CELL_SIZE + 4, CELL_SIZE - 8, CELL_SIZE - 8);
-        ctx.fillStyle = '#fff';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.font = 'bold 16px Courier';
-        ctx.fillText(t.label, t.x, t.y);
+        ctx.fillRect(0, -4, CELL_SIZE / 2 - 2, 8);
+        ctx.restore();
     });
 
-    // Draw enemies
+    // Draw enemies (Cyber Cores)
     enemies.forEach(e => {
-        ctx.fillStyle = e.slowTimer > 0 ? '#38bdf8' : e.color;
-        ctx.beginPath();
-        ctx.arc(e.x, e.y, 10, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.save();
+        ctx.translate(e.x, e.y);
+        ctx.rotate(time * e.baseSpeed);
         
-        ctx.fillStyle = 'red';
-        ctx.fillRect(e.x - 10, e.y - 15, 20, 3);
+        const isSlowed = e.slowTimer > 0;
+        const eColor = isSlowed ? '#38bdf8' : e.color;
+        
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = eColor;
+        ctx.strokeStyle = eColor;
+        ctx.lineWidth = 2;
+        
+        // Polygon shape based on wave modulo
+        const sides = 3 + (wave % 3);
+        ctx.beginPath();
+        for (let i = 0; i < sides; i++) {
+            const a = (Math.PI * 2 / sides) * i;
+            ctx.lineTo(Math.cos(a) * 12, Math.sin(a) * 12);
+        }
+        ctx.closePath();
+        ctx.stroke();
+        
+        // Pulsing inner core
+        ctx.fillStyle = isSlowed ? '#fff' : '#ffb3c6';
+        ctx.beginPath();
+        ctx.arc(0, 0, 4 + Math.sin(time * 10) * 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        
+        // HP bar (no shadow)
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+        ctx.fillRect(e.x - 12, e.y - 20, 24, 4);
         ctx.fillStyle = '#00ff00';
-        ctx.fillRect(e.x - 10, e.y - 15, 20 * Math.max(0, e.hp / e.maxHp), 3);
+        ctx.fillRect(e.x - 12, e.y - 20, 24 * Math.max(0, e.hp / e.maxHp), 4);
     });
 
     // Draw projectiles
     projectiles.forEach(p => {
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = p.color;
         ctx.fillStyle = p.color;
         ctx.beginPath();
+        
         if (p.effect === 'chain') {
-            // Draw a line connecting for tesla instead of a dot
             ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p.x + (p.target.x - p.x)*0.3, p.y + (p.target.y - p.y)*0.3);
+            // Jagged lightning
+            const midX = (p.x + p.target.x) / 2 + (Math.random() - 0.5) * 20;
+            const midY = (p.y + p.target.y) / 2 + (Math.random() - 0.5) * 20;
+            ctx.lineTo(midX, midY);
+            ctx.lineTo(p.target.x, p.target.y);
             ctx.strokeStyle = p.color;
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 3;
             ctx.stroke();
+        } else if (p.effect === 'splash') {
+            ctx.arc(p.x, p.y, 6 + Math.random() * 2, 0, Math.PI * 2);
+            ctx.fill();
         } else {
-            ctx.arc(p.x, p.y, p.effect==='splash' ? 5 : 3, 0, Math.PI * 2);
+            ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
             ctx.fill();
         }
     });
+
+    // Draw Particles
+    ctx.shadowBlur = 10;
+    particles.forEach(pt => {
+        ctx.shadowColor = pt.color;
+        ctx.fillStyle = `rgba(${hexToRgb(pt.color)}, ${pt.life})`;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2);
+        ctx.fill();
+    });
+    ctx.shadowBlur = 0; // reset
+}
+
+function hexToRgb(hex) {
+    let r = 0, g = 0, b = 0;
+    if (hex.length === 7) {
+        r = parseInt(hex.substring(1, 3), 16);
+        g = parseInt(hex.substring(3, 5), 16);
+        b = parseInt(hex.substring(5, 7), 16);
+    }
+    return `${r}, ${g}, ${b}`;
 }
 
 function loop() {
