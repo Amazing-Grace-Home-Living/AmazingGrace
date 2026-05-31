@@ -1,0 +1,129 @@
+:root {
+    --bg: #020617;
+    --panel: #0f172a;
+    --accent: #00f2ff;
+    --accent-hover: #38bdf8;
+    --danger: #ff0040;
+    --text: #e2e8f0;
+    --border: #1e293b;
+    --mono: 'Courier New', Courier, monospace;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#game-wrapper {
+    background: var(--panel);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 0 30px rgba(0, 242, 255, 0.2);
+    position: relative;
+    max-width: 100%;
+}
+
+#header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.stat {
+    font-weight: bold;
+    color: var(--text);
+}
+
+.stat span {
+    color: var(--accent);
+}
+
+.btn {
+    background: var(--accent);
+    color: #020617;
+    border: none;
+    padding: 8px 16px;
+    font-family: var(--mono);
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.btn:hover {
+    background: var(--accent-hover);
+}
+
+#game-canvas {
+    background: #000;
+    border: 1px solid var(--border);
+    cursor: crosshair;
+    display: block;
+}
+
+#build-panel {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 12px;
+}
+
+.tower-option {
+    border: 1px solid var(--border);
+    background: rgba(0, 0, 0, 0.5);
+    padding: 8px 16px;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 6px;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.tower-option:hover {
+    border-color: var(--accent);
+    background: rgba(0, 242, 255, 0.1);
+}
+
+.tower-option.selected {
+    border-color: var(--accent);
+    background: rgba(0, 242, 255, 0.2);
+    box-shadow: 0 0 10px var(--accent);
+}
+
+#overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+#overlay.hidden {
+    display: none;
+}
+
+#overlay h1 {
+    color: var(--danger);
+    margin-bottom: 16px;
+}
+
+#overlay p {
+    margin-bottom: 24px;
+    color: var(--text);
+}

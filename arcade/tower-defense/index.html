@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tower Defense Subsystem</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div id="game-wrapper">
+        <div id="header">
+            <div class="stat">CORES: <span id="stat-money">100</span></div>
+            <div class="stat">INTEGRITY: <span id="stat-health">20</span></div>
+            <div class="stat">WAVE: <span id="stat-wave">1</span></div>
+            <button id="btn-start" class="btn">START WAVE</button>
+        </div>
+        
+        <canvas id="game-canvas" width="600" height="400"></canvas>
+        
+        <div id="build-panel">
+            <div class="tower-option" data-type="basic">
+                <strong>Blaster</strong><br>Cost: 50<br>Range: Med
+            </div>
+            <div class="tower-option" data-type="sniper">
+                <strong>Sniper</strong><br>Cost: 100<br>Range: High
+            </div>
+            <div class="tower-option" data-type="rapid">
+                <strong>Rapid</strong><br>Cost: 150<br>Range: Low
+            </div>
+        </div>
+
+        <div id="overlay" class="hidden">
+            <h1 id="overlay-title">SYSTEM COMPROMISED</h1>
+            <p id="overlay-desc">Integrity reached 0.</p>
+            <button id="btn-restart" class="btn">REBOOT</button>
+        </div>
+    </div>
+    <script src="./js/game.js"></script>
+</body>
+</html>
