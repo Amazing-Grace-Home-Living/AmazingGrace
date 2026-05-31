@@ -123,7 +123,10 @@
         <h2 style="color:var(--accent); margin-bottom:10px;">NEW HIGH SCORE</h2>
         <p style="color:white; margin-bottom:10px;">Enter your callsign for the Global Leaderboard:</p>
         <input type="text" id="player-name-input" maxlength="12" style="padding:10px; font-family:var(--mono); font-size:16px; background:#020617; color:var(--accent); border:1px solid var(--accent); margin-bottom:15px; outline:none;" placeholder="GUEST">
-        <button id="btn-submit-score" class="btn primary-btn">SUBMIT TO FIREBASE</button>
+        <div style="display:flex; gap:10px;">
+            <button id="btn-submit-score" class="btn primary-btn">SUBMIT</button>
+            <button id="btn-cancel-score" class="btn">CANCEL</button>
+        </div>
     </div>
 
     <audio id="bg-music" loop>

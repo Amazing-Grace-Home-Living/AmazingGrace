@@ -15,6 +15,7 @@ function saveMeta() {
 let currentFaction = 'netrunners';
 let globalRank = null; // 1 = 1st, 2 = 2nd, null = other
 let discountMultiplier = 1; // 1 = full price, 0.25 = 75% off, 0.5 = 50% off
+let globalLeaderboard = [];
 
 // --- UI Navigation ---
 const screens = {
@@ -63,6 +64,7 @@ async function loadLeaderboard() {
                 scores.push({ name: key, ...data[key] });
             });
             scores.sort((a, b) => b.score - a.score); // Highest first
+            globalLeaderboard = scores;
 
             // Check our rank
             globalRank = null;
@@ -86,6 +88,7 @@ async function loadLeaderboard() {
     } catch (e) {
         list.innerHTML = 'Error fetching rankings.';
         console.error(e);
+        globalLeaderboard = [];
     }
 }
 
@@ -339,12 +342,29 @@ function gameOver() {
     document.getElementById('overlay-fragments').innerText = fragsEarned;
     document.getElementById('overlay').classList.remove('hidden');
 
-    if (!metaState.playerName && score > 0) {
-        document.getElementById('player-name-input').value = 'ANON_' + Math.floor(Math.random()*1000);
-        document.getElementById('name-dialog').classList.remove('hidden');
-    } else if (metaState.playerName && score > 0) {
-        submitHighScore(metaState.playerName);
+    let isHighScore = false;
+    if (score > 0) {
+        if (globalLeaderboard.length < 10) {
+            isHighScore = true;
+        } else {
+            const lowestScore = globalLeaderboard[globalLeaderboard.length - 1].score;
+            if (score > lowestScore) isHighScore = true;
+        }
     }
+
+    if (isHighScore) {
+        if (!metaState.playerName) {
+            document.getElementById('player-name-input').value = 'ANON_' + Math.floor(Math.random()*1000);
+            document.getElementById('name-dialog').classList.remove('hidden');
+            document.getElementById('player-name-input').focus();
+        } else {
+            submitHighScore(metaState.playerName);
+        }
+    }
+}
+
+function closeNameDialog() {
+    document.getElementById('name-dialog').classList.add('hidden');
 }
 
 document.getElementById('btn-submit-score').addEventListener('click', () => {
@@ -352,8 +372,18 @@ document.getElementById('btn-submit-score').addEventListener('click', () => {
     if (!name) name = 'ANON_' + Math.floor(Math.random()*1000);
     metaState.playerName = name;
     saveMeta();
-    document.getElementById('name-dialog').classList.add('hidden');
+    closeNameDialog();
     submitHighScore(name);
+});
+
+document.getElementById('btn-cancel-score').addEventListener('click', () => {
+    closeNameDialog();
+});
+
+document.getElementById('player-name-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        document.getElementById('btn-submit-score').click();
+    }
 });
 
 async function submitHighScore(name) {
