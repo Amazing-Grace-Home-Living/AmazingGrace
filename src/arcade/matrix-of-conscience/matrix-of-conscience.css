@@ -105,28 +105,19 @@
   line-height: 1.5;
 }
 
-.mc-economy-readout {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
+.mc-points-box {
   background: rgba(0,0,0,0.3);
   padding: 1rem;
   border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.05);
-}
-
-.econ-stat {
-  flex: 1;
+  margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
+  border: 1px solid rgba(255,255,255,0.05);
 }
 
-.econ-stat span:first-child { font-size: 0.65rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.1em; }
-.econ-val { font-family: 'Orbitron', monospace; font-size: 1.25rem; font-weight: 900; }
-.econ-val.cyan { color: var(--neon-blue); }
-.econ-val.gold { color: var(--neon-gold); }
+.pts-label { font-size: 0.65rem; color: #64748b; letter-spacing: 0.1em; }
+.pts-value { font-family: 'Orbitron', monospace; font-size: 1.8rem; color: var(--neon-gold); font-weight: 900; }
 
 .mc-bars-list {
   display: flex;
@@ -194,50 +185,100 @@
 .m45-tile.selected-node { border-color: var(--neon-blue); box-shadow: 0 0 15px var(--neon-blue); background: rgba(0, 229, 255, 0.1); }
 
 .nexus-store-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-}
-
-.store-card {
-  background: rgba(2,6,23,0.4);
-  border: 1px solid rgba(255,255,255,0.05);
-  border-radius: 12px;
-  padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
+  max-height: 550px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.nexus-store-grid::-webkit-scrollbar { width: 6px; }
+.nexus-store-grid::-webkit-scrollbar-thumb { background: rgba(188, 19, 254, 0.3); border-radius: 99px; }
+
+.store-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1.25rem;
   transition: all 0.2s;
 }
 
-.store-card.owned { border-color: var(--neon-blue); background: rgba(0, 242, 255, 0.03); }
-.store-card.available { border-color: var(--neon-purple); }
+.store-card.available { border-color: rgba(0, 242, 255, 0.4); box-shadow: 0 0 15px rgba(0, 242, 255, 0.1); }
+.store-card.owned { border-color: rgba(74, 222, 128, 0.4); opacity: 0.8; }
+.store-card.locked { opacity: 0.6; filter: grayscale(0.4); }
 
-.store-card-header { display: flex; align-items: center; gap: 0.75rem; }
+.store-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
 .store-icon { font-size: 1.5rem; }
-.store-card h3 { font-size: 0.9rem; margin: 0; color: #fff; }
+.store-card-header h3 {
+  margin: 0;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.1rem;
+  color: #fff;
+}
 
-.store-desc { font-size: 0.75rem; color: #94a3b8; line-height: 1.4; margin: 0; flex: 1; }
+.store-desc {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin: 0 0 1rem 0;
+}
 
-.store-reqs { display: flex; gap: 0.75rem; font-family: 'Orbitron', monospace; font-size: 0.65rem; }
-.store-reqs span.met { color: #4ade80; }
-.store-reqs span.unmet { color: #f43f5e; }
+.store-reqs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.store-reqs .met { color: #4ade80; }
+.store-reqs .unmet { color: #ef4444; }
 
 .store-buy-btn {
-  padding: 0.6rem;
-  background: var(--neon-purple);
-  border: none;
-  border-radius: 6px;
-  color: #fff;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.7rem;
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
   font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   cursor: pointer;
+  border: 1px solid transparent;
   transition: all 0.2s;
 }
 
-.store-buy-btn:hover:not(:disabled) { filter: brightness(1.2); transform: translateY(-1px); }
-.store-buy-btn:disabled { background: #1e293b; color: #475569; cursor: not-allowed; }
+.store-card.available .store-buy-btn {
+  background: rgba(0, 242, 255, 0.1);
+  color: var(--neon-blue);
+  border-color: rgba(0, 242, 255, 0.3);
+}
+
+.store-card.available .store-buy-btn:hover {
+  background: var(--neon-blue);
+  color: #020617;
+}
+
+.store-card.locked .store-buy-btn {
+  background: rgba(255, 255, 255, 0.05);
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.store-card.owned .store-buy-btn {
+  background: rgba(74, 222, 128, 0.1);
+  color: #4ade80;
+  border-color: rgba(74, 222, 128, 0.3);
+  cursor: default;
+}
 
 .mc-actions-group {
   display: flex;
@@ -319,3 +360,128 @@
 .status-tag.click-trigger { color: var(--neon-blue); text-decoration: underline; }
 
 .text-center { text-align: center; }
+
+/* --- Nexus Exchange Economy UI --- */
+
+.mc-economy-readout {
+  display: flex;
+  justify-content: space-between;
+  background: rgba(2, 6, 23, 0.5);
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 1.5rem;
+}
+
+.econ-stat {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.econ-val {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-top: 0.2rem;
+}
+.econ-val.cyan { color: var(--neon-blue); }
+.econ-val.gold { color: var(--neon-gold); text-shadow: 0 0 10px rgba(251, 191, 36, 0.4); }
+
+.nexus-store-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 550px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.nexus-store-grid::-webkit-scrollbar { width: 6px; }
+.nexus-store-grid::-webkit-scrollbar-thumb { background: rgba(188, 19, 254, 0.3); border-radius: 99px; }
+
+.store-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1.25rem;
+  transition: all 0.2s;
+}
+
+.store-card.available { border-color: rgba(0, 242, 255, 0.4); box-shadow: 0 0 15px rgba(0, 242, 255, 0.1); }
+.store-card.owned { border-color: rgba(74, 222, 128, 0.4); opacity: 0.8; }
+.store-card.locked { opacity: 0.6; filter: grayscale(0.4); }
+
+.store-card-header {
+  display: flex;
+  align-items: center; gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.store-icon { font-size: 1.5rem; }
+.store-card-header h3 {
+  margin: 0;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.store-desc {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin: 0 0 1rem 0;
+}
+
+.store-reqs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.store-reqs .met { color: #4ade80; }
+.store-reqs .unmet { color: #ef4444; }
+
+.store-buy-btn {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.store-card.available .store-buy-btn {
+  background: rgba(0, 242, 255, 0.1);
+  color: var(--neon-blue);
+  border-color: rgba(0, 242, 255, 0.3);
+}
+
+.store-card.available .store-buy-btn:hover {
+  background: var(--neon-blue);
+  color: #020617;
+}
+
+.store-card.locked .store-buy-btn {
+  background: rgba(255, 255, 255, 0.05);
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.store-card.owned .store-buy-btn {
+  background: rgba(74, 222, 128, 0.1);
+  color: #4ade80;
+  border-color: rgba(74, 222, 128, 0.3);
+  cursor: default;
+}
