@@ -339,16 +339,17 @@ function gameOver() {
     document.getElementById('overlay-fragments').innerText = fragsEarned;
     document.getElementById('overlay').classList.remove('hidden');
 
-    if (!metaState.playerName) {
+    if (!metaState.playerName && score > 0) {
+        document.getElementById('player-name-input').value = 'ANON_' + Math.floor(Math.random()*1000);
         document.getElementById('name-dialog').classList.remove('hidden');
-    } else {
+    } else if (metaState.playerName && score > 0) {
         submitHighScore(metaState.playerName);
     }
 }
 
 document.getElementById('btn-submit-score').addEventListener('click', () => {
     let name = document.getElementById('player-name-input').value.trim().toUpperCase();
-    if (!name) name = 'GUEST_' + Math.floor(Math.random()*1000);
+    if (!name) name = 'ANON_' + Math.floor(Math.random()*1000);
     metaState.playerName = name;
     saveMeta();
     document.getElementById('name-dialog').classList.add('hidden');
@@ -369,147 +370,147 @@ async function submitHighScore(name) {
 }
 
 function update() {
-    if (!gameActive) return;
-
-    if (waveActive && enemiesToSpawn > 0) {
-        spawnTimer++;
-        if (spawnTimer >= 40 - Math.min(wave, 20)) {
-            spawnEnemy();
-            enemiesToSpawn--;
-            spawnTimer = 0;
-        }
-    } else if (waveActive && enemiesToSpawn === 0 && enemies.length === 0) {
-        waveActive = false;
-        wave++;
-        money += 50 + wave * 5;
-        updateHUD();
-    }
-
-    // Move enemies
-    for (let i = enemies.length - 1; i >= 0; i--) {
-        const e = enemies[i];
-        const targetPoint = path[e.pathIndex + 1];
-        
-        if (!targetPoint) {
-            health--;
-            enemies.splice(i, 1);
+    if (gameActive) {
+        if (waveActive && enemiesToSpawn > 0) {
+            spawnTimer++;
+            if (spawnTimer >= 40 - Math.min(wave, 20)) {
+                spawnEnemy();
+                enemiesToSpawn--;
+                spawnTimer = 0;
+            }
+        } else if (waveActive && enemiesToSpawn === 0 && enemies.length === 0) {
+            waveActive = false;
+            wave++;
+            money += 50 + wave * 5;
             updateHUD();
-            if (health <= 0) gameOver();
-            continue;
         }
 
-        let speed = e.baseSpeed;
-        if (e.slowTimer > 0) {
-            speed *= 0.5;
-            e.slowTimer--;
-        }
-
-        const targetX = targetPoint.x * CELL_SIZE + CELL_SIZE/2;
-        const targetY = targetPoint.y * CELL_SIZE + CELL_SIZE/2;
-        const dx = targetX - e.x;
-        const dy = targetY - e.y;
-        const dist = Math.hypot(dx, dy);
-
-        if (dist <= speed) {
-            e.x = targetX;
-            e.y = targetY;
-            e.pathIndex++;
-        } else {
-            e.x += (dx / dist) * speed;
-            e.y += (dy / dist) * speed;
-        }
-    }
-
-    // Towers shoot
-    towers.forEach(t => {
-        if (t.cooldownTimer > 0) t.cooldownTimer--;
-        else if (enemies.length > 0) {
-            let closest = null;
-            let minDist = t.range;
-            enemies.forEach(e => {
-                const dist = Math.hypot(e.x - t.x, e.y - t.y);
-                if (dist <= minDist) { minDist = dist; closest = e; }
-            });
-
-            if (closest) {
-                t.angle = Math.atan2(closest.y - t.y, closest.x - t.x);
-                projectiles.push({
-                    x: t.x, y: t.y,
-                    target: closest,
-                    speed: 10,
-                    damage: t.damage,
-                    color: t.color,
-                    effect: t.effect,
-                    hasChained: false
-                });
-                t.cooldownTimer = t.cooldown;
-                
-                // Laser style instant visual for Sniper
-                if (t.type === 'sniper') projectiles[projectiles.length-1].speed = 30;
-            }
-        }
-    });
-
-    // Move projectiles
-    for (let i = projectiles.length - 1; i >= 0; i--) {
-        const p = projectiles[i];
-        
-        // Target died before impact, just fly to last known coords
-        if (!enemies.includes(p.target)) {
-            projectiles.splice(i, 1);
-            continue;
-        }
-        
-        const dx = p.target.x - p.x;
-        const dy = p.target.y - p.y;
-        const dist = Math.hypot(dx, dy);
-
-        if (dist <= p.speed) {
-            // Apply Damage and Effects
-            p.target.hp -= p.damage;
-            spawnParticles(p.target.x, p.target.y, p.color, 5);
-            spawnText(p.target.x, p.target.y - 10, '-' + Math.floor(p.damage), p.color);
+        // Move enemies
+        for (let i = enemies.length - 1; i >= 0; i--) {
+            const e = enemies[i];
+            const targetPoint = path[e.pathIndex + 1];
             
-            if (p.damage >= 50 || p.effect === 'splash') screenShake = Math.max(screenShake, 10);
-            
-            if (p.effect === 'slow') p.target.slowTimer = 120; // 2 seconds slow
-            
-            if (p.effect === 'splash') {
-                spawnParticles(p.target.x, p.target.y, p.color, 20, 2);
-                enemies.forEach(e => {
-                    if (e !== p.target && Math.hypot(e.x - p.target.x, e.y - p.target.y) < 60) {
-                        e.hp -= p.damage * 0.5; // 50% splash damage
-                        spawnText(e.x, e.y - 10, '-' + Math.floor(p.damage * 0.5), p.color);
-                        checkEnemyDeath(e);
-                    }
-                });
+            if (!targetPoint) {
+                health--;
+                enemies.splice(i, 1);
+                updateHUD();
+                if (health <= 0) gameOver();
+                continue;
             }
 
-            if (p.effect === 'chain' && !p.hasChained) {
-                // Find next target
-                let nextTarget = null;
-                let minDist = 80;
+            let speed = e.baseSpeed;
+            if (e.slowTimer > 0) {
+                speed *= 0.5;
+                e.slowTimer--;
+            }
+
+            const targetX = targetPoint.x * CELL_SIZE + CELL_SIZE/2;
+            const targetY = targetPoint.y * CELL_SIZE + CELL_SIZE/2;
+            const dx = targetX - e.x;
+            const dy = targetY - e.y;
+            const dist = Math.hypot(dx, dy);
+
+            if (dist <= speed) {
+                e.x = targetX;
+                e.y = targetY;
+                e.pathIndex++;
+            } else {
+                e.x += (dx / dist) * speed;
+                e.y += (dy / dist) * speed;
+            }
+        }
+
+        // Towers shoot
+        towers.forEach(t => {
+            if (t.cooldownTimer > 0) t.cooldownTimer--;
+            else if (enemies.length > 0) {
+                let closest = null;
+                let minDist = t.range;
                 enemies.forEach(e => {
-                    if (e !== p.target) {
-                        const d = Math.hypot(e.x - p.target.x, e.y - p.target.y);
-                        if (d < minDist) { minDist = d; nextTarget = e; }
-                    }
+                    const dist = Math.hypot(e.x - t.x, e.y - t.y);
+                    if (dist <= minDist) { minDist = dist; closest = e; }
                 });
-                if (nextTarget) {
+
+                if (closest) {
+                    t.angle = Math.atan2(closest.y - t.y, closest.x - t.x);
                     projectiles.push({
-                        x: p.target.x, y: p.target.y,
-                        target: nextTarget,
-                        speed: p.speed, damage: p.damage * 0.7, // reduce damage on bounce
-                        color: p.color, effect: 'chain', hasChained: true
+                        x: t.x, y: t.y,
+                        target: closest,
+                        speed: 10,
+                        damage: t.damage,
+                        color: t.color,
+                        effect: t.effect,
+                        hasChained: false
                     });
+                    t.cooldownTimer = t.cooldown;
+                    
+                    // Laser style instant visual for Sniper
+                    if (t.type === 'sniper') projectiles[projectiles.length-1].speed = 30;
                 }
             }
+        });
 
-            checkEnemyDeath(p.target);
-            projectiles.splice(i, 1);
-        } else {
-            p.x += (dx / dist) * p.speed;
-            p.y += (dy / dist) * p.speed;
+        // Move projectiles
+        for (let i = projectiles.length - 1; i >= 0; i--) {
+            const p = projectiles[i];
+            
+            // Target died before impact, just fly to last known coords
+            if (!enemies.includes(p.target)) {
+                projectiles.splice(i, 1);
+                continue;
+            }
+            
+            const dx = p.target.x - p.x;
+            const dy = p.target.y - p.y;
+            const dist = Math.hypot(dx, dy);
+
+            if (dist <= p.speed) {
+                // Apply Damage and Effects
+                p.target.hp -= p.damage;
+                spawnParticles(p.target.x, p.target.y, p.color, 5);
+                spawnText(p.target.x, p.target.y - 10, '-' + Math.floor(p.damage), p.color);
+                
+                if (p.damage >= 50 || p.effect === 'splash') screenShake = Math.max(screenShake, 10);
+                
+                if (p.effect === 'slow') p.target.slowTimer = 120; // 2 seconds slow
+                
+                if (p.effect === 'splash') {
+                    spawnParticles(p.target.x, p.target.y, p.color, 20, 2);
+                    enemies.forEach(e => {
+                        if (e !== p.target && Math.hypot(e.x - p.target.x, e.y - p.target.y) < 60) {
+                            e.hp -= p.damage * 0.5; // 50% splash damage
+                            spawnText(e.x, e.y - 10, '-' + Math.floor(p.damage * 0.5), p.color);
+                            checkEnemyDeath(e);
+                        }
+                    });
+                }
+
+                if (p.effect === 'chain' && !p.hasChained) {
+                    // Find next target
+                    let nextTarget = null;
+                    let minDist = 80;
+                    enemies.forEach(e => {
+                        if (e !== p.target) {
+                            const d = Math.hypot(e.x - p.target.x, e.y - p.target.y);
+                            if (d < minDist) { minDist = d; nextTarget = e; }
+                        }
+                    });
+                    if (nextTarget) {
+                        projectiles.push({
+                            x: p.target.x, y: p.target.y,
+                            target: nextTarget,
+                            speed: p.speed, damage: p.damage * 0.7, // reduce damage on bounce
+                            color: p.color, effect: 'chain', hasChained: true
+                        });
+                    }
+                }
+
+                checkEnemyDeath(p.target);
+                projectiles.splice(i, 1);
+            } else {
+                p.x += (dx / dist) * p.speed;
+                p.y += (dy / dist) * p.speed;
+            }
         }
     }
 
@@ -703,7 +704,5 @@ function hexToRgb(hex) {
 function loop() {
     update();
     draw();
-    if (gameActive) {
-        animationId = requestAnimationFrame(loop);
-    }
+    animationId = requestAnimationFrame(loop);
 }
