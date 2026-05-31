@@ -298,6 +298,12 @@ class NexusMatrix {
   }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+function bootstrap() {
   new NexusMatrix();
-});
+}
+
+if (document.readyState === 'loading') {
+  window.addEventListener('DOMContentLoaded', bootstrap);
+} else {
+  bootstrap();
+}
