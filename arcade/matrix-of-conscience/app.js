@@ -59,6 +59,7 @@ const THEMES = {
 class NexusMatrix {
   constructor() {
     this.mode = new URLSearchParams(window.location.search).get('mode') || MODES.STARS;
+    this.ext = new URLSearchParams(window.location.search).get('ext') || null;
     this.theme = THEMES[this.mode] || THEMES[MODES.STARS];
     
     this.board = [];
@@ -75,6 +76,14 @@ class NexusMatrix {
   }
 
   init() {
+    if (this.ext) {
+        this.renderExternalUI();
+        this.wireEvents();
+        this.initAudio();
+        this.log(`System initialized. External Subsystem: ${this.ext}`);
+        return;
+    }
+
     this.board = createInitialGrid();
     this.renderInitialUI();
     this.input = new InputHandler(document.getElementById('sm-grid'), this.handleSwap.bind(this));
@@ -117,12 +126,31 @@ class NexusMatrix {
     }
   }
 
+  renderExternalUI() {
+    document.title = `External Subsystem | Nexus Arcade`;
+    
+    document.querySelectorAll('.routine').forEach(el => {
+        el.classList.toggle('active', el.dataset.ext === this.ext);
+    });
+
+    const iframe = document.getElementById('ext-frame');
+    if (iframe) {
+        iframe.src = this.ext;
+        iframe.style.display = 'block';
+    }
+
+    document.getElementById('console').style.display = 'none';
+    document.getElementById('hud').style.display = 'none';
+    const gameContainer = document.querySelector('.game-container');
+    if (gameContainer) gameContainer.style.display = 'none';
+  }
+
   renderInitialUI() {
     document.title = `${this.theme.title} | Nexus Arcade`;
     document.body.style.background = this.theme.bg;
     
     document.querySelectorAll('.routine').forEach(el => {
-        el.classList.toggle('active', el.dataset.mode === this.mode);
+        el.classList.toggle('active', el.dataset.mode === this.mode && !this.ext);
     });
 
     this.renderBoard();
@@ -131,8 +159,11 @@ class NexusMatrix {
   wireEvents() {
     document.querySelectorAll('.routine').forEach(el => {
         el.addEventListener('click', () => {
-            const newMode = el.dataset.mode;
-            window.location.search = `?mode=${newMode}`;
+            if (el.dataset.ext) {
+                window.location.search = `?ext=${encodeURIComponent(el.dataset.ext)}`;
+            } else if (el.dataset.mode) {
+                window.location.search = `?mode=${el.dataset.mode}`;
+            }
         });
     });
 
