@@ -26,81 +26,155 @@ body {
     overflow: hidden;
 }
 
-#game-wrapper {
+.screen {
+    width: 100%;
+    max-width: 800px;
     background: var(--panel);
     border: 2px solid var(--accent);
     border-radius: 12px;
-    padding: 16px;
+    padding: 30px;
     box-shadow: 0 0 30px rgba(0, 242, 255, 0.2);
+    text-align: center;
     position: relative;
-    max-width: 100%;
 }
 
+.hidden { display: none !important; }
+
+.title {
+    color: var(--accent);
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+}
+
+.btn {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 10px 20px;
+    font-family: var(--mono);
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+    margin: 5px;
+    font-size: 1em;
+}
+
+.btn:hover {
+    background: rgba(0, 242, 255, 0.1);
+    box-shadow: 0 0 10px var(--accent);
+}
+
+.primary-btn {
+    background: var(--accent);
+    color: #020617;
+}
+.primary-btn:hover {
+    background: var(--accent-hover);
+    color: #020617;
+}
+
+/* Faction Box */
+.faction-box { margin-bottom: 30px; }
+.faction-options {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+.faction-btn {
+    border: 1px solid var(--border);
+    padding: 10px;
+    cursor: pointer;
+    background: rgba(0,0,0,0.4);
+    border-radius: 6px;
+    width: 150px;
+    font-size: 0.85em;
+}
+.faction-btn.selected {
+    border-color: var(--accent);
+    background: rgba(0, 242, 255, 0.1);
+    box-shadow: 0 0 10px var(--accent);
+}
+
+/* Store */
+.store-grid {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+.store-item {
+    border: 1px solid var(--border);
+    padding: 15px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 6px;
+    width: 180px;
+}
+.store-item p { margin: 10px 0; font-size: 0.9em; color: #94a3b8; }
+.level { margin-top: 10px; font-size: 0.9em; color: var(--accent); }
+
+/* Leaderboard */
+.leaderboard-list {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--border);
+    padding: 15px;
+    border-radius: 6px;
+    max-height: 300px;
+    overflow-y: auto;
+    text-align: left;
+}
+.lb-entry {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    border-bottom: 1px solid #1e293b;
+}
+.lb-entry:nth-child(1) { color: #ffd700; font-weight: bold; text-shadow: 0 0 5px #ffd700; }
+.lb-entry:nth-child(2) { color: #c0c0c0; font-weight: bold; text-shadow: 0 0 5px #c0c0c0; }
+
+/* Game Screen Overrides */
+#game-wrapper {
+    padding: 0;
+    border: none;
+    box-shadow: none;
+}
 #header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 12px;
 }
-
-.stat {
-    font-weight: bold;
-    color: var(--text);
-}
-
-.stat span {
-    color: var(--accent);
-}
-
-.btn {
-    background: var(--accent);
-    color: #020617;
-    border: none;
-    padding: 8px 16px;
-    font-family: var(--mono);
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background 0.2s;
-}
-
-.btn:hover {
-    background: var(--accent-hover);
-}
+.stat { font-weight: bold; }
+.stat span { color: var(--accent); }
 
 #game-canvas {
     background: #000;
     border: 1px solid var(--border);
     cursor: crosshair;
     display: block;
+    margin: 0 auto;
 }
 
 #build-panel {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     margin-top: 12px;
+    gap: 5px;
 }
-
 .tower-option {
+    flex: 1;
     border: 1px solid var(--border);
     background: rgba(0, 0, 0, 0.5);
-    padding: 8px 16px;
+    padding: 5px;
     cursor: pointer;
-    text-align: center;
+    font-size: 0.8em;
     border-radius: 6px;
-    transition: all 0.2s;
-    user-select: none;
 }
-
-.tower-option:hover {
-    border-color: var(--accent);
-    background: rgba(0, 242, 255, 0.1);
-}
-
 .tower-option.selected {
     border-color: var(--accent);
     background: rgba(0, 242, 255, 0.2);
-    box-shadow: 0 0 10px var(--accent);
 }
 
 #overlay {
@@ -113,17 +187,4 @@ body {
     align-items: center;
     z-index: 10;
 }
-
-#overlay.hidden {
-    display: none;
-}
-
-#overlay h1 {
-    color: var(--danger);
-    margin-bottom: 16px;
-}
-
-#overlay p {
-    margin-bottom: 24px;
-    color: var(--text);
-}
+#overlay h1 { color: var(--danger); margin-bottom: 16px; }
