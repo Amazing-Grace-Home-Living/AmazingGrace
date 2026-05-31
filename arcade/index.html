@@ -1,383 +1,51 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nexus Arcade | Matrix of Conscience</title>
-  <meta name="description" content="Unified Nexus Arcade Hub — Matrix of Conscience Portal.">
-  <link rel="icon" type="image/png" href="../assets/logo.png">
+  <title>Nexus Arcade | Amazing Grace</title>
   <style>
-    :root {
-      color-scheme: dark;
-      --bg: #020617;
-      --panel: #0b1224;
-      --panel-border: rgba(148, 163, 184, 0.25);
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-      --accent: #22d3ee;
-      --danger: #f43f5e;
-      --ok: #34d399;
-      --gold: #fbbf24;
-      --purple: #bc13fe;
-    }
-    * { box-sizing: border-box; }
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at 20% 0%, rgba(34, 211, 238, 0.1), transparent 35%),
-        radial-gradient(circle at 80% 100%, rgba(244, 63, 94, 0.08), transparent 40%),
-        var(--bg);
+      background: #020617;
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 1rem;
-    }
-    .container {
-      width: min(1000px, 100%);
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-    .header {
-      text-align: center;
-      padding: 1.5rem 1rem;
-      border: 1px solid var(--panel-border);
-      border-radius: 16px;
-      background: rgba(11, 18, 36, 0.8);
-      backdrop-filter: blur(8px);
-    }
-    h1 {
-      margin: 0 0 0.5rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      font-size: 1.5rem;
-      color: var(--accent);
-      text-shadow: 0 0 15px rgba(34, 211, 238, 0.4);
-    }
-    .nav-links {
-      display: flex;
       justify-content: center;
-      gap: 1rem;
-      list-style: none;
-      padding: 0;
-      margin: 1rem 0 0;
     }
-    .nav-links a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: white; }
-
-    /* Tool Grid */
-    .tools-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1rem;
-    }
-    .tool-card {
-      background: rgba(15, 23, 42, 0.7);
-      border: 1px solid var(--panel-border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      transition: transform 0.2s, border-color 0.2s;
-    }
-    .tool-card:hover {
-      transform: translateY(-2px);
-      border-color: var(--accent);
-    }
-    .tool-card h2 {
-      font-size: 1rem;
-      margin: 0;
-      color: white;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .tool-card p {
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin: 0;
-      flex-grow: 1;
-    }
-    .btn {
-      background: #0f172a;
-      border: 1px solid var(--panel-border);
-      border-radius: 8px;
-      color: white;
-      padding: 0.6rem;
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      transition: background 0.2s;
-    }
-    .btn:hover { background: #1e293b; }
-    .btn-accent { border-color: var(--accent); color: var(--accent); }
-    .btn-accent:hover { background: rgba(34, 211, 238, 0.1); }
-
-    /* Game Stage */
-    .game-stage {
-      display: none;
-      background: rgba(11, 18, 36, 0.95);
-      border: 1px solid var(--panel-border);
+    .redirect-card {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(0, 242, 255, 0.3);
+      padding: 3rem;
       border-radius: 16px;
-      padding: 2rem;
-      margin-top: 1rem;
-      animation: fadeIn 0.3s ease;
-    }
-    .game-stage.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-    /* Seven Stars Specific */
-    .map-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-      gap: 1rem;
-      margin: 1.5rem 0;
-    }
-    .map-item {
-      padding: 1rem;
-      background: rgba(255,255,255,0.05);
-      border: 2px solid var(--panel-border);
-      border-radius: 12px;
       text-align: center;
-      cursor: pointer;
+      box-shadow: 0 0 30px rgba(0, 242, 255, 0.1);
+    }
+    h1 { margin: 0 0 1rem; color: #00f2ff; }
+    p { color: #94a3b8; font-family: 'Inter', sans-serif; margin-bottom: 2rem; }
+    .btn {
+      background: rgba(188, 19, 254, 0.15);
+      border: 1px solid #bc13fe;
+      color: #fff;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
       transition: all 0.2s;
     }
-    .map-item:hover { border-color: var(--gold); background: rgba(251, 191, 36, 0.1); }
-    .map-item.completed { border-color: var(--gold); background: rgba(251, 191, 36, 0.2); }
-    .star-svg { width: 32px; height: 32px; fill: none; stroke: var(--gold); stroke-width: 2; margin-bottom: 0.5rem; }
-    .completed .star-svg { fill: var(--gold); }
-
-    /* Wallet HUD */
-    .wallet-hud {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.75rem 1.25rem;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid var(--panel-border);
-      border-radius: 12px;
-      font-family: monospace;
-      font-size: 0.9rem;
-    }
-    .wallet-value { color: var(--ok); font-weight: bold; }
-
-    /* Store */
-    .store-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.75rem;
-      border-bottom: 1px solid var(--panel-border);
-    }
-    .store-item:last-child { border-bottom: none; }
-
-    #status-bar { text-align: center; font-size: 0.75rem; color: var(--muted); margin-top: 2rem; }
+    .btn:hover { background: #bc13fe; box-shadow: 0 0 20px rgba(188, 19, 254, 0.4); }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header class="header">
-      <h1>MATRIX OF CONSCIENCE</h1>
-      <p class="sub">Nexus Arcade Unification Node v2.1</p>
-      <nav>
-        <ul class="nav-links">
-          <li><a href="../">Home</a></li>
-          <li><a href="./certificates/">Certificates</a></li>
-          <li><a href="../ministry/">Ministry</a></li>
-        </ul>
-      </nav>
-    </header>
-
-    <div class="wallet-hud">
-      <span>BALANCE: <span id="wallet-balance" class="wallet-value">0</span> LUMEN</span>
-      <span>LEVEL: <span id="player-level" class="wallet-value">1</span></span>
-    </div>
-
-    <div class="tools-grid" id="tools-grid">
-      <!-- Seven Stars Card -->
-      <div class="tool-card" id="card-sevenstars">
-        <h2>🌟 Seven Stars</h2>
-        <p>Journey through the seven churches of Asia Minor. Collect stars and verify your alignment.</p>
-        <button class="btn btn-accent" onclick="launchGame('sevenstars')">Launch Quest</button>
-      </div>
-
-      <!-- Janus Continuum Card -->
-      <div class="tool-card" id="card-janus">
-        <h2>🌀 Janus Continuum</h2>
-        <p>The dual-phase Metaphysical Engine. Weave timelines and stabilize contradictions.</p>
-        <a href="./janus/" class="btn btn-accent">Enter Continuum</a>
-      </div>
-
-      <!-- Exchange Card -->
-      <div class="tool-card" id="card-exchange">
-        <h2>💎 Lumen Exchange</h2>
-        <p>Spend your hard-earned points on upgrades and skips.</p>
-        <button class="btn" onclick="showStore()">Open Exchange</button>
-      </div>
-    </div>
-
-    <!-- Seven Stars Game Stage -->
-    <div id="stage-sevenstars" class="game-stage">
-      <button class="btn" style="margin-bottom: 1rem;" onclick="closeGame()">← Back to Matrix</button>
-      <div id="sevenstars-content"></div>
-    </div>
-
-    <!-- Exchange Stage -->
-    <div id="stage-exchange" class="game-stage">
-      <button class="btn" style="margin-bottom: 1rem;" onclick="closeGame()">← Back to Matrix</button>
-      <h2>LUMEN EXCHANGE</h2>
-      <div id="store-content">
-        <div class="store-item">
-          <span>Alignment Skip (菲律宾 Skip)</span>
-          <button class="btn btn-accent" onclick="buyItem('skip', 500)">500 LUMEN</button>
-        </div>
-        <div class="store-item">
-          <span>Wisdom Boost</span>
-          <button class="btn btn-accent" onclick="buyItem('wisdom', 200)">200 LUMEN</button>
-        </div>
-      </div>
-    </div>
-
-    <p id="status-bar">Portal Status: NOMINAL</p>
+  <div class="redirect-card">
+    <h1>ARCADE UNIFIED</h1>
+    <p>All subsystems have been merged into the Central Matrix.</p>
+    <a href="./matrix-of-conscience/" class="btn">Enter the Matrix</a>
   </div>
-
-  <script type="module">
-    // Minimal point management for standalone
-    let balance = parseInt(localStorage.getItem('playerScore') || '0', 10);
-    let level = parseInt(localStorage.getItem('playerLevel') || '1', 10);
-
-    function updateWalletUI() {
-      document.getElementById('wallet-balance').textContent = balance;
-      document.getElementById('player-level').textContent = level;
-    }
-
-    window.addPoints = (amt) => {
-      balance += amt;
-      localStorage.setItem('playerScore', balance);
-      updateWalletUI();
-    };
-
-    window.buyItem = (id, cost) => {
-      if (balance >= cost) {
-        balance -= cost;
-        localStorage.setItem('playerScore', balance);
-        updateWalletUI();
-        alert(`Purchased ${id}!`);
-        if (id === 'skip') {
-          // Grant a star randomly or the next one
-          grantNextStar();
-        }
-      } else {
-        alert("Insufficient Lumen.");
-      }
-    };
-
-    function grantNextStar() {
-      const churches = ['Ephesus', 'Smyrna', 'Pergamum', 'Thyatira', 'Sardis', 'Philadelphia', 'Laodicea'];
-      let completed = JSON.parse(localStorage.getItem('aghl_sevenStarsCompleted') || '[]');
-      const next = churches.find(c => !completed.includes(c));
-      if (next) {
-        completed.push(next);
-        localStorage.setItem('aghl_sevenStarsCompleted', JSON.stringify(completed));
-        alert(`${next} aligned via skip!`);
-        if (window.sevenStarsRenderMap) window.sevenStarsRenderMap();
-      } else {
-        alert("All churches already aligned.");
-      }
-    }
-
-    // Seven Stars Logic
-    const churches = [
-        { name: 'Ephesus', message: 'The church in Ephesus was known for its hard work and perseverance. However, Jesus warned them that they had abandoned their first love.', question: 'What had the church in Ephesus abandoned?', options: ['Their generosity', 'Their first love', 'Their church building', 'Their daily prayers'], answer: 'Their first love' },
-        { name: 'Smyrna', message: 'The church in Smyrna faced tribulation and poverty, yet Jesus praised their faithfulness and told them not to fear suffering.', question: 'What did Jesus tell Smyrna not to fear?', options: ['False prophets', 'Poverty', 'Suffering', 'Travel'], answer: 'Suffering' },
-        { name: 'Pergamum', message: 'Pergamum held fast to Jesus’ name in a difficult city, but some there were tolerating false teaching.', question: 'What problem did Pergamum tolerate?', options: ['False teaching', 'Silence', 'No worship songs', 'Lack of elders'], answer: 'False teaching' },
-        { name: 'Thyatira', message: 'Thyatira was praised for love, faith, service, and perseverance, but rebuked for tolerating corruption.', question: 'What was Thyatira praised for?', options: ['Military power', 'Love and service', 'Wealth alone', 'Temple size'], answer: 'Love and service' },
-        { name: 'Sardis', message: 'Sardis had a reputation for being alive, but Jesus said they were dead and needed to wake up.', question: 'What did Sardis need to do?', options: ['Build larger walls', 'Wake up', 'Move cities', 'Collect offerings'], answer: 'Wake up' },
-        { name: 'Philadelphia', message: 'Philadelphia had little strength, but kept Jesus’ word and did not deny His name. An open door was set before them.', question: 'What was set before Philadelphia?', options: ['A closed gate', 'A golden crown', 'An open door', 'A mountain path'], answer: 'An open door' },
-        { name: 'Laodicea', message: 'Laodicea was called lukewarm—neither hot nor cold—and was warned against complacency.', question: 'How was Laodicea described?', options: ['Faithful', 'Bold', 'Lukewarm', 'Joyful'], answer: 'Lukewarm' }
-    ];
-
-    window.launchGame = (id) => {
-      document.getElementById('tools-grid').style.display = 'none';
-      const stage = document.getElementById(`stage-${id}`);
-      stage.classList.add('active');
-      if (id === 'sevenstars') initSevenStars();
-    };
-
-    window.showStore = () => {
-      document.getElementById('tools-grid').style.display = 'none';
-      document.getElementById('stage-exchange').classList.add('active');
-    };
-
-    window.closeGame = () => {
-      document.querySelectorAll('.game-stage').forEach(s => s.classList.remove('active'));
-      document.getElementById('tools-grid').style.display = 'grid';
-    };
-
-    function initSevenStars() {
-      const root = document.getElementById('sevenstars-content');
-      let completed = JSON.parse(localStorage.getItem('aghl_sevenStarsCompleted') || '[]');
-
-      window.sevenStarsRenderMap = function() {
-          root.innerHTML = `
-              <h3>SELECT A CHURCH</h3>
-              <div class="map-grid">
-                  ${churches.map((c, i) => `
-                      <div class="map-item ${completed.includes(c.name) ? 'completed' : ''}" onclick="sevenStarsShowChurch(${i})">
-                          <svg class="star-svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                          <div style="font-size:0.7rem;font-weight:bold">${c.name.toUpperCase()}</div>
-                      </div>
-                  `).join('')}
-              </div>
-              ${completed.length === 7 ? `<div style="text-align:center;"><p>ALL STARS COLLECTED</p><a class="btn btn-accent" href="./certificates/">Claim Certificate</a></div>` : ''}
-          `;
-      }
-
-      window.sevenStarsShowChurch = function(index) {
-          const c = churches[index];
-          root.innerHTML = `
-              <h3>${c.name.toUpperCase()}</h3>
-              <p style="background:rgba(0,0,0,0.3);padding:1rem;border-radius:10px;line-height:1.6;">${c.message}</p>
-              <div style="text-align:left;">
-                  <p style="font-weight:bold;color:var(--gold);">${c.question}</p>
-                  ${c.options.map(opt => `
-                      <button class="btn" style="display:block;width:100%;margin-bottom:0.5rem;text-align:left;" onclick="sevenStarsCheckAnswer('${c.name}', '${opt}', '${c.answer}')">${opt}</button>
-                  `).join('')}
-              </div>
-              <button class="btn" style="margin-top:1rem;opacity:0.6" onclick="sevenStarsRenderMap()">Back to Map</button>
-          `;
-      }
-
-      window.sevenStarsCheckAnswer = function(name, selected, correct) {
-          if (selected === correct) {
-              if (!completed.includes(name)) {
-                  completed.push(name);
-                  localStorage.setItem('aghl_sevenStarsCompleted', JSON.stringify(completed));
-                  addPoints(100);
-              }
-              alert("Correct! +100 Lumen.");
-              sevenStarsRenderMap();
-          } else {
-              alert("Incorrect. Reflection required.");
-          }
-      }
-
-      sevenStarsRenderMap();
-    }
-
-    updateWalletUI();
-  </script>
 </body>
 </html>

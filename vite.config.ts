@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+﻿import { defineConfig } from "vite";
 import { resolve } from "path";
 import { copyFileSync, mkdirSync } from "fs";
 
@@ -9,14 +9,13 @@ export default defineConfig({
   build: {
     outDir: "dist",
     emptyOutDir: true,
-    chunkSizeWarningLimit: 600,
+    chunkSizeWarningLimit: 800,
     rollupOptions: {
       input: {
         main:              resolve(__dirname, "index.html"),
         contact:           resolve(__dirname, "contact/index.html"),
         matrix:            resolve(__dirname, "matrix.html"),
         arcade:            resolve(__dirname, "arcade/index.html"),
-        arcadeStarMatrix:   resolve(__dirname, "arcade/star-matrix/index.html"),
         arcadeNexusMatrix:  resolve(__dirname, "arcade/nexus-matrix/index.html"),
         arcadeJanus:       resolve(__dirname, "arcade/janus/index.html"),
         arcadeMatrix:      resolve(__dirname, "arcade/matrix-of-conscience/index.html"),
@@ -58,11 +57,9 @@ export default defineConfig({
       },
       output: {
         manualChunks(id) {
-          // Split Firebase into its own chunk
           if (id.includes('node_modules/firebase')) {
             return 'firebase';
           }
-          // Split React into its own chunk
           if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
             return 'react';
           }
@@ -74,7 +71,6 @@ export default defineConfig({
     {
       name: 'copy-library-json',
       closeBundle() {
-        // Copy stories/library.json to dist/stories/library.json
         try {
           mkdirSync(resolve(__dirname, 'dist/stories'), { recursive: true });
           copyFileSync(

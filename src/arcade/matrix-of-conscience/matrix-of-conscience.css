@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --neon-blue: #00f2ff;
   --neon-purple: #bc13fe;
   --neon-gold: #fbbf24;
@@ -105,6 +105,20 @@
   line-height: 1.5;
 }
 
+.mc-points-box {
+  background: rgba(0,0,0,0.3);
+  padding: 1rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.pts-label { font-size: 0.65rem; color: #64748b; letter-spacing: 0.1em; }
+.pts-value { font-family: 'Orbitron', monospace; font-size: 1.8rem; color: var(--neon-gold); font-weight: 900; }
+
 .mc-bars-list {
   display: flex;
   flex-direction: column;
@@ -171,20 +185,44 @@
   transform: translateY(-1px);
 }
 
-.mc-btn-danger {
-  background: none;
-  border: none;
-  color: #64748b;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.65rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  cursor: pointer;
-  margin-top: 0.5rem;
-  transition: color 0.2s;
+.mc-exchange-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
-.mc-btn-danger:hover { color: #ef4444; }
+
+.exchange-item {
+  background: rgba(2,6,23,0.4);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.exchange-item.owned { border-color: var(--neon-blue); background: rgba(0, 242, 255, 0.03); }
+
+.tier-info { display: flex; flex-direction: column; gap: 0.35rem; }
+.tier-name { font-weight: 700; color: #fff; font-size: 0.9rem; }
+.tier-desc { font-size: 0.75rem; color: #94a3b8; line-height: 1.4; }
+.tier-req { font-family: 'Orbitron', monospace; font-size: 0.65rem; color: var(--neon-purple); }
+
+.buy-btn {
+  padding: 0.6rem 1.25rem;
+  background: var(--neon-purple);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.buy-btn:hover { filter: brightness(1.2); }
+.buy-btn.disabled { background: #1e293b; color: #475569; cursor: not-allowed; }
 
 .mc-console-log {
   background: rgba(2, 6, 23, 0.7);
