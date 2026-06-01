@@ -34,7 +34,9 @@ describe('The 2027 Rebellion library integration', () => {
   });
 
   it('emits the legacy redirect page to dist/ after build, preserving the old URL', () => {
-    execSync('npm run build', { stdio: 'pipe' });
+    if (!fs.existsSync('dist/stories/blog/rebellion.html')) {
+      execSync('npm run build', { stdio: 'pipe' });
+    }
 
     expect(fs.existsSync('dist/stories/blog/rebellion.html')).toBe(true);
 

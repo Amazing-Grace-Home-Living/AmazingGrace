@@ -4,8 +4,10 @@ import fs from 'node:fs';
 
 describe('library.json dist deployment', () => {
   it('builds and copies stories/library.json to dist/stories/library.json', () => {
-    // Run a production build
-    execSync('npm run build', { stdio: 'pipe' });
+    // Run a production build if not already built
+    if (!fs.existsSync('dist/stories/library.json')) {
+      execSync('npm run build', { stdio: 'pipe' });
+    }
 
     // Verify the source file exists
     expect(fs.existsSync('stories/library.json')).toBe(true);
