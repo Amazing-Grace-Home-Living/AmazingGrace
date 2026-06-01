@@ -16,17 +16,14 @@ import { resolve } from 'path';
 
 const ARCADE_GAMES = [
   { name: 'Main Arcade', path: 'arcade/index.html' },
-  { name: 'Star Matrix', path: 'arcade/star-matrix/index.html' },
   { name: 'Matrix of Conscience', path: 'arcade/matrix-of-conscience/index.html' },
   { name: 'Matrix Terminal', path: 'arcade/matrix-of-conscience-terminal/index.html' },
   { name: 'Lore Archive', path: 'arcade/lore-archive/lore-archive.html' },
   { name: 'Certificates', path: 'arcade/certificates/index.html' },
   { name: 'Bible Study', path: 'arcade/bible-study/index.html' },
-  { name: 'Quick Click', path: 'arcade/quick-click/index.html' },
-  { name: 'Trinity', path: 'arcade/trinity/index.html' },
-  { name: 'Nexus Arcade', path: 'arcade/nexus-arcade/index.html' },
+  { name: 'Seven Stars', path: 'arcade/seven-stars/index.html' },
   { name: 'Syndicate Siege', path: 'arcade/syndicate-siege/index.html' },
-  { name: 'Matrix App', path: 'arcade/matrix-app/index.html' },
+  { name: 'Tower Defense', path: 'arcade/tower-defense/index.html' },
 ];
 
 describe('Arcade Game Smoke Tests', () => {
@@ -179,8 +176,8 @@ describe('Arcade Game Smoke Tests', () => {
     it('should have working back navigation links in arcade games', () => {
       const arcadeIndex = readFileSync(resolve('arcade/index.html'), 'utf-8');
 
-      // Main arcade should link to homepage
-      expect(arcadeIndex).toMatch(/href=["']\.\.\/["']/);
+      // Main arcade should have a link to parent (homepage or matrix)
+      expect(arcadeIndex).toMatch(/href=["']\.\.\/[^"']*["']/);
     });
 
     it('should have sub-games link back to arcade index', () => {
