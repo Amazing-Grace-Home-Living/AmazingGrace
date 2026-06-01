@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Star Matrix — match constellations on a 7×7 board. Swipe adjacent stars, chain combos, and reach 1000 points." />
+    <meta name="theme-color" content="#050610" />
+    <link rel="icon" type="image/png" href="../../assets/logo.png" />
+    <title>Star Matrix | Amazing Grace</title>
+    <style>
+      :root {
+        --bg: #050610;
+        --panel: rgba(16, 18, 30, 0.92);
+        --border: rgba(126, 255, 216, 0.18);
+        --accent: #7effd8;
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+      }
+
+      *, *::before, *::after { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        background: radial-gradient(circle at 50% 20%, rgba(126,255,216,0.12), transparent 55%), var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      .topbar {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--border);
+        background: rgba(5, 6, 16, 0.75);
+        backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+      .topbar a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+      .topbar a:hover { text-decoration: underline; }
+
+      .shell {
+        width: min(100%, 720px);
+        margin: 0 auto;
+        padding: 1.25rem 1.25rem 2rem;
+      }
+
+      .header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        margin: 0.75rem 0 1rem;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: clamp(1.5rem, 4vw, 2.1rem);
+        letter-spacing: 0.03em;
+      }
+      .header p {
+        margin: 0.35rem 0 0;
+        color: var(--muted);
+        line-height: 1.5;
+        max-width: 46ch;
+      }
+
+      .hud {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        align-items: center;
+      }
+      .hud-pill {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+        color: var(--muted);
+        min-width: 10ch;
+        text-align: center;
+      }
+      .hud-pill strong { color: var(--text); }
+
+      .board-wrap {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 1rem;
+      }
+
+      #board {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        grid-template-rows: repeat(7, 1fr);
+        gap: 8px;
+        width: 100%;
+        max-width: 540px;
+        margin: 0 auto;
+        touch-action: manipulation;
+      }
+
+      .star-cell {
+        aspect-ratio: 1 / 1;
+        border-radius: 14px;
+        border: 1px solid rgba(126,255,216,0.20);
+        background: rgba(255,255,255,0.04);
+        display: grid;
+        place-items: center;
+        font-size: clamp(1.2rem, 5vw, 2rem);
+        user-select: none;
+        cursor: pointer;
+        transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+      }
+      .star-cell:focus-visible { outline: 3px solid rgba(126,255,216,0.65); outline-offset: 2px; }
+      .star-cell.selected {
+        border-color: rgba(126,255,216,0.9);
+        background: rgba(126,255,216,0.10);
+        transform: translateY(-1px);
+      }
+      .star-cell.is-processing { cursor: progress; }
+
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 0.75rem;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+      }
+      button {
+        appearance: none;
+        border: 1px solid var(--border);
+        background: rgba(126,255,216,0.10);
+        color: var(--text);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        font-weight: 800;
+        min-height: 44px;
+        cursor: pointer;
+        letter-spacing: 0.03em;
+      }
+      button:hover { background: rgba(126,255,216,0.16); }
+      button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+      .status {
+        text-align: center;
+        color: var(--muted);
+        margin-top: 0.75rem;
+        min-height: 1.25rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <a href="../" aria-label="Back to Arcade">← Arcade</a>
+      <a href="../../" aria-label="Amazing Grace Home Living">amazinggracehl.org</a>
+    </header>
+
+    <main class="shell">
+      <div class="header">
+        <div>
+          <h1>Star Matrix</h1>
+          <p>Swipe adjacent stars. Chain matches to reach <strong>1000</strong> points.</p>
+        </div>
+        <div class="hud" aria-label="Scoreboard">
+          <div class="hud-pill">Score: <strong id="score">0</strong></div>
+          <div class="hud-pill">High: <strong id="high">0</strong></div>
+        </div>
+      </div>
+
+      <section class="board-wrap" aria-label="Star Matrix board">
+        <div id="board" role="grid" aria-label="Star Matrix board grid"></div>
+        <div class="controls">
+          <button id="reset-btn" type="button">Reset</button>
+          <a id="certificate-link" href="../certificates/" style="display:none; text-decoration:none;">
+            <button type="button">Claim Certificate</button>
+          </a>
+        </div>
+        <div id="status" class="status" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <script type="module">
+      import {
+        GRID_SIZE,
+        createGrid,
+        applySwap,
+        findMatches,
+        applyMatches,
+        applyGravity,
+        isAdjacent as smIsAdjacent
+      } from '../../js/matchmaker.js';
+
+      const ICONS = {
+        heart: '💠',   // supernova
+        star: '🌟',    // shooting
+        cross: '✦',    // gem
+        flame: '🔥',   // rank
+        drop: '☄️'     // cosmic
+      };
+
+      const SCORE_KEY = 'star_matrix_high_score';
+
+      const boardEl = document.getElementById('board');
+      const scoreEl = document.getElementById('score');
+      const highEl = document.getElementById('high');
+      const statusEl = document.getElementById('status');
+      const resetBtn = document.getElementById('reset-btn');
+      const certificateLink = document.getElementById('certificate-link');
+
+      let gridData = createGrid();
+      let score = 0;
+      let high = Number(localStorage.getItem(SCORE_KEY) || 0);
+      highEl.textContent = String(high);
+
+      let isProcessing = false;
+      let dragStartTile = null;
+      let dragTargetTile = null;
+      let dragStartPos = null;
+      let activePointerId = null;
+
+      const tiles = [];
+
+      function kindOf(cell) {
+        if (!cell) return null;
+        return typeof cell === 'string' ? cell : cell.kind;
+      }
+
+      function renderBoard() {
+        if (!tiles.length) return;
+        for (let r = 0; r < GRID_SIZE; r++) {
+          for (let c = 0; c < GRID_SIZE; c++) {
+            const idx = r * GRID_SIZE + c;
+            const cell = tiles[idx];
+            const kind = kindOf(gridData[r][c]);
+            cell.dataset.row = String(r);
+            cell.dataset.col = String(c);
+            cell.dataset.kind = kind || '';
+            cell.textContent = ICONS[kind] || '·';
+            cell.classList.toggle('is-processing', isProcessing);
+          }
+        }
+      }
+
+      function setScore(nextScore) {
+        score = nextScore;
+        scoreEl.textContent = String(score);
+        if (score > high) {
+          high = score;
+          localStorage.setItem(SCORE_KEY, String(high));
+          highEl.textContent = String(high);
+        }
+        if (score >= 1000) {
+          certificateLink.style.display = 'inline-block';
+          statusEl.textContent = 'Threshold reached. Claim your certificate.';
+        }
+      }
+
+      function resetGame() {
+        isProcessing = false;
+        resetDragState();
+        gridData = createGrid();
+        setScore(0);
+        certificateLink.style.display = 'none';
+        statusEl.textContent = '';
+        renderBoard();
+      }
+
+      function resetDragState() {
+        if (dragStartTile) {
+          dragStartTile.classList.remove('selected');
+          dragStartTile.setAttribute('aria-selected', 'false');
+        }
+        dragStartTile = null;
+        dragTargetTile = null;
+        dragStartPos = null;
+        activePointerId = null;
+      }
+
+      function smSwap(rowA, colA, rowB, colB) {
+        if (isProcessing) return;
+        if (!smIsAdjacent(rowA, colA, rowB, colB)) return;
+
+        isProcessing = true;
+        renderBoard();
+
+        let next = applySwap(gridData, rowA, colA, rowB, colB);
+        let combo = 1;
+        let gained = 0;
+
+        const firstMatch = findMatches(next);
+        if (!firstMatch.matches.length) {
+          isProcessing = false;
+          renderBoard();
+          return;
+        }
+
+        while (true) {
+          const res = findMatches(next);
+          if (!res.matches.length) break;
+          gained += res.matches.length * 10 * combo;
+          next = applyMatches(next, res, combo);
+          next = applyGravity(next);
+          combo++;
+        }
+
+        gridData = next;
+        setScore(score + gained);
+        isProcessing = false;
+        renderBoard();
+      }
+
+      function attemptSwap(tileA, tileB) {
+        const rowA = Number(tileA?.dataset?.row);
+        const colA = Number(tileA?.dataset?.col);
+        const rowB = Number(tileB?.dataset?.row);
+        const colB = Number(tileB?.dataset?.col);
+        if (![rowA, colA, rowB, colB].every(Number.isFinite)) return;
+
+        const isAdjacent =
+          (Math.abs(rowA - rowB) === 1 && colA === colB) ||
+          (Math.abs(colA - colB) === 1 && rowA === rowB);
+        if (!isAdjacent) return;
+
+        smSwap(rowA, colA, rowB, colB);
+        resetDragState();
+      }
+
+      function inferSwipeNeighbor(e) {
+        if (!dragStartPos) return null;
+        const dx = e.clientX - dragStartPos.x;
+        const dy = e.clientY - dragStartPos.y;
+        const threshold = 18;
+        if (Math.abs(dx) < threshold && Math.abs(dy) < threshold) return null;
+        const row = Number(dragStartTile?.dataset?.row);
+        const col = Number(dragStartTile?.dataset?.col);
+        if (![row, col].every(Number.isFinite)) return null;
+
+        let targetRow = row;
+        let targetCol = col;
+        if (Math.abs(dx) > Math.abs(dy)) {
+          targetCol += dx > 0 ? 1 : -1;
+        } else {
+          targetRow += dy > 0 ? 1 : -1;
+        }
+        if (!smIsAdjacent(row, col, targetRow, targetCol)) return null;
+        return boardEl.querySelector(`.star-cell[data-row="${targetRow}"][data-col="${targetCol}"]`);
+      }
+
+      function onPointerDown(e) {
+        if (isProcessing) return;
+        if (dragStartTile || activePointerId !== null) return;
+        const cell = e.currentTarget;
+        if (!(cell instanceof HTMLElement)) return;
+
+        activePointerId = e.pointerId;
+        dragStartTile = cell;
+        dragStartPos = { x: e.clientX, y: e.clientY };
+        cell.setPointerCapture(e.pointerId);
+        cell.classList.add('selected');
+        cell.setAttribute('aria-selected', 'true');
+      }
+
+      function onPointerMove(e) {
+        if (e.pointerId !== activePointerId) return;
+        const el = document.elementFromPoint(e.clientX, e.clientY);
+        dragTargetTile = el ? el.closest('.star-cell') : null;
+      }
+
+      function onPointerUp(e) {
+        if (e.pointerId !== activePointerId) return;
+        const elementAtPoint = document.elementFromPoint(e.clientX, e.clientY);
+        const dragEndTile = (elementAtPoint ? elementAtPoint.closest('.star-cell') : null) || dragTargetTile || inferSwipeNeighbor(e);
+        if (dragStartTile && dragEndTile && dragEndTile !== dragStartTile) {
+          attemptSwap(dragStartTile, dragEndTile);
+        } else {
+          resetDragState();
+        }
+      }
+
+      function onPointerCancel(e) {
+        if (e.pointerId !== activePointerId) return;
+        resetDragState();
+      }
+
+      function initBoard() {
+        boardEl.innerHTML = '';
+        tiles.length = 0;
+        for (let r = 0; r < GRID_SIZE; r++) {
+          for (let c = 0; c < GRID_SIZE; c++) {
+            const cell = document.createElement('div');
+            cell.className = 'star-cell';
+            cell.tabIndex = 0;
+            cell.setAttribute('role', 'gridcell');
+            cell.setAttribute('aria-selected', 'false');
+
+            cell.addEventListener('pointerdown', onPointerDown);
+            cell.addEventListener('pointermove', onPointerMove);
+            cell.addEventListener('pointerup', onPointerUp);
+            cell.addEventListener('pointercancel', onPointerCancel);
+
+            tiles.push(cell);
+            boardEl.appendChild(cell);
+          }
+        }
+      }
+
+      resetBtn.addEventListener('click', resetGame);
+      certificateLink.addEventListener('click', () => {
+        window.location.href = '../certificates/';
+      });
+      initBoard();
+      renderBoard();
+    </script>
+  </body>
+</html>
+

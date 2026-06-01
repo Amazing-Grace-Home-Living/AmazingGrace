@@ -15,7 +15,7 @@ The Nexus Arcade hub — play faith-based games including **Mystery of the Seven
 - Certificate viewer: `https://amazinggracehl.org/arcade/certificates/`
 
 ### ✝️ Ministry (`/ministry/`)
-Faith-based content and ministry resources.
+Faith-based content and ministry resources. Join our weekly Bible study session Friday nights at 9:30 pm est. https://m.me/j/AbbK3MZd144YgdvI/?send_source=gc%3Acopy_invite_link_c
 
 ### 🔎 Matrix subdomain comparison workflow (`matrix.amazinggracehl.org`)
 Use this **safe comparison flow** when you need to publish a specific historical commit (for example `5a2704c2cc4aaeac9a40ac0d532bbd9bbb5958a4`) without changing production `amazinggracehl.org`:

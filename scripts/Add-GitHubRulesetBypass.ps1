@@ -30,9 +30,6 @@ Repository: $Owner/$Repo
    - Keep main branch protections strict
 
 4) Re-run the blocked automation after saving ruleset changes.
-
-Reference document:
-   $repoUrl/blob/main/docs/rulesets-and-agents.md
 "@
 
 Write-Output $message

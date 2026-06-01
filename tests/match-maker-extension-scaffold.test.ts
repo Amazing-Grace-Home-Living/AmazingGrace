@@ -2,17 +2,11 @@ import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 
 describe('arcade cleanup', () => {
-  it('shows a focused arcade hub (no Janus Continuum card; Matrix of Conscience is active)', () => {
+  it('shows a focused arcade hub (all subsystems merged into Central Matrix)', () => {
     const arcade = fs.readFileSync('arcade/index.html', 'utf8');
 
-    expect(arcade).toContain('href="./star-matrix/"');
-    expect(arcade).toContain('Star Matrix');
-    expect(arcade).toContain('href="./bible-study/"');
-    expect(arcade).toContain('Bible Study Quiz');
-    expect(arcade).toContain('Mystery of the Seven Stars');
+    expect(arcade).toContain('href="../matrix.html"');
     expect(arcade).not.toContain('Janus Continuum');
-    expect(arcade).toContain('Matrix of Conscience');
-    expect(arcade).toContain('href="./matrix-of-conscience/"');
     expect(arcade).not.toContain('href="../arcade.html"');
   });
 

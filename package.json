@@ -2,37 +2,29 @@
   "name": "amazing-grace-home-living",
   "version": "2.0.0",
   "private": true,
-  "engines": {
-    "node": ">=20.0.0"
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "ella-merge": "node scripts/ella-merge.js",
+    "preview": "vite preview",
+    "test": "vitest run"
   },
-"scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "typecheck": "tsc --noEmit",
-  "test": "vitest run",
-  "sync-key": "node scripts/vault-tool.js"
-},
   "dependencies": {
-    "firebase": "^12.13.0",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "firebase": "^12.12.1",
+    "framer-motion": "^11.3.8",
+    "lucide-react": "^0.441.0",
+    "nodemailer": "^7.0.11",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@tailwindcss/browser": "^4.3.0",
-    "@types/node": "^25.9.1",
-    "@types/react": "^19.2.15",
-    "@types/react-dom": "^19.2.3",
-    "@typescript-eslint/eslint-plugin": "^8.60.0",
-    "@typescript-eslint/parser": "^8.60.0",
-    "eslint": "^10.4.0",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.2",
-    "globals": "^17.6.0",
-    "typescript": "^6.0.3",
-    "typescript-eslint": "^8.60.0",
-    "vite": "^8.0.14",
-    "vitest": "^4.1.7"
-  },
-  "type": "module"
+    "@types/node": "^25.6.0",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.3",
+    "vite": "^7.1.5",
+    "vitest": "^3.1.0"
+  }
 }
