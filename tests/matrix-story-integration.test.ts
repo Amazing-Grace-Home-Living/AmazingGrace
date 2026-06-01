@@ -22,7 +22,7 @@ describe('matrix story integration', () => {
     expect(html).toContain("tile.addEventListener('pointerdown', onPointerDown);");
     expect(html).toContain("sourceTile.addEventListener('pointermove', onPointerMove);");
     expect(html).toContain("sourceTile.addEventListener('pointerup', onPointerUp);");
-    expect(html).toContain('../arcade/matrix-of-conscience/');
+    expect(html).toContain('../arcade/star-matrix/');
     expect(html).toContain('amazinggracehl.org');
   });
 

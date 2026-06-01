@@ -7,7 +7,7 @@
 class AudioManager {
   constructor(opts = {}) {
     this.STORAGE_KEY = opts.storageKey || 'matrixTrials_audioPrefs';
-    const def = { musicEnabled: false, sfxEnabled: true, musicVolume: 0.4, sfxVolume: 0.7 };
+    const def = { musicEnabled: true, sfxEnabled: true, musicVolume: 0.4, sfxVolume: 0.7 };
     this.prefs = { ...def, ...this._loadPrefs() };
     this._ctx = null;
     this._tracks = new Map();
@@ -123,11 +123,35 @@ class AudioManager {
 
   /* ---- Playback ---- */
   async playMusic(name, loop = true) {
-    if (!this._ready) { this._pending = name; return; }
     if (!this.prefs.musicEnabled) { this._pending = name; return; }
-    if (this._current) await this._fadeOut(0.5);
+
     const t = this._tracks.get(name);
     if (!t) return;
+
+    // MIDI files need a synthesizer — use html-midi-player web component
+    const isMidi = t.url.toLowerCase().endsWith('.mid') || t.url.toLowerCase().endsWith('.midi');
+    if (isMidi) {
+      if (this._current) await this._fadeOut(0.5);
+      const player = document.createElement('midi-player');
+      player.setAttribute('src', t.url);
+      player.setAttribute('sound-font', '');
+      player.style.display = 'none';
+      document.body.appendChild(player);
+      if (loop) {
+        player.addEventListener('stop', () => {
+          if (this._current && this._current.source === player) {
+            player.start();
+          }
+        });
+      }
+      player.start();
+      this._current = { name, source: player, type: 'midi' };
+      return;
+    }
+
+    // Web Audio path — requires AudioContext
+    if (!this._ready) { this._pending = name; return; }
+    if (this._current) await this._fadeOut(0.5);
     if (!t.buffer) {
       try {
         const r = await fetch(t.url), ab = await r.arrayBuffer();
@@ -137,7 +161,7 @@ class AudioManager {
     const src = this._ctx.createBufferSource();
     src.buffer = t.buffer; src.loop = loop;
     src.connect(this._mGain); src.start(0);
-    this._current = { name, source: src };
+    this._current = { name, source: src, type: 'webaudio' };
   }
 
   async stopMusic(fade = 0.5) { if (this._current) await this._fadeOut(fade); }
@@ -165,7 +189,19 @@ class AudioManager {
   }
 
   async _fadeOut(dur) {
-    if (!this._current || !this._mGain) return;
+    if (!this._current) return;
+
+    // html-midi-player web component
+    if (this._current.type === 'midi') {
+      const player = this._current.source;
+      player.stop();
+      player.remove();
+      this._current = null;
+      return;
+    }
+
+    // Web Audio buffer source
+    if (!this._mGain) return;
     const g = this._mGain.gain;
     g.setValueAtTime(g.value, this._ctx.currentTime);
     g.linearRampToValueAtTime(0, this._ctx.currentTime + dur);
@@ -181,6 +217,14 @@ class AudioManager {
     this._savePrefs();
     if (this._mGain) this._mGain.gain.setValueAtTime(
       this.prefs.musicEnabled ? this.prefs.musicVolume : 0, this._ctx.currentTime);
+    // Handle MIDI player toggle
+    if (this._current && this._current.type === 'midi') {
+      if (!this.prefs.musicEnabled) {
+        this._current.source.stop();
+      } else {
+        this._current.source.start();
+      }
+    }
     if (this.prefs.musicEnabled && this._pending) this.playMusic(this._pending);
     if (!this.prefs.musicEnabled && this._current) this._fadeOut(0.3);
     this._updateUI();

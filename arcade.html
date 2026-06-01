@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Match Maker — Nexus Arcade — Amazing Grace Home Living</title>
+  <title>Nexus Arcade — Star Matrix</title>
   <link rel="icon" type="image/png" href="./assets/logo.png" />
+  <meta http-equiv="refresh" content="0; url=./arcade/star-matrix/" />
   <style>
     :root {
       color-scheme: dark;
@@ -21,6 +22,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
     }
     .page-shell {
       width: min(100%, 820px);
@@ -41,15 +43,44 @@
       color: #f8fafc;
       text-decoration: underline;
     }
+    .card {
+      border: 1px solid rgba(148,163,184,0.2);
+      border-radius: 16px;
+      background: rgba(15,23,42,0.55);
+      padding: 1.25rem;
+    }
+    h1 {
+      margin: 0 0 0.25rem;
+      font-size: 1.2rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    p {
+      margin: 0.25rem 0 0;
+      color: rgba(226,232,240,0.75);
+      line-height: 1.55;
+    }
   </style>
 </head>
 <body>
   <div class="page-shell">
     <div class="top-bar">
-      <a class="back-link" href="./arcade/">← Back to Arcade</a>
+      <a class="back-link" href="./matrix.html">← Back to Arcade</a>
     </div>
-    <div id="app"></div>
+    <div class="card">
+      <h1>Star Matrix</h1>
+      <p>This route has been consolidated into the unified Star Matrix experience.</p>
+      <p><a class="back-link" href="./arcade/star-matrix/">Continue to Star Matrix →</a></p>
+    </div>
   </div>
-  <script type="module" src="./arcade/main.js"></script>
+  <script>
+    (function () {
+      try {
+        window.location.replace('./arcade/star-matrix/');
+      } catch (_) {
+        window.location.href = './arcade/star-matrix/';
+      }
+    })();
+  </script>
 </body>
 </html>

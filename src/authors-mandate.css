@@ -1,0 +1,131 @@
+/* Root layout */
+.janus-root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: radial-gradient(circle at top, #0b0b16 0, #050509 45%, #020208 100%);
+  color: #f5f5ff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+}
+
+/* Fade-in wrapper */
+.janus-fade-wrapper {
+  opacity: 0;
+  transform: scale(1.05);
+  transition: opacity 1.6s ease, transform 1.6s ease;
+}
+.janus-fade-in {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Main grid */
+.janus-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1.4fr) minmax(260px, 320px);
+  gap: 1rem;
+  padding: 1rem 1.5rem 1.25rem;
+}
+
+/* Panels */
+.janus-panel {
+  border-radius: 14px;
+  background: radial-gradient(circle at top left, rgba(255,255,255,0.06), rgba(5,5,15,0.95));
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 0.75rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.janus-panel h2 {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  opacity: 0.8;
+  margin-bottom: 0.5rem;
+}
+
+/* Canvas */
+.janus-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 12px;
+  background: radial-gradient(circle at center, #1a0b24, #05030a);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+/* Console */
+.console-panel button {
+  margin-bottom: 0.5rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: transparent;
+  color: #f5f5ff;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+.console-panel button:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.prophecy-output {
+  margin-top: 1rem;
+  min-height: 3rem;
+  border-radius: 8px;
+  border: 1px dashed rgba(255,255,255,0.18);
+  padding: 0.4rem 0.5rem;
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+
+/* Title screen */
+.matrix-title-root {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at top, #0b0b16 0, #050509 45%, #020208 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.matrix-title-inner {
+  text-align: center;
+  padding: 2rem 2.5rem;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: radial-gradient(circle at top left, rgba(255,255,255,0.06), rgba(5,5,15,0.96));
+}
+
+.matrix-pill {
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.matrix-title-inner h1 {
+  margin: 0.75rem 0 0.5rem;
+  font-size: 1.8rem;
+}
+
+.matrix-sub {
+  opacity: 0.85;
+  margin-bottom: 1.5rem;
+}
+
+.matrix-start-btn {
+  padding: 0.6rem 1.4rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ff4b8b, #ffd86b);
+  color: #050308;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
