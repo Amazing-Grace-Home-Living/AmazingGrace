@@ -1,32 +1,31 @@
 export default function ModulePanel({ modules }) {
-  const internal = Object.entries(modules.internal);
-  const external = Object.entries(modules.external);
+  const { internal, external } = modules;
 
   return (
     <div className="hud-panel module-panel">
-      <div className="panel-title">MODULES</div>
+      <h3>MODULES</h3>
 
       <div className="module-section">
-        <div className="section-label">INTERNAL</div>
-        {internal.map(([id, active]) => (
-          <div key={id} className={`module-item ${active ? "active" : "inactive"}`}>
-            <span className="indicator">{active ? "●" : "○"}</span>
-            <span className="module-name">{id.toUpperCase()}</span>
-          </div>
-        ))}
+        <h4>Internal</h4>
+        <ul>
+          {Object.entries(internal).map(([id, active]) => (
+            <li key={id} className={active ? "active" : "inactive"}>
+              {id}
+            </li>
+          ))}
+        </ul>
       </div>
 
-      {external.length > 0 && (
-        <div className="module-section">
-          <div className="section-label">EXTERNAL</div>
-          {external.map(([id, mod]) => (
-            <div key={id} className={`module-item ${mod.state === "active" ? "active" : "inactive"}`}>
-              <span className="indicator">{mod.state === "active" ? "●" : "○"}</span>
-              <span className="module-name">{mod.name || id.toUpperCase()}</span>
-            </div>
+      <div className="module-section">
+        <h4>External</h4>
+        <ul>
+          {Object.entries(external).map(([id, active]) => (
+            <li key={id} className={active ? "active" : "inactive"}>
+              {id}
+            </li>
           ))}
-        </div>
-      )}
+        </ul>
+      </div>
     </div>
   );
 }

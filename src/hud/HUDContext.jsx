@@ -4,16 +4,18 @@ const HUDContext = createContext();
 
 export function HUDProvider({ children }) {
   const [hud, setHUD] = useState({
-    system: { battery: 100, integrity: 100, connection: "online" },
-    player: { name: "Player", level: 1, xp: 0 },
+    system: { battery: 100, integrity: 100, connection: "online", temperature: 22, alerts: 0 },
+    player: { name: "Player", level: 1, virtue_alignment: "Neutral", xp: 0, xp_to_next: 100 },
+    world: { region: "Nexus", biome: "Sanctum", time_of_day: "Dawn", weather: "Clear", threat_level: 0 },
     modules: {
-      internal: { matrix: true, arcade: true, housing: false },
-      external: {} // dynamically filled
+      internal: { matrix: true, arcade: true, housing: false, example: false },
+      external: {} // { tower_defense: true, bible_study: true, ... }
     },
     overlays: {
-      dialogue: { active: false, text: null },
-      combat: { active: false },
-      external: {}
+      dialogue: { active: false, speaker: null, text: null },
+      combat: { active: false, enemy_name: null, enemy_health: null, combo_meter: null },
+      match3: { active: false, board_state: null, moves_remaining: null, powerups: [] },
+      external: {} // { id: { active, render } }
     },
     notifications: []
   });
