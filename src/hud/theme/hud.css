@@ -602,6 +602,31 @@
   border-radius: 3px;
 }
 
+/* Temple Node sweep hover animation */
+.temple-node:hover .temple-node-sweep {
+  left: 150% !important;
+}
+
+/* Pulsing guardian shields keyframe */
+@keyframes guardianPulse {
+  0% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(244, 63, 94, 0.4)); opacity: 0.85; }
+  50% { transform: scale(1.08); filter: drop-shadow(0 0 12px rgba(244, 63, 94, 0.8)); opacity: 1; }
+  100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(244, 63, 94, 0.4)); opacity: 0.85; }
+}
+
+/* Flowing pathway line animation */
+@keyframes pathFlow {
+  from { stroke-dashoffset: 20; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* Ambient Oracle whispers anim */
+@keyframes whisperFade {
+  0% { opacity: 0.3; transform: translateY(0); }
+  50% { opacity: 0.75; transform: translateY(-3px); }
+  100% { opacity: 0.3; transform: translateY(0); }
+}
+
 
 
 
