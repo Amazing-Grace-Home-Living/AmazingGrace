@@ -133,7 +133,7 @@ if (!container) {
   throw new Error('Root container #root was not found.');
 }
 
-createRoot(container).render(
+createRoot(container!).render(
   <React.StrictMode>
     <FamilyStatsProvider>
       <ArcadeApp />
