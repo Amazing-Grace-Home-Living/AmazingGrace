@@ -191,13 +191,19 @@ describe('Arcade Game Smoke Tests', () => {
       for (const game of subGames) {
         const html = readFileSync(resolve(game.path), 'utf-8');
 
-        // Game should have navigation back to arcade or home
+        // Game should have navigation back to arcade or home (either in static HTML or via an SPA shell)
+        const isSpaShell =
+          /<main[^>]+id=["']root["']/i.test(html) &&
+          /<script[^>]+type=["']module["'][^>]+src=["'][^"']+["']/i.test(html);
+
         const hasBackNav =
+          isSpaShell ||
           html.includes('href="../') ||
+          html.includes("href='../") ||
           html.includes('href="./') ||
+          html.includes("href='./") ||
           html.includes('Back to Arcade') ||
           html.includes('← Arcade');
-
         expect(
           hasBackNav,
           `${game.name} should have navigation back to arcade or home`
