@@ -17,6 +17,13 @@ export function HUDProvider({ children }) {
       match3: { active: false, board_state: null, moves_remaining: null, powerups: [] },
       external: {} // { id: { active, render } }
     },
+    progress: {
+      sevenStars: {
+        collected: [],
+        unlockedVirtues: [],
+        level: 1
+      }
+    },
     notifications: []
   });
 

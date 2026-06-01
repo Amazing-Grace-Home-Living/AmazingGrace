@@ -4,6 +4,8 @@ import "./matrix-of-conscience.css";
 import { useTowerDefenseHUD } from "../modules/tower-defense/useTowerDefenseHUD";
 // @ts-ignore
 import { useSevenStarsHUD } from "../modules/seven-stars/useSevenStarsHUD";
+// @ts-ignore
+import { useBibleStudyHUD } from "../modules/bible-study/useBibleStudyHUD";
 
 const TELEMETRY_ENDPOINT = "https://script.google.com/macros/s/AKfycbyq6jzCVGtoOTcid-LzD_njmuuOOSwJrhktU3ya1GKXLZI9jp6yCMJzlrdvyNb1fpkb/exec";
 
@@ -105,6 +107,7 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
   // HUD hook integrations
   const { showOverlay: startTowerDefense } = useTowerDefenseHUD();
   const { openSevenStars } = useSevenStarsHUD();
+  const { openBibleStudy } = useBibleStudyHUD();
 
   // Seven Stars local storage state and selection
   const [completedStars, setCompletedStars] = useState<string[]>(() => {
@@ -247,22 +250,38 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
                   🌠 Sync Seven Stars HUD
                 </button>
                 <button 
-                  onClick={() => startTowerDefense({ wave: 1, coresRemaining: 5, lives: 20, credits: 100 })} 
+                  onClick={openBibleStudy} 
                   style={{
                     flex: 1,
                     padding: "0.5rem",
                     fontSize: "0.75rem",
-                    background: "rgba(6, 182, 212, 0.1)",
-                    border: "1px solid rgba(6, 182, 212, 0.3)",
-                    color: "#22d3ee",
+                    background: "rgba(234, 179, 8, 0.1)",
+                    border: "1px solid rgba(234, 179, 8, 0.3)",
+                    color: "#facc15",
                     borderRadius: "8px",
                     cursor: "pointer",
                     fontWeight: "bold"
                   }}
                 >
-                  🛡️ Launch Tower Defense
+                  📖 Engage Bible Study
                 </button>
               </div>
+              <button 
+                onClick={() => startTowerDefense({ wave: 1, coresRemaining: 5, lives: 20, credits: 100 })} 
+                style={{
+                  width: "100%",
+                  padding: "0.5rem",
+                  fontSize: "0.75rem",
+                  background: "rgba(6, 182, 212, 0.1)",
+                  border: "1px solid rgba(6, 182, 212, 0.3)",
+                  color: "#22d3ee",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontWeight: "bold"
+                }}
+              >
+                🛡️ Launch Tower Defense
+              </button>
             </div>
           </section>
 

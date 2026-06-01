@@ -1,4 +1,5 @@
 import React from "react";
+import SevenStarsConstellation from "./SevenStarsConstellation";
 
 export default function SevenStarsOverlay({ star }) {
   if (!star) return null;
@@ -10,6 +11,9 @@ export default function SevenStarsOverlay({ star }) {
       <div className="ss-virtue">Virtue: {star.virtue}</div>
       <div className="ss-verse">{star.verse}</div>
       <div className="ss-summary">{star.summary}</div>
+      <div style={{ marginTop: "12px" }}>
+        <SevenStarsConstellation />
+      </div>
     </div>
   );
 }

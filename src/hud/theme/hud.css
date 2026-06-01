@@ -258,3 +258,87 @@
   margin-top: var(--hud-space-2);
 }
 
+/* Bible Study Subsystem Styles */
+.ext-bible-study {
+  top: var(--hud-space-3);
+  right: var(--hud-space-3);
+  background: var(--hud-bg-overlay);
+  padding: var(--hud-space-3);
+  border-radius: var(--hud-radius-md);
+  border: var(--hud-border-width) solid var(--hud-accent-soft);
+  max-width: 280px;
+  font-size: var(--hud-font-size-xs);
+}
+
+.ext-bible-study .bs-header {
+  font-size: var(--hud-font-size-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hud-accent);
+  margin-bottom: var(--hud-space-2);
+}
+
+.ext-bible-study .bs-ref {
+  font-weight: bold;
+  color: var(--hud-accent);
+  margin-bottom: var(--hud-space-2);
+}
+
+.ext-bible-study .bs-text {
+  margin-bottom: var(--hud-space-3);
+  line-height: 1.4;
+}
+
+/* Seven Stars Constellation Map Styles */
+.ss-constellation {
+  position: relative;
+  width: 100%;
+  height: 120px;
+  background: radial-gradient(circle at top, #101426 0, #05060a 70%);
+  border-radius: var(--hud-radius-md);
+  border: var(--hud-border-width) solid var(--hud-border);
+  overflow: hidden;
+}
+
+.ss-star {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--hud-accent);
+  box-shadow: 0 0 6px rgba(79, 209, 255, 0.8);
+  animation: ss-twinkle 2.4s ease-in-out infinite alternate;
+}
+
+.ss-star-1 { left: 10%; top: 70%; }
+.ss-star-2 { left: 25%; top: 55%; }
+.ss-star-3 { left: 40%; top: 40%; }
+.ss-star-4 { left: 55%; top: 30%; }
+.ss-star-5 { left: 70%; top: 35%; }
+.ss-star-6 { left: 80%; top: 50%; }
+.ss-star-7 { left: 90%; top: 65%; }
+
+.ss-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ss-line {
+  fill: none;
+  stroke: rgba(79, 209, 255, 0.4);
+  stroke-width: 0.6;
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: ss-draw 2.8s ease-out forwards;
+}
+
+@keyframes ss-twinkle {
+  from { opacity: 0.4; transform: scale(0.9); }
+  to   { opacity: 1;   transform: scale(1.2); }
+}
+
+@keyframes ss-draw {
+  to { stroke-dashoffset: 0; }
+}
+

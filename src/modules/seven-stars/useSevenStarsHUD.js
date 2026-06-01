@@ -2,11 +2,13 @@ import React from "react";
 import { useHUD } from "../../hud/HUDContext";
 import SevenStarsOverlay from "./SevenStarsOverlay";
 import { useSevenStarsLore } from "./useSevenStarsLore";
+import { useSevenStarsProgress } from "./useSevenStarsProgress";
 import { emit, Events } from "../../core/eventBus";
 
 export function useSevenStarsHUD() {
   const { setHUD } = useHUD();
   const { getRandomStar } = useSevenStarsLore();
+  const { collectStar } = useSevenStarsProgress();
 
   function openSevenStars() {
     const star = getRandomStar();
@@ -17,6 +19,9 @@ export function useSevenStarsHUD() {
       message: `Seven Stars databank opened: ${star.name}.`
     });
     emit(Events.VIRTUE_GAIN, { amount: 1, virtue: star.virtue });
+
+    // Auto-collect the star to trigger progression levels
+    collectStar(star.id);
 
     setHUD(h => ({
       ...h,
