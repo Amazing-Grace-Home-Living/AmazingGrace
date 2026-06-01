@@ -225,8 +225,6 @@ describe('Arcade Game Smoke Tests', () => {
           const size = script.length;
 
           // Fail if over 100KB (should definitely be external)
-
-          // Fail if over 100KB (should definitely be external)
           expect(
             size,
             `${game.name} inline script too large (${Math.round(size/1024)}KB) - externalize to separate .js file`
