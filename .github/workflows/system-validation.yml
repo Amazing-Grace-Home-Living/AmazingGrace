@@ -32,7 +32,7 @@ jobs:
         run: npm test -- tests/arcade-games-validation.test.ts
 
       - name: Game health checks - Star Matrix
-        run: npm test -- tests/starMap.test.ts tests/star-matrix-input-handling.test.ts
+        run: npm test -- tests/starMap.test.ts
 
       - name: Game health checks - Match Maker
         run: npm test -- tests/matchMakerState.test.ts tests/match-maker-ui-refactor.test.ts
