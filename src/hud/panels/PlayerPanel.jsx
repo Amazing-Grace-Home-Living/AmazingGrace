@@ -1,25 +1,17 @@
 export default function PlayerPanel({ data }) {
-  const xpToNext = data.level * 100;
-  const xpPercent = Math.min(100, Math.round((data.xp / xpToNext) * 100));
+  const { name, level, virtue_alignment, xp, xp_to_next } = data;
+  const pct = Math.min(100, Math.round((xp / xp_to_next) * 100));
 
   return (
     <div className="hud-panel player-panel">
-      <div className="panel-title">OPERATOR</div>
-      <div className="metric">
-        <span className="label">NAME</span>
-        <span className="value">{data.name}</span>
-      </div>
-      <div className="metric">
-        <span className="label">LEVEL</span>
-        <span className="value">{data.level}</span>
-      </div>
-      <div className="metric">
-        <span className="label">XP</span>
-        <span className="value">{data.xp} / {xpToNext}</span>
-      </div>
+      <h3>PLAYER</h3>
+      <div>Name: {name}</div>
+      <div>Level: {level}</div>
+      <div>Virtue: {virtue_alignment}</div>
       <div className="xp-bar">
-        <div className="xp-fill" style={{ width: `${xpPercent}%` }} />
+        <div className="xp-bar-fill" style={{ width: `${pct}%` }} />
       </div>
+      <div>XP: {xp} / {xp_to_next}</div>
     </div>
   );
 }

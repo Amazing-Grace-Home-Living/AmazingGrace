@@ -1,21 +1,15 @@
+import DialogueOverlay from "./DialogueOverlay";
+import CombatOverlay from "./CombatOverlay";
+import Match3Overlay from "./Match3Overlay";
+import ExternalOverlayHost from "./ExternalOverlayHost";
+
 export default function OverlayRenderer({ overlays }) {
   return (
     <>
-      {overlays.dialogue.active && (
-        <div className="overlay dialogue">{overlays.dialogue.text}</div>
-      )}
-
-      {overlays.combat.active && (
-        <div className="overlay combat">Combat Engaged</div>
-      )}
-
-      {Object.entries(overlays.external).map(([id, overlay]) =>
-        overlay.active ? (
-          <div key={id} className={`overlay ext-${id}`}>
-            {overlay.render()}
-          </div>
-        ) : null
-      )}
+      <DialogueOverlay dialogue={overlays.dialogue} />
+      <CombatOverlay combat={overlays.combat} />
+      <Match3Overlay match3={overlays.match3} />
+      <ExternalOverlayHost external={overlays.external} />
     </>
   );
 }

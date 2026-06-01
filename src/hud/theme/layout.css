@@ -1,0 +1,47 @@
+/* src/hud/theme/layout.css */
+
+.hud-root {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  gap: var(--hud-space-3);
+  width: 100%;
+  height: 100%;
+}
+
+.hud-top,
+.hud-middle,
+.hud-bottom {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: var(--hud-space-3);
+}
+
+/* Responsive collapse */
+@media (max-width: 900px) {
+  .hud-top,
+  .hud-middle,
+  .hud-bottom {
+    grid-auto-flow: row;
+  }
+}
+
+/* Anchor helpers */
+.hud-anchor-top-left {
+  position: absolute;
+  top: var(--hud-space-3);
+  left: var(--hud-space-3);
+}
+
+.hud-anchor-top-right {
+  position: absolute;
+  top: var(--hud-space-3);
+  right: var(--hud-space-3);
+}
+
+.hud-anchor-bottom-center {
+  position: absolute;
+  bottom: var(--hud-space-3);
+  left: 50%;
+  transform: translateX(-50%);
+}
