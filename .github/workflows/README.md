@@ -84,12 +84,10 @@ The `scripts/validate-dist-links.mjs` script:
 This prevents "broken games" and other navigation issues from reaching production.
 
 ### Arcade Game Protection
-While we don't have game-specific integration tests yet, the link validation step catches:
-- Missing game assets (images, audio, scripts)
-- Broken navigation links within games
-- Missing game entry points
+Arcade game breakages are caught by:
+- The dist link validation step (broken navigation + missing assets in `dist/`)
+- `tests/arcade-smoke-tests.test.ts`, which verifies arcade HTML entry points are registered in `vite.config.ts` and performs basic HTML sanity checks
 
-**Future Enhancement:** Add smoke tests that verify each arcade game loads without errors.
 
 ## Maintenance
 
