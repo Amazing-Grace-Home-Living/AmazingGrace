@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, createContext, useContext } from "react";
+import { useEffect, useMemo, useState, createContext, useContext, useRef, useCallback } from "react";
 import "./matrix-of-conscience.css";
 
 const TELEMETRY_ENDPOINT = "https://script.google.com/macros/s/AKfycbyq6jzCVGtoOTcid-LzD_njmuuOOSwJrhktU3ya1GKXLZI9jp6yCMJzlrdvyNb1fpkb/exec";
@@ -29,13 +29,19 @@ type ConscienceProviderProps = {
 
 export function ConscienceProvider({ children, initialMetrics = M_CONSCIENCE_DEFAULT }: ConscienceProviderProps) {
   const [metrics, setMetrics] = useState(initialMetrics);
+  const prevMetricsRef = useRef(initialMetrics);
 
-  // Sync state if initialMetrics changes from external props
   useEffect(() => {
-    setMetrics(initialMetrics);
+    const changed = (Object.keys(initialMetrics) as Array<keyof typeof M_CONSCIENCE_DEFAULT>).some(
+      (key) => initialMetrics[key] !== prevMetricsRef.current[key]
+    );
+    if (changed) {
+      setMetrics(initialMetrics);
+      prevMetricsRef.current = initialMetrics;
+    }
   }, [initialMetrics]);
 
-  const updateMetrics = (deltas: Partial<typeof M_CONSCIENCE_DEFAULT>) => {
+  const updateMetrics = useCallback((deltas: Partial<typeof M_CONSCIENCE_DEFAULT>) => {
     setMetrics((prev) => {
       const updated = { ...prev };
       Object.keys(deltas).forEach((key) => {
@@ -44,8 +50,8 @@ export function ConscienceProvider({ children, initialMetrics = M_CONSCIENCE_DEF
       });
       return updated;
     });
-  };
-  const value = useMemo(() => ({ metrics, updateMetrics }), [metrics]);
+  }, []);
+  const value = useMemo(() => ({ metrics, updateMetrics }), [metrics, updateMetrics]);
   return <ConscienceContext.Provider value={value}>{children}</ConscienceContext.Provider>;
 }
 

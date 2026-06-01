@@ -9,7 +9,7 @@ export default defineConfig({
   build: {
     outDir: "dist",
     emptyOutDir: true,
-    chunkSizeWarningLimit: 800,
+    chunkSizeWarningLimit: 500,
     rollupOptions: {
       input: {
         main:              resolve(__dirname, "index.html"),
@@ -60,12 +60,12 @@ export default defineConfig({
       },
       output: {
         manualChunks(id) {
-          if (id.includes('node_modules/firebase')) {
-            return 'firebase';
-          }
-          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
-            return 'react';
-          }
+          if (id.includes('firebase/firestore')) return 'firebase-firestore';
+          if (id.includes('firebase/auth')) return 'firebase-auth';
+          if (id.includes('firebase/app')) return 'firebase-core';
+          if (id.includes('react-dom')) return 'react-dom';
+          if (id.includes('react')) return 'react';
+          if (id.includes('framer-motion')) return 'framer-motion';
         }
       }
     }
