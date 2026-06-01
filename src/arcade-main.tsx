@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import MatrixOfConscience from './components/MatrixOfConscience';
-import { useFamilyStats } from './hooks/useFamilyStats';
+import { FamilyStatsProvider, useFamilyStatsContext } from './context/FamilyStatsContext';
 import styles from './arcade-main.module.css';
 import { mountScarletLattice, type ScarletLatticeController } from './fx/scarletLattice';
 
@@ -38,7 +38,7 @@ function LoadingSkeleton() {
 }
 
 function ArcadeApp() {
-  const { stats, chainLevel, activeUser, syncStatus, syncError, isLoading } = useFamilyStats();
+  const { stats, chainLevel, activeUser, syncStatus, syncError, isLoading } = useFamilyStatsContext();
   const scarletCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const scarletControllerRef = useRef<ScarletLatticeController | null>(null);
 
@@ -135,6 +135,8 @@ if (!container) {
 
 createRoot(container).render(
   <React.StrictMode>
-    <ArcadeApp />
+    <FamilyStatsProvider>
+      <ArcadeApp />
+    </FamilyStatsProvider>
   </React.StrictMode>
 );
