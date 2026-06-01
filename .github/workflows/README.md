@@ -55,7 +55,7 @@ To obtain this secret:
 
 **Features:**
 - Automatically applies code suggestions from PR reviews
-- Looks for fenced \`\`\`suggestion blocks in review comments
+- Looks for `` ```suggestion `` fenced blocks in review comments
 - Commits and pushes changes back to the PR branch
 
 ### 4. Sync Secrets from Matrix (`sync-secrets-from-matrix.yml`)
