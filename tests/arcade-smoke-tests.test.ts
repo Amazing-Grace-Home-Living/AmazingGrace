@@ -26,6 +26,20 @@ const ARCADE_GAMES = [
   { name: 'Tower Defense', path: 'arcade/tower-defense/index.html' },
 ];
 
+<<<<<<< HEAD
+=======
+const extractInlineScriptBody = (scriptTag: string): string => {
+  const openTagEnd = scriptTag.indexOf('>');
+  const closeTagStart = scriptTag.toLowerCase().lastIndexOf('</script');
+
+  if (openTagEnd === -1 || closeTagStart <= openTagEnd) {
+    return '';
+  }
+
+  return scriptTag.slice(openTagEnd + 1, closeTagStart);
+};
+
+>>>>>>> origin/main
 describe('Arcade Game Smoke Tests', () => {
   describe('Game Entry Points', () => {
     it('should have all arcade games configured in vite.config.ts', () => {
@@ -77,14 +91,22 @@ describe('Arcade Game Smoke Tests', () => {
           html = readFileSync(resolve(game.path), 'utf-8');
 
           // Check for common script errors
+<<<<<<< HEAD
           const scriptBlocks = html.match(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi) || [];
+=======
+          const scriptBlocks = html.match(/<script\b[^>]*>[\s\S]*?<\/script\b[^>]*>/gi) || [];
+>>>>>>> origin/main
 
           for (const script of scriptBlocks) {
             // Skip if it's an external script (src attribute)
             if (script.match(/src=/i)) continue;
 
             // Check for unmatched braces (basic syntax check)
+<<<<<<< HEAD
             const content = script.replace(/<script\b[^>]*>|<\/script\s*>/gi, '');
+=======
+            const content = extractInlineScriptBody(script);
+>>>>>>> origin/main
             const openBraces = (content.match(/\{/g) || []).length;
             const closeBraces = (content.match(/\}/g) || []).length;
 
@@ -213,7 +235,11 @@ describe('Arcade Game Smoke Tests', () => {
     it('should not have excessively large inline scripts', () => {
       for (const game of ARCADE_GAMES) {
         const html = readFileSync(resolve(game.path), 'utf-8');
+<<<<<<< HEAD
         const scriptBlocks = html.match(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi) || [];
+=======
+        const scriptBlocks = html.match(/<script\b[^>]*>[\s\S]*?<\/script\b[^>]*>/gi) || [];
+>>>>>>> origin/main
 
         for (const script of scriptBlocks) {
           // Skip external scripts

@@ -10,6 +10,15 @@ import ReclaimMission from '@/modules/arcade/ReclaimMission';
 import AuthorsMandate from './components/AuthorsMandate';
 import MatrixOfConscience from './arcade/matrix-of-conscience/MatrixOfConscience';
 
+// Nexus HUD System
+import { HUDProvider } from './hud/HUDContext';
+import HUD from './hud/HUD';
+import { useHUDEventBindings } from './hud/useHUDEventBindings';
+import './hud/theme/tokens.css';
+import './hud/theme/hud.css';
+import './hud/theme/animations.css';
+import './hud/theme/layout.css';
+
 // Thematic Configuration (Nimbus Land / Voice of Jesus)
 const OS_THEME = {
   primary: '#7851A9',   // Royal Purple
@@ -18,10 +27,13 @@ const OS_THEME = {
   alert: '#facc15'      // Radiant Yellow (Lumen)
 };
 
-export default function StellaraOS() {
+function StellaraOSInner() {
   const [activeView, setActiveView] = useState('hub');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeMissionId, setActiveMissionId] = useState(null);
+
+  // Bind Nexus Event Bus → HUD state
+  useHUDEventBindings();
 
   // Pull global telemetry from the Context
   const { matrixMetrics, sisters, getUnlockedCount } = useSevenSisters();
@@ -71,6 +83,9 @@ export default function StellaraOS() {
             <button onClick={() => navigateTo('exchange')} className={`text-sm font-bold uppercase tracking-widest transition-colors ${activeView === 'exchange' ? 'text-yellow-400' : 'text-gray-400 hover:text-white'}`}>
               Lumen Exchange
             </button>
+            <button onClick={() => navigateTo('nexus-hud')} className={`text-sm font-bold uppercase tracking-widest transition-colors ${activeView === 'nexus-hud' ? 'text-[#4fd1ff]' : 'text-gray-400 hover:text-white'}`}>
+              Nexus HUD
+            </button>
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -91,6 +106,7 @@ export default function StellaraOS() {
           <button onClick={() => navigateTo('conscience')} className="text-left text-[#ffd700] font-bold uppercase tracking-widest">Conscience Matrix</button>
           <button onClick={() => navigateTo('mandate')} className="text-left text-[#7effd8] font-bold uppercase tracking-widest">Author's Mandate</button>
           <button onClick={() => navigateTo('exchange')} className="text-left text-white font-bold uppercase tracking-widest">Lumen Exchange</button>
+          <button onClick={() => navigateTo('nexus-hud')} className="text-left text-[#4fd1ff] font-bold uppercase tracking-widest">Nexus HUD</button>
         </div>
       )}
     </nav>
@@ -188,6 +204,13 @@ export default function StellaraOS() {
           </div>
         );
 
+      case 'nexus-hud':
+        return (
+          <div className="animate-in fade-in duration-500">
+            <HUD />
+          </div>
+        );
+
       default:
         return null;
     }
@@ -207,5 +230,14 @@ export default function StellaraOS() {
         {renderActiveView()}
       </main>
     </div>
+  );
+}
+
+// Wrap with HUDProvider so the HUD context is available throughout the app
+export default function StellaraOS() {
+  return (
+    <HUDProvider>
+      <StellaraOSInner />
+    </HUDProvider>
   );
 }

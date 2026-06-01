@@ -188,6 +188,40 @@
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         }
 
+        .search-container {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-container input {
+            width: 100%;
+            min-height: 44px;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+            background: rgba(15, 23, 42, 0.95);
+            color: var(--text);
+            padding: 0.7rem 0.85rem;
+            font-size: 1rem;
+        }
+
+        .search-container button {
+            min-width: 44px;
+            min-height: 44px;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+            background: rgba(148, 163, 184, 0.15);
+            color: var(--text);
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .search-container button:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
         .property-card {
             background: rgba(15, 23, 42, 0.94);
             border: 1px solid var(--border);
@@ -345,9 +379,14 @@
                 </div>
             </div>
 
-            <div class="property-grid">
+            <div class="search-container">
+                <input type="text" id="property-search" placeholder="Search by location or amenities..." aria-label="Search properties">
+                <button id="search-clear" type="button" aria-label="Clear search">✕</button>
+            </div>
+
+            <div class="property-grid" id="property-grid">
                 <article class="property-card">
-                    <img src="./assets/images/926-poinsettia/1000002510.jpg" alt="Bedroom at 926 E Poinsettia Ave in Tampa">
+                    <img decoding="async" loading="lazy" src="./assets/images/926-poinsettia/1000002510.jpg" alt="Bedroom at 926 E Poinsettia Ave in Tampa">
                     <div class="property-card-content">
                         <h3>926 E Poinsettia Ave — Tampa, FL</h3>
                         <p class="property-meta">Tampa, FL · $850/mo</p>
@@ -365,21 +404,21 @@
 
                 <article class="property-card">
                     <a href="./assets/images/1142-7th-street/889bbd8f-3c61-431a-9da7-d21e0738ec8c.jpg" target="_blank" rel="noopener">
-                        <img src="./assets/images/1142-7th-street/889bbd8f-3c61-431a-9da7-d21e0738ec8c.jpg" alt="Exterior entry at 1142 7th Street NW in Largo">
+                        <img decoding="async" loading="lazy" src="./assets/images/1142-7th-street/889bbd8f-3c61-431a-9da7-d21e0738ec8c.jpg" alt="Exterior entry at 1142 7th Street NW in Largo">
                     </a>
                     <div class="property-card-gallery" aria-label="1142 7th Street NW photo gallery">
-                        <a href="./assets/images/1142-7th-street/db43caca-6cf5-44db-9977-ea590b416bca.jpg" target="_blank" rel="noopener"><img src="./assets/images/1142-7th-street/db43caca-6cf5-44db-9977-ea590b416bca.jpg" alt="1142 7th Street NW photo 2" loading="lazy"></a>
-                        <a href="./assets/images/1142-7th-street/9b5c9a4e-78cf-4b3d-bc58-2e63de8971a7.jpg" target="_blank" rel="noopener"><img src="./assets/images/1142-7th-street/9b5c9a4e-78cf-4b3d-bc58-2e63de8971a7.jpg" alt="1142 7th Street NW photo 3" loading="lazy"></a>
-                        <a href="./assets/images/1142-7th-street/01b83773-5e20-4b83-8da4-13719a8e1a5a.jpg" target="_blank" rel="noopener"><img src="./assets/images/1142-7th-street/01b83773-5e20-4b83-8da4-13719a8e1a5a.jpg" alt="1142 7th Street NW photo 4" loading="lazy"></a>
-                        <a href="./assets/images/1142-7th-street/3c2f9c29-7787-42df-a5ef-57727fd00951.jpg" target="_blank" rel="noopener"><img src="./assets/images/1142-7th-street/3c2f9c29-7787-42df-a5ef-57727fd00951.jpg" alt="1142 7th Street NW photo 5" loading="lazy"></a>
-                        <a href="./assets/images/1142-7th-street/b4ad39de-6b72-45c7-adf3-862acac5e5b5.jpg" target="_blank" rel="noopener"><img src="./assets/images/1142-7th-street/b4ad39de-6b72-45c7-adf3-862acac5e5b5.jpg" alt="1142 7th Street NW photo 6" loading="lazy"></a>
-                        <a href="./assets/images/1142-7th-street/8dce806b-e552-47b7-bd41-07017c8792ca.jpg" target="_blank" rel="noopener"><img src="./assets/images/1142-7th-street/8dce806b-e552-47b7-bd41-07017c8792ca.jpg" alt="1142 7th Street NW photo 7" loading="lazy"></a>
-                        <a href="./assets/images/1142-7th-street/1d5c47cd-7d54-446f-82eb-ea1d7a089b30.jpg" target="_blank" rel="noopener"><img src="./assets/images/1142-7th-street/1d5c47cd-7d54-446f-82eb-ea1d7a089b30.jpg" alt="1142 7th Street NW photo 8" loading="lazy"></a>
-                        <a href="./assets/images/1142-7th-street/1940a088-9629-4609-b018-523611119aa0.jpg" target="_blank" rel="noopener"><img src="./assets/images/1142-7th-street/1940a088-9629-4609-b018-523611119aa0.jpg" alt="1142 7th Street NW photo 9" loading="lazy"></a>
-                        <a href="./assets/images/1142-7th-street/7a984ab5-2ec7-4211-bc99-ad8eadec9936.jpg" target="_blank" rel="noopener"><img src="./assets/images/1142-7th-street/7a984ab5-2ec7-4211-bc99-ad8eadec9936.jpg" alt="1142 7th Street NW photo 10" loading="lazy"></a>
-                        <a href="./assets/images/1142-7th-street/ff665772-3e1e-45e2-9937-2ba09c754d7b.jpg" target="_blank" rel="noopener"><img src="./assets/images/1142-7th-street/ff665772-3e1e-45e2-9937-2ba09c754d7b.jpg" alt="1142 7th Street NW photo 11" loading="lazy"></a>
-                        <a href="./assets/images/1142-7th-street/eb85c854-4d64-4e6f-a981-632d7af77ca1.jpg" target="_blank" rel="noopener"><img src="./assets/images/1142-7th-street/eb85c854-4d64-4e6f-a981-632d7af77ca1.jpg" alt="1142 7th Street NW photo 12" loading="lazy"></a>
-                        <a href="./assets/images/1142-7th-street/57d23a1f-270e-4583-b04b-753286f8dd80.jpg" target="_blank" rel="noopener"><img src="./assets/images/1142-7th-street/57d23a1f-270e-4583-b04b-753286f8dd80.jpg" alt="1142 7th Street NW photo 13" loading="lazy"></a>
+                        <a href="./assets/images/1142-7th-street/db43caca-6cf5-44db-9977-ea590b416bca.jpg" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1142-7th-street/db43caca-6cf5-44db-9977-ea590b416bca.jpg" alt="1142 7th Street NW photo 2" loading="lazy"></a>
+                        <a href="./assets/images/1142-7th-street/9b5c9a4e-78cf-4b3d-bc58-2e63de8971a7.jpg" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1142-7th-street/9b5c9a4e-78cf-4b3d-bc58-2e63de8971a7.jpg" alt="1142 7th Street NW photo 3" loading="lazy"></a>
+                        <a href="./assets/images/1142-7th-street/01b83773-5e20-4b83-8da4-13719a8e1a5a.jpg" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1142-7th-street/01b83773-5e20-4b83-8da4-13719a8e1a5a.jpg" alt="1142 7th Street NW photo 4" loading="lazy"></a>
+                        <a href="./assets/images/1142-7th-street/3c2f9c29-7787-42df-a5ef-57727fd00951.jpg" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1142-7th-street/3c2f9c29-7787-42df-a5ef-57727fd00951.jpg" alt="1142 7th Street NW photo 5" loading="lazy"></a>
+                        <a href="./assets/images/1142-7th-street/b4ad39de-6b72-45c7-adf3-862acac5e5b5.jpg" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1142-7th-street/b4ad39de-6b72-45c7-adf3-862acac5e5b5.jpg" alt="1142 7th Street NW photo 6" loading="lazy"></a>
+                        <a href="./assets/images/1142-7th-street/8dce806b-e552-47b7-bd41-07017c8792ca.jpg" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1142-7th-street/8dce806b-e552-47b7-bd41-07017c8792ca.jpg" alt="1142 7th Street NW photo 7" loading="lazy"></a>
+                        <a href="./assets/images/1142-7th-street/1d5c47cd-7d54-446f-82eb-ea1d7a089b30.jpg" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1142-7th-street/1d5c47cd-7d54-446f-82eb-ea1d7a089b30.jpg" alt="1142 7th Street NW photo 8" loading="lazy"></a>
+                        <a href="./assets/images/1142-7th-street/1940a088-9629-4609-b018-523611119aa0.jpg" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1142-7th-street/1940a088-9629-4609-b018-523611119aa0.jpg" alt="1142 7th Street NW photo 9" loading="lazy"></a>
+                        <a href="./assets/images/1142-7th-street/7a984ab5-2ec7-4211-bc99-ad8eadec9936.jpg" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1142-7th-street/7a984ab5-2ec7-4211-bc99-ad8eadec9936.jpg" alt="1142 7th Street NW photo 10" loading="lazy"></a>
+                        <a href="./assets/images/1142-7th-street/ff665772-3e1e-45e2-9937-2ba09c754d7b.jpg" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1142-7th-street/ff665772-3e1e-45e2-9937-2ba09c754d7b.jpg" alt="1142 7th Street NW photo 11" loading="lazy"></a>
+                        <a href="./assets/images/1142-7th-street/eb85c854-4d64-4e6f-a981-632d7af77ca1.jpg" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1142-7th-street/eb85c854-4d64-4e6f-a981-632d7af77ca1.jpg" alt="1142 7th Street NW photo 12" loading="lazy"></a>
+                        <a href="./assets/images/1142-7th-street/57d23a1f-270e-4583-b04b-753286f8dd80.jpg" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1142-7th-street/57d23a1f-270e-4583-b04b-753286f8dd80.jpg" alt="1142 7th Street NW photo 13" loading="lazy"></a>
                     </div>
                     <div class="property-card-content">
                         <h3>1142 7th Street NW — Largo, FL</h3>
@@ -398,21 +437,21 @@
 
                 <article class="property-card">
                     <a href="./assets/images/1144-7th-street/1144-7th-street-largo.jpg" target="_blank" rel="noopener">
-                        <img src="./assets/images/1144-7th-street/1144-7th-street-largo.jpg" alt="Exterior of 1144 7th Street NW in Largo">
+                        <img decoding="async" loading="lazy" src="./assets/images/1144-7th-street/1144-7th-street-largo.jpg" alt="Exterior of 1144 7th Street NW in Largo">
                     </a>
                     <div class="property-card-gallery" aria-label="1144 7th Street NW photo gallery">
-                        <a href="./assets/images/1144-7th-street/image.jpg" target="_blank" rel="noopener"><img src="./assets/images/1144-7th-street/image.jpg" alt="1144 7th Street NW photo 2" loading="lazy"></a>
-                        <a href="./assets/images/1144-7th-street/image_67125505.JPG" target="_blank" rel="noopener"><img src="./assets/images/1144-7th-street/image_67125505.JPG" alt="1144 7th Street NW photo 3" loading="lazy"></a>
-                        <a href="./assets/images/1144-7th-street/image_67145217.JPG" target="_blank" rel="noopener"><img src="./assets/images/1144-7th-street/image_67145217.JPG" alt="1144 7th Street NW photo 4" loading="lazy"></a>
-                        <a href="./assets/images/1144-7th-street/image_67164161.JPG" target="_blank" rel="noopener"><img src="./assets/images/1144-7th-street/image_67164161.JPG" alt="1144 7th Street NW photo 5" loading="lazy"></a>
-                        <a href="./assets/images/1144-7th-street/image_67166209.JPG" target="_blank" rel="noopener"><img src="./assets/images/1144-7th-street/image_67166209.JPG" alt="1144 7th Street NW photo 6" loading="lazy"></a>
-                        <a href="./assets/images/1144-7th-street/image_67169793.JPG" target="_blank" rel="noopener"><img src="./assets/images/1144-7th-street/image_67169793.JPG" alt="1144 7th Street NW photo 7" loading="lazy"></a>
-                        <a href="./assets/images/1144-7th-street/image_67172609.JPG" target="_blank" rel="noopener"><img src="./assets/images/1144-7th-street/image_67172609.JPG" alt="1144 7th Street NW photo 8" loading="lazy"></a>
-                        <a href="./assets/images/1144-7th-street/image_67178497.JPG" target="_blank" rel="noopener"><img src="./assets/images/1144-7th-street/image_67178497.JPG" alt="1144 7th Street NW photo 9" loading="lazy"></a>
-                        <a href="./assets/images/1144-7th-street/image_67217665.JPG" target="_blank" rel="noopener"><img src="./assets/images/1144-7th-street/image_67217665.JPG" alt="1144 7th Street NW photo 10" loading="lazy"></a>
-                        <a href="./assets/images/1144-7th-street/IMG_2467.jpg" target="_blank" rel="noopener"><img src="./assets/images/1144-7th-street/IMG_2467.jpg" alt="1144 7th Street NW photo 11" loading="lazy"></a>
-                        <a href="./assets/images/1144-7th-street/IMG_2469.jpg" target="_blank" rel="noopener"><img src="./assets/images/1144-7th-street/IMG_2469.jpg" alt="1144 7th Street NW photo 12" loading="lazy"></a>
-                        <a href="./assets/images/1144-7th-street/IMG_2474.jpg" target="_blank" rel="noopener"><img src="./assets/images/1144-7th-street/IMG_2474.jpg" alt="1144 7th Street NW photo 13" loading="lazy"></a>
+                        <a href="./assets/images/1144-7th-street/image.jpg" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1144-7th-street/image.jpg" alt="1144 7th Street NW photo 2" loading="lazy"></a>
+                        <a href="./assets/images/1144-7th-street/image_67125505.JPG" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1144-7th-street/image_67125505.JPG" alt="1144 7th Street NW photo 3" loading="lazy"></a>
+                        <a href="./assets/images/1144-7th-street/image_67145217.JPG" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1144-7th-street/image_67145217.JPG" alt="1144 7th Street NW photo 4" loading="lazy"></a>
+                        <a href="./assets/images/1144-7th-street/image_67164161.JPG" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1144-7th-street/image_67164161.JPG" alt="1144 7th Street NW photo 5" loading="lazy"></a>
+                        <a href="./assets/images/1144-7th-street/image_67166209.JPG" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1144-7th-street/image_67166209.JPG" alt="1144 7th Street NW photo 6" loading="lazy"></a>
+                        <a href="./assets/images/1144-7th-street/image_67169793.JPG" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1144-7th-street/image_67169793.JPG" alt="1144 7th Street NW photo 7" loading="lazy"></a>
+                        <a href="./assets/images/1144-7th-street/image_67172609.JPG" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1144-7th-street/image_67172609.JPG" alt="1144 7th Street NW photo 8" loading="lazy"></a>
+                        <a href="./assets/images/1144-7th-street/image_67178497.JPG" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1144-7th-street/image_67178497.JPG" alt="1144 7th Street NW photo 9" loading="lazy"></a>
+                        <a href="./assets/images/1144-7th-street/image_67217665.JPG" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1144-7th-street/image_67217665.JPG" alt="1144 7th Street NW photo 10" loading="lazy"></a>
+                        <a href="./assets/images/1144-7th-street/IMG_2467.jpg" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1144-7th-street/IMG_2467.jpg" alt="1144 7th Street NW photo 11" loading="lazy"></a>
+                        <a href="./assets/images/1144-7th-street/IMG_2469.jpg" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1144-7th-street/IMG_2469.jpg" alt="1144 7th Street NW photo 12" loading="lazy"></a>
+                        <a href="./assets/images/1144-7th-street/IMG_2474.jpg" target="_blank" rel="noopener"><img decoding="async" src="./assets/images/1144-7th-street/IMG_2474.jpg" alt="1144 7th Street NW photo 13" loading="lazy"></a>
                     </div>
                     <div class="property-card-content">
                         <h3>1144 7th Street NW — Largo, FL</h3>
@@ -449,5 +488,44 @@
     <footer class="footer">
         <p>&copy; 2026 Amazing Grace Home Living &mdash; Tampa and Largo, Florida</p>
     </footer>
+    <script>
+        (function () {
+            const searchInput = document.getElementById('property-search');
+            const clearButton = document.getElementById('search-clear');
+            const cards = Array.from(document.querySelectorAll('#property-grid .property-card'));
+            if (!searchInput || !clearButton || !cards.length) return;
+
+            const index = cards.map((card) => {
+                const heading = card.querySelector('h3')?.textContent || '';
+                const meta = card.querySelector('.property-meta')?.textContent || '';
+                const amenities = Array.from(card.querySelectorAll('.property-amenities li'))
+                    .map((item) => item.textContent || '')
+                    .join(' ');
+                return { card, searchText: `${heading} ${meta} ${amenities}`.toLowerCase() };
+            });
+
+            const applyFilter = (query) => {
+                const normalized = query.trim().toLowerCase();
+                index.forEach(({ card, searchText }) => {
+                    card.style.display = !normalized || searchText.includes(normalized) ? '' : 'none';
+                });
+                clearButton.disabled = normalized.length === 0;
+            };
+
+            let debounceId;
+            searchInput.addEventListener('input', () => {
+                clearTimeout(debounceId);
+                debounceId = setTimeout(() => applyFilter(searchInput.value), 150);
+            });
+
+            clearButton.addEventListener('click', () => {
+                searchInput.value = '';
+                applyFilter('');
+                searchInput.focus();
+            });
+
+            applyFilter('');
+        })();
+    </script>
 </body>
 </html>

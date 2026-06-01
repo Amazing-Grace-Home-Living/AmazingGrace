@@ -108,7 +108,7 @@ function Test-AGGitHubPagesReadiness {
     'index.html',
     'CNAME',
     'manifest.json',
-    '.github/workflows/deploy.yml',
+    '.github/workflows/system-validation.yml',
     'vite.config.ts'
   )
 
@@ -133,20 +133,20 @@ function Test-AGGitHubPagesReadiness {
     }
   }
 
-  $deployWorkflowPath = Join-Path $RepoRoot '.github/workflows/deploy.yml'
-  if (Test-Path -LiteralPath $deployWorkflowPath) {
-    $deployWorkflow = Get-Content -LiteralPath $deployWorkflowPath -Raw
-    if ($deployWorkflow -match 'branches:\s*\[\s*main\s*\]') {
-      Write-AGStatus -Level Success -Message 'Deploy workflow is configured for main branch pushes.'
+  $systemValidationWorkflowPath = Join-Path $RepoRoot '.github/workflows/system-validation.yml'
+  if (Test-Path -LiteralPath $systemValidationWorkflowPath) {
+    $systemValidationWorkflow = Get-Content -LiteralPath $systemValidationWorkflowPath -Raw
+    if ($systemValidationWorkflow -match 'branches:\s*\[\s*main\s*\]') {
+      Write-AGStatus -Level Success -Message 'System validation workflow is configured for main branch pushes.'
     } else {
-      Write-AGStatus -Level Warning -Message 'Deploy workflow does not clearly target main branch.'
+      Write-AGStatus -Level Warning -Message 'System validation workflow does not clearly target main branch.'
       $ok = $false
     }
 
-    if ($deployWorkflow -match 'actions/deploy-pages@') {
-      Write-AGStatus -Level Success -Message 'Deploy workflow uses actions/deploy-pages.'
+    if ($systemValidationWorkflow -match 'Instruction layer validation') {
+      Write-AGStatus -Level Success -Message 'System validation workflow includes instruction layer checks.'
     } else {
-      Write-AGStatus -Level Warning -Message 'Deploy workflow does not reference actions/deploy-pages.'
+      Write-AGStatus -Level Warning -Message 'System validation workflow is missing instruction layer checks.'
       $ok = $false
     }
   }

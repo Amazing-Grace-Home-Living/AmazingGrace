@@ -11,6 +11,7 @@ describe('arcade quality audit', () => {
     expect(config).toContain("recursive: true");
   });
 
+<<<<<<< HEAD
   it('keeps firebase workflow validating arcade game routes and scripts on pull requests', () => {
     const workflow = fs.readFileSync('.github/workflows/firebase.yml', 'utf8');
 
@@ -26,5 +27,13 @@ describe('arcade quality audit', () => {
     expect(workflow).toContain('test -f dist/arcade/js/lore-files.js');
     expect(workflow).toContain('test -f dist/arcade/js/cosmetics.js');
     expect(workflow).toContain('test -f dist/arcade/js/elite-animations.js');
+=======
+  it('keeps unified workflow validating arcade checks on pull requests', () => {
+    const workflow = fs.readFileSync('.github/workflows/system-validation.yml', 'utf8');
+
+    expect(workflow).toContain('pull_request:');
+    expect(workflow).toContain('- name: Arcade registry integrity checks');
+    expect(workflow).toContain('npm test -- tests/arcade-games-validation.test.ts');
+>>>>>>> origin/main
   });
 });

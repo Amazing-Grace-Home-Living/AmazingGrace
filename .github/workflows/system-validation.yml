@@ -1,0 +1,57 @@
+name: System Validation
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Theme schema validation
+        run: npm test -- tests/text-contrast-theme-vars.test.ts tests/rebellion-skin-integration.test.ts
+
+      - name: Arcade registry integrity checks
+        run: npm test -- tests/arcade-games-validation.test.ts
+
+      - name: Game health checks - Star Matrix
+        run: npm test -- tests/starMap.test.ts
+
+      - name: Game health checks - Match Maker
+        run: npm test -- tests/canonical-matchmaker.test.ts tests/constellationState.test.ts
+
+      - name: Game health checks - Trinity
+        run: npm test -- tests/matrix-trinity-alignment.test.ts
+
+      - name: Instruction layer validation
+        run: |
+          test ! -f .github/copilot-instructions.md
+          test ! -f docs/rulesets-and-agents.md
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Build production bundle
+        run: npm run build
+
+      - name: Enforce rollback gate on failure
+        if: failure()
+        run: |
+          echo "Rollback gate engaged: this failed status blocks promotion."

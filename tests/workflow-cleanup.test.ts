@@ -2,8 +2,9 @@ import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 
 describe('workflow cleanup', () => {
-  it('has the expected workflows in the repository', () => {
+  it('keeps only the unified system validation workflow', () => {
     expect(fs.readdirSync('.github/workflows').sort()).toEqual([
+<<<<<<< HEAD
       'README.md',
       'ci.yml',
       'deploy.yml',
@@ -53,5 +54,24 @@ describe('workflow cleanup', () => {
     expect(placeholderPattern.test('<section>TODO</section>')).toBe(true);
     expect(placeholderPattern.test('<div>placeholder text</div>')).toBe(true);
     expect(placeholderPattern.test('<input placeholder=\"Your name\">')).toBe(false);
+=======
+      'system-validation.yml',
+    ]);
+  });
+
+  it('validates unified workflow structure and key checks', () => {
+    const workflow = fs.readFileSync('.github/workflows/system-validation.yml', 'utf8');
+
+    expect(workflow).toContain('branches: [main]');
+    expect(workflow).toContain('node-version: 20');
+    expect(workflow).toContain('- name: Theme schema validation');
+    expect(workflow).toContain('- name: Arcade registry integrity checks');
+    expect(workflow).toContain('- name: Game health checks - Star Matrix');
+    expect(workflow).toContain('- name: Game health checks - Match Maker');
+    expect(workflow).toContain('- name: Game health checks - Trinity');
+    expect(workflow).toContain('- name: Instruction layer validation');
+    expect(workflow).toContain('- name: Enforce rollback gate on failure');
+    expect(workflow).toContain('if: failure()');
+>>>>>>> origin/main
   });
 });
