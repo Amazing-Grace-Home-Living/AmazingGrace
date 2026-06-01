@@ -218,10 +218,7 @@ describe('Arcade Game Smoke Tests', () => {
 
           const size = script.length;
 
-          // Warn if inline script is over 50KB
-          if (size > 50000) {
-            console.warn(`${game.name} has large inline script (${Math.round(size/1024)}KB) - consider externalizing`);
-          }
+          // Fail if over 100KB (should definitely be external)
 
           // Fail if over 100KB (should definitely be external)
           expect(
