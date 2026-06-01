@@ -16,16 +16,15 @@ export default defineConfig({
         contact:           resolve(__dirname, "contact/index.html"),
         matrix:            resolve(__dirname, "matrix.html"),
         arcade:            resolve(__dirname, "arcade/index.html"),
-        arcadeNexusMatrix:  resolve(__dirname, "arcade/nexus-matrix/index.html"),
-        arcadeJanus:       resolve(__dirname, "arcade/janus/index.html"),
         arcadeMatrix:      resolve(__dirname, "arcade/matrix-of-conscience/index.html"),
         arcadeMatrixTerminal: resolve(__dirname, "arcade/matrix-of-conscience-terminal/index.html"),
         arcadeLoreArchive: resolve(__dirname, "arcade/lore-archive/lore-archive.html"),
         matrixConscienceIndex: resolve(__dirname, "matrix-of-conscience/index.html"),
         arcadeCertificates: resolve(__dirname, "arcade/certificates/index.html"),
         arcadeBibleStudy:  resolve(__dirname, "arcade/bible-study/index.html"),
-        arcadeNexusArcade:  resolve(__dirname, "arcade/nexus-arcade/index.html"),
         arcadeSyndicateSiege: resolve(__dirname, "arcade/syndicate-siege/index.html"),
+        arcadeSevenStars:  resolve(__dirname, "arcade/seven-stars/index.html"),
+        arcadeTowerDefense: resolve(__dirname, "arcade/tower-defense/index.html"),
         ministry:          resolve(__dirname, "ministry/index.html"),
         ministryBibleJourney: resolve(__dirname, "ministry/bible-journey.html"),
         ministryTheRedQueen:  resolve(__dirname, "ministry/the-red-queen.html"),
@@ -52,7 +51,6 @@ export default defineConfig({
         audioLibrary:        resolve(__dirname, "audio-library/index.html"),
         storiesLampInWindow: resolve(__dirname, "stories/books/the-lamp-in-the-window.html"),
         storiesElla:       resolve(__dirname, "stories/characters/ella.html"),
-        matrixApp:         resolve(__dirname, "arcade/matrix-app/index.html"),
         news:              resolve(__dirname, "news/index.html"),
         newsZykoLearn:     resolve(__dirname, "news/articles/zyko-learn.html"),
         newsFutureArticles: resolve(__dirname, "news/articles/future-articles.html"),
@@ -82,21 +80,17 @@ export default defineConfig({
             resolve(__dirname, 'stories/library.json'),
             resolve(__dirname, 'dist/stories/library.json')
           );
+          // Preserve legacy non-module arcade runtime scripts required by
+          // syndicate-siege, lore-archive, and matrix-of-conscience-terminal pages.
+          cpSync(
+            resolve(__dirname, 'arcade/js'),
+            resolve(__dirname, 'dist/arcade/js'),
+            { recursive: true }
+          );
           console.log('✓ Copied stories/library.json to dist/stories/');
+          console.log('✓ Copied arcade runtime scripts to dist/arcade/js/');
         } catch (err) {
-          console.error('Failed to copy library.json:', err);
-        }
-
-        // Copy arcade runtime scripts that are loaded as classic scripts
-        // (not bundled via Vite) so they are available in production builds.
-        try {
-          const srcArcadeJs = resolve(__dirname, 'arcade/js');
-          const distArcadeJs = resolve(__dirname, 'dist/arcade/js');
-          mkdirSync(distArcadeJs, { recursive: true });
-          cpSync(srcArcadeJs, distArcadeJs, { recursive: true });
-          console.log('✓ Copied arcade/js to dist/arcade/js');
-        } catch (err) {
-          console.error('Failed to copy arcade/js:', err);
+          console.error('Failed to copy build artifacts:', err);
         }
       }
     }
