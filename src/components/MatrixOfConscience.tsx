@@ -6,6 +6,9 @@ import { useTowerDefenseHUD } from "../modules/tower-defense/useTowerDefenseHUD"
 import { useSevenStarsHUD } from "../modules/seven-stars/useSevenStarsHUD";
 // @ts-ignore
 import { useBibleStudyHUD } from "../modules/bible-study/useBibleStudyHUD";
+// @ts-ignore
+import SpiritualFormationPanel from "../spiritual/SpiritualFormationPanel";
+
 
 const TELEMETRY_ENDPOINT = "https://script.google.com/macros/s/AKfycbyq6jzCVGtoOTcid-LzD_njmuuOOSwJrhktU3ya1GKXLZI9jp6yCMJzlrdvyNb1fpkb/exec";
 
@@ -214,6 +217,9 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
             <button className={`mc-nav-btn ${activeTab === "sevenstars" ? "active" : ""}`} onClick={() => setActiveTab("sevenstars")}>
               Seven Stars Status
             </button>
+            <button className={`mc-nav-btn ${activeTab === "formation" ? "active" : ""}`} onClick={() => setActiveTab("formation")}>
+              Spiritual Formation
+            </button>
           </div>
         </header>
 
@@ -285,7 +291,7 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
             </div>
           </section>
 
-          {activeTab === "calibration" ? (
+          {activeTab === "calibration" && (
             <section className="mc-card mc-control-panel">
               <h2>M45 Constellation Shifter</h2>
               <p className="mc-panel-desc">Align neighbor nodes linearly to resolve localized database entropy metrics.</p>
@@ -308,7 +314,9 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
                 ))}
               </div>
             </section>
-          ) : (
+          )}
+
+          {activeTab === "sevenstars" && (
             <section className="mc-card mc-control-panel">
               <h2>Seven Stars Alignment</h2>
               {selectedChurchIndex === null ? (
@@ -434,6 +442,12 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
                   </div>
                 </div>
               )}
+            </section>
+          )}
+
+          {activeTab === "formation" && (
+            <section className="mc-card mc-control-panel">
+              <SpiritualFormationPanel />
             </section>
           )}
         </div>

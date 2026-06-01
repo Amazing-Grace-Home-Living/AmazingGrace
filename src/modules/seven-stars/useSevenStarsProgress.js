@@ -3,7 +3,7 @@ import { emit, Events } from "../../core/eventBus";
 import { useSevenStarsLore } from "./useSevenStarsLore";
 
 export function useSevenStarsProgress() {
-  const { setHUD } = useHUD();
+  const { hud, setHUD } = useHUD();
   const { stars } = useSevenStarsLore();
 
   function collectStar(id) {
@@ -41,5 +41,5 @@ export function useSevenStarsProgress() {
     });
   }
 
-  return { collectStar };
+  return { progress: hud?.progress, collectStar };
 }
