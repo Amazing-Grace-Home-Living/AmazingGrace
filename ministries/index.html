@@ -305,6 +305,7 @@
             box-shadow: 0 0 20px var(--nebula);
             border-radius: 12px;
             position: relative;
+            touch-action: none;
         }
 
         @media (max-width: 420px) {
@@ -383,6 +384,19 @@
             0%,100% { transform: translateX(0); }
             25%     { transform: translateX(-5px); }
             75%     { transform: translateX(5px); }
+        }
+
+        .square.drag-source {
+            transform: scale(1.1);
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(255,215,0,0.6);
+            z-index: 10;
+        }
+
+        .square.drop-target {
+            transform: translateY(-3px);
+            border-color: white;
+            box-shadow: 0 0 18px rgba(255,255,255,0.5);
         }
 
         /* Puzzle message */
@@ -621,6 +635,8 @@
     let puzzleScore = 0;
     let puzzleSolved = false;
     let boardLocked = false;
+    let dragState = null;
+    const MIN_DRAG_DISTANCE = 16;
 
     function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
@@ -708,6 +724,7 @@
 
                 sq.addEventListener('click', () => handleCellClick(r, c));
                 sq.addEventListener('keydown', (e) => handleCellKey(e, r, c));
+                sq.addEventListener('pointerdown', (e) => onPointerDown(e, r, c));
                 el.appendChild(sq);
             }
         }
@@ -810,6 +827,128 @@
                 if (newCell) newCell.classList.add('sq-selected');
             }
         }
+    }
+
+    function clearDragClasses() {
+        document.querySelectorAll('.drag-source, .drop-target').forEach(el => {
+            el.classList.remove('drag-source', 'drop-target');
+        });
+    }
+
+    function resolveDragTarget(event) {
+        if (!dragState) return null;
+
+        const targetTile = document.elementFromPoint(event.clientX, event.clientY);
+        if (targetTile && targetTile.classList.contains('square')) {
+            const row = parseInt(targetTile.dataset.r, 10);
+            const col = parseInt(targetTile.dataset.c, 10);
+            if (isAdjacent(dragState.row, dragState.col, row, col)) {
+                return { row, col, tile: targetTile };
+            }
+        }
+
+        // Fallback: infer direction from drag delta
+        const dx = event.clientX - dragState.startX;
+        const dy = event.clientY - dragState.startY;
+        if (Math.abs(dx) < MIN_DRAG_DISTANCE && Math.abs(dy) < MIN_DRAG_DISTANCE) return null;
+
+        let targetRow = dragState.row;
+        let targetCol = dragState.col;
+
+        if (Math.abs(dx) > Math.abs(dy)) {
+            targetCol += dx > 0 ? 1 : -1;
+        } else {
+            targetRow += dy > 0 ? 1 : -1;
+        }
+
+        if (targetRow < 0 || targetRow >= ROWS || targetCol < 0 || targetCol >= COLS) return null;
+
+        const inferredTile = getCell(targetRow, targetCol);
+        return inferredTile ? { row: targetRow, col: targetCol, tile: inferredTile } : null;
+    }
+
+    function onPointerDown(event, row, col) {
+        if (puzzleSolved || boardLocked) return;
+
+        // Cancel any in-progress drag before starting a new one
+        if (dragState) {
+            if (dragState.tile.hasPointerCapture(dragState.pointerId)) {
+                dragState.tile.releasePointerCapture(dragState.pointerId);
+            }
+            dragState.tile.removeEventListener('pointermove', onPointerMove);
+            dragState.tile.removeEventListener('pointerup', onPointerUp);
+            dragState.tile.removeEventListener('pointercancel', onPointerCancel);
+            clearDragClasses();
+            dragState = null;
+        }
+
+        const tile = event.currentTarget;
+        dragState = {
+            pointerId: event.pointerId,
+            startX: event.clientX,
+            startY: event.clientY,
+            row,
+            col,
+            tile,
+            target: null
+        };
+
+        clearDragClasses();
+        tile.classList.add('drag-source');
+        tile.setPointerCapture(event.pointerId);
+        tile.addEventListener('pointermove', onPointerMove);
+        tile.addEventListener('pointerup', onPointerUp);
+        tile.addEventListener('pointercancel', onPointerCancel);
+    }
+
+    function onPointerMove(event) {
+        if (!dragState || event.pointerId !== dragState.pointerId) return;
+
+        clearDragClasses();
+        dragState.tile.classList.add('drag-source');
+
+        const target = resolveDragTarget(event);
+        if (target) {
+            target.tile.classList.add('drop-target');
+            dragState.target = target;
+        } else {
+            dragState.target = null;
+        }
+    }
+
+    function onPointerUp(event) {
+        if (!dragState || event.pointerId !== dragState.pointerId) return;
+
+        const { tile, pointerId, row, col, target } = dragState;
+
+        if (tile.hasPointerCapture(pointerId)) {
+            tile.releasePointerCapture(pointerId);
+        }
+        tile.removeEventListener('pointermove', onPointerMove);
+        tile.removeEventListener('pointerup', onPointerUp);
+        tile.removeEventListener('pointercancel', onPointerCancel);
+
+        clearDragClasses();
+        dragState = null;
+
+        if (target) {
+            handleCellClick(row, col);
+            setTimeout(() => handleCellClick(target.row, target.col), 50);
+        }
+    }
+
+    function onPointerCancel(event) {
+        if (!dragState || event.pointerId !== dragState.pointerId) return;
+
+        if (dragState.tile.hasPointerCapture(event.pointerId)) {
+            dragState.tile.releasePointerCapture(event.pointerId);
+        }
+        dragState.tile.removeEventListener('pointermove', onPointerMove);
+        dragState.tile.removeEventListener('pointerup', onPointerUp);
+        dragState.tile.removeEventListener('pointercancel', onPointerCancel);
+
+        clearDragClasses();
+        dragState = null;
     }
 
     async function processMatches(matches) {
