@@ -1,9 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useTempleRouter } from "./useTempleRouter";
 import { useHUD } from "../hud/HUDContext";
 import { useOracleWhispers } from "./useOracleWhispers";
 import TempleNode from "./TempleNode";
-import TemplePathway from "./TemplePathway";
 import GuardianNode from "./GuardianNode";
 import OracleWhispers from "./OracleWhispers";
 import VeilTearOverlay from "./VeilTearOverlay";
@@ -12,6 +11,7 @@ export default function TempleNavigationScreen() {
   const { unlocked, go } = useTempleRouter();
   const { hud, setHUD } = useHUD();
   const whisper = useOracleWhispers(hud);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
 
   // Clear 'justTorn' state after 4 seconds to prevent lockups
   useEffect(() => {
@@ -28,6 +28,23 @@ export default function TempleNavigationScreen() {
       return () => clearTimeout(timer);
     }
   }, [hud?.templeVeil?.justTorn, setHUD]);
+
+  // Compute 3D mouse tracking tilt angles
+  function handleMouseMove(e) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    
+    // Limits rotation to ~10 degrees max
+    const tiltX = -(y / (rect.height / 2)) * 10;
+    const tiltY = (x / (rect.width / 2)) * 10;
+    
+    setTilt({ x: tiltX, y: tiltY });
+  }
+
+  function handleMouseLeave() {
+    setTilt({ x: 0, y: 0 });
+  }
 
   if (hud?.templeVeil?.justTorn) {
     return <VeilTearOverlay />;
@@ -50,35 +67,45 @@ export default function TempleNavigationScreen() {
           className="temple-title"
           style={{
             color: "var(--neon-gold)",
-            letterSpacing: "0.3em",
+            letterSpacing: "0.35em",
             marginBottom: "5px",
-            fontSize: "2.2rem",
+            fontSize: "2.3rem",
             textShadow: "0 0 15px rgba(234, 179, 8, 0.45)",
             fontFamily: "Orbitron, monospace"
           }}
         >
           THE SACRED TEMPLE
         </h1>
-        <p style={{ color: "#475569", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "3px", fontWeight: "bold" }}>
-          Temple Navigation System — Ascended Edition
+        <p style={{ color: "var(--neon-blue)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "3px", fontWeight: "bold" }}>
+          Temple Navigation — 3D Hologram Projection Mode
         </p>
       </header>
 
-      {/* Map Area with SVG Connections */}
+      {/* Map Area tilting wrapper */}
       <div
-        className="temple-map-area"
+        className="temple-map-area holo-3d-tilt-container"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
         style={{
           position: "relative",
           width: "100%",
           maxWidth: "960px",
           height: "460px",
           margin: "0 auto",
-          border: "1px solid rgba(255, 255, 255, 0.03)",
+          border: "1px solid rgba(79, 209, 255, 0.15)",
           borderRadius: "16px",
-          background: "rgba(0,0,0,0.3)"
+          background: "rgba(5, 8, 16, 0.55)",
+          transform: `perspective(1200px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+          transformStyle: "preserve-3d",
+          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(79, 209, 255, 0.05)"
         }}
       >
-        {/* Animated Connecting Pathways (SVG) */}
+        {/* Holographic Projection Sweepers & Grids */}
+        <div className="holo-scanline" />
+        <div className="holo-grid-overlay" />
+        <div className="holo-radar-sweep" />
+
+        {/* Animated Connecting Pathways (SVG in background layer) */}
         <svg
           style={{
             position: "absolute",
@@ -86,7 +113,8 @@ export default function TempleNavigationScreen() {
             width: "100%",
             height: "100%",
             pointerEvents: "none",
-            zIndex: 1
+            zIndex: 1,
+            transform: "translateZ(0)"
           }}
         >
           {/* Matrix to Inner Court */}
@@ -165,10 +193,10 @@ export default function TempleNavigationScreen() {
           />
         </svg>
 
-        {/* Nodes layer */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 5 }}>
+        {/* Nodes layer (Floating forward in 3D space) */}
+        <div style={{ position: "absolute", inset: 0, zIndex: 5, transformStyle: "preserve-3d" }}>
           {/* Matrix of Conscience */}
-          <div style={{ position: "absolute", left: "50%", top: "82%", width: "190px", transform: "translate(-50%, -50%)" }}>
+          <div className="holo-float-node" style={{ position: "absolute", left: "50%", top: "82%", width: "190px", transform: "translate(-50%, -50%) translateZ(45px)" }}>
             <TempleNode
               label="Matrix of Conscience"
               unlocked={unlocked.matrix}
@@ -181,7 +209,7 @@ export default function TempleNavigationScreen() {
           </div>
 
           {/* Inner Court Cockpit */}
-          <div style={{ position: "absolute", left: "50%", top: "52%", width: "190px", transform: "translate(-50%, -50%)" }}>
+          <div className="holo-float-node" style={{ position: "absolute", left: "50%", top: "52%", width: "190px", transform: "translate(-50%, -50%) translateZ(45px)" }}>
             <TempleNode
               label="Inner Court Cockpit"
               unlocked={unlocked.innerCourt}
@@ -194,7 +222,7 @@ export default function TempleNavigationScreen() {
           </div>
 
           {/* Throne Room */}
-          <div style={{ position: "absolute", left: "50%", top: "18%", width: "190px", transform: "translate(-50%, -50%)" }}>
+          <div className="holo-float-node" style={{ position: "absolute", left: "50%", top: "18%", width: "190px", transform: "translate(-50%, -50%) translateZ(45px)" }}>
             <TempleNode
               label="Throne Room"
               unlocked={unlocked.throne}
@@ -205,13 +233,13 @@ export default function TempleNavigationScreen() {
               chamber="throneRoom"
             />
             {/* watch eye overlay */}
-            <div style={{ position: "absolute", top: "-30px", left: "50%", transform: "translateX(-50%)" }}>
+            <div style={{ position: "absolute", top: "-30px", left: "50%", transform: "translateX(-50%) translateZ(10px)" }}>
               <GuardianNode active={!unlocked.throne} message="Locked" />
             </div>
           </div>
 
           {/* Holy of Holies */}
-          <div style={{ position: "absolute", left: "22%", top: "18%", width: "190px", transform: "translate(-50%, -50%)" }}>
+          <div className="holo-float-node" style={{ position: "absolute", left: "22%", top: "18%", width: "190px", transform: "translate(-50%, -50%) translateZ(45px)" }}>
             <TempleNode
               label="Holy of Holies"
               unlocked={unlocked.holyOfHolies}
@@ -221,13 +249,13 @@ export default function TempleNavigationScreen() {
               isGuardianGated={true}
               chamber="holyOfHolies"
             />
-            <div style={{ position: "absolute", top: "-30px", left: "50%", transform: "translateX(-50%)" }}>
+            <div style={{ position: "absolute", top: "-30px", left: "50%", transform: "translateX(-50%) translateZ(10px)" }}>
               <GuardianNode active={!unlocked.holyOfHolies} message="Locked" />
             </div>
           </div>
 
           {/* Oracle Chamber */}
-          <div style={{ position: "absolute", left: "78%", top: "52%", width: "190px", transform: "translate(-50%, -50%)" }}>
+          <div className="holo-float-node" style={{ position: "absolute", left: "78%", top: "52%", width: "190px", transform: "translate(-50%, -50%) translateZ(45px)" }}>
             <TempleNode
               label="Oracle Chamber"
               unlocked={unlocked.oracleChamber}
@@ -237,13 +265,13 @@ export default function TempleNavigationScreen() {
               isGuardianGated={true}
               chamber="oracleChamber"
             />
-            <div style={{ position: "absolute", top: "-30px", left: "50%", transform: "translateX(-50%)" }}>
+            <div style={{ position: "absolute", top: "-30px", left: "50%", transform: "translateX(-50%) translateZ(10px)" }}>
               <GuardianNode active={!unlocked.oracleChamber} message="Locked" />
             </div>
           </div>
 
           {/* Book of Life */}
-          <div style={{ position: "absolute", left: "78%", top: "18%", width: "190px", transform: "translate(-50%, -50%)" }}>
+          <div className="holo-float-node" style={{ position: "absolute", left: "78%", top: "18%", width: "190px", transform: "translate(-50%, -50%) translateZ(45px)" }}>
             <TempleNode
               label="Book of Life"
               unlocked={unlocked.bookOfLife}
@@ -253,7 +281,7 @@ export default function TempleNavigationScreen() {
               isGuardianGated={true}
               chamber="bookOfLife"
             />
-            <div style={{ position: "absolute", top: "-30px", left: "50%", transform: "translateX(-50%)" }}>
+            <div style={{ position: "absolute", top: "-30px", left: "50%", transform: "translateX(-50%) translateZ(10px)" }}>
               <GuardianNode active={!unlocked.bookOfLife} message="Locked" />
             </div>
           </div>
