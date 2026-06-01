@@ -159,22 +159,17 @@ describe('Arcade Game Smoke Tests', () => {
           // Skip external URLs
           if (/^(https?:|mailto:|tel:|data:|javascript:|#)/i.test(ref)) continue;
 
-          // Skip empty refs
-          if (!ref.trim()) continue;
+          const cleanRef = ref.split(/[?#]/)[0].trim();
+          if (!cleanRef) continue;
 
-          // For relative paths, check they don't reference non-existent ../../src/ files
-          // during build (these should be in vite.config.ts as entries)
-          if (ref.includes('../../src/')) {
-            // This is a build-time reference - Vite should process it
-            // We can't check if it exists in src/, but we can check vite.config
-            const viteConfig = readFileSync(resolve('vite.config.ts'), 'utf-8');
+          const resolvedPath = cleanRef.startsWith('/')
+            ? resolve(cleanRef.slice(1))
+            : resolve(gameDir, cleanRef);
 
-            // The game itself should be in vite config
-            expect(
-              viteConfig,
-              `${game.name} references ../../src/ files, ensure game is in vite.config.ts`
-            ).toContain(game.path);
-          }
+          expect(
+            existsSync(resolvedPath) || existsSync(resolve(resolvedPath, 'index.html')),
+            `${game.name} has a broken local reference: ${ref}`
+          ).toBe(true);
         }
       });
     }
