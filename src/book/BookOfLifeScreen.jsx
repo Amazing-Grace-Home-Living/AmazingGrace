@@ -13,6 +13,20 @@ export default function BookOfLifeScreen() {
   const lamps = hud?.lamps?.activated || [];
   const works = hud?.bookOfWorks || [];
 
+  function getVerdict() {
+    const corruption = virtue.corruption || 0;
+    const love = virtue.love || 0;
+    const humility = virtue.humility || 0;
+    const starsCount = stars?.length || 0;
+    const lampsCount = lamps?.length || 0;
+
+    if (corruption >= 10) return { title: "Unresolved", message: \\, your path is obscured. The light awaits your return.\ };
+    if (starsCount === 7 && lampsCount === 7 && love >= 7) return { title: "Sealed", message: \\, the Seven Stars and Seven Lamps bear witness. Your name is sealed in light.\ };
+    if (humility >= 5) return { title: "Growing", message: \\, humility guides your steps. Continue in grace.\ };
+    return { title: "In Progress", message: \\, your story is still being written.\ };
+  }
+  const verdict = getVerdict();
+
   return (
     <div
       className="book-of-life"
@@ -27,6 +41,10 @@ export default function BookOfLifeScreen() {
         boxShadow: "0 0 50px rgba(212, 175, 55, 0.05)"
       }}
     >
+      <div style={{ marginBottom: "30px", padding: "20px", border: "1px solid var(--neon-gold)", borderRadius: "12px", background: "rgba(234, 179, 8, 0.05)" }}>
+        <h2 style={{ color: "var(--neon-gold)", fontSize: "1.5rem", letterSpacing: "0.1em" }}>VERDICT: {verdict.title}</h2>
+        <p style={{ color: "#e2e8f0", fontStyle: "italic" }}>"{verdict.message}"</p>
+      </div>
       <header style={{ marginBottom: "30px" }}>
         <h1
           style={{
@@ -226,3 +244,4 @@ export default function BookOfLifeScreen() {
     </div>
   );
 }
+

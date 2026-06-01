@@ -24,3 +24,4 @@ export function getHolyEncounter(hud) {
     message: "A peaceful, waiting quietness dominates the sanctuary."
   };
 }
+
