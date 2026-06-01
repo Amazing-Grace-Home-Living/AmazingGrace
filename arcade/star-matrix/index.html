@@ -1,1381 +1,425 @@
-﻿<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="description" content="Star Matrix — match star constellations in this faith-based puzzle game from Amazing Grace.">
-  <link rel="icon" type="image/png" href="../../assets/logo.png">
-  <title>Star Matrix | Nexus Arcade — Amazing Grace</title>
-  <script src="../../assets/vendor/hosted-only.js"></script>
-  <script>
-    window.AmazingGraceHostedOnly?.loadStylesheet("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;800&display=swap");
-  </script>
-  <style>
-    :root {
-      --neon-blue: #00f2ff;
-      --neon-purple: #bc13fe;
-      --neon-gold: #fbbf24;
-      --deep-space: #020617;
-      --mc-tint-rgb: 188 19 254;
-      --mc-tint-opacity: 0.06;
-      --sm-shell-max: min(96vw, 920px);
-      --sm-grid-max: min(94vw, 740px);
-      --sm-grid-gap: clamp(3px, 0.55vw, 8px);
-    }
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: radial-gradient(circle at 50% 20%, #1a0533 0%, #020617 70%);
-      color: #e2e8f0;
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      touch-action: pan-x pan-y;
-    }
-    .orbitron { font-family: 'Orbitron', sans-serif; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Star Matrix — match constellations on a 7×7 board. Swipe adjacent stars, chain combos, and reach 1000 points." />
+    <meta name="theme-color" content="#050610" />
+    <link rel="icon" type="image/png" href="../../assets/logo.png" />
+    <title>Star Matrix | Amazing Grace</title>
+    <style>
+      :root {
+        --bg: #050610;
+        --panel: rgba(16, 18, 30, 0.92);
+        --border: rgba(126, 255, 216, 0.18);
+        --accent: #7effd8;
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+      }
 
-    #sm-page-bg {
-      position: relative;
-      width: 100%;
-    }
+      *, *::before, *::after { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        background: radial-gradient(circle at 50% 20%, rgba(126,255,216,0.12), transparent 55%), var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
 
-    #sm-page-bg::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(circle at 50% 18%,
-          rgba(var(--mc-tint-rgb) / var(--mc-tint-opacity)) 0%,
-          rgba(var(--mc-tint-rgb) / 0) 65%);
-      pointer-events: none;
-      z-index: 0;
-      transition: background 320ms ease-out;
-      mix-blend-mode: screen;
-    }
+      .topbar {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--border);
+        background: rgba(5, 6, 16, 0.75);
+        backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+      .topbar a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+      .topbar a:hover { text-decoration: underline; }
 
-    .game-header {
-      width: 100%;
-      max-width: var(--sm-shell-max);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 20px;
-      border-bottom: 1px solid rgba(188,19,254,0.2);
-    }
-    .game-header a {
-      font-size: 0.65rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      text-decoration: none;
-      color: #94a3b8;
-      transition: color 0.2s;
-    }
-    .game-header a:hover { color: var(--neon-purple); }
-    .game-header a.cert-link { color: var(--neon-gold); }
-    .game-header a.cert-link:hover { color: #fcd34d; }
-    .game-title {
-      font-family: 'Orbitron', monospace;
-      font-size: 0.85rem;
-      font-weight: 900;
-      color: #fff;
-      letter-spacing: 0.05em;
-    }
+      .shell {
+        width: min(100%, 720px);
+        margin: 0 auto;
+        padding: 1.25rem 1.25rem 2rem;
+      }
 
-    .game-header-right {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-    }
+      .header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        margin: 0.75rem 0 1rem;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: clamp(1.5rem, 4vw, 2.1rem);
+        letter-spacing: 0.03em;
+      }
+      .header p {
+        margin: 0.35rem 0 0;
+        color: var(--muted);
+        line-height: 1.5;
+        max-width: 46ch;
+      }
 
-    .sm-music-btn {
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(15,23,42,0.55);
-      color: #94a3b8;
-      font-size: 0.6rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      border-radius: 999px;
-      padding: 0.45rem 0.7rem;
-      cursor: pointer;
-      transition: color 0.2s, border-color 0.2s, background 0.2s;
-    }
-    .sm-music-btn:hover { color: #e2e8f0; border-color: rgba(255,255,255,0.28); }
-    .sm-music-btn[aria-pressed="true"] {
-      color: var(--neon-blue);
-      border-color: rgba(0, 242, 255, 0.45);
-      background: rgba(0, 242, 255, 0.08);
-    }
+      .hud {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        align-items: center;
+      }
+      .hud-pill {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+        color: var(--muted);
+        min-width: 10ch;
+        text-align: center;
+      }
+      .hud-pill strong { color: var(--text); }
 
-    .hud {
-      width: 100%;
-      max-width: var(--sm-shell-max);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
-      background: rgba(15,23,42,0.6);
-      border-bottom: 1px solid rgba(188,19,254,0.1);
-    }
-    .hud-stat { text-align: center; }
-    .hud-label {
-      font-size: 0.55rem;
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      color: #64748b;
-    }
-    .hud-value {
-      font-family: 'Orbitron', monospace;
-      font-size: clamp(1rem, 2.2vw, 1.25rem);
-      font-weight: 700;
-      color: var(--neon-purple);
-    }
-    .hud-value.gold { color: var(--neon-gold); }
-    .hud-value.cyan { color: var(--neon-blue); }
+      .board-wrap {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 1rem;
+      }
 
-    .board-wrapper {
-      width: 100%;
-      max-width: var(--sm-shell-max);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 18px 12px 32px;
-    }
-    .star-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: var(--sm-grid-gap);
-      width: 100%;
-      max-width: var(--sm-grid-max);
-      aspect-ratio: 1;
-      touch-action: none;
-      overscroll-behavior: contain;
-    }
-    .star-cell {
-      border-radius: clamp(10px, 1.2vw, 16px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: clamp(1.4rem, 3.6vw, 2.4rem);
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
-      position: relative;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      padding: 0;
-      font-family: inherit;
-      line-height: 1;
-      appearance: none;
-      -webkit-appearance: none;
-      background: rgba(15, 23, 42, 0.72);
-      touch-action: none;
-    }
-    .star-cell:focus-visible {
-      outline: 2px solid var(--neon-blue);
-      outline-offset: 2px;
-    }
-    .star-cell.selected {
-      border-color: var(--neon-blue);
-      transform: scale(1.08);
-      box-shadow: 0 0 18px var(--neon-blue);
-      z-index: 10;
-    }
-    .star-cell.drag-target {
-      border-color: rgba(0, 242, 255, 0.85);
-      box-shadow: 0 0 18px rgba(0, 242, 255, 0.35);
-      transform: scale(1.04);
-      z-index: 9;
-    }
-    .star-cell.matched {
-      animation: matchPop 0.35s ease forwards;
-    }
-    @keyframes matchPop {
-      0% { transform: scale(1.2); opacity: 1; }
-      100% { transform: scale(0); opacity: 0; }
-    }
-    .star-cell[data-type="supernova"] { background: rgba(251,191,36,0.15); }
-    .star-cell[data-type="shooting"] { background: rgba(0,242,255,0.12); }
-    .star-cell[data-type="gem"] { background: rgba(52,211,153,0.12); }
-    .star-cell[data-type="rank"] { background: rgba(188,19,254,0.15); }
-    .star-cell[data-type="cosmic"] { background: rgba(248,113,113,0.12); }
+      #board {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        grid-template-rows: repeat(7, 1fr);
+        gap: 8px;
+        width: 100%;
+        max-width: 540px;
+        margin: 0 auto;
+        touch-action: manipulation;
+      }
 
-    .progress-wrap {
-      width: 100%;
-      max-width: var(--sm-grid-max);
-      margin-top: 12px;
-    }
-    .progress-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.6rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: #64748b;
-      margin-bottom: 4px;
-    }
-    .progress-bar-outer {
-      height: 6px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 99px;
-      overflow: hidden;
-    }
-    .progress-bar-inner {
-      height: 100%;
-      border-radius: 99px;
-      background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue));
-      transition: width 0.4s ease;
-    }
+      .star-cell {
+        aspect-ratio: 1 / 1;
+        border-radius: 14px;
+        border: 1px solid rgba(126,255,216,0.20);
+        background: rgba(255,255,255,0.04);
+        display: grid;
+        place-items: center;
+        font-size: clamp(1.2rem, 5vw, 2rem);
+        user-select: none;
+        cursor: pointer;
+        transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+      }
+      .star-cell:focus-visible { outline: 3px solid rgba(126,255,216,0.65); outline-offset: 2px; }
+      .star-cell.selected {
+        border-color: rgba(126,255,216,0.9);
+        background: rgba(126,255,216,0.10);
+        transform: translateY(-1px);
+      }
+      .star-cell.is-processing { cursor: progress; }
 
-    .hint-text {
-      font-size: 0.6rem;
-      color: #475569;
-      text-transform: uppercase;
-      letter-spacing: 0.2em;
-      text-align: center;
-      margin-top: 10px;
-    }
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 0.75rem;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+      }
+      button {
+        appearance: none;
+        border: 1px solid var(--border);
+        background: rgba(126,255,216,0.10);
+        color: var(--text);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        font-weight: 800;
+        min-height: 44px;
+        cursor: pointer;
+        letter-spacing: 0.03em;
+      }
+      button:hover { background: rgba(126,255,216,0.16); }
+      button:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-      margin-top: 12px;
-      max-width: var(--sm-grid-max);
-    }
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 0.6rem;
-      color: #64748b;
-    }
+      .status {
+        text-align: center;
+        color: var(--muted);
+        margin-top: 0.75rem;
+        min-height: 1.25rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <a href="../" aria-label="Back to Arcade">← Arcade</a>
+      <a href="../../" aria-label="Amazing Grace Home Living">amazinggracehl.org</a>
+    </header>
 
-    .cert-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 300;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: rgba(2,6,23,0.97);
-      overflow-y: auto;
-      padding: 1.5rem;
-    }
-    .cert-overlay.hidden { display: none !important; }
-    .cert-overlay h2 {
-      font-family: 'Orbitron', monospace;
-      font-size: clamp(1.4rem, 5vw, 2.2rem);
-      font-weight: 900;
-      color: #fff;
-      margin-bottom: 0.5rem;
-      text-shadow: 0 0 20px var(--neon-purple);
-      text-align: center;
-    }
-    .cert-canvas {
-      max-width: min(90vw, 760px);
-      border: 1px solid rgba(188,19,254,0.3);
-      border-radius: 8px;
-      margin-bottom: 1rem;
-    }
-    .cert-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      justify-content: center;
-      margin-bottom: 1rem;
-    }
-    .cert-btn {
-      padding: 0.6rem 1.2rem;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(15,23,42,0.8);
-      font-size: 0.65rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-      transition: border-color 0.2s, background 0.2s;
-    }
-    .cert-btn.purple { color: var(--neon-purple); }
-    .cert-btn.purple:hover { border-color: var(--neon-purple); background: rgba(188,19,254,0.08); }
-    .cert-btn.cyan { color: var(--neon-blue); }
-    .cert-btn.cyan:hover { border-color: var(--neon-blue); background: rgba(0,242,255,0.08); }
-    .cert-btn.green { color: #4ade80; }
-    .cert-btn.green:hover { border-color: #4ade80; background: rgba(74,222,128,0.08); }
-
-    .name-input {
-      width: 100%;
-      max-width: 320px;
-      padding: 0.6rem 1rem;
-      border-radius: 12px;
-      background: rgba(15,23,42,0.9);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: #fff;
-      font-size: 0.9rem;
-      outline: none;
-      margin-bottom: 0.75rem;
-    }
-    .name-input:focus { border-color: var(--neon-purple); }
-    .play-again-btn {
-      background: none;
-      border: none;
-      color: #475569;
-      font-size: 0.6rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.2em;
-      cursor: pointer;
-      margin-top: 0.5rem;
-      transition: color 0.2s;
-    }
-    .play-again-btn:hover { color: #94a3b8; }
-    .cert-overlay-close {
-      position: absolute;
-      top: 0.75rem;
-      right: 0.75rem;
-      background: none;
-      border: 1px solid rgba(255,255,255,0.12);
-      color: #94a3b8;
-      font-size: 1rem;
-      width: 2rem;
-      height: 2rem;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: color 0.2s, border-color 0.2s;
-    }
-    .cert-overlay-close:hover { color: #fff; border-color: rgba(255,255,255,0.35); }
-  </style>
-</head>
-<body>
-  <div id="sm-page-bg">
-    <div class="game-header">
-      <a href="..">← Back</a>
-      <div class="game-title">STAR MATRIX</div>
-      <div class="game-header-right">
-        <button class="sm-music-btn" id="sm-sound-toggle" aria-pressed="true">Sound: On</button>
-        <a class="cert-link" href="../certificates/">My Certificates</a>
-      </div>
-    </div>
-
-    <div class="hud">
-      <div class="hud-stat">
-        <div class="hud-label">Score</div>
-        <div class="hud-value" id="sm-score">0</div>
-      </div>
-      <div class="hud-stat">
-        <div class="hud-label">Target</div>
-        <div class="hud-value gold" id="sm-target">1000</div>
-      </div>
-      <div class="hud-stat">
-        <div class="hud-label">Combo</div>
-        <div class="hud-value cyan" id="sm-combo">×1</div>
-      </div>
-      <div class="hud-stat">
-        <div class="hud-label">Moves</div>
-        <div class="hud-value" id="sm-moves">30</div>
-      </div>
-    </div>
-
-    <div class="board-wrapper">
-      <div class="star-grid" id="sm-grid" role="grid" aria-label="Star Matrix game board"></div>
-
-      <div class="progress-wrap">
-        <div class="progress-label">
-          <span>Mission Progress</span>
-          <span id="sm-pct">0%</span>
+    <main class="shell">
+      <div class="header">
+        <div>
+          <h1>Star Matrix</h1>
+          <p>Swipe adjacent stars. Chain matches to reach <strong>1000</strong> points.</p>
         </div>
-        <div class="progress-bar-outer">
-          <div class="progress-bar-inner" id="sm-progress" style="width:0%" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+        <div class="hud" aria-label="Scoreboard">
+          <div class="hud-pill">Score: <strong id="score">0</strong></div>
+          <div class="hud-pill">High: <strong id="high">0</strong></div>
         </div>
       </div>
 
-      <div class="legend" aria-label="Star types">
-        <div class="legend-item">🌟 Supernova</div>
-        <div class="legend-item">💫 Shooting</div>
-        <div class="legend-item">💎 Gem</div>
-        <div class="legend-item">⭐ Rank</div>
-        <div class="legend-item">🔴 Cosmic</div>
-      </div>
-
-      <div class="hint-text">Match 3 stars of the same type to align the constellation</div>
-    </div>
-  </div>
-
-  <div id="sm-cert-overlay" class="cert-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="cert-title">
-    <button id="sm-cert-close" class="cert-overlay-close" aria-label="Close certificate overlay">×</button>
-    
-    <div id="sm-name-phase" style="display:flex; flex-direction:column; align-items:center; width:100%;">
-      <h2 id="cert-title">Constellation Aligned</h2>
-      <p style="color:#94a3b8; margin-bottom:1.5rem; text-align:center;">Enter your name for the Star Matrix Alignment Certificate.</p>
-      <input type="text" id="sm-player-name" class="name-input" placeholder="Your Name" maxlength="30">
-      <button id="sm-gen-btn" class="cert-btn purple" style="width:100%; max-width:320px; justify-content:center;">Generate Certificate</button>
-    </div>
-
-    <div id="sm-cert-phase" style="display:none; flex-direction:column; align-items:center; width:100%;">
-      <h2>Alignment Verified</h2>
-      <canvas id="sm-cert-canvas" class="cert-canvas"></canvas>
-      <div class="cert-actions">
-        <button class="cert-btn cyan" onclick="smCertPNG()">⬇ Download PNG</button>
-        <a class="cert-btn green" href="../certificates/">📜 My Certificates</a>
-      </div>
-    </div>
-
-    <button class="play-again-btn" onclick="smReset()">↺ Play Again</button>
-  </div>
+      <section class="board-wrap" aria-label="Star Matrix board">
+        <div id="board" role="grid" aria-label="Star Matrix board grid"></div>
+        <div class="controls">
+          <button id="reset-btn" type="button">Reset</button>
+          <a id="certificate-link" href="../certificates/" style="display:none; text-decoration:none;">
+            <button type="button">Claim Certificate</button>
+          </a>
+        </div>
+        <div id="status" class="status" aria-live="polite"></div>
+      </section>
+    </main>
 
     <script type="module">
-    import {
-      createInitialGrid,
-      canSwap,
-      applySwap,
-      findMatchesGrouped,
-      applyGravity
-    } from '../../js/matchmaker.js';
-    import {
-      getAppId,
-      getFirestoreDb,
-      ensureAnonymousUser,
-      assertPathSegment,
-    } from '../../src/firebase/nexus-firestore.ts';
-    import {
-      deleteDoc,
-      doc,
-      getDoc,
-      runTransaction,
-      serverTimestamp,
-      setDoc,
-    } from 'firebase/firestore';
+      import {
+        GRID_SIZE,
+        createGrid,
+        applySwap,
+        findMatches,
+        applyMatches,
+        applyGravity,
+        isAdjacent as smIsAdjacent
+      } from '../../js/matchmaker.js';
 
-    const STAR_TYPES = [
-      { id: 'heart', emoji: 'ðŸŒŸ' },
-      { id: 'star', emoji: 'ðŸ’«' },
-      { id: 'cross', emoji: 'ðŸ’Ž' },
-      { id: 'flame', emoji: 'â­' },
-      { id: 'drop', emoji: 'ðŸ”´' }
-    ];
-
-    const GRID_SIZE = 7;
-    const TARGET = 1000;
-    const MAX_MOVES = 30;
-
-    const STORAGE = Object.freeze({
-      runKey: 'star-matrix:run',
-      certKey: 'star-matrix:certificates',
-      soundKey: 'star-matrix:sound',
-    });
-
-    let board = [];
-    let score = 0;
-    let moves = MAX_MOVES;
-    let combo = 1;
-    let gameOver = false;
-    let certDataUrl = null;
-    let certId = null;
-    let isProcessing = false;
-    let dragStartTile = null;
-    let dragTargetTile = null;
-    let lastDragTargetTile = null;
-    let activePointerId = null;
-    let dragStartX = 0;
-    let dragStartY = 0;
-    let resumePayload = null;
-    let hasPersistedEnd = false;
-    let persistTimer = null;
-    let persistInFlight = false;
-    let persistQueued = false;
-
-    const SM_MUSIC_URL = new URL('../../assets/audio/storm.mp3', import.meta.url).href;
-    let smMusic = null;
-    let musicArmActive = false;
-
-    const sfx = (() => {
-      const make = (src, volume) => {
-        const audio = new Audio(src);
-        audio.preload = 'auto';
-        audio.volume = volume;
-        return audio;
-      };
-      return {
-        swap: make('../../assets/audio/badge.mp3', 0.25),
-        match: make('../../assets/audio/badge.mp3', 0.35),
-        win: make('../../assets/audio/course-clear-fanfare.mp3', 0.45),
-        fail: make('../../assets/audio/player-down.mp3', 0.25),
-      };
-    })();
-
-    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-    function isSoundEnabled() {
-      try {
-        const raw = localStorage.getItem(STORAGE.soundKey);
-        if (raw === 'off') return false;
-      } catch (_) {}
-      return true;
-    }
-
-    function setSoundEnabled(enabled) {
-      try {
-        localStorage.setItem(STORAGE.soundKey, enabled ? 'on' : 'off');
-      } catch (_) {}
-      smRenderSoundToggle();
-      if (enabled) {
-        smArmMusicStartOnGesture();
-      } else {
-        smStopMusic();
-      }
-    }
-
-    function smRenderSoundToggle() {
-      const btn = document.getElementById('sm-sound-toggle');
-      if (!btn) return;
-      const on = isSoundEnabled();
-      btn.textContent = `Sound: ${on ? 'On' : 'Off'}`;
-      btn.classList.toggle('on', on);
-      btn.setAttribute('aria-pressed', String(on));
-    }
-
-    function playSfx(name) {
-      if (!isSoundEnabled()) return;
-      const audio = sfx[name];
-      if (!audio) return;
-      try {
-        audio.currentTime = 0;
-        void audio.play();
-      } catch (_) {}
-    }
-
-    function normalizeRunPayload(raw) {
-      if (!raw || typeof raw !== 'object') return null;
-      const p = raw;
-      const b = p.board;
-      if (!Array.isArray(b) || b.length !== GRID_SIZE) return null;
-      for (const row of b) {
-        if (!Array.isArray(row) || row.length !== GRID_SIZE) return null;
-        for (const cell of row) {
-          if (cell !== null && typeof cell !== 'string') return null;
-        }
-      }
-      const nextScore = typeof p.score === 'number' && Number.isFinite(p.score) ? p.score : 0;
-      const nextMoves = typeof p.moves === 'number' && Number.isFinite(p.moves) ? p.moves : MAX_MOVES;
-      const nextCombo = typeof p.combo === 'number' && Number.isFinite(p.combo) ? p.combo : 1;
-      const updatedAt = typeof p.updatedAt === 'number' && Number.isFinite(p.updatedAt) ? p.updatedAt : 0;
-      return { board: b, score: nextScore, moves: nextMoves, combo: nextCombo, updatedAt };
-    }
-
-    function loadLocalRun() {
-      try {
-        const raw = JSON.parse(localStorage.getItem(STORAGE.runKey) || 'null');
-        return normalizeRunPayload(raw);
-      } catch (_) {
-        return null;
-      }
-    }
-
-    function saveLocalRun() {
-      try {
-        const payload = { board, score, moves, combo, updatedAt: Date.now() };
-        localStorage.setItem(STORAGE.runKey, JSON.stringify(payload));
-      } catch (_) {}
-    }
-
-    async function clearSavedRun() {
-      try {
-        localStorage.removeItem(STORAGE.runKey);
-      } catch (_) {}
-
-      try {
-        const db = getFirestoreDb();
-        if (!db) return;
-        const user = await ensureAnonymousUser();
-        if (!user) return;
-
-        const appId = getAppId('arcade');
-        assertPathSegment('appId', appId);
-        assertPathSegment('userId', user.uid);
-        await deleteDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'game_state', 'star_matrix'));
-      } catch (err) {
-        console.warn('Failed to delete saved run from Firestore:', err);
-      }
-    }
-
-    function queuePersistRun() {
-      saveLocalRun();
-      if (persistTimer) return;
-      persistTimer = window.setTimeout(() => {
-        persistTimer = null;
-        void persistRemoteRun();
-      }, 900);
-    }
-
-    async function persistRemoteRun() {
-      if (persistInFlight) {
-        persistQueued = true;
-        return;
-      }
-      persistInFlight = true;
-      try {
-        const db = getFirestoreDb();
-        if (!db) return;
-        const user = await ensureAnonymousUser();
-        if (!user) return;
-
-        const appId = getAppId('arcade');
-        assertPathSegment('appId', appId);
-        assertPathSegment('userId', user.uid);
-        await setDoc(
-          doc(db, 'artifacts', appId, 'users', user.uid, 'game_state', 'star_matrix'),
-          { board, score, moves, combo, updatedAt: serverTimestamp() },
-          { merge: true }
-        );
-      } catch (_) {
-        // Fallback gracefully to local storage coverage
-      } finally {
-        persistInFlight = false;
-        if (persistQueued) {
-          persistQueued = false;
-          void persistRemoteRun();
-        }
-      }
-    }
-
-    async function loadRemoteRun() {
-      const db = getFirestoreDb();
-      if (!db) return null;
-      const user = await ensureAnonymousUser();
-      if (!user) return null;
-      const appId = getAppId('arcade');
-      assertPathSegment('appId', appId);
-      assertPathSegment('userId', user.uid);
-      const snap = await getDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'game_state', 'star_matrix'));
-      if (!snap.exists()) return null;
-      const data = snap.data();
-      return normalizeRunPayload({
-        board: data.board,
-        score: data.score,
-        moves: data.moves,
-        combo: data.combo,
-        updatedAt: Date.now(),
-      });
-    }
-
-    function showResumeOverlay(payload, sourceLabel) {
-      resumePayload = payload;
-      const overlay = document.getElementById('sm-resume-overlay');
-      const meta = document.getElementById('sm-resume-meta');
-      if (meta) {
-        meta.textContent = `Saved run found (${sourceLabel}) â€” Score ${payload.score}, Moves ${payload.moves}, Combo Ã—${payload.combo}.`;
-      }
-      overlay.classList.remove('hidden');
-      document.getElementById('sm-page-bg').inert = true;
-      setTimeout(() => document.getElementById('sm-resume-btn')?.focus(), 80);
-    }
-
-    function hideResumeOverlay() {
-      const overlay = document.getElementById('sm-resume-overlay');
-      overlay.classList.add('hidden');
-      document.getElementById('sm-page-bg').inert = false;
-    }
-
-    function showGameOverOverlay() {
-      const overlay = document.getElementById('sm-gameover-overlay');
-      const scoreDisplay = document.querySelector('#sm-gameover-score span');
-      if (scoreDisplay) {
-        scoreDisplay.textContent = score.toString();
-      }
-      overlay.classList.remove('hidden');
-      document.getElementById('sm-page-bg').inert = true;
-      setTimeout(() => document.getElementById('sm-tryagain-btn')?.focus(), 80);
-    }
-
-    function hideGameOverOverlay() {
-      const overlay = document.getElementById('sm-gameover-overlay');
-      overlay.classList.add('hidden');
-      document.getElementById('sm-page-bg').inert = false;
-    }
-
-    async function smStartMusic() {
-      if (!smMusic) {
-        smMusic = new Audio(SM_MUSIC_URL);
-        smMusic.loop = true;
-        smMusic.preload = 'none';
-        smMusic.volume = 0.28;
-      }
-      try {
-        await smMusic.play();
-        return true;
-      } catch (_) {
-        return false;
-      }
-    }
-
-    function smStopMusic() {
-      if (!smMusic) return;
-      try {
-        smMusic.pause();
-        smMusic.currentTime = 0;
-      } catch (_) {}
-    }
-
-    function smArmMusicStartOnGesture() {
-      if (musicArmActive) return;
-      musicArmActive = true;
-
-      const startOnFirstGesture = async () => {
-        musicArmActive = false;
-        if (!isSoundEnabled()) return;
-        const ok = await smStartMusic();
-        if (!ok) {
-          try {
-            localStorage.setItem(STORAGE.soundKey, 'off');
-          } catch (_) {}
-          smRenderSoundToggle();
-        }
+      const ICONS = {
+        heart: '💠',   // supernova
+        star: '🌟',    // shooting
+        cross: '✦',    // gem
+        flame: '🔥',   // rank
+        drop: '☄️'     // cosmic
       };
 
-      document.addEventListener('pointerdown', startOnFirstGesture, { once: true, capture: true });
-      document.addEventListener('keydown', startOnFirstGesture, { once: true, capture: true });
-    }
+      const SCORE_KEY = 'star_matrix_high_score';
 
-    function parseTileRC(tile) {
-      if (!tile) return null;
-      const row = Number.parseInt(tile.dataset.row, 10);
-      const col = Number.parseInt(tile.dataset.col, 10);
-      if (![row, col].every(Number.isFinite)) return null;
-      return { row, col };
-    }
+      const boardEl = document.getElementById('board');
+      const scoreEl = document.getElementById('score');
+      const highEl = document.getElementById('high');
+      const statusEl = document.getElementById('status');
+      const resetBtn = document.getElementById('reset-btn');
+      const certificateLink = document.getElementById('certificate-link');
 
-    function isAdjacentTiles(tileA, tileB) {
-      const a = parseTileRC(tileA);
-      const b = parseTileRC(tileB);
-      if (!a || !b) return false;
-      return (
-        (Math.abs(a.row - b.row) === 1 && a.col === b.col) ||
-        (Math.abs(a.col - b.col) === 1 && a.row === b.row)
-      );
-    }
+      let gridData = createGrid();
+      let score = 0;
+      let high = Number(localStorage.getItem(SCORE_KEY) || 0);
+      highEl.textContent = String(high);
 
-    function setDragTarget(tile) {
-      const nextTarget = tile && tile !== dragStartTile && isAdjacentTiles(dragStartTile, tile) ? tile : null;
-      dragTargetTile = nextTarget;
-      if (lastDragTargetTile && lastDragTargetTile !== nextTarget) {
-        lastDragTargetTile.classList.remove('drag-target');
+      let isProcessing = false;
+      let dragStartTile = null;
+      let dragTargetTile = null;
+      let dragStartPos = null;
+      let activePointerId = null;
+
+      const tiles = [];
+
+      function kindOf(cell) {
+        if (!cell) return null;
+        return typeof cell === 'string' ? cell : cell.kind;
       }
-      if (nextTarget && lastDragTargetTile !== nextTarget) {
-        nextTarget.classList.add('drag-target');
-      }
-      lastDragTargetTile = nextTarget;
-    }
 
-    function smCreateStarGrid() {
-      const grid = [];
-      const starIds = STAR_TYPES.map(t => t.id);
-
-      for (let r = 0; r < GRID_SIZE; r++) {
-        grid[r] = [];
-        for (let c = 0; c < GRID_SIZE; c++) {
-          let kind;
-          do {
-            kind = starIds[Math.floor(Math.random() * starIds.length)];
-          } while (
-            (c >= 2 && grid[r][c - 1] === kind && grid[r][c - 2] === kind) ||
-            (r >= 2 && grid[r - 1][c] === kind && grid[r - 2][c] === kind)
-          );
-          grid[r][c] = kind;
+      function renderBoard() {
+        if (!tiles.length) return;
+        for (let r = 0; r < GRID_SIZE; r++) {
+          for (let c = 0; c < GRID_SIZE; c++) {
+            const idx = r * GRID_SIZE + c;
+            const cell = tiles[idx];
+            const kind = kindOf(gridData[r][c]);
+            cell.dataset.row = String(r);
+            cell.dataset.col = String(c);
+            cell.dataset.kind = kind || '';
+            cell.textContent = ICONS[kind] || '·';
+            cell.classList.toggle('is-processing', isProcessing);
+          }
         }
       }
-      return grid;
-    }
 
-    function smInit(state) {
-      const next = state || null;
-      score = next?.score ?? 0;
-      moves = next?.moves ?? MAX_MOVES;
-      combo = next?.combo ?? 1;
-      gameOver = false;
-      hasPersistedEnd = false;
-      certDataUrl = null;
-      certId = null;
-      isProcessing = false;
-      dragStartTile = null;
-      dragTargetTile = null;
-      activePointerId = null;
-      dragStartX = 0;
-      dragStartY = 0;
-      board = next?.board ?? smCreateStarGrid();
-      smRender();
-      smUpdateHUD();
-      
-      if (next) {
-        smCheckGameEnd();
-        return;
-      }
-      queuePersistRun();
-    }
-
-    function smRender() {
-      const grid = document.getElementById('sm-grid');
-      if (!grid) return;
-      grid.innerHTML = '';
-
-      for (let r = 0; r < GRID_SIZE; r++) {
-        for (let c = 0; c < GRID_SIZE; c++) {
-          const starKind = board[r][c];
-          const star = STAR_TYPES.find(t => t.id === starKind) || STAR_TYPES[0];
-          const cell = document.createElement('button');
-          cell.type = 'button';
-          cell.className = 'star-cell';
-          cell.setAttribute('data-row', r);
-          cell.setAttribute('data-col', c);
-          cell.setAttribute('data-type', star.id);
-          cell.setAttribute('role', 'gridcell');
-          cell.setAttribute('aria-label', star.id + ' star');
-          cell.setAttribute('aria-selected', 'false');
-          cell.textContent = star.emoji;
-          cell.addEventListener('pointerdown', onPointerDown);
-          cell.addEventListener('pointermove', onPointerMove);
-          cell.addEventListener('pointerup', onPointerUp);
-          cell.addEventListener('pointercancel', onPointerCancel);
-          grid.appendChild(cell);
+      function setScore(nextScore) {
+        score = nextScore;
+        scoreEl.textContent = String(score);
+        if (score > high) {
+          high = score;
+          localStorage.setItem(SCORE_KEY, String(high));
+          highEl.textContent = String(high);
+        }
+        if (score >= 1000) {
+          certificateLink.style.display = 'inline-block';
+          statusEl.textContent = 'Threshold reached. Claim your certificate.';
         }
       }
-    }
 
-    function smUpdateHUD() {
-      document.getElementById('sm-score').textContent = score;
-      document.getElementById('sm-target').textContent = TARGET;
-      document.getElementById('sm-combo').textContent = 'Ã—' + combo;
-      document.getElementById('sm-moves').textContent = moves;
-      const pct = Math.min(100, Math.round((score / TARGET) * 100));
-      document.getElementById('sm-pct').textContent = pct + '%';
-      const bar = document.getElementById('sm-progress');
-      bar.style.width = pct + '%';
-      bar.setAttribute('aria-valuenow', pct);
-    }
-
-    function onPointerDown(e) {
-      if (gameOver || isProcessing || moves <= 0) return;
-      if (dragStartTile || activePointerId !== null) return;
-      const tile = e.currentTarget;
-      dragStartTile = tile;
-      dragTargetTile = tile;
-      activePointerId = e.pointerId;
-      dragStartX = e.clientX;
-      dragStartY = e.clientY;
-      tile.classList.add('selected');
-      tile.setAttribute('aria-selected', 'true');
-      if (e.cancelable) e.preventDefault();
-      e.currentTarget.setPointerCapture(e.pointerId);
-    }
-
-    function onPointerMove(e) {
-      if (e.pointerId !== activePointerId) return;
-      if (!dragStartTile) return;
-      if (e.cancelable) e.preventDefault();
-      const elementAtPoint = document.elementFromPoint(e.clientX, e.clientY);
-      const tile = elementAtPoint ? elementAtPoint.closest('.star-cell') : null;
-      setDragTarget(tile);
-    }
-
-    function onPointerUp(e) {
-      if (e.pointerId !== activePointerId) return;
-      if (!dragStartTile) return;
-      if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-        e.currentTarget.releasePointerCapture(e.pointerId);
-      }
-
-      const elementAtPoint = document.elementFromPoint(e.clientX, e.clientY);
-      const dragEndTile = (elementAtPoint ? elementAtPoint.closest('.star-cell') : null) || dragTargetTile || inferSwipeNeighbor(e);
-
-      if (dragEndTile && dragEndTile !== dragStartTile) {
-        attemptSwap(dragStartTile, dragEndTile);
-      }
-
-      resetDragState();
-    }
-
-    function inferSwipeNeighbor(e) {
-      if (!dragStartTile) return null;
-      const deltaX = e.clientX - dragStartX;
-      const deltaY = e.clientY - dragStartY;
-      const rect = dragStartTile.getBoundingClientRect();
-      const swipeThreshold = Math.max(18, Math.min(48, Math.round(Math.min(rect.width, rect.height) * 0.35)));
-      if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) < swipeThreshold) return null;
-
-      const row = Number.parseInt(dragStartTile.dataset.row, 10);
-      const col = Number.parseInt(dragStartTile.dataset.col, 10);
-      if (![row, col].every(Number.isFinite)) return null;
-
-      let targetRow = row;
-      let targetCol = col;
-      if (Math.abs(deltaX) > Math.abs(deltaY)) {
-        targetCol += deltaX > 0 ? 1 : -1;
-      } else {
-        targetRow += deltaY > 0 ? 1 : -1;
-      }
-
-      if (targetRow < 0 || targetRow >= GRID_SIZE || targetCol < 0 || targetCol >= GRID_SIZE) return null;
-      return document.querySelector(`.star-cell[data-row="${targetRow}"][data-col="${targetCol}"]`);
-    }
-
-    function onPointerCancel(e) {
-      if (e.pointerId !== activePointerId) return;
-      resetDragState();
-    }
-
-    function resetDragState() {
-      if (dragStartTile) {
-        dragStartTile.classList.remove('selected');
-        dragStartTile.setAttribute('aria-selected', 'false');
-      }
-      if (lastDragTargetTile) lastDragTargetTile.classList.remove('drag-target');
-      dragStartTile = null;
-      dragTargetTile = null;
-      lastDragTargetTile = null;
-      activePointerId = null;
-      dragStartX = 0;
-      dragStartY = 0;
-    }
-
-    function attemptSwap(tileA, tileB) {
-      const rowA = Number.parseInt(tileA.dataset.row, 10);
-      const colA = Number.parseInt(tileA.dataset.col, 10);
-      const rowB = Number.parseInt(tileB.dataset.row, 10);
-      const colB = Number.parseInt(tileB.dataset.col, 10);
-
-      if (![rowA, colA, rowB, colB].every(Number.isFinite)) return;
-      if (
-        rowA < 0 || rowA >= GRID_SIZE || colA < 0 || colA >= GRID_SIZE ||
-        rowB < 0 || rowB >= GRID_SIZE || colB < 0 || colB >= GRID_SIZE
-      ) return;
-
-      const isAdjacent = (
-        (Math.abs(rowA - rowB) === 1 && colA === colB) ||
-        (Math.abs(colA - colB) === 1 && rowA === rowB)
-      );
-
-      if (!isAdjacent) return;
-      smSwap(rowA, colA, rowB, colB);
-    }
-
-    function smSwap(r1, c1, r2, c2) {
-      if (moves <= 0 || gameOver || isProcessing) return;
-      if (!canSwap(null, r1, c1, r2, c2)) return;
-
-      isProcessing = true;
-      playSfx('swap');
-      board = applySwap(board, r1, c1, r2, c2);
-      smRender();
-
-      setTimeout(() => {
-        const matches = findMatchesGrouped(board);
-        if (matches.length === 0) {
-          board = applySwap(board, r1, c1, r2, c2);
-          smRender();
-          playSfx('fail');
-          isProcessing = false;
-          return;
-        }
-
-        moves--;
-        smUpdateHUD();
-        queuePersistRun();
-        setTimeout(() => void smResolveMatches(), 220);
-      }, 180);
-    }
-
-    function markMatched(cells) {
-      for (const { r, c } of cells) {
-        const el = document.querySelector(`.star-cell[data-row="${r}"][data-col="${c}"]`);
-        if (el) el.classList.add('matched');
-      }
-    }
-
-    async function smResolveMatches() {
-      if (gameOver) {
+      function resetGame() {
         isProcessing = false;
-        return;
+        resetDragState();
+        gridData = createGrid();
+        setScore(0);
+        certificateLink.style.display = 'none';
+        statusEl.textContent = '';
+        renderBoard();
       }
 
-      while (true) {
-        const matches = findMatchesGrouped(board);
-        if (matches.length === 0) break;
-
-        const clearedCells = matches.flat();
-        markMatched(clearedCells);
-        playSfx('match');
-        await sleep(180);
-
-        const pts = clearedCells.length * 10 * combo;
-        score += pts;
-        if (clearedCells.length >= 5) combo = Math.min(combo + 1, 5);
-        smUpdateHUD();
-
-        clearedCells.forEach(({ r, c }) => {
-          board[r][c] = null;
-        });
-        smRender();
-        await sleep(180);
-
-        board = applyGravity(board);
-        smRender();
-        await sleep(180);
-      }
-
-      combo = 1;
-      smUpdateHUD();
-      queuePersistRun();
-      isProcessing = false;
-      smCheckGameEnd();
-    }
-
-    async function smPersistEnd(outcome) {
-      if (hasPersistedEnd) return;
-      hasPersistedEnd = true;
-
-      const db = getFirestoreDb();
-      if (!db) return;
-      const user = await ensureAnonymousUser();
-      if (!user) return;
-
-      const appId = getAppId('arcade');
-      assertPathSegment('appId', appId);
-      assertPathSegment('userId', user.uid);
-
-      const scoreToPersist = score;
-      const statsRef = doc(db, 'artifacts', appId, 'users', user.uid, 'game_stats', 'star_matrix');
-
-      await runTransaction(db, async (tx) => {
-        const snap = await tx.get(statsRef);
-        const data = snap.exists() ? snap.data() : null;
-        const prevHigh = typeof data?.highScore === 'number' && Number.isFinite(data.highScore) ? data.highScore : 0;
-        const highScore = Math.max(prevHigh, scoreToPersist);
-        const clears = typeof data?.clears === 'number' && Number.isFinite(data.clears) ? data.clears : 0;
-        const nextClears = outcome === 'win' ? clears + 1 : clears;
-
-        tx.set(
-          statsRef,
-          {
-            lastScore: scoreToPersist,
-            highScore,
-            clears: nextClears,
-            lastOutcome: outcome,
-            updatedAt: serverTimestamp(),
-          },
-          { merge: true }
-        );
-      });
-    }
-
-    function smCheckGameEnd() {
-      if (score >= TARGET && !gameOver) {
-        gameOver = true;
-        void smPersistEnd('win');
-        setTimeout(smShowCert, 400);
-        return;
-      }
-      if (moves <= 0 && !gameOver) {
-        gameOver = true;
-        void smPersistEnd('lose');
-        setTimeout(showGameOverOverlay, 400);
-      }
-    }
-
-    function smGenCertId() {
-      try {
-        if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-          return 'SM-' + crypto.randomUUID().replace(/-/g, '').slice(0, 12).toUpperCase();
+      function resetDragState() {
+        if (dragStartTile) {
+          dragStartTile.classList.remove('selected');
+          dragStartTile.setAttribute('aria-selected', 'false');
         }
-      } catch (_) {}
-      return 'SM-' + Date.now().toString(36).toUpperCase();
-    }
-
-    function smShowCert() {
-      const overlay = document.getElementById('sm-cert-overlay');
-      overlay.classList.remove('hidden');
-      document.getElementById('sm-page-bg').inert = true;
-      setTimeout(() => document.getElementById('sm-cert-close').focus(), 80);
-      void smGenerateCert();
-    }
-
-    function smCloseCert() {
-      const overlay = document.getElementById('sm-cert-overlay');
-      if (overlay) overlay.classList.add('hidden');
-      document.getElementById('sm-page-bg').inert = false;
-    }
-
-    async function smGenerateCert() {
-      const playerName = "Star Guardian";
-      certId = smGenCertId();
-      const gameTitle = 'Star Matrix';
-      const completionDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-      
-      try {
-        localStorage.setItem('sm_complete', 'true');
-      } catch (_) {}
-      
-      const canvas = document.getElementById('sm-cert-canvas');
-      await smCertDraw(canvas, playerName, gameTitle, completionDate, certId, score);
-      certDataUrl = canvas.toDataURL('image/png');
-      playSfx('win');
-      
-      void smPersistCertificate({ id: certId, game: gameTitle, player: playerName, date: completionDate, score });
-      void clearSavedRun();
-      
-      const phase = document.getElementById('sm-cert-phase');
-      if (phase) phase.style.display = 'flex';
-    }
-
-    function loadLocalCertificates() {
-      try {
-        const raw = JSON.parse(localStorage.getItem(STORAGE.certKey) || '[]');
-        return Array.isArray(raw) ? raw : [];
-      } catch (_) {
-        return [];
-      }
-    }
-
-    function saveLocalCertificates(certs) {
-      try {
-        localStorage.setItem(STORAGE.certKey, JSON.stringify(certs));
-      } catch (_) {}
-    }
-
-    function upsertLocalCert(cert) {
-      const list = loadLocalCertificates();
-      const map = new Map();
-      for (const item of list) {
-        if (item && typeof item === 'object' && typeof item.id === 'string') map.set(item.id, item);
-      }
-      map.set(cert.id, cert);
-      saveLocalCertificates(Array.from(map.values()));
-    }
-
-    async function smPersistCertificate(cert) {
-      upsertLocalCert(cert);
-
-      const db = getFirestoreDb();
-      if (!db) return;
-      const user = await ensureAnonymousUser();
-      if (!user) return;
-
-      const appId = getAppId('arcade');
-      assertPathSegment('appId', appId);
-      assertPathSegment('userId', user.uid);
-      assertPathSegment('certId', cert.id);
-
-      await setDoc(
-        doc(db, 'artifacts', appId, 'users', user.uid, 'certificates', cert.id),
-        { ...cert, createdAt: serverTimestamp() },
-        { merge: true }
-      );
-    }
-
-    async function smCertDraw(canvas, playerName, gameTitle, completionDate, id, finalScore) {
-      if (document.fonts?.ready) await document.fonts.ready;
-      const ctx = canvas.getContext('2d');
-      const W = 760;
-      const H = 540;
-      canvas.width = W;
-      canvas.height = H;
-
-      const bg = ctx.createLinearGradient(0, 0, W, H);
-      bg.addColorStop(0, '#020617');
-      bg.addColorStop(0.5, '#0f0524');
-      bg.addColorStop(1, '#020617');
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, W, H);
-
-      for (let i = 0; i < 60; i++) {
-        ctx.fillStyle = 'rgba(255,255,255,' + (0.05 + (i % 4) * 0.05) + ')';
-        ctx.fillRect(((i * 137 + 20) % (W - 40)) + 20, ((i * 89 + 20) % (H - 40)) + 20, 1.5, 1.5);
+        dragStartTile = null;
+        dragTargetTile = null;
+        dragStartPos = null;
+        activePointerId = null;
       }
 
-      ctx.strokeStyle = '#bc13fe';
-      ctx.lineWidth = 3;
-      ctx.strokeRect(12, 12, W - 24, H - 24);
-      ctx.strokeStyle = 'rgba(251,191,36,0.3)';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(20, 20, W - 40, H - 40);
+      function smSwap(rowA, colA, rowB, colB) {
+        if (isProcessing) return;
+        if (!smIsAdjacent(rowA, colA, rowB, colB)) return;
 
-      ctx.font = '20px serif';
-      ctx.textAlign = 'center';
-      ['ðŸŒŸ', 'ðŸŒŸ', 'ðŸŒŸ', 'ðŸŒŸ'].forEach((s, i) => {
-        const x = i < 2 ? 28 : W - 28;
-        const y = i % 2 === 0 ? 28 : H - 18;
-        ctx.fillText(s, x, y);
-      });
+        isProcessing = true;
+        renderBoard();
 
-      ctx.fillStyle = '#bc13fe';
-      ctx.font = 'bold 24px monospace';
-      ctx.fillText('CERTIFICATE OF COMPLETION', W / 2, 78);
-      ctx.strokeStyle = 'rgba(188,19,254,0.3)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(80, 96);
-      ctx.lineTo(W - 80, 96);
-      ctx.stroke();
-      ctx.fillStyle = '#fbbf24';
-      ctx.font = '10px monospace';
-      ctx.fillText('STAR MATRIX  Â·  NEXUS ARCADE  Â·  AMAZING GRACE', W / 2, 116);
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '14px sans-serif';
-      ctx.fillText('This certifies that', W / 2, 170);
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 38px monospace';
-      ctx.fillText(playerName, W / 2, 228);
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '14px sans-serif';
-      ctx.fillText('has successfully navigated the', W / 2, 272);
-      ctx.fillStyle = '#fbbf24';
-      ctx.font = 'bold 26px monospace';
-      ctx.fillText(gameTitle, W / 2, 318);
-      ctx.fillStyle = '#bc13fe';
-      ctx.font = '12px monospace';
-      ctx.fillText('Final Score: ' + finalScore + ' Â· Stars Aligned', W / 2, 356);
-      ctx.strokeStyle = 'rgba(188,19,254,0.2)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(80, 390);
-      ctx.lineTo(W - 80, 390);
-      ctx.stroke();
-      ctx.fillStyle = '#64748b';
-      ctx.font = '12px sans-serif';
-      ctx.fillText('Completed: ' + completionDate, W / 2, 418);
-      ctx.fillStyle = '#334155';
-      ctx.font = '10px monospace';
-      ctx.fillText('Certificate ID: ' + id, W / 2, 442);
-    }
+        let next = applySwap(gridData, rowA, colA, rowB, colB);
+        let combo = 1;
+        let gained = 0;
 
-    function smCertPNG() {
-      if (!certDataUrl) return;
-      const a = document.createElement('a');
-      a.download = 'star-matrix-certificate-' + (certId || 'nexus') + '.png';
-      a.href = certDataUrl;
-      a.click();
-    }
-
-    function smReset() {
-      smCloseCert();
-      smInit();
-    }
-
-    window.addEventListener('DOMContentLoaded', function () {
-      const soundToggle = document.getElementById('sm-sound-toggle');
-      if (soundToggle) {
-        soundToggle.addEventListener('click', () => setSoundEnabled(!isSoundEnabled()));
-      }
-      smRenderSoundToggle();
-      if (isSoundEnabled()) smArmMusicStartOnGesture();
-
-      const resumeBtn = document.getElementById('sm-resume-btn');
-      const newBtn = document.getElementById('sm-new-btn');
-      if (resumeBtn) {
-        resumeBtn.addEventListener('click', () => {
-          const payload = resumePayload;
-          resumePayload = null;
-          hideResumeOverlay();
-          smInit(payload);
-        });
-      }
-      if (newBtn) {
-        newBtn.addEventListener('click', async () => {
-          resumePayload = null;
-          hideResumeOverlay();
-          await clearSavedRun();
-          smInit();
-        });
-      }
-
-      const tryAgainBtn = document.getElementById('sm-tryagain-btn');
-      if (tryAgainBtn) {
-        tryAgainBtn.addEventListener('click', () => {
-          hideGameOverOverlay();
-          smInit();
-        });
-      }
-
-      const closeBtn = document.getElementById('sm-cert-close');
-      if (closeBtn) closeBtn.addEventListener('click', smCloseCert);
-
-      document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') {
-          const resumeOverlay = document.getElementById('sm-resume-overlay');
-          if (resumeOverlay && !resumeOverlay.classList.contains('hidden')) {
-            resumePayload = null;
-            hideResumeOverlay();
-            void clearSavedRun().then(() => smInit());
-            return;
-          }
-          const gameoverOverlay = document.getElementById('sm-gameover-overlay');
-          if (gameoverOverlay && !gameoverOverlay.classList.contains('hidden')) {
-            return;
-          }
-          const overlay = document.getElementById('sm-cert-overlay');
-          if (overlay && !overlay.classList.contains('hidden')) smCloseCert();
-        }
-      });
-
-      const overlay = document.getElementById('sm-cert-overlay');
-      if (overlay) {
-        overlay.addEventListener('keydown', function (e) {
-          if (e.key !== 'Tab') return;
-          const focusable = Array.from(overlay.querySelectorAll('button:not([disabled]), input:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'));
-          if (!focusable.length) return;
-          const first = focusable[0];
-          const last = focusable[focusable.length - 1];
-          if (e.shiftKey) {
-            if (document.activeElement === first) {
-              e.preventDefault();
-              last.focus();
-            }
-          } else if (document.activeElement === last) {
-            e.preventDefault();
-            first.focus();
-          }
-        });
-      }
-
-      document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'hidden') queuePersistRun();
-      });
-
-      (async () => {
-        const local = loadLocalRun();
-        if (local) {
-          showResumeOverlay(local, 'Local');
+        const firstMatch = findMatches(next);
+        if (!firstMatch.matches.length) {
+          isProcessing = false;
+          renderBoard();
           return;
         }
-        try {
-          const remote = await loadRemoteRun();
-          if (remote) {
-            showResumeOverlay(remote, 'Synced');
-            return;
+
+        while (true) {
+          const res = findMatches(next);
+          if (!res.matches.length) break;
+          gained += res.matches.length * 10 * combo;
+          next = applyMatches(next, res, combo);
+          next = applyGravity(next);
+          combo++;
+        }
+
+        gridData = next;
+        setScore(score + gained);
+        isProcessing = false;
+        renderBoard();
+      }
+
+      function attemptSwap(tileA, tileB) {
+        const rowA = Number(tileA?.dataset?.row);
+        const colA = Number(tileA?.dataset?.col);
+        const rowB = Number(tileB?.dataset?.row);
+        const colB = Number(tileB?.dataset?.col);
+        if (![rowA, colA, rowB, colB].every(Number.isFinite)) return;
+
+        const isAdjacent =
+          (Math.abs(rowA - rowB) === 1 && colA === colB) ||
+          (Math.abs(colA - colB) === 1 && rowA === rowB);
+        if (!isAdjacent) return;
+
+        smSwap(rowA, colA, rowB, colB);
+        resetDragState();
+      }
+
+      function inferSwipeNeighbor(e) {
+        if (!dragStartPos) return null;
+        const dx = e.clientX - dragStartPos.x;
+        const dy = e.clientY - dragStartPos.y;
+        const threshold = 18;
+        if (Math.abs(dx) < threshold && Math.abs(dy) < threshold) return null;
+        const row = Number(dragStartTile?.dataset?.row);
+        const col = Number(dragStartTile?.dataset?.col);
+        if (![row, col].every(Number.isFinite)) return null;
+
+        let targetRow = row;
+        let targetCol = col;
+        if (Math.abs(dx) > Math.abs(dy)) {
+          targetCol += dx > 0 ? 1 : -1;
+        } else {
+          targetRow += dy > 0 ? 1 : -1;
+        }
+        if (!smIsAdjacent(row, col, targetRow, targetCol)) return null;
+        return boardEl.querySelector(`.star-cell[data-row="${targetRow}"][data-col="${targetCol}"]`);
+      }
+
+      function onPointerDown(e) {
+        if (isProcessing) return;
+        if (dragStartTile || activePointerId !== null) return;
+        const cell = e.currentTarget;
+        if (!(cell instanceof HTMLElement)) return;
+
+        activePointerId = e.pointerId;
+        dragStartTile = cell;
+        dragStartPos = { x: e.clientX, y: e.clientY };
+        cell.setPointerCapture(e.pointerId);
+        cell.classList.add('selected');
+        cell.setAttribute('aria-selected', 'true');
+      }
+
+      function onPointerMove(e) {
+        if (e.pointerId !== activePointerId) return;
+        const el = document.elementFromPoint(e.clientX, e.clientY);
+        dragTargetTile = el ? el.closest('.star-cell') : null;
+      }
+
+      function onPointerUp(e) {
+        if (e.pointerId !== activePointerId) return;
+        const elementAtPoint = document.elementFromPoint(e.clientX, e.clientY);
+        const dragEndTile = (elementAtPoint ? elementAtPoint.closest('.star-cell') : null) || dragTargetTile || inferSwipeNeighbor(e);
+        if (dragStartTile && dragEndTile && dragEndTile !== dragStartTile) {
+          attemptSwap(dragStartTile, dragEndTile);
+        } else {
+          resetDragState();
+        }
+      }
+
+      function onPointerCancel(e) {
+        if (e.pointerId !== activePointerId) return;
+        resetDragState();
+      }
+
+      function initBoard() {
+        boardEl.innerHTML = '';
+        tiles.length = 0;
+        for (let r = 0; r < GRID_SIZE; r++) {
+          for (let c = 0; c < GRID_SIZE; c++) {
+            const cell = document.createElement('div');
+            cell.className = 'star-cell';
+            cell.tabIndex = 0;
+            cell.setAttribute('role', 'gridcell');
+            cell.setAttribute('aria-selected', 'false');
+
+            cell.addEventListener('pointerdown', onPointerDown);
+            cell.addEventListener('pointermove', onPointerMove);
+            cell.addEventListener('pointerup', onPointerUp);
+            cell.addEventListener('pointercancel', onPointerCancel);
+
+            tiles.push(cell);
+            boardEl.appendChild(cell);
           }
-        } catch (_) {}
+        }
+      }
 
-        smInit();
-      })();
-    });
-
-    window.smCertPNG = smCertPNG;
-    window.smReset = smReset;
-  </script>
-  <script src="../../sw-register.js" defer></script>
-</body>
+      resetBtn.addEventListener('click', resetGame);
+      certificateLink.addEventListener('click', () => {
+        window.location.href = '../certificates/';
+      });
+      initBoard();
+      renderBoard();
+    </script>
+  </body>
 </html>
 

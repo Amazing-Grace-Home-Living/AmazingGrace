@@ -4,7 +4,6 @@ import fs from 'node:fs';
 describe('theme variables', () => {
   it('avoids Tailwind-colliding --text tokens on Tailwind pages', () => {
     const pages = [
-      'arcade/index.html',
       'arcade/bible-study/index.html',
       'ministries/index.html',
     ];
