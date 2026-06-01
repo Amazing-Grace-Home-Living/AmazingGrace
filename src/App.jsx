@@ -11,11 +11,14 @@ import AuthorsMandate from './components/AuthorsMandate';
 import MatrixOfConscience from './arcade/matrix-of-conscience/MatrixOfConscience';
 
 // Nexus HUD System
-import { HUDProvider } from './hud/HUDContext';
+import { HUDProvider, useHUD } from './hud/HUDContext';
 import HUD from './hud/HUD';
 import { useHUDEventBindings } from './hud/useHUDEventBindings';
 import { useVirtueEngine } from './virtue/useVirtueEngine';
 import { useBookOfWorks } from './book/useBookOfWorks';
+// @ts-ignore
+import { useInnerCourtChoir } from './choir/useInnerCourtChoir';
+
 
 
 import './hud/theme/tokens.css';
@@ -40,6 +43,10 @@ function StellaraOSInner() {
   useHUDEventBindings();
   useVirtueEngine();
   useBookOfWorks();
+
+  const { hud } = useHUD();
+  useInnerCourtChoir(hud);
+
 
   // Pull global telemetry from the Context
   const { matrixMetrics, sisters, getUnlockedCount } = useSevenSisters();

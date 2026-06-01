@@ -46,6 +46,10 @@ export function HUDProvider({ children }) {
       activated: []
     },
     rituals: {},
+    templeVeil: {
+      torn: false,
+      unlockedModules: []
+    },
     notifications: []
   });
 

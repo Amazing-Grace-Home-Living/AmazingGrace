@@ -1,14 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { useHUD } from "../hud/HUDContext";
 import { emit, Events } from "../core/eventBus";
 // @ts-ignore
 import { useNexusRouter } from "../router/useNexusRouter";
 // @ts-ignore
 import Button from "../ui/Button";
+// @ts-ignore
+import { useThroneJudgment } from "./useThroneJudgment";
+// @ts-ignore
+import ThroneJudgmentSequence from "./ThroneJudgmentSequence";
 
 export default function ThroneRoomScreen() {
   const { hud } = useHUD();
   const { go } = useNexusRouter();
+  const { canJudge } = useThroneJudgment();
+  const [judging, setJudging] = useState(false);
 
   const virtueEngine = hud?.virtueEngine || {
     truth: 0,
@@ -25,10 +31,27 @@ export default function ThroneRoomScreen() {
   const level = hud?.progress?.sevenStars?.level || 1;
 
   function finalize() {
+    if (canJudge()) {
+      setJudging(true);
+    } else {
+      emit(Events.NOTIFY, {
+        type: "info",
+        message: "Your destiny is sealed. The Matrix acknowledges your transformation."
+      });
+    }
+  }
+
+  function handleJudgmentComplete() {
+    setJudging(false);
     emit(Events.NOTIFY, {
       type: "info",
-      message: "Your destiny is sealed. The Matrix acknowledges your transformation."
+      message: "The seal of destiny is permanently recorded."
     });
+    go("matrix");
+  }
+
+  if (judging) {
+    return <ThroneJudgmentSequence onComplete={handleJudgmentComplete} />;
   }
 
   return (
@@ -72,7 +95,7 @@ export default function ThroneRoomScreen() {
             boxShadow: "0 0 15px rgba(234, 179, 8, 0.3)"
           }}
         >
-          👑 Accept Your Destiny
+          {canJudge() ? "👑 Undergo Throne Judgment" : "👑 Accept Your Destiny"}
         </Button>
         
         <Button 
