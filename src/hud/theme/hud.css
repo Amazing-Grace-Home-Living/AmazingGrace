@@ -830,6 +830,664 @@
   transform: translateZ(45px);
 }
 
+/* ==========================================================================
+   CELESTIAL LADDER STYLES
+   ========================================================================== */
+
+.celestial-ladder {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: radial-gradient(circle at center, #070c1a 0%, #030408 80%, #000000 100%);
+  color: #ffffff;
+  padding: 30px;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid rgba(79, 209, 255, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+}
+
+/* Parallax Scrolling Starfield Backdrops */
+.ladder-background {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.starfield-far {
+  background-image: 
+    radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+    radial-gradient(1.5px 1.5px at 60px 110px, #e2e8f0, rgba(0,0,0,0)),
+    radial-gradient(1px 1px at 120px 220px, #ffffff, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 180px 80px, #cbd5e1, rgba(0,0,0,0)),
+    radial-gradient(1px 1px at 240px 310px, #ffffff, rgba(0,0,0,0)),
+    radial-gradient(1.5px 1.5px at 290px 170px, #cbd5e1, rgba(0,0,0,0));
+  background-size: 320px 400px;
+  animation: star-scroll-far 45s linear infinite;
+  opacity: 0.25;
+}
+
+.starfield-close {
+  background-image: 
+    radial-gradient(2px 2px at 15px 15px, #ffffff, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 115px 235px, #4fd1ff, rgba(0,0,0,0)),
+    radial-gradient(2.5px 2.5px at 215px 75px, #ffffff, rgba(0,0,0,0)),
+    radial-gradient(1.5px 1.5px at 275px 335px, #4fd1ff, rgba(0,0,0,0));
+  background-size: 350px 450px;
+  animation: star-scroll-close 25s linear infinite;
+  opacity: 0.45;
+}
+
+@keyframes star-scroll-far {
+  from { transform: translateY(0); }
+  to { transform: translateY(-400px); }
+}
+
+@keyframes star-scroll-close {
+  from { transform: translateY(0); }
+  to { transform: translateY(-450px); }
+}
+
+.ladder-scanlines {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  ), linear-gradient(
+    90deg, 
+    rgba(255, 0, 0, 0.06), 
+    rgba(0, 255, 0, 0.02), 
+    rgba(0, 0, 255, 0.06)
+  );
+  background-size: 100% 4px, 6px 100%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.45;
+}
+
+/* Header styling */
+.ladder-header {
+  text-align: center;
+  z-index: 2;
+  margin-bottom: 25px;
+}
+
+.ladder-title {
+  font-family: var(--hud-font-family);
+  font-size: 2.2rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #4fd1ff;
+  text-shadow: 0 0 15px rgba(79, 209, 255, 0.5);
+  margin: 0 0 5px 0;
+}
+
+.ladder-subtitle {
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Split Workspace */
+.ladder-workspace {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 30px;
+  flex: 1;
+  z-index: 2;
+  min-height: 0;
+  margin-bottom: 25px;
+}
+
+@media (max-width: 900px) {
+  .ladder-workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Left panel: climber view */
+.ladder-climber-view {
+  background: rgba(5, 7, 15, 0.65);
+  border: 1px solid rgba(79, 209, 255, 0.15);
+  border-radius: 12px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+  overflow-y: auto;
+  max-height: 60vh;
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.ladder-column-container {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Central light beam elevator */
+.ladder-beam {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  transform: translateX(-50%);
+  background: linear-gradient(to bottom, #4fd1ff 0%, rgba(79, 209, 255, 0.1) 85%, transparent 100%);
+  animation: beam-pulse-glow 4s infinite ease-in-out;
+  box-shadow: 0 0 15px rgba(79, 209, 255, 0.4);
+  z-index: 1;
+}
+
+@keyframes beam-pulse-glow {
+  0%, 100% { opacity: 0.4; width: 4px; box-shadow: 0 0 10px rgba(79, 209, 255, 0.3); }
+  50% { opacity: 1; width: 6px; box-shadow: 0 0 22px rgba(79, 209, 255, 0.7); }
+}
+
+.ladder-column {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  z-index: 2;
+}
+
+/* Ladder Node Rung Item styling */
+.ladder-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  opacity: 0.35;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  cursor: default;
+}
+
+.ladder-node:hover {
+  opacity: 0.65;
+  transform: scale(1.03);
+}
+
+.ladder-node.active {
+  opacity: 1;
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 15px rgba(79, 209, 255, 0.5));
+}
+
+.ladder-glyph {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, #0f172a 30%, #020617 100%);
+  border: 2px solid rgba(79, 209, 255, 0.3);
+  color: #4fd1ff;
+  font-family: var(--hud-font-family);
+  font-size: 1.2rem;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0 0 10px rgba(79, 209, 255, 0.5);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+  transition: border var(--hud-anim-normal), box-shadow var(--hud-anim-normal);
+}
+
+.ladder-node.active .ladder-glyph {
+  border-color: #4fd1ff;
+  background: radial-gradient(circle at center, #1e293b 20%, #0f172a 100%);
+  box-shadow: 0 0 25px rgba(79, 209, 255, 0.8), inset 0 0 10px rgba(79, 209, 255, 0.4);
+}
+
+.ladder-label {
+  margin-top: 10px;
+  font-family: var(--hud-font-family);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #cbd5e1;
+  text-align: center;
+  transition: color var(--hud-anim-normal);
+}
+
+.ladder-node.active .ladder-label {
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Right panel: telemetry */
+.ladder-telemetry {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+/* Virtues Calibrator Card container styling */
+.virtues-calibrator {
+  background: linear-gradient(135deg, rgba(11, 15, 26, 0.75), rgba(5, 6, 15, 0.75));
+  border: 1px solid rgba(79, 209, 255, 0.15);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.virtues-description {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 5px 0 15px 0;
+  line-height: 1.4;
+}
+
+.virtues-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.virtue-card {
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(79, 209, 255, 0.08);
+  border-radius: 8px;
+  padding: 12px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border var(--hud-anim-normal);
+}
+
+.virtue-card:hover {
+  border-color: rgba(79, 209, 255, 0.25);
+}
+
+.virtue-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.virtue-name {
+  font-family: var(--hud-font-family);
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #cbd5e1;
+}
+
+.virtue-val {
+  font-family: var(--hud-font-family);
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #4fd1ff;
+  text-shadow: 0 0 6px rgba(79, 209, 255, 0.3);
+}
+
+.virtue-bar-bg {
+  height: 5px;
+  background: #090d16;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.virtue-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4fd1ff, #38bdf8);
+  border-radius: 999px;
+  transition: width 0.5s ease-out;
+}
+
+.virtue-calibrate-btn {
+  align-self: flex-end;
+  font-family: var(--hud-font-family);
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #4fd1ff;
+  background: rgba(79, 209, 255, 0.08);
+  border: 1px solid rgba(79, 209, 255, 0.25);
+  border-radius: 4px;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: background var(--hud-anim-fast), color var(--hud-anim-fast), border var(--hud-anim-fast);
+}
+
+.virtue-calibrate-btn:hover {
+  background: rgba(79, 209, 255, 0.2);
+  color: #ffffff;
+  border-color: #4fd1ff;
+}
+
+/* History panel adjustments */
+.ascension-history {
+  background: linear-gradient(135deg, rgba(11, 15, 26, 0.75), rgba(5, 6, 15, 0.75));
+  border: 1px solid rgba(79, 209, 255, 0.15);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.ascension-history h3 {
+  color: #4fd1ff;
+  text-shadow: 0 0 10px rgba(79, 209, 255, 0.3);
+}
+
+.history-empty {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-style: italic;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.ascension-history ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 150px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ascension-history li {
+  background: rgba(15, 23, 42, 0.3);
+  border: 1px solid rgba(79, 209, 255, 0.05);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.history-layer {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.history-realm {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Footer controls */
+.ladder-controls-bar {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  z-index: 2;
+  margin-top: 10px;
+}
+
+.ascend-trigger-btn {
+  background: linear-gradient(90deg, #0284c7 0%, #0369a1 100%) !important;
+  border-color: #0284c7 !important;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  box-shadow: 0 0 15px rgba(2, 132, 199, 0.4) !important;
+}
+
+.ascend-trigger-btn:hover {
+  background: linear-gradient(90deg, #0ea5e9 0%, #0284c7 100%) !important;
+  border-color: #0ea5e9 !important;
+  box-shadow: 0 0 25px rgba(14, 165, 233, 0.7) !important;
+}
+
+/* ==========================================================================
+   3D HOLOGRAM CELESTIAL LADDER & AEON ENGINE
+   ========================================================================== */
+
+.ladder3d-wrapper {
+  perspective: 1500px;
+  width: 100%;
+  height: 480px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at center, rgba(15, 23, 42, 0.3) 0%, transparent 80%);
+}
+
+.ladder3d {
+  width: 240px;
+  height: 380px;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ladder3d-beam {
+  position: absolute;
+  left: 50%;
+  top: -10%;
+  width: 8px;
+  height: 120%;
+  transform: translateX(-50%) translateZ(0);
+  background: linear-gradient(to bottom, #4fd1ff, rgba(79, 209, 255, 0.15) 80%, transparent 100%);
+  animation: beam-pulse-glow 3s infinite ease-in-out;
+  box-shadow: 0 0 20px rgba(79, 209, 255, 0.3);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.ladder3d-node {
+  position: absolute;
+  transform-style: preserve-3d;
+  text-align: center;
+  opacity: 0.3;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+
+.ladder3d-node.active {
+  opacity: 1;
+  transform: translateX(-50%) scale(1.15) !important;
+  filter: drop-shadow(0 0 20px rgba(79, 209, 255, 0.6));
+}
+
+.ladder3d-glyph {
+  font-family: var(--hud-font-family);
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #4fd1ff;
+  text-shadow: 0 0 15px rgba(79, 209, 255, 0.8);
+}
+
+.ladder3d-node.active .ladder3d-glyph {
+  color: #ffffff;
+  text-shadow: 0 0 25px rgba(79, 209, 255, 1), 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.ladder3d-label {
+  font-family: var(--hud-font-family);
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin-top: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.ladder3d-node.active .ladder3d-label {
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.ladder3d-controls {
+  position: absolute;
+  bottom: 15px;
+  display: flex;
+  gap: 12px;
+  z-index: 3;
+}
+
+.holo-rotate-btn {
+  font-family: var(--hud-font-family);
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #4fd1ff;
+  background: rgba(79, 209, 255, 0.08);
+  border: 1px solid rgba(79, 209, 255, 0.25);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  transition: background var(--hud-anim-fast), color var(--hud-anim-fast), border var(--hud-anim-fast), transform var(--hud-anim-fast);
+}
+
+.holo-rotate-btn:hover {
+  background: rgba(79, 209, 255, 0.2);
+  color: #ffffff;
+  border-color: #4fd1ff;
+  transform: translateY(-1px);
+}
+
+/* Aeon Engine Reactor layout styling */
+.aeon-reactor-core {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, #0b081c 20%, #030208 80%, #000000 100%);
+  border: 2px solid rgba(139, 92, 246, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: inset 0 0 30px rgba(139, 92, 246, 0.2), 0 0 30px rgba(0, 0, 0, 0.6);
+  align-self: center;
+  margin: 15px 0;
+}
+
+.aeon-cycle-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+}
+
+.aeon-cycle-label {
+  font-family: var(--hud-font-family);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: #a78bfa;
+  font-weight: bold;
+  opacity: 0.8;
+}
+
+.aeon-cycle-value {
+  font-family: var(--hud-font-family);
+  font-size: 4rem;
+  font-weight: 900;
+  color: #c084fc;
+  text-shadow: 0 0 25px rgba(167, 139, 250, 0.9), 0 0 10px rgba(192, 132, 252, 0.5);
+  line-height: 1;
+}
+
+.aeon-core-glow {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  animation: aeonPulseGlow 4s infinite linear;
+}
+
+@keyframes aeonPulseGlow {
+  0% { transform: scale(0.98); opacity: 0.3; box-shadow: 0 0 15px rgba(139, 92, 246, 0.15); }
+  50% { transform: scale(1.03); opacity: 0.8; box-shadow: 0 0 35px rgba(139, 92, 246, 0.4); border-color: rgba(167, 139, 250, 0.4); }
+  100% { transform: scale(0.98); opacity: 0.3; box-shadow: 0 0 15px rgba(139, 92, 246, 0.15); }
+}
+
+/* ==========================================================================
+   APEX CONSTRUCTS: HYPERCUBE, WEATHER STORMS, & EMPYREAN TRANSMUTATION
+   ========================================================================== */
+
+/* 4D Hypercube drift animation */
+@keyframes hypercube-drift {
+  0% { background-position: 0% 0%; filter: hue-rotate(0deg); }
+  50% { background-position: 100% 100%; filter: hue-rotate(180deg) brightness(1.2); }
+  100% { background-position: 0% 0%; filter: hue-rotate(360deg); }
+}
+
+/* 3D Node Echo / after-image drift styling */
+.ladder3d-node.active-echo {
+  pointer-events: none;
+  animation: hypercube-ghost-fade 2s infinite ease-in-out;
+}
+
+@keyframes hypercube-ghost-fade {
+  0%, 100% { opacity: 0.1; filter: blur(6px) grayscale(0.5); }
+  50% { opacity: 0.35; filter: blur(3px) grayscale(0); }
+}
+
+/* Virtue Storm weather screen flashes */
+@keyframes pulse-storm {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.75; }
+}
+
+.overdrive-active {
+  animation: reactor-shake 0.5s infinite ease-in-out;
+}
+
+@keyframes reactor-shake {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(0.5px, 0.5px) rotate(0.1deg); }
+  50% { transform: translate(-0.5px, 0.5px) rotate(-0.1deg); }
+  75% { transform: translate(0.5px, -0.5px) rotate(0deg); }
+}
+
+/* Empyrean Sphere screen adjustments */
+.empyrean-screen {
+  transition: background 2s ease, border-color 2s ease;
+}
+
+/* Pure light column for Ladder of Radiant Ascent */
+.radiant-ascent-beam {
+  pointer-events: none;
+  z-index: 1;
+  transition: width 1s ease, box-shadow 1s ease;
+}
+
+@keyframes wave-float {
+  from { background-position: 0 0; }
+  to { background-position: 300px 0; }
+}
+
+/* Zero-state unconditioned void visual styles */
+@keyframes primordial-breath {
+  0%, 100% { opacity: 0.25; filter: brightness(1); }
+  50% { opacity: 0.65; filter: brightness(1.3); }
+}
+
+.origin-screen .aeon-core-glow {
+  animation: primordial-breath 6s infinite ease-in-out !important;
+}
+
+
+
+
+
+
 
 
 

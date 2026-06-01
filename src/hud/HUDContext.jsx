@@ -55,6 +55,35 @@ export function HUDProvider({ children }) {
       history: []
     },
     visionCodex: [],
+    ascension: {
+      layer: 0,
+      realms: [],
+      cosmicVirtues: {
+        illumination: 0,
+        resonance: 0,
+        transcendence: 0
+      }
+    },
+    aeon: {
+      cycle: 0,
+      cosmicVirtues: {
+        illumination: 0,
+        resonance: 0,
+        transcendence: 0
+      },
+      destinyPaths: [],
+      resonanceEvents: [],
+      overdrive: false,
+      virtueStorm: null, // "Illumination Storm" | "Resonance Tempest" | "Transcendence Flare" | null
+      mutatedRealms: [],
+      crownUnlocked: false,
+      luminousIntegrity: null,
+      isRadiantAscent: false,
+      proceduralRealms: [],
+      logosConvergence: 0,
+      harmonicFrequency: 432,
+      distinctionActive: false
+    },
     notifications: []
   });
 

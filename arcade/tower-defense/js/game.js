@@ -288,7 +288,29 @@ canvas.addEventListener('click', (e) => {
     const row = Math.floor(y / CELL_SIZE);
     
     if (path.some(p => p.x === col && p.y === row)) return;
-    if (towers.some(t => t.col === col && t.row === row)) return;
+
+    // Check if clicked an existing tower
+    const existingTower = towers.find(t => t.col === col && t.row === row);
+    if (existingTower) {
+        const baseCost = TOWER_DEFS[existingTower.type].cost;
+        const upgradeCost = Math.floor(baseCost * 0.6 * (existingTower.level || 1));
+        if (money >= upgradeCost) {
+            money -= upgradeCost;
+            existingTower.level = (existingTower.level || 1) + 1;
+            
+            // Apply stats upgrades
+            existingTower.damage = Math.floor(existingTower.damage * 1.5);
+            existingTower.range = Math.floor(existingTower.range * 1.15);
+            existingTower.cooldown = Math.max(5, Math.floor(existingTower.cooldown * 0.85)); // shoot faster!
+            
+            spawnParticles(existingTower.x, existingTower.y, '#38bdf8', 25, 1.2);
+            spawnText(existingTower.x, existingTower.y - 15, `LVL ${existingTower.level} OVERCLOCKED`, '#38bdf8');
+            updateHUD();
+        } else {
+            spawnText(existingTower.x, existingTower.y - 15, `NEED ${upgradeCost} CORES`, '#ef4444');
+        }
+        return;
+    }
 
     const cost = getTowerCost(selectedTowerType);
     if (money >= cost) {
@@ -311,7 +333,8 @@ canvas.addEventListener('click', (e) => {
             color: baseDef.color,
             label: baseDef.label,
             effect: baseDef.effect,
-            angle: 0
+            angle: 0,
+            level: 1
         });
         spawnParticles(towers[towers.length-1].x, towers[towers.length-1].y, baseDef.color, 15);
         updateHUD();
@@ -620,7 +643,7 @@ function draw() {
         ctx.shadowBlur = 20;
         ctx.shadowColor = t.color;
         ctx.strokeStyle = t.color;
-        ctx.lineWidth = 2;
+        ctx.lineWidth = t.level > 1 ? 3 : 2;
         ctx.beginPath();
         ctx.arc(0, 0, CELL_SIZE / 2 - 6, 0, Math.PI * 2);
         ctx.stroke();
@@ -628,6 +651,27 @@ function draw() {
         // Core glow
         ctx.fillStyle = `rgba(${hexToRgb(t.color)}, 0.3)`;
         ctx.fill();
+
+        // Upgraded extra ring
+        if (t.level > 1) {
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(0, 0, CELL_SIZE / 2 - 11, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+
+        // Level overlay text in center of base
+        if (t.level > 1) {
+            ctx.save();
+            ctx.shadowBlur = 5;
+            ctx.shadowColor = '#000000';
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 9px Courier';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`L${t.level}`, 0, 0);
+            ctx.restore();
+        }
 
         // Rotating Barrel
         ctx.rotate(t.angle);

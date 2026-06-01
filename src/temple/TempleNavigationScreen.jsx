@@ -76,10 +76,54 @@ export default function TempleNavigationScreen() {
         >
           THE SACRED TEMPLE
         </h1>
-        <p style={{ color: "var(--neon-blue)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "3px", fontWeight: "bold" }}>
-          Temple Navigation — 3D Hologram Projection Mode
+        <p style={{ color: "#475569", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "3px", fontWeight: "bold" }}>
+          Temple Navigation System — Ascended Edition
         </p>
       </header>
+
+      {/* Manual toggle view bar */}
+      <div style={{ display: "flex", justifyContent: "center", gap: "10px", marginBottom: "30px", position: "relative", zIndex: 10 }}>
+        <button
+          style={{
+            padding: "6px 16px",
+            background: "rgba(234, 179, 8, 0.1)",
+            border: "1px solid rgba(234, 179, 8, 0.3)",
+            borderRadius: "20px",
+            color: "var(--neon-gold)",
+            cursor: "default",
+            fontSize: "0.75rem",
+            fontWeight: "bold",
+            letterSpacing: "1px"
+          }}
+        >
+          Standard View
+        </button>
+        <button
+          onClick={() => go("temple3d")}
+          style={{
+            padding: "6px 16px",
+            background: "rgba(255,255,255,0.02)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: "20px",
+            color: "#94a3b8",
+            cursor: "pointer",
+            fontSize: "0.75rem",
+            fontWeight: "bold",
+            letterSpacing: "1px",
+            transition: "all 0.2s"
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = "var(--neon-blue)";
+            e.currentTarget.style.color = "var(--neon-blue)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+            e.currentTarget.style.color = "#94a3b8";
+          }}
+        >
+          3D Hologram Projection
+        </button>
+      </div>
 
       {/* Map Area tilting wrapper */}
       <div

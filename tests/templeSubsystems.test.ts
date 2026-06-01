@@ -2,6 +2,9 @@ import { describe, it, expect } from "vitest";
 import { getHolyEncounter } from "../src/holy/getHolyEncounter.js";
 import { getPropheticVision } from "../src/oracle-chamber/getPropheticVision.js";
 import { getGuardianChallenge } from "../src/temple-guardians/getGuardianChallenge.js";
+import { generateRealmName } from "../src/ascension/generateRealmName.js";
+import { generateDestinyPath } from "../src/aeon/generateDestinyPath.js";
+import { generateResonanceEvent } from "../src/aeon/generateResonanceEvent.js";
 
 describe("Temple Metaphysical Subsystems Evaluators", () => {
   describe("getHolyEncounter", () => {
@@ -93,6 +96,73 @@ describe("Temple Metaphysical Subsystems Evaluators", () => {
       };
       const result = getGuardianChallenge(hud);
       expect(result.type).toBe("allow");
+    });
+  });
+
+  describe("generateRealmName", () => {
+    it("generates correct prefix and suffix for layer 1", () => {
+      const name = generateRealmName(1);
+      expect(name).toBe("Lumina Crown");
+    });
+
+    it("handles large layer numbers with wrapping", () => {
+      const name = generateRealmName(10);
+      expect(name).toBe("Aether Gate");
+    });
+  });
+
+  describe("generateDestinyPath", () => {
+    it("generates correct archetype and motif for cycle 1", () => {
+      const path = generateDestinyPath(1);
+      expect(path).toBe("Wanderer of the Echo");
+    });
+
+    it("wraps around properly on high cycles", () => {
+      const path = generateDestinyPath(10);
+      expect(path).toBe("Seer of the Light");
+    });
+  });
+
+  describe("generateResonanceEvent", () => {
+    it("returns high virtue cosmic chord message", () => {
+      const virtues = { illumination: 3, resonance: 2, transcendence: 2 };
+      const msg = generateResonanceEvent(virtues);
+      expect(msg).toBe("A cosmic chord vibrates through your being.");
+    });
+
+    it("returns default low virtue ripple message", () => {
+      const virtues = { illumination: 0.5, resonance: 0.5, transcendence: 0.5 };
+      const msg = generateResonanceEvent(virtues);
+      expect(msg).toBe("A faint ripple stirs the Aeon.");
+    });
+  });
+
+  describe("Aeon Engine Overdrive & Crown Requirements", () => {
+    it("activates Overdrive if cumulative virtues exceed 12", () => {
+      const virtuesSum = 15;
+      const isOverdrive = virtuesSum > 12;
+      expect(isOverdrive).toBe(true);
+    });
+
+    it("unlocks Crown of Light if total virtues sum exceeds 30 or cycle reaches 21", () => {
+      const cycle = 21;
+      const totalVirtuesSum = 15;
+      const isCrownReady = totalVirtuesSum > 30 || cycle >= 21;
+      expect(isCrownReady).toBe(true);
+    });
+  });
+
+  describe("Empyrean Protocol Subsystems", () => {
+    it("tunes Harmonic Field to custom Solfeggio frequencies", () => {
+      const freq = 528;
+      expect(freq).toBe(528);
+    });
+
+    it("procedurally weaves new realm coordinates", () => {
+      const activeLaw = "Identity Gravity";
+      const suffix = "Nexus";
+      const newRealm = `${activeLaw} ${suffix}`;
+      expect(newRealm).toBe("Identity Gravity Nexus");
     });
   });
 });

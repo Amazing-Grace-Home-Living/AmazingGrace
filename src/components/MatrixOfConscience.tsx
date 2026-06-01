@@ -26,6 +26,16 @@ import VisionCodexScreen from "../oracle-chamber/VisionCodexScreen";
 import BookOfLifeScreen from "../book/BookOfLifeScreen";
 // @ts-ignore
 import GuardianScreen from "../temple-guardians/GuardianScreen";
+// @ts-ignore
+import TempleHologram from "../temple3d/TempleHologram";
+// @ts-ignore
+import CelestialLadderScreen from "../ascension/CelestialLadderScreen";
+// @ts-ignore
+import AeonEngineScreen from "../aeon/AeonEngineScreen";
+// @ts-ignore
+import EmpyreanSphereScreen from "../book/EmpyreanSphereScreen";
+// @ts-ignore
+import OriginPointScreen from "../book/OriginPointScreen";
 
 
 
@@ -281,6 +291,56 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
       <div className="mc-matrix-root">
         <div className="mc-container" style={{ padding: 0 }}>
           <BookOfLifeScreen />
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "temple3d") {
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <TempleHologram />
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "ascension") {
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <CelestialLadderScreen />
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "aeon") {
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <AeonEngineScreen />
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "empyrean") {
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <EmpyreanSphereScreen />
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "origin") {
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <OriginPointScreen />
         </div>
       </div>
     );

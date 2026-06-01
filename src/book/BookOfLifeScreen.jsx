@@ -215,7 +215,10 @@ export default function BookOfLifeScreen() {
         </div>
       </div>
 
-      <div style={{ marginTop: "40px" }}>
+      <div style={{ marginTop: "40px", display: "flex", gap: "10px", justifyContent: "center" }}>
+        <Button onClick={() => go("ascension")} style={{ background: "rgba(16, 185, 129, 0.1)", border: "1px solid rgba(16, 185, 129, 0.3)", color: "#10b981", fontWeight: "bold" }}>
+          🌌 Enter Ascension Cycle
+        </Button>
         <Button variant="primary" onClick={() => go("temple")}>
           Return to Temple Map
         </Button>
