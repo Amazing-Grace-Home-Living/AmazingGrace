@@ -77,4 +77,31 @@ describe("js/matchmaker.js (Canonical Engine)", () => {
       expect(next[0][c]).toBeNull();
     }
   });
+
+  it("triggers supernova special to clear matching gems of same kind", () => {
+    const grid = emptyGrid();
+    // Supernova gem is heart and part of a heart match
+    grid[0][0] = { kind: 'heart', special: 'supernova' };
+    grid[0][1] = 'heart';
+    grid[0][2] = 'heart';
+    
+    // Scattered heart gems across the board to be cleared
+    grid[3][3] = 'heart';
+    grid[5][6] = 'heart';
+    
+    // Other gems that should NOT be cleared
+    grid[2][2] = 'star';
+    grid[4][4] = 'cross';
+
+    const result = findMatches(grid);
+    const next = applyMatches(grid, result);
+
+    // Scattered hearts should be cleared
+    expect(next[3][3]).toBeNull();
+    expect(next[5][6]).toBeNull();
+    
+    // Other types should remain intact
+    expect(next[2][2]).toBe('star');
+    expect(next[4][4]).toBe('cross');
+  });
 });

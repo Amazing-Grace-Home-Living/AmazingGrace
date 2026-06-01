@@ -1,32 +1,30 @@
-import { defineConfig } from "vite";
+﻿import { defineConfig } from "vite";
 import { resolve } from "path";
-import { copyFileSync, mkdirSync } from "fs";
+import { copyFileSync, cpSync, mkdirSync } from "fs";
 
 export default defineConfig({
   // Use relative asset paths so the site works on GitHub Pages PR previews
-  // (pr-<number>/ subdirectory URLs) as well as on the production domain.
+  // (pr-<number>/ subdirectory URLs) as well as on the production domain. 
   base: "./",
   build: {
     outDir: "dist",
     emptyOutDir: true,
-    chunkSizeWarningLimit: 600,
+    chunkSizeWarningLimit: 800,
     rollupOptions: {
       input: {
         main:              resolve(__dirname, "index.html"),
         contact:           resolve(__dirname, "contact/index.html"),
         matrix:            resolve(__dirname, "matrix.html"),
         arcade:            resolve(__dirname, "arcade/index.html"),
-        arcadeStarMatrix:   resolve(__dirname, "arcade/star-matrix/index.html"),
         arcadeMatrix:      resolve(__dirname, "arcade/matrix-of-conscience/index.html"),
         arcadeMatrixTerminal: resolve(__dirname, "arcade/matrix-of-conscience-terminal/index.html"),
         arcadeLoreArchive: resolve(__dirname, "arcade/lore-archive/lore-archive.html"),
         matrixConscienceIndex: resolve(__dirname, "matrix-of-conscience/index.html"),
         arcadeCertificates: resolve(__dirname, "arcade/certificates/index.html"),
         arcadeBibleStudy:  resolve(__dirname, "arcade/bible-study/index.html"),
-        arcadeQuickClick:    resolve(__dirname, "arcade/quick-click/index.html"),
-        arcadeTrinity:      resolve(__dirname, "arcade/trinity/index.html"),
-        arcadeNexusArcade:  resolve(__dirname, "arcade/nexus-arcade/index.html"),
         arcadeSyndicateSiege: resolve(__dirname, "arcade/syndicate-siege/index.html"),
+        arcadeSevenStars:  resolve(__dirname, "arcade/seven-stars/index.html"),
+        arcadeTowerDefense: resolve(__dirname, "arcade/tower-defense/index.html"),
         ministry:          resolve(__dirname, "ministry/index.html"),
         ministryBibleJourney: resolve(__dirname, "ministry/bible-journey.html"),
         ministryTheRedQueen:  resolve(__dirname, "ministry/the-red-queen.html"),
@@ -53,7 +51,6 @@ export default defineConfig({
         audioLibrary:        resolve(__dirname, "audio-library/index.html"),
         storiesLampInWindow: resolve(__dirname, "stories/books/the-lamp-in-the-window.html"),
         storiesElla:       resolve(__dirname, "stories/characters/ella.html"),
-        matrixApp:         resolve(__dirname, "arcade/matrix-app/index.html"),
         news:              resolve(__dirname, "news/index.html"),
         newsZykoLearn:     resolve(__dirname, "news/articles/zyko-learn.html"),
         newsFutureArticles: resolve(__dirname, "news/articles/future-articles.html"),
@@ -63,11 +60,9 @@ export default defineConfig({
       },
       output: {
         manualChunks(id) {
-          // Split Firebase into its own chunk
           if (id.includes('node_modules/firebase')) {
             return 'firebase';
           }
-          // Split React into its own chunk
           if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
             return 'react';
           }
@@ -79,16 +74,23 @@ export default defineConfig({
     {
       name: 'copy-library-json',
       closeBundle() {
-        // Copy stories/library.json to dist/stories/library.json
         try {
           mkdirSync(resolve(__dirname, 'dist/stories'), { recursive: true });
           copyFileSync(
             resolve(__dirname, 'stories/library.json'),
             resolve(__dirname, 'dist/stories/library.json')
           );
+          // Preserve legacy non-module arcade runtime scripts required by
+          // syndicate-siege, lore-archive, and matrix-of-conscience-terminal pages.
+          cpSync(
+            resolve(__dirname, 'arcade/js'),
+            resolve(__dirname, 'dist/arcade/js'),
+            { recursive: true }
+          );
           console.log('✓ Copied stories/library.json to dist/stories/');
+          console.log('✓ Copied arcade runtime scripts to dist/arcade/js/');
         } catch (err) {
-          console.error('Failed to copy library.json:', err);
+          console.error('Failed to copy build artifacts:', err);
         }
       }
     }

@@ -14,7 +14,7 @@ describe('Node version consistency', () => {
 
   it('pins CI/deploy workflows to Node 20', () => {
     const workflowFiles = [
-      '.github/workflows/deploy.yml',
+      '.github/workflows/system-validation.yml',
     ];
 
     for (const file of workflowFiles) {

@@ -354,6 +354,9 @@
     </style>
 </head>
 <body>
+    <audio id="bg-music" loop>
+        <source src="../../assets/audio/victory.mp3" type="audio/mpeg">
+    </audio>
 
     <header class="site-header">
         <div class="nav-container">
@@ -383,17 +386,17 @@
         <div class="game-header">
             <div class="game-header-icon">📖</div>
             <h1>Bible Study Quiz</h1>
-            <p>Test your knowledge of scripture — Old and New Testament. Each correct answer earns credits toward the Matrix of Conscience arcade.</p>
+            <p>Test your knowledge of scripture — Old and New Testament. Each correct answer earns credits toward your Nexus Arcade progress.</p>
         </div>
 
         <div class="quiz-wrap">
 
             <!-- Intro screen -->
             <div id="screen-intro" class="screen active">
-                <div class="intro-card">
+                    <div class="intro-card">
                     <h2>Welcome to Bible Study</h2>
                     <p>Answer <strong style="color:white">10 multiple-choice questions</strong> drawn from Old and New Testament scripture. Each correct answer earns <strong style="color:#ffd700">10 ⭐ credits</strong>.</p>
-                    <p style="margin-bottom:1.5rem;">Your credits are shared with <a href="../matrix-of-conscience/" style="color:var(--accent);font-weight:700;">Matrix of Conscience</a> and <a href="../trinity/" style="color:var(--accent);font-weight:700;">Trinity Match</a>.</p>
+                    <p style="margin-bottom:1.5rem;">Your credits are shared across arcade games.</p>
                     <button class="start-btn" onclick="startQuiz()">📖 Begin Quiz</button>
                 </div>
             </div>
@@ -638,6 +641,13 @@
         sessionCredits = 0;
         answered = false;
         updateHUD();
+        
+        const bgm = document.getElementById('bg-music');
+        if (bgm && bgm.paused) {
+            bgm.volume = 0.2;
+            bgm.play().catch(e => console.log('Audio autoplay blocked'));
+        }
+        
         showScreen('screen-quiz');
         renderQuestion();
     }
@@ -737,6 +747,5 @@
     window.addEventListener('credits:updated', updateHUD);
     window.addEventListener('storage', updateHUD);
     </script>
-    <script src="../../sw-register.js" defer></script>
 </body>
 </html>

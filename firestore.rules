@@ -1,8 +1,50 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
+
+    // ------------------------------
+    // JANUS STATE DOCUMENTS
+    // ------------------------------
+    match /janusStates/{userId} {
+      allow get, list: if request.auth != null && request.auth.uid == userId;
+      allow create, update: if request.auth != null && request.auth.uid == userId && isValidJanusState(request.resource.data);
+      allow delete: if false; 
+
+      function isValidJanusState(data) {
+        return data.white is number
+            && data.scarlet is number
+            && data.coherence is number
+            && data.white >= 0 && data.white <= 1
+            && data.scarlet >= 0 && data.scarlet <= 1
+            && data.coherence >= 0 && data.coherence <= 1
+            && (data.updatedAt is timestamp || data.updatedAt is number); // Flexible for migration
+      }
+    }
+
+    // ------------------------------
+    // ARTIFACTS & GAME DATA
+    // ------------------------------
+    match /artifacts/{appId}/users/{userId}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /artifacts/{appId}/public/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null; // Restrict as needed in production
+    }
+
+    // ------------------------------
+    // MINISTRY METRICS
+    // ------------------------------
+    match /ministry_metrics/{document=**} {
       allow read, write: if request.auth != null;
+    }
+
+    // ------------------------------
+    // DEFAULT DENY
+    // ------------------------------
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
