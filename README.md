@@ -7,7 +7,7 @@ Welcome to Amazing Grace Home Living. Providing secure, all-inclusive housing in
 The main homepage now serves as the only public listings page for Amazing Grace Home Living.
 
 ### 🎮 Arcade (`/arcade/`)
-The Nexus Arcade hub — play faith-based games including **Mystery of the Seven Stars**, **Star Matrix**, **Matrix of Conscience**, **Bible Study Quiz**, and **Match Maker**.
+The Nexus Arcade hub — play faith-based games including **Mystery of the Seven Stars**, **Star Matrix**, and **Bible Study Quiz**.
 
 - URL: `https://amazinggracehl.org/arcade/`
 - Tracks level progress via `progression.js` (localStorage-backed)
