@@ -414,7 +414,9 @@
       }
 
       resetBtn.addEventListener('click', resetGame);
-
+      certificateLink.addEventListener('click', () => {
+        window.location.href = '../certificates/';
+      });
       initBoard();
       renderBoard();
     </script>
