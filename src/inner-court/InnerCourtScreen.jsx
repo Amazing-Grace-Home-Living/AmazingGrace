@@ -99,6 +99,9 @@ export default function InnerCourtScreen() {
               👑 Enter Throne Room
             </Button>
           )}
+          <Button onClick={() => go("temple")} style={{ padding: "6px 14px", fontSize: "0.75rem", background: "rgba(234, 179, 8, 0.1)", border: "1px solid rgba(234, 179, 8, 0.3)", color: "var(--neon-gold)", fontWeight: "bold" }}>
+            🕌 Temple Map
+          </Button>
           <Button onClick={() => go("matrix")} style={{ padding: "6px 14px", fontSize: "0.75rem", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "#cbd5e1" }}>
             🚪 Return to Matrix
           </Button>

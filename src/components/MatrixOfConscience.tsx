@@ -14,6 +14,18 @@ import InnerCourtScreen from "../inner-court/InnerCourtScreen";
 import { useNexusRouter } from "../router/useNexusRouter";
 // @ts-ignore
 import ThroneRoomScreen from "../throne/ThroneRoomScreen";
+// @ts-ignore
+import { useHUD } from "../hud/HUDContext";
+// @ts-ignore
+import TempleNavigationScreen from "../temple/TempleNavigationScreen";
+// @ts-ignore
+import HolyEncounterScreen from "../holy/HolyEncounterScreen";
+// @ts-ignore
+import VisionCodexScreen from "../oracle-chamber/VisionCodexScreen";
+// @ts-ignore
+import BookOfLifeScreen from "../book/BookOfLifeScreen";
+// @ts-ignore
+import GuardianScreen from "../temple-guardians/GuardianScreen";
 
 
 
@@ -120,6 +132,7 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
   const { openSevenStars } = useSevenStarsHUD();
   const { openBibleStudy } = useBibleStudyHUD();
   const { screen, go } = useNexusRouter();
+  const { hud } = useHUD();
 
   // Seven Stars local storage state and selection
   const [completedStars, setCompletedStars] = useState<string[]>(() => {
@@ -233,6 +246,57 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
     );
   }
 
+  if (screen === "temple") {
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <TempleNavigationScreen />
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "holyOfHolies") {
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <HolyEncounterScreen />
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "oracleChamber") {
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <VisionCodexScreen />
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "bookOfLife") {
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <BookOfLifeScreen />
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "guardian") {
+    const target = hud?.route?.target || "temple";
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <GuardianScreen onPass={() => go(target)} onFail={() => go("temple")} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mc-matrix-root">
       <div className="mc-container">
@@ -332,10 +396,27 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
                   color: "#a78bfa",
                   borderRadius: "8px",
                   cursor: "pointer",
-                  fontWeight: "bold"
+                  fontWeight: "bold",
+                  marginBottom: "0.5rem"
                 }}
               >
                 🚪 Enter Inner Court Cockpit
+              </button>
+              <button 
+                onClick={() => go("temple")} 
+                style={{
+                  width: "100%",
+                  padding: "0.5rem",
+                  fontSize: "0.75rem",
+                  background: "rgba(234, 179, 8, 0.1)",
+                  border: "1px solid rgba(234, 179, 8, 0.3)",
+                  color: "var(--neon-gold)",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontWeight: "bold"
+                }}
+              >
+                🕌 Open Temple Map Overworld
               </button>
             </div>
           </section>

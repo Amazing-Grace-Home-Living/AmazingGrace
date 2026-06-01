@@ -50,6 +50,11 @@ export function HUDProvider({ children }) {
       torn: false,
       unlockedModules: []
     },
+    holyEncounter: {
+      stage: 0,
+      history: []
+    },
+    visionCodex: [],
     notifications: []
   });
 
