@@ -36,7 +36,8 @@ const THEMES = {
     moves: 45,
     mapping: { heart: '💙', star: '✨', cross: '🛡️', flame: '🔥', drop: '💧' },
     bg: 'radial-gradient(circle at 50% 20%, #051a33 0%, #020617 70%)',
-    accent: '#00f2ff'
+    accent: '#00f2ff',
+    music: 'conscience_bg'
   },
   [MODES.CLASSIC]: {
     title: 'Janus Weave',
@@ -44,7 +45,8 @@ const THEMES = {
     moves: 60,
     mapping: { heart: '⚪', star: '✨', cross: '💎', flame: '🔴', drop: '💠' },
     bg: 'radial-gradient(circle at 50% 20%, #0f172a 0%, #020617 70%)',
-    accent: '#7effd8'
+    accent: '#7effd8',
+    music: 'classic_bg'
   },
   [MODES.SPIDER]: {
     title: 'Spider Protocol',
@@ -52,7 +54,8 @@ const THEMES = {
     moves: 20,
     mapping: { heart: '🕷️', star: '🕸️', cross: '☣️', flame: '⚠️', drop: '💀' },
     bg: 'radial-gradient(circle at 50% 20%, #1a0000 0%, #020617 70%)',
-    accent: '#ff0040'
+    accent: '#ff0040',
+    music: 'bowser_bg'
   }
 };
 
@@ -96,8 +99,12 @@ class NexusMatrix {
   initAudio() {
     if (window.AudioManager) {
         this.audio = new window.AudioManager();
-        // Register requested tracks
+        // Register music tracks
         this.audio.registerTrack('star_bg', '../../assets/music/m64slide.mid');
+        this.audio.registerTrack('bowser_bg', '../../assets/music/m64bowsr.mid');
+        this.audio.registerTrack('conscience_bg', '../../assets/music/m64endin.mid');
+        this.audio.registerTrack('classic_bg', '../../assets/music/m64metal.mid');
+        // Register SFX
         this.audio.registerSFX('star_chain', '../../assets/audio/storm.mp3');
         
         // Start music if applicable
