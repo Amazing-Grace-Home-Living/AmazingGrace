@@ -67,13 +67,12 @@ jobs:
 
       - name: Verify arcade games exist
         run: |
-          test -f dist/arcade/star-matrix/index.html
           test -f dist/arcade/matrix-of-conscience/index.html
           test -f dist/arcade/matrix-of-conscience-terminal/index.html
           test -f dist/arcade/bible-study/index.html
-          test -f dist/arcade/trinity/index.html
           test -f dist/arcade/syndicate-siege/index.html
-          test -f dist/arcade/nexus-arcade/index.html
+          test -f dist/arcade/seven-stars/index.html
+          test -f dist/arcade/tower-defense/index.html
           test -f dist/arcade.html
           echo "✅ All arcade games built successfully"
 

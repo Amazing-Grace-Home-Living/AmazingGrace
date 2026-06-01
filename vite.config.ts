@@ -92,18 +92,6 @@ export default defineConfig({
         } catch (err) {
           console.error('Failed to copy build artifacts:', err);
         }
-
-        // Copy arcade runtime scripts that are loaded as classic scripts
-        // (not bundled via Vite) so they are available in production builds.
-        try {
-          const srcArcadeJs = resolve(__dirname, 'arcade/js');
-          const distArcadeJs = resolve(__dirname, 'dist/arcade/js');
-          mkdirSync(distArcadeJs, { recursive: true });
-          cpSync(srcArcadeJs, distArcadeJs, { recursive: true });
-          console.log('✓ Copied arcade/js to dist/arcade/js');
-        } catch (err) {
-          console.error('Failed to copy arcade/js:', err);
-        }
       }
     }
   ]

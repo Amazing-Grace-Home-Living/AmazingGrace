@@ -77,14 +77,14 @@ describe('Arcade Game Smoke Tests', () => {
           html = readFileSync(resolve(game.path), 'utf-8');
 
           // Check for common script errors
-          const scriptBlocks = html.match(/<script[^>]*>[\s\S]*?<\/script>/gi) || [];
+          const scriptBlocks = html.match(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi) || [];
 
           for (const script of scriptBlocks) {
             // Skip if it's an external script (src attribute)
             if (script.match(/src=/i)) continue;
 
             // Check for unmatched braces (basic syntax check)
-            const content = script.replace(/<\/?script[^>]*>/gi, '');
+            const content = script.replace(/<script\b[^>]*>|<\/script\s*>/gi, '');
             const openBraces = (content.match(/\{/g) || []).length;
             const closeBraces = (content.match(/\}/g) || []).length;
 
@@ -213,7 +213,7 @@ describe('Arcade Game Smoke Tests', () => {
     it('should not have excessively large inline scripts', () => {
       for (const game of ARCADE_GAMES) {
         const html = readFileSync(resolve(game.path), 'utf-8');
-        const scriptBlocks = html.match(/<script[^>]*>[\s\S]*?<\/script>/gi) || [];
+        const scriptBlocks = html.match(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi) || [];
 
         for (const script of scriptBlocks) {
           // Skip external scripts
