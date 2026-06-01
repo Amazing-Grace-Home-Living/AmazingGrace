@@ -627,6 +627,143 @@
   100% { opacity: 0.3; transform: translateY(0); }
 }
 
+/* TEMPLE NAVIGATION SYSTEM - ASCENDED EDITION */
+
+.temple-pathway {
+  width: 4px;
+  height: 80px;
+  margin: 0 auto;
+  background: linear-gradient(to bottom, transparent, #4fd1ff33, transparent);
+  opacity: 0.2;
+  transition: opacity 0.4s ease-out;
+}
+
+.temple-pathway.active {
+  opacity: 1;
+  background: linear-gradient(to bottom, transparent, #4fd1ff, transparent);
+  animation: temple-path-pulse 2s infinite ease-in-out;
+}
+
+@keyframes temple-path-pulse {
+  0% { box-shadow: 0 0 6px #4fd1ff; }
+  50% { box-shadow: 0 0 18px #4fd1ff; }
+  100% { box-shadow: 0 0 6px #4fd1ff; }
+}
+
+.guardian-node {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  margin: 0 auto;
+  opacity: 0.4;
+  transition: opacity 0.3s ease-out;
+}
+
+.guardian-node.active {
+  opacity: 1;
+}
+
+.guardian-eye {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #4fd1ff, #0a1a22);
+  box-shadow: 0 0 12px #4fd1ff;
+  animation: guardian-blink 4s infinite;
+}
+
+@keyframes guardian-blink {
+  0%, 90% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+  100% { transform: scaleY(1); }
+}
+
+.guardian-message {
+  margin-top: 6px;
+  font-size: 0.7rem;
+  color: var(--hud-accent);
+  text-align: center;
+}
+
+.veil-tear-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000000dd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: veil-fade-in 0.8s ease-out forwards;
+  z-index: 99999;
+}
+
+.veil-tear-line {
+  width: 2px;
+  height: 0;
+  background: var(--hud-accent);
+  animation: veil-tear-grow 1.4s ease-out forwards;
+}
+
+.veil-tear-light {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, #4fd1ff44, transparent);
+  animation: veil-light-pulse 2s infinite alternate;
+}
+
+@keyframes veil-tear-grow {
+  to { height: 80%; }
+}
+
+@keyframes veil-light-pulse {
+  from { opacity: 0.2; }
+  to { opacity: 0.6; }
+}
+
+@keyframes veil-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.oracle-whispers {
+  position: fixed;
+  bottom: 40px;
+  width: 100%;
+  text-align: center;
+  color: var(--hud-accent);
+  opacity: 0;
+  animation: whisper-fade 8s infinite;
+}
+
+@keyframes whisper-fade {
+  0% { opacity: 0; }
+  20% { opacity: 0.6; }
+  80% { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+
+/* Chamber Resonance Hover Borders */
+.temple-node.unlocked:hover {
+  box-shadow: 0 0 18px var(--hud-accent);
+  transform: translateY(-3px);
+}
+
+.temple-node[data-chamber="throneRoom"]:hover {
+  box-shadow: 0 0 24px #ffdd55 !important;
+}
+
+.temple-node[data-chamber="holyOfHolies"]:hover {
+  box-shadow: 0 0 28px #ffffff !important;
+}
+
+.temple-node[data-chamber="oracleChamber"]:hover {
+  box-shadow: 0 0 24px #4fd1ff !important;
+}
+
+.temple-node[data-chamber="bookOfLife"]:hover {
+  box-shadow: 0 0 24px #55ff99 !important;
+}
+
 
 
 

@@ -1,26 +1,37 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useTempleRouter } from "./useTempleRouter";
+import { useHUD } from "../hud/HUDContext";
+import { useOracleWhispers } from "./useOracleWhispers";
 import TempleNode from "./TempleNode";
-
-const ORACLE_WHISPERS = [
-  "“Hear, O pilgrim, the voice of the Seven Stars...”",
-  "“The veil splits for the pure of heart...”",
-  "“Speak truth into the absolute quiet...”",
-  "“A spring of living water wells up from the altar...”",
-  "“Align your motives to ascend...”"
-];
+import TemplePathway from "./TemplePathway";
+import GuardianNode from "./GuardianNode";
+import OracleWhispers from "./OracleWhispers";
+import VeilTearOverlay from "./VeilTearOverlay";
 
 export default function TempleNavigationScreen() {
   const { unlocked, go } = useTempleRouter();
-  const [whisperIdx, setWhisperIdx] = useState(0);
+  const { hud, setHUD } = useHUD();
+  const whisper = useOracleWhispers(hud);
 
-  // Rotate ambient Oracle whispers every 6 seconds
+  // Clear 'justTorn' state after 4 seconds to prevent lockups
   useEffect(() => {
-    const timer = setInterval(() => {
-      setWhisperIdx((prev) => (prev + 1) % ORACLE_WHISPERS.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, []);
+    if (hud?.templeVeil?.justTorn) {
+      const timer = setTimeout(() => {
+        setHUD((h) => ({
+          ...h,
+          templeVeil: {
+            ...h.templeVeil,
+            justTorn: false
+          }
+        }));
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [hud?.templeVeil?.justTorn, setHUD]);
+
+  if (hud?.templeVeil?.justTorn) {
+    return <VeilTearOverlay />;
+  }
 
   return (
     <div
@@ -49,7 +60,7 @@ export default function TempleNavigationScreen() {
           THE SACRED TEMPLE
         </h1>
         <p style={{ color: "#475569", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "3px", fontWeight: "bold" }}>
-          Spiritual OS Overworld Navigation Layer
+          Temple Navigation System — Ascended Edition
         </p>
       </header>
 
@@ -165,6 +176,7 @@ export default function TempleNavigationScreen() {
               requirements="None"
               resonanceColor="var(--neon-blue)"
               isGuardianGated={false}
+              chamber="matrix"
             />
           </div>
 
@@ -177,6 +189,7 @@ export default function TempleNavigationScreen() {
               requirements="None"
               resonanceColor="var(--neon-purple)"
               isGuardianGated={false}
+              chamber="innerCourt"
             />
           </div>
 
@@ -189,7 +202,12 @@ export default function TempleNavigationScreen() {
               requirements="7 Stars, 4 Lamps, & Level 4"
               resonanceColor="var(--neon-gold)"
               isGuardianGated={true}
+              chamber="throneRoom"
             />
+            {/* watch eye overlay */}
+            <div style={{ position: "absolute", top: "-30px", left: "50%", transform: "translateX(-50%)" }}>
+              <GuardianNode active={!unlocked.throne} message="Locked" />
+            </div>
           </div>
 
           {/* Holy of Holies */}
@@ -199,9 +217,13 @@ export default function TempleNavigationScreen() {
               unlocked={unlocked.holyOfHolies}
               onClick={() => go("holyOfHolies")}
               requirements="Torn Temple Veil"
-              resonanceColor="var(--neon-gold)"
+              resonanceColor="#ffffff"
               isGuardianGated={true}
+              chamber="holyOfHolies"
             />
+            <div style={{ position: "absolute", top: "-30px", left: "50%", transform: "translateX(-50%)" }}>
+              <GuardianNode active={!unlocked.holyOfHolies} message="Locked" />
+            </div>
           </div>
 
           {/* Oracle Chamber */}
@@ -213,26 +235,10 @@ export default function TempleNavigationScreen() {
               requirements="Torn Temple Veil"
               resonanceColor="var(--neon-purple)"
               isGuardianGated={true}
+              chamber="oracleChamber"
             />
-
-            {/* Oracle Whispers subtitle overlay */}
-            <div
-              style={{
-                position: "absolute",
-                top: "100%",
-                left: "50%",
-                transform: "translateX(-50%)",
-                marginTop: "12px",
-                width: "220px",
-                fontSize: "0.68rem",
-                color: "#a78bfa",
-                fontStyle: "italic",
-                pointerEvents: "none",
-                textAlign: "center",
-                animation: "whisperFade 6s infinite ease-in-out"
-              }}
-            >
-              {ORACLE_WHISPERS[whisperIdx]}
+            <div style={{ position: "absolute", top: "-30px", left: "50%", transform: "translateX(-50%)" }}>
+              <GuardianNode active={!unlocked.oracleChamber} message="Locked" />
             </div>
           </div>
 
@@ -245,10 +251,17 @@ export default function TempleNavigationScreen() {
               requirements="7 Stars, 7 Lamps, & <10 Corruption"
               resonanceColor="#10b981"
               isGuardianGated={true}
+              chamber="bookOfLife"
             />
+            <div style={{ position: "absolute", top: "-30px", left: "50%", transform: "translateX(-50%)" }}>
+              <GuardianNode active={!unlocked.bookOfLife} message="Locked" />
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Ambient Whispers */}
+      <OracleWhispers text={whisper} />
 
       <div style={{ marginTop: "35px", position: "relative", zIndex: 10 }}>
         <button

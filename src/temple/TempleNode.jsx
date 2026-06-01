@@ -6,7 +6,8 @@ export default function TempleNode({
   onClick,
   requirements,
   resonanceColor = "var(--hud-accent)",
-  isGuardianGated = false
+  isGuardianGated = false,
+  chamber
 }) {
   // Compute inline colors based on resonance color
   const glowShadow = unlocked
@@ -31,6 +32,7 @@ export default function TempleNode({
     <div
       className={`temple-node ${unlocked ? "unlocked" : "locked"} ${isGuardianGated ? "guardian-gated" : ""}`}
       onClick={unlocked ? onClick : undefined}
+      data-chamber={chamber}
       style={{
         position: "relative",
         overflow: "hidden",
