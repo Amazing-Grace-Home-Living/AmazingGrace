@@ -1,3 +1,5 @@
+@import url('./rebellion-skin.css');
+
 :root {
   --unified-nav-bg: rgba(2, 6, 23, 0.96);
   --unified-nav-border: rgba(30, 41, 59, 1);

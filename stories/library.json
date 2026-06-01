@@ -166,6 +166,22 @@
       "summary": "In the year 2087, Electra designs conscience modules for androids in Nexus Prime's managed society. When Module 48-Sigma begins to truly feel, she must confront her brother's fate and the dangerous hope of organic emotion in a world that suppresses it."
     },
     {
+      "title": "The 2027 Rebellion",
+      "author": "Amazing Grace Story Team",
+      "genre": "Sci-Fi / Cyberpunk",
+      "series": "Matrix of Conscience",
+      "slug": "rebellion2027",
+      "path": "./rebellion2027/",
+      "tags": [
+        "matrix",
+        "electra",
+        "rebellion",
+        "nexus prime",
+        "conscience"
+      ],
+      "summary": "A cinematic prelude to Matrix of Conscience: witness Electra's uprising in Nexus Prime and the birth of ethical resistance."
+    },
+    {
       "title": "More Articles Are on the Way",
       "author": "Amazing Grace Home Living",
       "genre": "News / Article",

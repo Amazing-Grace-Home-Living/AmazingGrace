@@ -42,6 +42,7 @@
     <script src="../../assets/vendor/tailwindcss.js"></script>
     <script src="../../assets/vendor/hosted-only.js"></script>
     <link rel="stylesheet" href="../../assets/css/unified-nav.css">
+  <link rel="stylesheet" href="../../assets/css/rebellion-skin.css">
     <script>
         window.AmazingGraceHostedOnly?.loadStylesheet("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Orbitron:wght@700;900&family=Playfair+Display:wght@700&display=swap");
     </script>
@@ -395,7 +396,7 @@
                     <div class="intro-card">
                     <h2>Welcome to Bible Study</h2>
                     <p>Answer <strong style="color:white">10 multiple-choice questions</strong> drawn from Old and New Testament scripture. Each correct answer earns <strong style="color:#ffd700">10 ⭐ credits</strong>.</p>
-                    <p style="margin-bottom:1.5rem;">Your credits are shared with <a href="../star-matrix/" style="color:var(--accent);font-weight:700;">Star Matrix</a> and <a href="../trinity/" style="color:var(--accent);font-weight:700;">Trinity Match</a>.</p>
+                    <p style="margin-bottom:1.5rem;">Your credits are shared across arcade games.</p>
                     <button class="start-btn" onclick="startQuiz()">📖 Begin Quiz</button>
                 </div>
             </div>
@@ -746,6 +747,5 @@
     window.addEventListener('credits:updated', updateHUD);
     window.addEventListener('storage', updateHUD);
     </script>
-    <script src="../../sw-register.js" defer></script>
 </body>
 </html>
