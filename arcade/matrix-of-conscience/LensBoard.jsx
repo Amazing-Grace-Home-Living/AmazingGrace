@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import React, { useEffect, useState } from "react";
-=======
 import React, { useEffect, useMemo, useState } from "react";
->>>>>>> origin/main
 import "./lens.css";
 
 /* -----------------------------
@@ -213,19 +209,6 @@ export default function LensBoard() {
   const [selectedId, setSelectedId] = useState(null);
   const [disturbance, setDisturbance] = useState(0.3); // 0–1
 
-<<<<<<< HEAD
-  const selected = segments.find((s) => s.id === selectedId) || null;
-
-  // Recompute alignment
-  useEffect(() => {
-    setSegments((prev) =>
-      prev.map((s) => ({
-        ...s,
-        aligned: isAligned(s)
-      }))
-    );
-  }, [selectedId]); // recalculated when selection changes; you can refine
-=======
   const alignedSegments = useMemo(
     () =>
       segments.map((s) => ({
@@ -236,27 +219,10 @@ export default function LensBoard() {
   );
 
   const selected = alignedSegments.find((s) => s.id === selectedId) || null;
->>>>>>> origin/main
 
   // Disturbance slowly increases over time
   useEffect(() => {
     const id = setInterval(() => {
-<<<<<<< HEAD
-      setDisturbance((d) => Math.min(1, d + 0.01));
-      // Randomly nudge segments when disturbance is high
-      setSegments((prev) =>
-        prev.map((s) => {
-          if (Math.random() < 0.05) {
-            return {
-              ...s,
-              phase: (s.phase + (Math.random() - 0.5) * 10) % 360
-            };
-          }
-          return s;
-        })
-      );
-    }, 1500);
-=======
       setDisturbance((d) => {
         const nextDisturbance = Math.min(1, d + 0.01);
         if (Math.random() < nextDisturbance * 0.1) {
@@ -275,7 +241,6 @@ export default function LensBoard() {
         return nextDisturbance;
       });
     }, 200);
->>>>>>> origin/main
     return () => clearInterval(id);
   }, []);
 
@@ -285,12 +250,7 @@ export default function LensBoard() {
         s.id === id
           ? {
               ...s,
-<<<<<<< HEAD
-              ...partial,
-              aligned: isAligned({ ...s, ...partial })
-=======
               ...partial
->>>>>>> origin/main
             }
           : s
       )
@@ -301,13 +261,8 @@ export default function LensBoard() {
     setDisturbance((d) => Math.max(0, d - 0.2));
   }
 
-<<<<<<< HEAD
-  const alignedCount = segments.filter((s) => s.aligned).length;
-  const allAligned = alignedCount === segments.length;
-=======
   const alignedCount = alignedSegments.filter((s) => s.aligned).length;
   const allAligned = alignedCount === alignedSegments.length;
->>>>>>> origin/main
 
   return (
     <div className="lens-root">
@@ -317,19 +272,11 @@ export default function LensBoard() {
         <div className="lens-layout">
           <div className="lens-left">
             <HexGrid
-<<<<<<< HEAD
-              segments={segments}
-              onSelect={(id) => setSelectedId(id)}
-            />
-            <div className="lens-status">
-              <span>Aligned: {alignedCount} / {segments.length}</span>
-=======
               segments={alignedSegments}
               onSelect={(id) => setSelectedId(id)}
             />
             <div className="lens-status">
               <span>Aligned: {alignedCount} / {alignedSegments.length}</span>
->>>>>>> origin/main
               {allAligned && (
                 <span className="lens-status-complete">
                   RESOLUTION ACHIEVED — JANUS LENS ONLINE
