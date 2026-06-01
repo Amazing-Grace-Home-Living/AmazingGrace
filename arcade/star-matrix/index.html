@@ -403,6 +403,8 @@
         dragStartTile = cell;
         cell.classList.add('selected', 'dragging');
         cell.setAttribute('aria-selected', 'true');
+        // setData is required by Firefox for drag-and-drop to activate;
+        // the actual source is tracked via the dragStartTile reference
         e.dataTransfer.setData('text/plain', `${cell.dataset.row},${cell.dataset.col}`);
         e.dataTransfer.effectAllowed = 'move';
       }
@@ -432,9 +434,8 @@
           cell.classList.remove('dragging', 'selected');
           cell.setAttribute('aria-selected', 'false');
         }
-        if (dragStartTile) {
-          resetDragState();
-        }
+        // Always reset — if onDrop already called resetDragState, this is a safe no-op
+        resetDragState();
       }
 
       function initBoard() {
