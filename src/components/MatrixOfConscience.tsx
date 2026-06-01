@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useState, createContext, useContext, useRef, useCallback } from "react";
 import "./matrix-of-conscience.css";
+// @ts-ignore
+import { useTowerDefenseHUD } from "../modules/tower-defense/useTowerDefenseHUD";
+// @ts-ignore
+import { useSevenStarsHUD } from "../modules/seven-stars/useSevenStarsHUD";
 
 const TELEMETRY_ENDPOINT = "https://script.google.com/macros/s/AKfycbyq6jzCVGtoOTcid-LzD_njmuuOOSwJrhktU3ya1GKXLZI9jp6yCMJzlrdvyNb1fpkb/exec";
 
@@ -97,6 +101,10 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
   const [activeTab, setActiveTab] = useState("calibration");
   const [selectedStar, setSelectedStar] = useState<{ r: number; c: number } | null>(null);
   const currentUserId = activeUser;
+
+  // HUD hook integrations
+  const { showOverlay: startTowerDefense } = useTowerDefenseHUD();
+  const { openSevenStars } = useSevenStarsHUD();
 
   // Seven Stars local storage state and selection
   const [completedStars, setCompletedStars] = useState<string[]>(() => {
@@ -217,6 +225,44 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
             </div>
             <div className="mc-console-log">
               <div className="mc-log-terminal">{terminalLog}</div>
+            </div>
+            
+            <div style={{ marginTop: "1rem", display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div style={{ fontSize: "0.7rem", color: "#64748b", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.05em" }}>HUD Subsystems</div>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button 
+                  onClick={openSevenStars} 
+                  style={{
+                    flex: 1,
+                    padding: "0.5rem",
+                    fontSize: "0.75rem",
+                    background: "rgba(139, 92, 246, 0.1)",
+                    border: "1px solid rgba(139, 92, 246, 0.3)",
+                    color: "#a78bfa",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontWeight: "bold"
+                  }}
+                >
+                  🌠 Sync Seven Stars HUD
+                </button>
+                <button 
+                  onClick={() => startTowerDefense({ wave: 1, coresRemaining: 5, lives: 20, credits: 100 })} 
+                  style={{
+                    flex: 1,
+                    padding: "0.5rem",
+                    fontSize: "0.75rem",
+                    background: "rgba(6, 182, 212, 0.1)",
+                    border: "1px solid rgba(6, 182, 212, 0.3)",
+                    color: "#22d3ee",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontWeight: "bold"
+                  }}
+                >
+                  🛡️ Launch Tower Defense
+                </button>
+              </div>
             </div>
           </section>
 

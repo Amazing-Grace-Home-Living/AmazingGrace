@@ -1,0 +1,53 @@
+{
+  "stars": [
+    {
+      "id": "star_1",
+      "name": "Star of Identity",
+      "virtue": "Truth",
+      "verse": "Revelation 1:16",
+      "summary": "Anchors the self in Christ; guards against fragmentation and false selves."
+    },
+    {
+      "id": "star_2",
+      "name": "Star of Obedience",
+      "virtue": "Faithfulness",
+      "verse": "Revelation 2:10",
+      "summary": "Trains the will to remain loyal under pressure and persecution."
+    },
+    {
+      "id": "star_3",
+      "name": "Star of Discernment",
+      "virtue": "Wisdom",
+      "verse": "Revelation 2:24",
+      "summary": "Separates true teaching from flattering deception and spiritual flattery."
+    },
+    {
+      "id": "star_4",
+      "name": "Star of Repentance",
+      "virtue": "Humility",
+      "verse": "Revelation 3:19",
+      "summary": "Keeps the conscience soft and responsive to correction."
+    },
+    {
+      "id": "star_5",
+      "name": "Star of Endurance",
+      "virtue": "Perseverance",
+      "verse": "Revelation 3:10",
+      "summary": "Trains the soul to remain under trial without breaking or fleeing."
+    },
+    {
+      "id": "star_6",
+      "name": "Star of Watchfulness",
+      "virtue": "Alertness",
+      "verse": "Revelation 3:2",
+      "summary": "Prevents spiritual sleep; keeps the inner guard awake."
+    },
+    {
+      "id": "star_7",
+      "name": "Star of Communion",
+      "virtue": "Love",
+      "verse": "Revelation 3:20",
+      "summary": "Centers everything on shared life with Christ, not just performance."
+    }
+  ]
+}

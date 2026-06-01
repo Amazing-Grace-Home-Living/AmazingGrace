@@ -222,3 +222,39 @@
   border: 1px solid var(--hud-danger);
   background: rgba(255, 79, 107, 0.15);
 }
+
+/* Seven Stars External Overlay Styles */
+.ext-seven-stars {
+  bottom: var(--hud-space-3);
+  right: var(--hud-space-3);
+  background: var(--hud-bg-overlay);
+  padding: var(--hud-space-3);
+  border-radius: var(--hud-radius-md);
+  border: var(--hud-border-width) solid var(--hud-accent-soft);
+  max-width: 260px;
+  font-size: var(--hud-font-size-xs);
+}
+
+.ext-seven-stars .ss-header {
+  font-size: var(--hud-font-size-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hud-accent);
+  margin-bottom: var(--hud-space-2);
+}
+
+.ext-seven-stars .ss-name {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.ext-seven-stars .ss-virtue,
+.ext-seven-stars .ss-verse {
+  color: var(--hud-text-muted);
+  margin-bottom: 2px;
+}
+
+.ext-seven-stars .ss-summary {
+  margin-top: var(--hud-space-2);
+}
+
