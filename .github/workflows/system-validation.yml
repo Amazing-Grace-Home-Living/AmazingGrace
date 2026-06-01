@@ -35,7 +35,7 @@ jobs:
         run: npm test -- tests/starMap.test.ts
 
       - name: Game health checks - Match Maker
-        run: npm test -- tests/matchMakerState.test.ts tests/match-maker-ui-refactor.test.ts
+        run: npm test -- tests/canonical-matchmaker.test.ts tests/constellationState.test.ts
 
       - name: Game health checks - Trinity
         run: npm test -- tests/matrix-trinity-alignment.test.ts
