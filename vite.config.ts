@@ -1,4 +1,4 @@
-﻿import { defineConfig } from "vite";
+import { defineConfig } from "vite";
 import { resolve } from "path";
 import { copyFileSync, cpSync, mkdirSync } from "fs";
 
@@ -9,7 +9,7 @@ export default defineConfig({
   build: {
     outDir: "dist",
     emptyOutDir: true,
-    chunkSizeWarningLimit: 800,
+    chunkSizeWarningLimit: 500,
     rollupOptions: {
       input: {
         main:              resolve(__dirname, "index.html"),
@@ -87,8 +87,8 @@ export default defineConfig({
             resolve(__dirname, 'dist/arcade/js'),
             { recursive: true }
           );
-          console.log('✓ Copied stories/library.json to dist/stories/');
-          console.log('✓ Copied arcade runtime scripts to dist/arcade/js/');
+          console.log('? Copied stories/library.json to dist/stories/');
+          console.log('? Copied arcade runtime scripts to dist/arcade/js/');
         } catch (err) {
           console.error('Failed to copy build artifacts:', err);
         }
@@ -96,3 +96,4 @@ export default defineConfig({
     }
   ]
 });
+

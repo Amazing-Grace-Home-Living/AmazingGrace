@@ -1,0 +1,1 @@
+import React from 'react'; import ReactDOM from 'react-dom/client'; import ListingSearch from './components/ListingSearch'; ReactDOM.createRoot(document.getElementById('listing-search-root')).render(<React.StrictMode><ListingSearch /></React.StrictMode>);
