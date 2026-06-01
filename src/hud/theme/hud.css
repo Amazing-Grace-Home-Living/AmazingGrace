@@ -342,3 +342,124 @@
   to { stroke-dashoffset: 0; }
 }
 
+/* Inner Court Core Layout Styles */
+.inner-court {
+  padding: var(--hud-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--hud-space-3);
+  background: rgba(5, 5, 5, 0.4);
+  border-radius: var(--hud-radius-lg);
+}
+
+.inner-court-header h1 {
+  margin: 0;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: var(--hud-font-size-lg);
+  color: var(--hud-accent);
+}
+
+.inner-court-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--hud-space-3);
+}
+
+.inner-court-footer {
+  display: flex;
+  gap: var(--hud-space-2);
+  margin-top: var(--hud-space-2);
+}
+
+/* Scroll of Destiny Panel Styles */
+.scroll-panel .sd-name {
+  font-size: var(--hud-font-size-md);
+  font-weight: 600;
+}
+
+.scroll-panel .sd-title {
+  color: var(--hud-text-muted);
+  margin-bottom: 2px;
+}
+
+.sd-section {
+  margin-top: var(--hud-space-2);
+}
+
+.sd-virtues {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: var(--hud-font-size-xs);
+}
+
+.sd-virtue-key {
+  text-transform: capitalize;
+}
+
+.sd-virtue-val {
+  float: right;
+}
+
+.sd-tags {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.sd-tags li {
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--hud-border);
+  font-size: var(--hud-font-size-xs);
+}
+
+/* Voice of the Oracle Panel Styles */
+.oracle-panel p {
+  font-size: var(--hud-font-size-sm);
+  color: var(--hud-text-muted);
+}
+
+/* Conscience Calibration Overlay Styles */
+.ext-conscience {
+  top: var(--hud-space-3);
+  right: var(--hud-space-3);
+  background: var(--hud-bg-overlay);
+  padding: var(--hud-space-3);
+  border-radius: var(--hud-radius-md);
+  border: var(--hud-border-width) solid var(--hud-accent-soft);
+  max-width: 280px;
+  font-size: var(--hud-font-size-xs);
+  box-shadow: 0 0 15px rgba(250, 204, 21, 0.2);
+}
+
+/* Seven Lamps Overlay Styles */
+.ext-seven_lamps {
+  bottom: var(--hud-space-3);
+  left: var(--hud-space-3);
+  background: var(--hud-bg-overlay);
+  padding: var(--hud-space-3);
+  border-radius: var(--hud-radius-md);
+  border: var(--hud-border-width) solid var(--hud-accent-soft);
+  max-width: 280px;
+  font-size: var(--hud-font-size-xs);
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+}
+
+/* Throne Room Support Styles */
+.throne-room {
+  transition: all 0.3s ease;
+}
+.throne-stats div {
+  transition: transform 0.2s ease;
+}
+.throne-stats div:hover {
+  transform: translateY(-2px);
+}
+
+
+

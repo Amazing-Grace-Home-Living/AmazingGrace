@@ -8,6 +8,14 @@ import { useSevenStarsHUD } from "../modules/seven-stars/useSevenStarsHUD";
 import { useBibleStudyHUD } from "../modules/bible-study/useBibleStudyHUD";
 // @ts-ignore
 import SpiritualFormationPanel from "../spiritual/SpiritualFormationPanel";
+// @ts-ignore
+import InnerCourtScreen from "../inner-court/InnerCourtScreen";
+// @ts-ignore
+import { useNexusRouter } from "../router/useNexusRouter";
+// @ts-ignore
+import ThroneRoomScreen from "../throne/ThroneRoomScreen";
+
+
 
 
 const TELEMETRY_ENDPOINT = "https://script.google.com/macros/s/AKfycbyq6jzCVGtoOTcid-LzD_njmuuOOSwJrhktU3ya1GKXLZI9jp6yCMJzlrdvyNb1fpkb/exec";
@@ -111,6 +119,7 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
   const { showOverlay: startTowerDefense } = useTowerDefenseHUD();
   const { openSevenStars } = useSevenStarsHUD();
   const { openBibleStudy } = useBibleStudyHUD();
+  const { screen, go } = useNexusRouter();
 
   // Seven Stars local storage state and selection
   const [completedStars, setCompletedStars] = useState<string[]>(() => {
@@ -204,6 +213,26 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
     setTerminalLog("[Lattice Reset] All congregation coordinates released.");
   };
 
+  if (screen === "innerCourt") {
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <InnerCourtScreen />
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "throne") {
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <ThroneRoomScreen />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mc-matrix-root">
       <div className="mc-container">
@@ -219,6 +248,9 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
             </button>
             <button className={`mc-nav-btn ${activeTab === "formation" ? "active" : ""}`} onClick={() => setActiveTab("formation")}>
               Spiritual Formation
+            </button>
+            <button className={`mc-nav-btn ${activeTab === "innercourt" ? "active" : ""}`} onClick={() => setActiveTab("innercourt")}>
+              Inner Court
             </button>
           </div>
         </header>
@@ -283,10 +315,27 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
                   color: "#22d3ee",
                   borderRadius: "8px",
                   cursor: "pointer",
-                  fontWeight: "bold"
+                  fontWeight: "bold",
+                  marginBottom: "0.5rem"
                 }}
               >
                 🛡️ Launch Tower Defense
+              </button>
+              <button 
+                onClick={() => go("innerCourt")} 
+                style={{
+                  width: "100%",
+                  padding: "0.5rem",
+                  fontSize: "0.75rem",
+                  background: "rgba(167, 139, 250, 0.1)",
+                  border: "1px solid rgba(167, 139, 250, 0.3)",
+                  color: "#a78bfa",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontWeight: "bold"
+                }}
+              >
+                🚪 Enter Inner Court Cockpit
               </button>
             </div>
           </section>
@@ -448,6 +497,12 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
           {activeTab === "formation" && (
             <section className="mc-card mc-control-panel">
               <SpiritualFormationPanel />
+            </section>
+          )}
+
+          {activeTab === "innercourt" && (
+            <section className="mc-card mc-control-panel">
+              <InnerCourtScreen />
             </section>
           )}
         </div>

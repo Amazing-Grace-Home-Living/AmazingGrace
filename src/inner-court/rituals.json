@@ -1,0 +1,25 @@
+{
+  "rituals": [
+    {
+      "id": "ritual_prayer",
+      "name": "Morning Prayer",
+      "virtue": "humility",
+      "xp": 10,
+      "cooldown": 86400
+    },
+    {
+      "id": "ritual_scripture",
+      "name": "Scripture Meditation",
+      "virtue": "wisdom",
+      "xp": 15,
+      "cooldown": 86400
+    },
+    {
+      "id": "ritual_service",
+      "name": "Act of Service",
+      "virtue": "love",
+      "xp": 20,
+      "cooldown": 86400
+    }
+  ]
+}

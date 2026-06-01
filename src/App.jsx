@@ -14,6 +14,10 @@ import MatrixOfConscience from './arcade/matrix-of-conscience/MatrixOfConscience
 import { HUDProvider } from './hud/HUDContext';
 import HUD from './hud/HUD';
 import { useHUDEventBindings } from './hud/useHUDEventBindings';
+import { useVirtueEngine } from './virtue/useVirtueEngine';
+import { useBookOfWorks } from './book/useBookOfWorks';
+
+
 import './hud/theme/tokens.css';
 import './hud/theme/hud.css';
 import './hud/theme/animations.css';
@@ -34,6 +38,8 @@ function StellaraOSInner() {
 
   // Bind Nexus Event Bus → HUD state
   useHUDEventBindings();
+  useVirtueEngine();
+  useBookOfWorks();
 
   // Pull global telemetry from the Context
   const { matrixMetrics, sisters, getUnlockedCount } = useSevenSisters();
