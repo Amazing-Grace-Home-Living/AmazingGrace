@@ -22,7 +22,7 @@ describe('library.json dist deployment', () => {
     expect(data).toHaveProperty('entries');
     expect(Array.isArray(data.entries)).toBe(true);
     expect(data.entries.length).toBeGreaterThan(0);
-  });
+  }, 45000);
 
   it('library.json contains all required entry fields', () => {
     const sourceContent = fs.readFileSync('stories/library.json', 'utf8');

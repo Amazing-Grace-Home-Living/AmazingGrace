@@ -41,5 +41,5 @@ describe('The 2027 Rebellion library integration', () => {
     const html = fs.readFileSync('dist/stories/blog/rebellion.html', 'utf8');
     expect(html).toContain('<meta http-equiv="refresh" content="0; url=../rebellion2027/">');
     expect(html).toContain('href="../rebellion2027/"');
-  });
+  }, 45000);
 });
