@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import AtariCabinet from "./AtariCabinet";
 
 export default function AtariLab() {
-  const [unlocked, setUnlocked] = useState(false);
+  const [unlocked, setUnlocked] = useState(true);
   const [scanlines, setScanlines] = useState(true);
   const [activeCabinet, setActiveCabinet] = useState(null);
   const [reactorLoad, setReactorLoad] = useState(42.5);
@@ -12,9 +12,9 @@ export default function AtariLab() {
   useEffect(() => {
     try {
       const isUnlocked = localStorage.getItem("atariUnlocked") === "true";
-      setUnlocked(isUnlocked);
+      setUnlocked(true);
     } catch (e) {
-      setUnlocked(false);
+      setUnlocked(true);
     }
   }, []);
 

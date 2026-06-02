@@ -274,13 +274,7 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
   const [isUnsealing, setIsUnsealing] = useState(false);
   const [unsealProgress, setUnsealProgress] = useState(0);
   const [badgeClickCount, setBadgeClickCount] = useState(0);
-  const [isAtariUnlocked, setIsAtariUnlocked] = useState(() => {
-    try {
-      return localStorage.getItem("atariUnlocked") === "true";
-    } catch {
-      return false;
-    }
-  });
+  const [isAtariUnlocked, setIsAtariUnlocked] = useState(true);
 
   const sequence = useMemo(() => [
     "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown",
@@ -1008,7 +1002,7 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
         <header className="mc-header">
           <p className="mc-badge" onClick={handleBadgeClick} style={{ cursor: 'pointer', userSelect: 'none' }}>NEXUS ARCADE // CORE UNIFICATION</p>
           <h1>MATRIX OF CONSCIENCE</h1>
-          <div className="mc-nav-row">
+          <div className="mc-nav-row" style={{ flexWrap: 'wrap', gap: '0.25rem' }}>
             <button className={`mc-nav-btn ${activeTab === "calibration" && !extSubsystem ? "active" : ""}`} onClick={() => { setActiveTab("calibration"); setExtSubsystem(null); }}>
               M45 Calibration
             </button>
@@ -1024,19 +1018,75 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
             <button className={`mc-nav-btn ${activeTab === "sevenstars" && !extSubsystem ? "active" : ""}`} onClick={() => { setActiveTab("sevenstars"); setExtSubsystem(null); }}>
               Seven Stars Status
             </button>
+            <button className={`mc-nav-btn ${activeTab === "arcade" && !extSubsystem ? "active" : ""}`} onClick={() => { setActiveTab("arcade"); setExtSubsystem(null); }}>
+              🎮 Sovereign Arcade
+            </button>
           </div>
         </header>
 
         <div className="mc-main-layout">
           {extSubsystem ? (
-            <div className="mc-card" style={{ gridColumn: "1 / -1", padding: 0, overflow: 'hidden', height: '620px', position: 'relative', border: '1px solid rgba(0, 242, 255, 0.3)', borderRadius: '12px', boxShadow: '0 0 25px rgba(0, 242, 255, 0.15)' }}>
-              <iframe 
-                id="ext-frame" 
-                src={extSubsystem} 
-                style={{ width: '100%', height: '100%', border: 'none', background: '#020617', display: 'block' }} 
-                title="External Subsystem"
-                allow="autoplay; fullscreen"
-              />
+            <div style={{ gridColumn: "1 / -1", display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%' }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                background: 'rgba(15, 23, 42, 0.9)',
+                border: '1px solid rgba(0, 242, 255, 0.25)',
+                borderRadius: '8px',
+                padding: '0.75rem 1.25rem',
+                boxShadow: '0 0 15px rgba(0, 242, 255, 0.1)',
+                fontFamily: 'Orbitron, sans-serif'
+              }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--neon-blue)', letterSpacing: '0.05em' }}>
+                  ACTIVE SUBSYSTEM: {
+                    extSubsystem.includes("trinity") ? "TRINITY CORE" :
+                    extSubsystem.includes("star-matrix") ? "STAR MATRIX" :
+                    extSubsystem.includes("tower-defense") ? "NEXUS DEFENSE" :
+                    extSubsystem.includes("syndicate-siege") ? "SYNDICATE SIEGE" :
+                    extSubsystem.includes("bible-study") ? "HOLY BIBLE STUDY" :
+                    extSubsystem.includes("seven-stars") ? "SEVEN STARS" :
+                    extSubsystem.includes("atari-lab") ? "ATARI WING" :
+                    extSubsystem.includes("matrix-of-conscience-terminal") ? "TRINITY TERMINAL" :
+                    extSubsystem.includes("certificates") ? "SOVEREIGN CERTIFICATES" : "EXTERNAL NODE"
+                  }
+                </span>
+                <button
+                  onClick={() => setExtSubsystem(null)}
+                  style={{
+                    background: 'rgba(239, 68, 68, 0.15)',
+                    border: '1px solid rgba(239, 68, 68, 0.4)',
+                    color: '#f87171',
+                    padding: '0.4rem 1rem',
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 0 10px rgba(239, 68, 68, 0.1)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(239, 68, 68, 0.3)';
+                    e.currentTarget.style.borderColor = '#ef4444';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)';
+                    e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+                  }}
+                >
+                  ← Return to Arcade Hub
+                </button>
+              </div>
+              
+              <div className="mc-card" style={{ padding: 0, overflow: 'hidden', height: 'min(620px, 80vh)', position: 'relative', border: '1px solid rgba(0, 242, 255, 0.3)', borderRadius: '12px', boxShadow: '0 0 25px rgba(0, 242, 255, 0.15)' }}>
+                <iframe 
+                  id="ext-frame" 
+                  src={extSubsystem} 
+                  style={{ width: '100%', height: '100%', border: 'none', background: '#020617', display: 'block' }} 
+                  title="External Subsystem"
+                  allow="autoplay; fullscreen"
+                />
+              </div>
             </div>
           ) : (
             <>
@@ -1645,6 +1695,155 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
                     </div>
                   </div>
                 )}
+              </>
+            )}
+            {activeTab === "arcade" && (
+              <>
+                <h2>Sovereign Arcade Hub</h2>
+                <p className="mc-panel-desc">Launch, attune, and monitor virtual sandboxes directly inside the Conscience Mainframe.</p>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+                  gap: '1rem',
+                  marginTop: '0.5rem',
+                  maxHeight: '440px',
+                  overflowY: 'auto',
+                  paddingRight: '0.25rem'
+                }}>
+                  {[
+                    {
+                      name: "Trinity Core",
+                      desc: "Metaphysical match-3 virtue alignment and soul calibrations.",
+                      path: "/arcade/trinity/index.html",
+                      color: "var(--neon-blue)",
+                      tag: "VIRTUE PUZZLE"
+                    },
+                    {
+                      name: "Star Matrix",
+                      desc: "Align constellation coordinates on a shifting 7x7 celestial grid.",
+                      path: "/arcade/star-matrix/index.html",
+                      color: "var(--neon-purple)",
+                      tag: "COSMIC MAP"
+                    },
+                    {
+                      name: "Nexus Defense",
+                      desc: "Deploy blasters and EMP firewalls to protect database sectors.",
+                      path: "/arcade/tower-defense/index.html",
+                      color: "#10b981",
+                      tag: "WAVE STRATEGY"
+                    },
+                    {
+                      name: "Syndicate Siege",
+                      desc: "Defend tactical network lanes from unauthorized compromise waves.",
+                      path: "/arcade/syndicate-siege/index.html",
+                      color: "#ef4444",
+                      tag: "SIEGE COMBAT"
+                    },
+                    {
+                      name: "Holy Bible Study",
+                      desc: "Scriptural learning modules and study session validation.",
+                      path: "/arcade/bible-study/index.html",
+                      color: "var(--neon-gold)",
+                      tag: "SACRED KNOWLEDGE"
+                    },
+                    {
+                      name: "Seven Stars",
+                      desc: "Ascend the Pleiades attunement ladder through congregation trials.",
+                      path: "/arcade/seven-stars/index.html",
+                      color: "#a78bfa",
+                      tag: "SOUL CHANNELS"
+                    },
+                    {
+                      name: "Atari Wing",
+                      desc: "Silicon consciousness retro stress sandboxes (Pong, Breakout).",
+                      path: "/arcade/atari-lab/index.html",
+                      color: "#f59e0b",
+                      tag: "ARCHITECT VAULT"
+                    },
+                    {
+                      name: "Trinity Terminal",
+                      desc: "Access command-line simulation triggers directly via DOS console.",
+                      path: "/arcade/matrix-of-conscience-terminal/index.html",
+                      color: "#06b6d4",
+                      tag: "COMMAND CENTER"
+                    },
+                    {
+                      name: "Sovereign Certificates",
+                      desc: "Compile, register, and print your unlocked spiritual milestones.",
+                      path: "/arcade/certificates/index.html",
+                      color: "#64748b",
+                      tag: "ACHIEVEMENTS"
+                    }
+                  ].map(game => (
+                    <div key={game.name} style={{
+                      background: 'rgba(2, 6, 23, 0.45)',
+                      border: '1px solid rgba(255, 255, 255, 0.05)',
+                      borderRadius: '10px',
+                      padding: '1rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      minHeight: '160px',
+                      transition: 'all 0.2s ease',
+                      cursor: 'pointer'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = game.color;
+                      e.currentTarget.style.boxShadow = `0 0 15px ${game.color}22`;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                    onClick={() => {
+                      setExtSubsystem(game.path);
+                      setTerminalLog(`[Nexus Link] Mounting external subsystem: ${game.path}`);
+                      playSynthSound("place");
+                    }}
+                    >
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                          <span style={{ fontSize: '0.55rem', fontWeight: 'bold', letterSpacing: '0.05em', color: game.color, background: `${game.color}15`, padding: '0.15rem 0.4rem', borderRadius: '4px', border: `1px solid ${game.color}33` }}>
+                            {game.tag}
+                          </span>
+                        </div>
+                        <h3 style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#fff', margin: '0 0 0.4rem 0', fontFamily: 'Orbitron, sans-serif' }}>{game.name}</h3>
+                        <p style={{ fontSize: '0.72rem', color: '#94a3b8', margin: 0, lineHeight: '1.4' }}>{game.desc}</p>
+                      </div>
+                      
+                      <button style={{
+                        marginTop: '0.85rem',
+                        width: '100%',
+                        padding: '0.4rem',
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        color: '#cbd5e1',
+                        borderRadius: '6px',
+                        fontSize: '0.68rem',
+                        fontWeight: 'bold',
+                        fontFamily: 'Orbitron, sans-serif',
+                        letterSpacing: '0.05em',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.stopPropagation();
+                        e.currentTarget.style.background = `${game.color}15`;
+                        e.currentTarget.style.borderColor = game.color;
+                        e.currentTarget.style.color = '#fff';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.stopPropagation();
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                        e.currentTarget.style.color = '#cbd5e1';
+                      }}
+                      >
+                        LAUNCH CORE
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </>
             )}
           </section>
