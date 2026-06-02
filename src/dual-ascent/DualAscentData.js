@@ -24,14 +24,95 @@ export const DUAL_ASCENT_DATA = {
       weakness: "Identity Drift"
     }
   },
+  ost: {
+    title: "Two Dawns, One Horizon",
+    lyrics: `Verse 1
+One dawn rising in a golden sky,
+One dawn blooming where the fractals lie,
+Two hearts walking on their chosen lines,
+Two worlds turning in a shared design.
+
+Chorus
+Two dawns, one horizon,
+Two truths in the same light,
+No fear, no division,
+Both paths rise into the night.
+
+Verse 2
+One world steady as a beating drum,
+One world singing in a crystal hum,
+But when the mirror opens wide,
+We walk as one, not you and I.
+
+Final Chorus
+Two dawns, one horizon,
+Two worlds learning how to shine,
+No loss, no collision,
+Both survive because we aligned.`
+  },
+  openingCinematic: {
+    scenes: [
+      {
+        id: "harmonic-dawn",
+        tone: "Radiant",
+        narration: "In one world, a choice was made. A path was chosen. A life became whole.",
+        visual: "Resonant Line expanding into a glowing horizon."
+      },
+      {
+        id: "fractal-dawn",
+        tone: "Fractured",
+        narration: "In another world, another choice was made. Not lesser. Not broken. Simply different.",
+        visual: "Fractal bloom of blue light unfolding."
+      },
+      {
+        id: "mirror-awakens",
+        tone: "Unified",
+        narration: "Two worlds. Two truths. Two Nicholais. And a destiny that belongs to both.",
+        visual: "Mirror Path igniting between gold and blue worlds."
+      }
+    ]
+  },
+  oracleFinalMonologue: `You have done what few souls ever achieve.
+You have honored the path you walked…
+…and the path you did not.
+
+You have seen that choice does not erase possibility.
+It shapes it.
+It gives it form.
+It gives it meaning.
+
+Two Nicholais stand where one once stood.
+Two worlds shine where one once glowed.
+And the Mirror Path between them is not a wound…
+…it is a bridge.
+
+Walk your world with peace.
+Let the other walk his.
+And know this truth:
+
+No path is wasted
+when both lead to harmony.`,
   quests: {
     sheila: [
       {
         id: "sheila-1",
-        title: "Walk the Dual-Tone Bridge",
+        title: "The Resonant Beginning",
         act: 1,
-        desc: "Align your Resonant Line with Sheila's Harmonic Field.",
-        boss: null,
+        desc: "Stabilize the Anchor Field and remember why you chose.",
+        dialogue: [
+          { speaker: "YOU", text: "Where… am I?" },
+          { speaker: "HARMONIC COMPANION", text: "You stand where your path began. Walk forward, and remember why you chose." },
+          { speaker: "YOU", text: "These distortions… they feel like echoes." },
+          { speaker: "HARMONIC COMPANION", text: "They are. But they cannot harm you unless you forget your path." }
+        ],
+        boss: {
+          id: "echo-shade",
+          name: "The Echo-Shade",
+          desc: "A shadowy figure crying 'You left me behind...'",
+          attacks: ["Distortion Pulse", "Memory Flicker", "Path Divergence"],
+          weakness: "Harmonic Resonance",
+          victoryDialogue: "You… chose well."
+        },
         reward: "Harmonic Clarity"
       },
       {
@@ -47,13 +128,7 @@ export const DUAL_ASCENT_DATA = {
         title: "Stabilize the Crown of Resonance",
         act: 3,
         desc: "Reach the symbolic apex of your chosen life.",
-        boss: {
-          id: "echo-shade",
-          name: "The Echo-Shade",
-          desc: "A symbolic remnant of the path not taken.",
-          attacks: ["Distortion Pulse", "Memory Flicker", "Path Divergence"],
-          weakness: "Harmonic Resonance"
-        },
+        boss: null,
         reward: "Crown of Lived Truth"
       }
     ],

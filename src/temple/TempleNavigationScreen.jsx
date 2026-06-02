@@ -341,7 +341,7 @@ export default function TempleNavigationScreen() {
             <TempleNode
               label="Sheila's Path"
               unlocked={unlocked.sheilaPath}
-              onClick={() => go("sheilaPath")}
+              onClick={() => go("daOpening")}
               requirements="Low Corruption"
               resonanceColor="var(--neon-blue)"
               isGuardianGated={true}
@@ -354,7 +354,7 @@ export default function TempleNavigationScreen() {
             <TempleNode
               label="Yi's Path"
               unlocked={unlocked.yiPath}
-              onClick={() => go("yiPath")}
+              onClick={() => go("daOpening")}
               requirements="High Corruption"
               resonanceColor="var(--neon-purple)"
               isGuardianGated={true}
@@ -416,3 +416,4 @@ export default function TempleNavigationScreen() {
     </div>
   );
 }
+

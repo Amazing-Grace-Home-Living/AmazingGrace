@@ -33,8 +33,12 @@ import CelestialLadderScreen from "../ascension/CelestialLadderScreen";
 import PreOriginField from "../ascension/PreOriginField";
 import UnutterableConstant from "../ascension/UnutterableConstant";
 import SheilaPathScreen from "../dual-ascent/SheilaPathScreen";
+import SheilaPathChapter1 from "../dual-ascent/SheilaPathChapter1";
+import { useDualAscent } from "../dual-ascent/DualAscentContext";
 import YiPathScreen from "../dual-ascent/YiPathScreen";
 import MirrorLayerScreen from "../dual-ascent/MirrorLayerScreen";
+import OpeningCinematic from "../dual-ascent/OpeningCinematic";
+import DualAscentTitleScreen from "../dual-ascent/DualAscentTitleScreen";
 // @ts-ignore
 import AeonEngineScreen from "../aeon/AeonEngineScreen";
 // @ts-ignore
@@ -972,6 +976,14 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
     return <YiPathScreen />;
   }
 
+  if (screen === "daOpening") {
+    return <OpeningCinematic />;
+  }
+
+  if (screen === "daTitle") {
+    return <DualAscentTitleScreen />;
+  }
+
   if (screen === "mirrorLayer") {
     return <MirrorLayerScreen />;
   }
@@ -1715,3 +1727,13 @@ function MetricRow({ label, value, color }: { label: string; value: number; colo
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
