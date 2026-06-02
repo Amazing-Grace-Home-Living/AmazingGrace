@@ -127,6 +127,7 @@
         transform: translateY(-1px);
       }
       .star-cell.is-processing { cursor: progress; }
+      .star-cell.dragging { opacity: 0.5; cursor: grabbing; }
 
       .controls {
         display: flex;
@@ -276,7 +277,7 @@
 
       function resetDragState() {
         if (dragStartTile) {
-          dragStartTile.classList.remove('selected');
+          dragStartTile.classList.remove('selected', 'dragging');
           dragStartTile.setAttribute('aria-selected', 'false');
         }
         dragStartTile = null;
@@ -391,6 +392,52 @@
         resetDragState();
       }
 
+      // --- HTML5 Drag-and-Drop handlers ---
+
+      // onDragStart: record the source tile and apply drag visual feedback
+      function onDragStart(e) {
+        if (isProcessing) { e.preventDefault(); return; }
+        const cell = e.currentTarget;
+        if (!(cell instanceof HTMLElement)) return;
+        // Re-assign in case pointercancel already cleared dragStartTile on this browser
+        dragStartTile = cell;
+        cell.classList.add('selected', 'dragging');
+        cell.setAttribute('aria-selected', 'true');
+        // setData is required by Firefox for drag-and-drop to activate;
+        // the actual source is tracked via the dragStartTile reference
+        e.dataTransfer.setData('text/plain', `${cell.dataset.row},${cell.dataset.col}`);
+        e.dataTransfer.effectAllowed = 'move';
+      }
+
+      // onDragOver: prevent default to signal that this cell accepts drops
+      function onDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+      }
+
+      // onDrop: validate adjacency and execute the swap
+      function onDrop(e) {
+        e.preventDefault();
+        const target = e.currentTarget;
+        if (!(target instanceof HTMLElement) || !dragStartTile) return;
+        if (target !== dragStartTile) {
+          attemptSwap(dragStartTile, target);
+        } else {
+          resetDragState();
+        }
+      }
+
+      // onDragEnd: remove drag visual feedback; also resets state if drop was cancelled
+      function onDragEnd(e) {
+        const cell = e.currentTarget;
+        if (cell instanceof HTMLElement) {
+          cell.classList.remove('dragging', 'selected');
+          cell.setAttribute('aria-selected', 'false');
+        }
+        // Always reset — if onDrop already called resetDragState, this is a safe no-op
+        resetDragState();
+      }
+
       function initBoard() {
         boardEl.innerHTML = '';
         tiles.length = 0;
@@ -406,6 +453,13 @@
             cell.addEventListener('pointermove', onPointerMove);
             cell.addEventListener('pointerup', onPointerUp);
             cell.addEventListener('pointercancel', onPointerCancel);
+
+            // HTML5 drag-and-drop for desktop click-drag interactions
+            cell.draggable = true;
+            cell.addEventListener('dragstart', onDragStart);
+            cell.addEventListener('dragover', onDragOver);
+            cell.addEventListener('drop', onDrop);
+            cell.addEventListener('dragend', onDragEnd);
 
             tiles.push(cell);
             boardEl.appendChild(cell);
