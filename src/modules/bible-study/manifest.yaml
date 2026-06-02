@@ -1,0 +1,16 @@
+manifest:
+  id: "bible_study"
+  name: "Bible Study"
+  version: "1.0.0"
+  description: "Theological knowledge verification."
+  entrypoint: "bible-study.sys"
+  capabilities:
+    hud_overlay: true
+    xp_rewards: true
+    virtue_rewards: true
+    pwr_rewards: false
+  sandbox: true
+runtime:
+  state: "idle"
+  last_run: null
+  error_log: []

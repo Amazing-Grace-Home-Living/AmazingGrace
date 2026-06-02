@@ -1,0 +1,42 @@
+:root {
+  /* Colors */
+  --hud-bg: #05060a;
+  --hud-bg-panel: #0b0f1a;
+  --hud-bg-overlay: #05060acc;
+  --hud-border: #2f3b5a;
+  --hud-accent: #4fd1ff;
+  --hud-accent-soft: #4fd1ff33;
+  --hud-danger: #ff4f6b;
+  --hud-warning: #ffc94f;
+  --hud-success: #4fff9a;
+  --hud-text: #e5f0ff;
+  --hud-text-muted: #7f8bad;
+
+  /* Typography */
+  --hud-font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --hud-font-size-xs: 10px;
+  --hud-font-size-sm: 12px;
+  --hud-font-size-md: 14px;
+  --hud-font-size-lg: 16px;
+
+  /* Spacing */
+  --hud-space-1: 4px;
+  --hud-space-2: 8px;
+  --hud-space-3: 12px;
+  --hud-space-4: 16px;
+
+  /* Radius */
+  --hud-radius-sm: 4px;
+  --hud-radius-md: 8px;
+
+  /* Borders */
+  --hud-border-width: 1px;
+
+  /* Shadows / Glow */
+  --hud-glow-soft: 0 0 12px rgba(79, 209, 255, 0.35);
+
+  /* Animation */
+  --hud-anim-fast: 120ms;
+  --hud-anim-normal: 220ms;
+  --hud-anim-slow: 400ms;
+}

@@ -3,12 +3,22 @@
 ## Game Maintenance
 - **Star Matrix:** Match-3 puzzle using `js/matchmaker.js`.
   - Mapping: `heart` → `supernova`, `star` → `shooting`, `cross` → `gem`, `flame` → `rank`, `drop` → `cosmic`.
-- **Matrix of Conscience:** Advanced Match-3 with Seven Calibration Levels.
+- **Janus Continuum:** The successor to the Matrix of Conscience. A dual-phase metaphysical engine.
+  - Core: `arcade/janus/js/JanusWeaveCore.js`.
+  - Physics: Identity Gravity, Recursive Momentum, Harmonic Inversion, Prophetic Causality.
+  - UI: Psionic glyph dialogue and fractal rendering.
+  - **State Migration:** Legacy Matrix states are auto-converted via `src/migrations/migrateLegacyState.js`.
+    - `corruption` → `scarletGrowth` (Momentum)
+    - `wisdom` → `whiteClarity` (Inversion)
+    - `integrity` → `janusStability` (Gravity)
+    - `community` → `convergencePotential` (Causality)
 
 ## Workflows
 - **Ella:** Unified operations for review suggestions and automated patches.
   - Marker: `<!-- ella:apply -->` in a review body triggers a full repo diff apply via `scripts/ella-auto-apply-review.js`.
-  - Marker: ` ```suggestion` in a comment applies inline suggestions.
+- **System Auditing:** Professional PowerShell maintenance suite.
+  - `SystemHealthAudit.ps1`: Monitors disk space and critical service states (WinRM, W32Time).
+  - `RepositoryIndexer.ps1`: Generates structural Data Matrices (CSV) and JSON manifests of project assets.
 - **Firebase:** Build, validate, and deploy to Hosting.
   - Automatically triggered on push to `main`.
 - **Sync Secrets:** repository_dispatch `key_rotation_event` updates GitHub secrets via `sync-secrets-from-matrix.yml`.

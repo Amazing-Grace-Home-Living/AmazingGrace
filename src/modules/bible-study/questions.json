@@ -1,0 +1,30 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "reference": "James 1:22",
+      "text": "According to James 1:22, what must believers not be?",
+      "choices": [
+        "Hearers only",
+        "Teachers only",
+        "Workers only",
+        "Preachers only"
+      ],
+      "answerIndex": 0,
+      "virtue": "Obedience"
+    },
+    {
+      "id": "q2",
+      "reference": "Psalm 51:10",
+      "text": "What does David ask God to create in him?",
+      "choices": [
+        "A strong body",
+        "A clean heart",
+        "A wise mind",
+        "A bold spirit"
+      ],
+      "answerIndex": 1,
+      "virtue": "Repentance"
+    }
+  ]
+}

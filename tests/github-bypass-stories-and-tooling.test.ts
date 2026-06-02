@@ -37,6 +37,6 @@ describe('GitHub bypass stories and downloadable tool', () => {
 
     expect(script).toContain('GitHub Ruleset Bypass Setup Helper');
     expect(script).toContain('github-actions[bot]');
-    expect(script).toContain('docs/rulesets-and-agents.md');
+    expect(script).toContain('/settings/rules');
   });
 });

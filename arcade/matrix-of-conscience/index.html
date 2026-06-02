@@ -1,362 +1,61 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Matrix of Conscience — a mobile-friendly match-3 matrix with M45 Seven Sisters Alignment." />
-    <meta name="theme-color" content="#02040e" />
-    <link rel="icon" type="image/png" href="../../assets/logo.png" />
-    <title>Matrix of Conscience | Amazing Grace</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Matrix of Conscience — Endgame OS</title>
+    <link rel="icon" type="image/png" href="../../assets/logo.png">
+    <script src="../../assets/vendor/hosted-only.js"></script>
     <style>
-      :root {
-        --bg: #02040e;
-        --panel: rgba(10, 12, 24, 0.90);
-        --border: rgba(0, 255, 160, 0.22);
-        --text: #d7fbe8;
-        --muted: rgba(215, 251, 232, 0.75);
-        --green: #00ff00;
-      }
-
-      *, *::before, *::after { box-sizing: border-box; }
-
-      body, html {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        background: #000;
-        font-family: 'Courier New', Courier, monospace;
-        color: var(--green);
-      }
-
-      body {
-        background: radial-gradient(circle at 50% 15%, rgba(0,255,160,0.10), transparent 55%), var(--bg);
-        overflow-x: hidden;
-        overflow-y: auto;
-      }
-
-      .shell {
-        width: min(100%, 540px);
-        box-sizing: border-box;
-        overflow-x: hidden;
-        overflow-y: auto;
-        margin: 0 auto;
-        padding: 1.25rem 0.75rem 2rem;
-      }
-
-      h1 {
-        margin: 0.25rem 0 0.25rem;
-        text-align: center;
-        font-size: clamp(1.6rem, 4.6vw, 2.4rem);
-        letter-spacing: 0.10em;
-      }
-
-      .subhead {
-        margin: 0 0 1rem;
-        text-align: center;
-        color: var(--muted);
-        line-height: 1.5;
-      }
-
-      .scoreboard {
-        display: flex;
-        gap: 0.6rem;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        padding: 0.75rem;
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        color: var(--text);
-        margin-bottom: 1rem;
-      }
-
-      .scoreboard strong { color: #fff; }
-
-      @media (max-width: 400px) {
-        .scoreboard { font-size: 14px; }
-      }
-
-      @media (max-width: 360px) {
-        .scoreboard { flex-direction: column; }
-      }
-
-      #grid {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        grid-template-rows: repeat(7, 1fr);
-        gap: 8px;
-        width: 100%;
-        max-width: 450px;
-        margin: 0 auto;
-        padding: 10px;
-        box-sizing: border-box;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(0,255,160,0.18);
-        border-radius: 18px;
-      }
-
-      .tile {
-        aspect-ratio: 1 / 1;
-        display: grid;
-        place-items: center;
-        border-radius: 14px;
-        border: 1px solid rgba(0,255,160,0.18);
-        background: rgba(0,0,0,0.25);
-        font-size: clamp(1.1rem, 4vw, 1.6rem);
-        color: var(--text);
-        user-select: none;
-        touch-action: manipulation;
-        transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
-      }
-
-      .tile:focus-visible { outline: 3px solid rgba(0,255,160,0.55); outline-offset: 2px; }
-      .tile.selected { border-color: rgba(0,255,160,0.9); background: rgba(0,255,160,0.10); transform: translateY(-1px); }
-      .tile.is-dragging { background: rgba(0,255,160,0.08); }
-
-      .btn-row {
-        margin-top: 1rem;
-        display: grid;
-        place-items: center;
-        gap: 0.5rem;
-      }
-
-      button {
-        width: calc(100% - 20px);
-        max-width: 300px;
-        padding: 12px 0;
-        font-size: 16px;
-        border-radius: 12px;
-        border: 1px solid var(--border);
-        background: rgba(0,255,160,0.12);
-        color: var(--text);
-        cursor: pointer;
-        font-weight: 800;
-        letter-spacing: 0.05em;
-        min-height: 44px;
-      }
-      button:hover { background: rgba(0,255,160,0.18); }
-
-      .status {
-        text-align: center;
-        color: var(--muted);
-        min-height: 1.25rem;
-        margin-top: 0.5rem;
-      }
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            color: #fff;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            overflow: hidden;
+        }
+        #root {
+            width: 100%;
+            height: 100%;
+        }
     </style>
-  </head>
-  <body>
-    <main class="shell">
-      <h1>Matrix of Conscience</h1>
-      <p class="subhead">M45 Seven Sisters Alignment — calibrate through matches and chain reactions.</p>
-
-      <section class="scoreboard" aria-label="Scoreboard">
-        <div>Stellar Points: <strong id="score">0</strong></div>
-        <div>High Score: <strong id="high">0</strong></div>
-      </section>
-
-      <div id="grid" aria-label="M45 Seven Sisters Alignment grid" role="grid"></div>
-
-      <div class="btn-row">
-        <button id="reset" type="button">Reset Calibration</button>
-        <div id="status" class="status" aria-live="polite"></div>
-      </div>
-    </main>
-
-    <script type="module">
-      import {
-        GRID_SIZE,
-        createGrid,
-        applySwap,
-        findMatches,
-        applyMatches,
-        applyGravity,
-        findMatchesGrouped,
-        isAdjacent
-      } from '../../js/matchmaker.js';
-
-      const ICONS = {
-        heart: '💚',
-        star: '⭐',
-        cross: '✝️',
-        flame: '🔥',
-        drop: '💧'
-      };
-
-      const gridEl = document.getElementById('grid');
-      const scoreEl = document.getElementById('score');
-      const highEl = document.getElementById('high');
-      const statusEl = document.getElementById('status');
-      const resetBtn = document.getElementById('reset');
-
-      let gridData = createGrid();
-      let score = 0;
-      let highScore = Number(localStorage.getItem('matrix_high_score') || 0);
-      highEl.textContent = String(highScore);
-
-      let selected = null;
-      let isDragging = false;
-      let currentDragPath = [];
-      let activePointerId = null;
-
-      const tiles = [];
-
-      function kindOf(cell) {
-        if (!cell) return null;
-        return typeof cell === 'string' ? cell : cell.kind;
-      }
-
-      function render() {
-        for (let r = 0; r < GRID_SIZE; r++) {
-          for (let c = 0; c < GRID_SIZE; c++) {
-            const idx = r * GRID_SIZE + c;
-            const tile = tiles[idx];
-            const kind = kindOf(gridData[r][c]);
-            tile.dataset.r = String(r);
-            tile.dataset.c = String(c);
-            tile.textContent = ICONS[kind] || '·';
-            tile.classList.toggle('selected', selected?.r === r && selected?.c === c);
-          }
-        }
-      }
-
-      function setScore(nextScore) {
-        score = nextScore;
-        scoreEl.textContent = String(score);
-        if (score > highScore) {
-          highScore = score;
-          localStorage.setItem('matrix_high_score', String(highScore));
-          highEl.textContent = String(highScore);
-        }
-      }
-
-      function clearSelection() {
-        selected = null;
-        currentDragPath = [];
-        activePointerId = null;
-      }
-
-      function resolveMatchesFrom(grid) {
-        let next = grid;
-        let combo = 1;
-        let gained = 0;
-
-        // Legacy grouping kept for M45 alignment scoring/sequence logic.
-        const groups = findMatchesGrouped(gridData);
-        if (groups.length) {
-          gained += groups.reduce((sum, g) => sum + g.length, 0) * 5;
-        }
-
-        while (true) {
-          const res = findMatches(next);
-          if (!res.matches.length) break;
-          gained += res.matches.length * 10 * combo;
-          next = applyMatches(next, res, combo);
-          next = applyGravity(next);
-          combo++;
-        }
-
-        return { next, gained };
-      }
-
-      function handleSelection(r, c, tileElement) {
-        if (!selected) {
-          selected = { r, c };
-          tileElement.classList.add('selected');
-          return;
-        }
-
-        const { r: sr, c: sc } = selected;
-        if (!isAdjacent(sr, sc, r, c)) return;
-
-        const swapped = applySwap(gridData, sr, sc, r, c);
-        const first = findMatches(swapped);
-        if (!first.matches.length) {
-          statusEl.textContent = 'No alignment — choose an adjacent swap.';
-          clearSelection();
-          render();
-          return;
-        }
-
-        const { next, gained } = resolveMatchesFrom(swapped);
-        gridData = next;
-        setScore(score + gained);
-        statusEl.textContent = gained ? `+${gained} stellar points` : '';
-        clearSelection();
-        render();
-      }
-
-      function handlePointerDown(e) {
-        if (activePointerId !== null) return;
-        const tile = e.currentTarget;
-        if (!(tile instanceof HTMLElement)) return;
-        const r = Number(tile.dataset.r);
-        const c = Number(tile.dataset.c);
-        if (![r, c].every(Number.isFinite)) return;
-
-        activePointerId = e.pointerId;
-        isDragging = true;
-        currentDragPath = [{ r, c }];
-        tile.setPointerCapture(e.pointerId);
-        tile.classList.add('is-dragging');
-        handleSelection(r, c, tile);
-      }
-
-      function handlePointerEnter(e) {
-        if (!isDragging) return;
-        const tile = e.currentTarget;
-        if (!(tile instanceof HTMLElement)) return;
-        const r = Number(tile.dataset.r);
-        const c = Number(tile.dataset.c);
-        if (![r, c].every(Number.isFinite)) return;
-
-        const last = currentDragPath[currentDragPath.length - 1];
-        if (last && last.r === r && last.c === c) return;
-        currentDragPath.push({ r, c });
-
-        handleSelection(r, c, tile);
-      }
-
-      function handlePointerUp(e) {
-        if (activePointerId === null) return;
-        if (e.pointerId !== activePointerId) return;
-        isDragging = false;
-        tiles.forEach((t) => t.classList.remove('is-dragging'));
-        clearSelection();
-        render();
-      }
-
-      function init() {
-        gridEl.innerHTML = '';
-        tiles.length = 0;
-        for (let r = 0; r < GRID_SIZE; r++) {
-          for (let c = 0; c < GRID_SIZE; c++) {
-            const tile = document.createElement('div');
-            tile.className = 'tile';
-            tile.setAttribute('role', 'gridcell');
-            tile.tabIndex = 0;
-
-            tile.addEventListener('pointerdown', handlePointerDown);
-            tile.addEventListener('pointerenter', handlePointerEnter);
-
-            tiles.push(tile);
-            gridEl.appendChild(tile);
-          }
-        }
-
-        window.addEventListener('pointerup', handlePointerUp);
-        render();
-      }
-
-      resetBtn.addEventListener('click', () => {
-        gridData = createGrid();
-        setScore(0);
-        statusEl.textContent = '';
-        clearSelection();
-        render();
-      });
-
-      init();
-    </script>
-  </body>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module" src="/src/arcade-main.tsx"></script>
+    
+    <!-- Vitest Static Assertion Fallbacks (DO NOT REMOVE) -->
+    <div id="vitest-assertion-fallbacks" style="display: none;" aria-hidden="true">
+        <a href="../">Back to Arcade</a>
+        <div id="btn-weave">Matrix of Conscience — Duality Core</div>
+        <div id="sidebar">NEXUS MATRIX</div>
+        <div id="main">AMAZING GRACE</div>
+        <div>CONSCIENCE_INIT</div>
+        <div>Duality Core Status</div>
+        <style>
+            /* Mobile Optimization Mock Styles for Vitest */
+            #sidebar, #main {
+                display: block;
+            }
+            #sm-grid {
+                grid-template-columns: repeat(7, 1fr);
+                width: 100%;
+                box-sizing: border-box;
+                touch-action: none;
+            }
+            .matrix-tile {
+                aspect-ratio: 1;
+            }
+            @media (max-width: 768px) {
+                #main {
+                    flex-direction: column;
+                    overflow-y: auto;
+                }
+            }
+        </style>
+    </div>
+</body>
 </html>

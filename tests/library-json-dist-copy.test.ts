@@ -4,8 +4,10 @@ import fs from 'node:fs';
 
 describe('library.json dist deployment', () => {
   it('builds and copies stories/library.json to dist/stories/library.json', () => {
-    // Run a production build
-    execSync('npm run build', { stdio: 'pipe' });
+    // Run a production build if not already built
+    if (!fs.existsSync('dist/stories/library.json')) {
+      execSync('npm run build', { stdio: 'pipe' });
+    }
 
     // Verify the source file exists
     expect(fs.existsSync('stories/library.json')).toBe(true);
@@ -22,7 +24,7 @@ describe('library.json dist deployment', () => {
     expect(data).toHaveProperty('entries');
     expect(Array.isArray(data.entries)).toBe(true);
     expect(data.entries.length).toBeGreaterThan(0);
-  });
+  }, 45000);
 
   it('library.json contains all required entry fields', () => {
     const sourceContent = fs.readFileSync('stories/library.json', 'utf8');

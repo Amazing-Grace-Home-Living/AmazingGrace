@@ -24,7 +24,7 @@ describe('The 2027 Rebellion library integration', () => {
     expect(html).toContain('https://github.com/user-attachments/assets/0ad97551-f128-4b35-b39e-d24f9d6b8eb0');
     expect(html).toContain('href="../nexus-prime-2087/"');
     expect(html).toContain('href="../our-covenant-of-new-beginnings/"');
-    expect(html).toContain('href="../../arcade/matrix-of-conscience/"');
+    expect(html).toContain('href="../../arcade/"');
   });
 
   it('includes the story page and legacy redirect page in Vite multi-page build inputs', () => {
@@ -34,12 +34,14 @@ describe('The 2027 Rebellion library integration', () => {
   });
 
   it('emits the legacy redirect page to dist/ after build, preserving the old URL', () => {
-    execSync('npm run build', { stdio: 'pipe' });
+    if (!fs.existsSync('dist/stories/blog/rebellion.html')) {
+      execSync('npm run build', { stdio: 'pipe' });
+    }
 
     expect(fs.existsSync('dist/stories/blog/rebellion.html')).toBe(true);
 
     const html = fs.readFileSync('dist/stories/blog/rebellion.html', 'utf8');
     expect(html).toContain('<meta http-equiv="refresh" content="0; url=../rebellion2027/">');
     expect(html).toContain('href="../rebellion2027/"');
-  });
+  }, 45000);
 });

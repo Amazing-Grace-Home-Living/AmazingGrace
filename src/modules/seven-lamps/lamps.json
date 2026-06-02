@@ -1,0 +1,11 @@
+{
+  "lamps": [
+    { "id": "lamp_1", "name": "Spirit of the Lord", "buff": "truth" },
+    { "id": "lamp_2", "name": "Spirit of Wisdom", "buff": "wisdom" },
+    { "id": "lamp_3", "name": "Spirit of Understanding", "buff": "discernment" },
+    { "id": "lamp_4", "name": "Spirit of Counsel", "buff": "faithfulness" },
+    { "id": "lamp_5", "name": "Spirit of Might", "buff": "perseverance" },
+    { "id": "lamp_6", "name": "Spirit of Knowledge", "buff": "alertness" },
+    { "id": "lamp_7", "name": "Spirit of Fear of the Lord", "buff": "humility" }
+  ]
+}

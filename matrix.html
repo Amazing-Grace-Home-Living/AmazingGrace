@@ -28,232 +28,947 @@
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Matrix of Conscience — reflective portal for the Matrix of Conscience experience.">
-  <meta name="theme-color" content="#0a0a0a">
+  <meta name="description" content="Sovereign Matrix — High-fidelity cybernetic portal for the Nexus simulation environment.">
+  <meta name="theme-color" content="#03070c">
   <link rel="icon" type="image/png" href="./assets/logo.png">
-  <title>Matrix of Conscience | Amazing Grace Home Living</title>
-  <link rel="stylesheet" href="./admin/css/matrix.css">
+  <title>Sovereign Matrix | Amazing Grace Home Living</title>
+  
+  <!-- Modern Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  
   <style>
-    /* ── Page layout ──────────────────────────────────────────── */
+    /* ── Cyberpunk Design System CSS ───────────────────────────────────────── */
+    :root {
+      --matrix-green:   #10b981; /* Premium Emerald */
+      --matrix-cyan:    #00f2ff; /* Tech Cyber Cyan */
+      --matrix-dark:    #03070c; /* Deep Space Black */
+      --matrix-panel:   rgba(10, 20, 32, 0.45); /* Blur Glass */
+      --matrix-border:  rgba(0, 242, 255, 0.2);
+      --matrix-dim:     #0d2a2a;
+      --matrix-red:     #ef4444; /* Alert Warning Red */
+      --matrix-purple:  #bc13fe; /* Rare Unlock */
+      --matrix-text:    #d1f4ff; /* Pale Ice Cyan */
+      --matrix-heading: #00f2ff;
+      --font-mono: 'Fira Code', 'Courier New', Courier, monospace;
+      --font-sans: 'Outfit', sans-serif;
+      --glass-shadow: 0 8px 32px 0 rgba(0, 242, 255, 0.05);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background-color: var(--matrix-dark);
+      color: var(--matrix-text);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    /* ── Scrollbar ──────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--matrix-dark); }
+    ::-webkit-scrollbar-thumb { background: rgba(0, 242, 255, 0.15); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(0, 242, 255, 0.3); }
+
+    /* ── Background Telemetry / Matrix Rain ───────────────── */
+    #matrix-rain-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none;
+      opacity: 0.08;
+      z-index: -1;
+    }
+
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.25) 50%
+      ), linear-gradient(
+        90deg,
+        rgba(255, 0, 0, 0.03),
+        rgba(0, 255, 0, 0.01),
+        rgba(0, 0, 255, 0.03)
+      );
+      background-size: 100% 4px, 6px 100%;
+      z-index: 999;
+    }
+
+    /* ── Navigation ─────────────────────────────────────────── */
+    .matrix-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(3, 7, 12, 0.7);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--matrix-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      transition: border-color 0.3s;
+    }
+    .matrix-nav:hover {
+      border-color: rgba(0, 242, 255, 0.35);
+    }
+    .nav-brand {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--matrix-heading);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      text-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+      font-family: var(--font-sans);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--matrix-text);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      transition: all 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--matrix-cyan);
+      text-shadow: 0 0 8px rgba(0, 242, 255, 0.4);
+    }
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .nav-user {
+      font-size: 0.78rem;
+      color: var(--matrix-green);
+      font-family: var(--font-mono);
+      background: rgba(16, 185, 129, 0.1);
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    .sound-toggle-btn {
+      background: transparent;
+      border: none;
+      color: var(--matrix-cyan);
+      cursor: pointer;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 242, 255, 0.2);
+      transition: all 0.2s;
+    }
+    .sound-toggle-btn:hover {
+      background: rgba(0, 242, 255, 0.1);
+      border-color: var(--matrix-cyan);
+    }
+
+    /* ── Main Layout ───────────────────────────────────────── */
     .page-wrap {
-      max-width: 960px;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 2rem 1.25rem 4rem;
+      padding: 3rem 1.5rem 6rem;
+      position: relative;
     }
 
     .hero {
       text-align: center;
-      padding: 2.5rem 1rem 1.5rem;
+      margin-bottom: 3.5rem;
     }
     .hero h1 {
-      font-size: clamp(1.6rem, 5vw, 2.8rem);
-      font-family: var(--font-mono);
-      color: var(--matrix-green);
-      text-shadow: 0 0 18px rgba(0,255,65,0.55);
-      letter-spacing: 0.08em;
-      margin-bottom: 0.5rem;
+      font-size: clamp(2rem, 6vw, 3.8rem);
+      font-weight: 800;
+      color: #fff;
+      background: linear-gradient(to right, #fff, var(--matrix-cyan), var(--matrix-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 0.75rem;
     }
     .hero p {
       color: var(--matrix-text);
-      font-size: 0.88rem;
-      opacity: 0.7;
+      font-size: 1rem;
+      opacity: 0.75;
+      max-width: 600px;
+      margin: 0 auto;
     }
 
-    /* ── Tool grid ────────────────────────────────────────────── */
+    /* ── Glassmorphic Cards ────────────────────────────────── */
+    .matrix-card {
+      background: var(--matrix-panel);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--matrix-border);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: var(--glass-shadow);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .matrix-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--matrix-cyan), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .matrix-card:hover {
+      border-color: rgba(0, 242, 255, 0.4);
+      box-shadow: 0 12px 40px 0 rgba(0, 242, 255, 0.08);
+      transform: translateY(-2px);
+    }
+    .matrix-card:hover::before {
+      opacity: 1;
+    }
+
+    .matrix-heading {
+      font-family: var(--font-sans);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      letter-spacing: 0.04em;
+    }
+    .matrix-heading span {
+      color: var(--matrix-cyan);
+    }
+
+    /* ── Tool grid ────────────────────────────────────────── */
     .tools-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.25rem;
-      margin-top: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3.5rem;
     }
 
     .tool-card {
-      background: var(--matrix-panel);
-      border: 1px solid var(--matrix-border);
-      border-radius: 6px;
-      padding: 1.5rem;
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
-      transition: box-shadow 0.2s, border-color 0.2s;
+      height: 100%;
     }
-    .tool-card:hover { box-shadow: 0 0 16px rgba(0,255,65,0.18); }
     .tool-card.locked {
-      border-color: var(--matrix-dim);
-      opacity: 0.55;
+      opacity: 0.5;
+      border-color: rgba(239, 68, 68, 0.15);
+      cursor: not-allowed;
     }
-
+    .tool-card.locked:hover {
+      box-shadow: 0 8px 32px 0 rgba(239, 68, 68, 0.04);
+      transform: none;
+      border-color: rgba(239, 68, 68, 0.25);
+    }
+    .tool-card.locked::before {
+      background: linear-gradient(90deg, transparent, var(--matrix-red), transparent);
+    }
+    
     .tool-card h2 {
-      font-size: 1rem;
-      color: var(--matrix-heading);
-      letter-spacing: 0.06em;
-      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .tool-card p {
-      font-size: 0.8rem;
+      font-size: 0.88rem;
       color: var(--matrix-text);
-      margin: 0;
-      flex: 1;
+      opacity: 0.7;
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+      flex-grow: 1;
     }
 
+    .tool-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
     .tool-badge {
-      display: inline-block;
-      font-size: 0.7rem;
-      padding: 0.2rem 0.55rem;
-      border-radius: 3px;
       font-family: var(--font-mono);
-      letter-spacing: 0.05em;
-    }
-    .tool-badge.unlocked { background: var(--matrix-dim); color: var(--matrix-green); border: 1px solid var(--matrix-green); }
-    .tool-badge.locked   { background: #1a0a0a; color: var(--matrix-red); border: 1px solid var(--matrix-red); }
-
-    .tool-hint {
       font-size: 0.72rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+    .tool-badge.unlocked {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--matrix-green);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    .tool-badge.locked-badge {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--matrix-red);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    .tool-hint {
+      font-size: 0.75rem;
       color: var(--matrix-red);
       font-style: italic;
     }
 
-    .btn { cursor: pointer; font-family: var(--font-mono); font-size: 0.8rem; padding: 0.45rem 1rem; border-radius: 4px; border: 1px solid var(--matrix-green); background: transparent; color: var(--matrix-green); transition: background 0.15s, color 0.15s; text-decoration: none; display: inline-block; }
-    .btn:hover, .btn:focus { background: var(--matrix-green); color: var(--matrix-dark); }
-    .btn:disabled, .btn[aria-disabled="true"] { opacity: 0.35; pointer-events: none; }
-
-    /* ── Login modal ──────────────────────────────────────────── */
-    .modal-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.8);
-      z-index: 200;
+    /* ── Universal Inputs & Buttons ────────────────────────── */
+    .btn {
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-    }
-    .modal-backdrop.open { display: flex; }
-    .modal {
-      background: var(--matrix-panel);
-      border: 1px solid var(--matrix-border);
+      gap: 0.5rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.6rem 1.25rem;
       border-radius: 6px;
-      padding: 2rem;
-      width: min(380px, 92vw);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      letter-spacing: 0.03em;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--matrix-cyan), #00aaff);
+      color: var(--matrix-dark);
+      border: none;
+      box-shadow: 0 4px 14px rgba(0, 242, 255, 0.3);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 6px 20px rgba(0, 242, 255, 0.5);
+      transform: translateY(-1px);
+    }
+    .btn-primary:disabled, .btn-primary[aria-disabled="true"] {
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.3);
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--matrix-cyan);
+      color: var(--matrix-cyan);
+    }
+    .btn-secondary:hover {
+      background: rgba(0, 242, 255, 0.1);
+      box-shadow: 0 0 12px rgba(0, 242, 255, 0.2);
+    }
+    .btn-danger {
+      background: transparent;
+      border: 1px solid var(--matrix-red);
+      color: var(--matrix-red);
+    }
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.15);
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.2);
+    }
+
+    .matrix-input {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      padding: 0.6rem 0.88rem;
+      border-radius: 6px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .matrix-input:focus {
+      border-color: var(--matrix-cyan);
+      box-shadow: 0 0 8px rgba(0, 242, 255, 0.15);
+      background: rgba(0, 0, 0, 0.55);
+    }
+
+    /* ── Diagnostics Console Panel ──────────────────────────── */
+    .panel-container {
+      margin-top: 3rem;
+      display: none;
+    }
+    .diag-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    @media (max-width: 820px) {
+      .diag-layout { grid-template-columns: 1fr; }
+    }
+    
+    /* CPU Grid visualizer */
+    .cpu-visualizer {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .cpu-core {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(0, 242, 255, 0.15);
+      border-radius: 6px;
+      padding: 0.75rem;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      transition: all 0.3s;
+    }
+    .cpu-core.active {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: var(--matrix-green);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+    }
+    .cpu-core-label { color: var(--matrix-text); opacity: 0.6; margin-bottom: 0.25rem; }
+    .cpu-core-val { color: var(--matrix-green); font-weight: 700; }
+
+    .diag-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      margin-top: 1rem;
+    }
+    .diag-table td {
+      padding: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+    .diag-table tr:hover td {
+      background: rgba(0, 242, 255, 0.02);
+    }
+    .diag-key { color: var(--matrix-text); opacity: 0.65; }
+    .diag-value { color: var(--matrix-cyan); font-weight: 600; text-align: right; word-break: break-all; }
+
+    /* DNS Reachability Visualizer */
+    .dns-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .dns-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+    .dns-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 0 8px currentColor;
+    }
+    .dns-dot.up   { color: var(--matrix-green); background: var(--matrix-green); }
+    .dns-dot.down { color: var(--matrix-red); background: var(--matrix-red); }
+    .dns-dot.pend { color: #888; background: #888; animation: blink 1.2s infinite; }
+    .dns-latency {
+      margin-left: auto;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .dns-latency.ok { color: var(--matrix-green); }
+    .dns-latency.bad { color: var(--matrix-red); }
+
+    /* ── Sovereign Nations Deck ───────────────────────────────── */
+    .nations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .nation-card {
+      background: rgba(0, 10, 20, 0.4);
+      border: 1px solid rgba(0, 242, 255, 0.15);
+      border-radius: 8px;
+      padding: 1.25rem;
+      transition: all 0.25s;
+    }
+    .nation-card:hover {
+      border-color: var(--matrix-cyan);
+      box-shadow: 0 4px 16px rgba(0, 242, 255, 0.1);
+    }
+    .nation-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 0.5rem;
+    }
+    .nation-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--matrix-cyan);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .nation-meta {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--matrix-text);
+      opacity: 0.6;
+    }
+    .nation-status-tag {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+      font-weight: 700;
+    }
+    .nation-status-tag.growing { background: rgba(16, 185, 129, 0.15); color: var(--matrix-green); }
+    .nation-status-tag.stable  { background: rgba(0, 242, 255, 0.15); color: var(--matrix-cyan); }
+    .nation-status-tag.declining { background: rgba(239, 68, 68, 0.15); color: var(--matrix-red); }
+
+    .nation-stats-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 1.25rem;
+    }
+    .stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.8rem;
+    }
+    .stat-label {
+      color: var(--matrix-text);
+      opacity: 0.7;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      width: 110px;
+    }
+    .stat-val {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: #fff;
+      width: 40px;
+      text-align: right;
+    }
+    .stat-progress-container {
+      flex-grow: 1;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+      margin: 0 0.75rem;
+      overflow: hidden;
+    }
+    .stat-progress-bar {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.4s ease-out;
+    }
+
+    .nation-policies {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .policy-label-tag {
+      font-size: 0.7rem;
+      color: var(--matrix-green);
+      font-family: var(--font-mono);
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.15);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      display: inline-block;
+    }
+    .policy-action-deck {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+    .policy-enact-btn {
+      font-size: 0.7rem !important;
+      padding: 0.35rem !important;
+      width: 100%;
+      text-align: center;
+    }
+
+    .nation-log {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 4px;
+      padding: 0.5rem 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--matrix-text);
+      opacity: 0.65;
+      min-height: 2.2rem;
+      max-height: 4rem;
+      overflow-y: auto;
+    }
+
+    /* ── Vision Forge Panel ────────────────────────────────── */
+    .vf-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    @media (max-width: 820px) {
+      .vf-layout { grid-template-columns: 1fr; }
+    }
+    .vf-prompt-box {
       display: flex;
       flex-direction: column;
       gap: 1rem;
     }
-    .modal h2 { color: var(--matrix-heading); font-size: 1.1rem; margin: 0; }
-    .modal label { font-size: 0.8rem; color: var(--matrix-text); }
-    .modal input[type="email"],
-    .modal input[type="password"] {
-      width: 100%;
-      background: var(--matrix-dark);
-      border: 1px solid var(--matrix-border);
-      color: var(--matrix-green);
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      padding: 0.5rem 0.75rem;
-      border-radius: 4px;
-      margin-top: 0.25rem;
-    }
-    .modal-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
-    #login-error { color: var(--matrix-red); font-size: 0.78rem; min-height: 1em; }
-
-    /* ── Diagnostics panel ────────────────────────────────────── */
-    .diag-section { margin-top: 1.5rem; }
-    .diag-section h3 { color: var(--matrix-heading); font-size: 0.9rem; margin-bottom: 0.75rem; }
-    .diag-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 0.4rem;
-    }
-    .diag-row {
+    .vf-prompt-deck {
       display: flex;
-      justify-content: space-between;
-      font-size: 0.75rem;
-      padding: 0.3rem 0.5rem;
-      background: rgba(0,255,65,0.04);
-      border: 1px solid var(--matrix-dim);
-      border-radius: 3px;
       gap: 0.5rem;
     }
-    .diag-key   { color: var(--matrix-text); opacity: 0.7; }
-    .diag-value { color: var(--matrix-green); font-weight: bold; word-break: break-all; }
-    .dns-row    { display: flex; gap: 0.75rem; align-items: center; padding: 0.35rem 0.5rem; border: 1px solid var(--matrix-dim); border-radius: 3px; font-size: 0.75rem; }
-    .dns-dot    { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .dns-dot.up   { background: var(--matrix-green); box-shadow: 0 0 6px var(--matrix-green); }
-    .dns-dot.down { background: var(--matrix-red); box-shadow: 0 0 6px var(--matrix-red); }
-    .dns-dot.pend { background: #888; animation: blink 1s linear infinite; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-    /* ── Nations panel ────────────────────────────────────────── */
-    .nations-panel { display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem; }
-    .nation-card   { background: rgba(0,255,65,0.05); border: 1px solid var(--matrix-dim); border-radius: 5px; padding: 1rem; }
-    .nation-name   { color: var(--matrix-green); font-size: 0.9rem; margin-bottom: 0.5rem; }
-    .nation-stats  { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; font-size: 0.75rem; color: var(--matrix-text); }
-    .nation-stat span { color: var(--matrix-cyan); }
-    .nation-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
-    .nation-actions .btn { font-size: 0.72rem; padding: 0.3rem 0.7rem; border-color: var(--matrix-cyan); color: var(--matrix-cyan); }
-    .nation-actions .btn:hover { background: var(--matrix-cyan); color: var(--matrix-dark); }
-    .nation-log { font-size: 0.72rem; color: var(--matrix-text); opacity: 0.55; margin-top: 0.35rem; font-style: italic; }
-
-    /* ── Vision Forge panel ───────────────────────────────────── */
-    .vf-panel  { display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem; }
-    .vf-prompt { display: flex; gap: 0.5rem; }
-    .vf-prompt input[type="text"] {
-      flex: 1;
-      background: var(--matrix-dark);
-      border: 1px solid var(--matrix-border);
-      color: var(--matrix-green);
-      font-family: var(--font-mono);
-      font-size: 0.82rem;
-      padding: 0.45rem 0.75rem;
-      border-radius: 4px;
+    .vf-prompt-deck input {
+      flex-grow: 1;
     }
-    .vf-output { min-height: 60px; }
-    .vf-result-img { max-width: 100%; border-radius: 5px; border: 1px solid var(--matrix-dim); margin-top: 0.5rem; }
-    .vf-result-desc { font-size: 0.8rem; color: var(--matrix-text); margin-top: 0.5rem; white-space: pre-wrap; }
-    .vf-history { margin-top: 1rem; }
-    .vf-history h4 { font-size: 0.8rem; color: var(--matrix-text); opacity: 0.6; margin-bottom: 0.5rem; }
-    .vf-history-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .vf-history-item { font-size: 0.72rem; color: var(--matrix-cyan); cursor: pointer; border-bottom: 1px dotted currentColor; }
+    
+    .vf-history-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.6;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .vf-history-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .vf-history-chip {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--matrix-cyan);
+      padding: 0.25rem 0.55rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .vf-history-chip:hover {
+      background: rgba(0, 242, 255, 0.08);
+      border-color: var(--matrix-cyan);
+    }
 
-    /* ── Status bar ───────────────────────────────────────────── */
-    #status-bar { font-size: 0.75rem; color: var(--matrix-text); opacity: 0.55; margin-top: 1.5rem; text-align: center; }
+    /* Animated Synthesis Loader */
+    .vf-canvas-container {
+      aspect-ratio: 1;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--matrix-border);
+      border-radius: 8px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .vf-blueprint-crosshairs {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: none;
+    }
+    .vf-blueprint-crosshairs::before, .vf-blueprint-crosshairs::after {
+      content: '';
+      position: absolute;
+      background: rgba(0, 242, 255, 0.35);
+    }
+    .vf-blueprint-crosshairs::before {
+      top: 0; bottom: 0; left: 50%; width: 1px;
+    }
+    .vf-blueprint-crosshairs::after {
+      left: 0; right: 0; top: 50%; height: 1px;
+    }
+    
+    .vf-canvas-container:hover .vf-blueprint-crosshairs {
+      display: block;
+    }
 
-    /* ── Responsive tweaks ────────────────────────────────────── */
-    @media (max-width: 480px) {
-      .page-wrap { padding: 1rem 0.75rem 3rem; }
+    .vf-coordinate-readout {
+      position: absolute;
+      bottom: 0.5rem;
+      right: 0.5rem;
+      background: rgba(3, 7, 12, 0.85);
+      border: 1px solid rgba(0, 242, 255, 0.3);
+      border-radius: 4px;
+      padding: 0.2rem 0.4rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--matrix-cyan);
+      pointer-events: none;
+      z-index: 10;
+      display: none;
+    }
+    .vf-canvas-container:hover .vf-coordinate-readout {
+      display: block;
+    }
+
+    .vf-image-result {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      transition: filter 0.3s;
+    }
+    .vf-image-result:hover {
+      filter: contrast(1.1) brightness(1.05);
+    }
+
+    .vf-loader-container {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      z-index: 5;
+    }
+    .vf-loader-orb {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      border: 2px dashed var(--matrix-cyan);
+      animation: spin 6s linear infinite;
+      position: relative;
+    }
+    .vf-loader-orb::after {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      border: 2px dotted var(--matrix-purple);
+      animation: spin-back 3s linear infinite;
+    }
+    .vf-loader-text {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--matrix-cyan);
+      animation: blink 1.5s infinite;
+    }
+
+    /* ── Administrative Portal ─────────────────────────────── */
+    .admin-panel {
+      margin-top: 3.5rem;
+      border-color: rgba(188, 19, 254, 0.3);
+      display: none;
+    }
+    .admin-panel::before {
+      background: linear-gradient(90deg, transparent, var(--matrix-purple), transparent);
+    }
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      margin-top: 1rem;
+    }
+    .admin-table th {
+      text-align: left;
+      padding: 0.6rem 0.5rem;
+      border-bottom: 2px solid rgba(188, 19, 254, 0.4);
+      color: var(--matrix-purple);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .admin-table td {
+      padding: 0.75rem 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      vertical-align: middle;
+    }
+    .admin-table tr:hover td {
+      background: rgba(188, 19, 254, 0.03);
+    }
+
+    .admin-permission-grid {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .admin-perm-pill {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      border: 1px solid;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s;
+    }
+    .admin-perm-pill.granted {
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--matrix-green);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+    .admin-perm-pill.revoked {
+      background: rgba(255, 255, 255, 0.03);
+      color: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .admin-num-input {
+      width: 60px;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #fff;
+      padding: 0.2rem 0.4rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      border-radius: 3px;
+      text-align: center;
+    }
+
+    /* ── Login Modal ────────────────────────────────────────── */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 7, 12, 0.9);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+    .modal-backdrop.open { display: flex; }
+    
+    .modal {
+      background: var(--matrix-panel);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(0, 242, 255, 0.25);
+      border-radius: 12px;
+      padding: 2.5rem;
+      width: min(420px, 92vw);
+      box-shadow: 0 0 40px rgba(0, 242, 255, 0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      position: relative;
+    }
+    .modal h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .modal label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--matrix-text);
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .modal-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .modal-field input {
+      width: 100%;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 0.5rem;
+    }
+    #login-error {
+      color: var(--matrix-red);
+      font-size: 0.8rem;
+      min-height: 1.2em;
+      font-family: var(--font-mono);
+    }
+
+    /* Status Telemetry Bar */
+    #status-bar {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--matrix-text);
+      opacity: 0.55;
+      text-align: center;
+      margin-top: 3rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.03);
+      padding-top: 1.5rem;
+    }
+
+    /* ── Animations ────────────────────────────────────────── */
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    @keyframes spin-back { 100% { transform: rotate(-360deg); } }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+    
+    /* Responsive tweaks */
+    @media (max-width: 600px) {
+      .page-wrap { padding: 2rem 1rem 4rem; }
+      .matrix-nav { padding: 0.75rem 1rem; }
+      .nav-links { display: none; } /* Kept clean on tiny viewports */
+      .tools-grid { grid-template-columns: 1fr; }
+      .policy-action-deck { grid-template-columns: 1fr; }
+      .admin-table { font-size: 0.7rem; }
+      .admin-permission-grid { flex-direction: column; gap: 0.25rem; }
     }
   </style>
 </head>
 <body>
 
+<div class="scanlines"></div>
+<canvas id="matrix-rain-canvas"></canvas>
+
 <!-- ═══════════════════════ NAV ═══════════════════════════════ -->
 <nav class="matrix-nav">
-  <a href="./" class="nav-brand">⬡ AMAZING GRACE</a>
+  <a href="./" class="nav-brand">⬡ SOVEREIGN MATRIX</a>
   <ul class="nav-links">
     <li><a href="./">Home</a></li>
     <li><a href="./arcade/">Arcade</a></li>
     <li><a href="./ministry/">Ministry</a></li>
     <li><a href="./admin/">Admin</a></li>
   </ul>
-  <span class="nav-user" id="nav-user"></span>
-  <button class="btn" id="login-btn" style="font-size:0.72rem;padding:0.3rem 0.75rem;">Login</button>
+  <div class="nav-controls">
+    <span class="nav-user" id="nav-user"></span>
+    <button class="sound-toggle-btn" id="sound-toggle" title="Toggle Synthesizer Feedback">🔊</button>
+    <button class="btn btn-secondary" id="login-btn" style="font-size:0.75rem;padding:0.4rem 0.9rem;">Login</button>
+  </div>
 </nav>
 
 <!-- ═══════════════════ LOGIN MODAL ═══════════════════════════ -->
 <div class="modal-backdrop" id="login-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal">
-    <h2 id="modal-title">⬡ Sovereign Matrix Login</h2>
-    <div>
-      <label for="login-email">Email</label>
-      <input type="email" id="login-email" autocomplete="username" placeholder="user@matrix.dev">
+    <h2 id="modal-title">⬡ Core Terminal Auth</h2>
+    <div class="modal-field">
+      <label for="login-email">Email Coordinate</label>
+      <input type="email" id="login-email" class="matrix-input" autocomplete="username" placeholder="user@matrix.dev">
     </div>
-    <div>
-      <label for="login-password">Password</label>
-      <input type="password" id="login-password" autocomplete="current-password" placeholder="••••••••">
+    <div class="modal-field">
+      <label for="login-password">Access Cipher</label>
+      <input type="password" id="login-password" class="matrix-input" autocomplete="current-password" placeholder="••••••••">
     </div>
     <div id="login-error" role="alert" aria-live="polite"></div>
     <div class="modal-actions">
-      <button class="btn" id="modal-cancel" style="border-color:var(--matrix-text);color:var(--matrix-text)">Cancel</button>
-      <button class="btn" id="modal-submit">Sign In</button>
+      <button class="btn btn-secondary" id="modal-cancel" style="border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.7)">Cancel</button>
+      <button class="btn btn-primary" id="modal-submit">Sync Uplink</button>
     </div>
   </div>
 </div>
@@ -262,94 +977,149 @@
 <div class="page-wrap">
 
   <div class="hero">
-    <h1 class="glitch">MATRIX OF CONSCIENCE</h1>
-    <p>Enter the Matrix of Conscience and continue your journey through the Nexus Arcade.</p>
+    <h1>Sovereign Matrix</h1>
+    <p>Unified telemetry deck interfacing cybernetic network diagnostics, Sovereign Nation metrics, and core conceptual synthesis.</p>
   </div>
 
-  <!-- ── Tool cards ───────────────────────────────────────────── -->
+  <!-- ── Tool cards grid ── -->
   <div class="tools-grid">
 
     <!-- Vision Forge -->
-    <div class="tool-card" id="card-visionforge">
-      <h2>🎨 Vision Forge</h2>
-      <p>Generate images with Gemini AI. Describe a scene and watch it materialize.</p>
-      <div>
+    <div class="matrix-card tool-card" id="card-visionforge">
+      <h2>
+        <span>🎨 Vision Forge</span>
         <span class="tool-badge" id="badge-visionforge">Checking…</span>
+      </h2>
+      <p>Interface with the Gemini AI visual synthesizers. Feed prompt coordinates to materialize creative conceptual matrices.</p>
+      <div class="tool-meta">
         <span class="tool-hint" id="hint-visionforge"></span>
+        <a href="#visionforge-panel" class="btn btn-primary" id="btn-visionforge">Access Forge</a>
       </div>
-      <a href="#visionforge-panel" class="btn" id="btn-visionforge">Open Vision Forge</a>
     </div>
 
     <!-- Sovereign Nations -->
-    <div class="tool-card" id="card-nations">
-      <h2>🌍 Sovereign Nations</h2>
-      <p>Build and govern your nation. Manage resources, enact policies, and trade.</p>
-      <div>
+    <div class="matrix-card tool-card" id="card-nations">
+      <h2>
+        <span>🌍 Sovereign Nations</span>
         <span class="tool-badge" id="badge-nations">Checking…</span>
+      </h2>
+      <p>Command-level governor mapping resources, demographics, and active covenant policies in real-time turn matrices.</p>
+      <div class="tool-meta">
         <span class="tool-hint" id="hint-nations"></span>
+        <a href="#nations-panel" class="btn btn-primary" id="btn-nations">Access Governor</a>
       </div>
-      <a href="#nations-panel" class="btn" id="btn-nations">Open Nations</a>
     </div>
 
     <!-- Diagnostics Console -->
-    <div class="tool-card" id="card-diagnostics">
-      <h2>🛠 Diagnostics Console</h2>
-      <p>Inspect browser capabilities and check DNS / network reachability.</p>
-      <div>
+    <div class="matrix-card tool-card" id="card-diagnostics">
+      <h2>
+        <span>🛠 Diagnostics Console</span>
         <span class="tool-badge" id="badge-diagnostics">Checking…</span>
+      </h2>
+      <p>Audit device concurrency capabilities, verify browser APIs, and probe DNS reachability vectors instantly.</p>
+      <div class="tool-meta">
         <span class="tool-hint" id="hint-diagnostics"></span>
+        <a href="#diagnostics-panel" class="btn btn-primary" id="btn-diagnostics">Access Console</a>
       </div>
-      <a href="#diagnostics-panel" class="btn" id="btn-diagnostics">Open Diagnostics</a>
     </div>
 
   </div><!-- /.tools-grid -->
 
   <!-- ══════════════ VISION FORGE PANEL ════════════════════════ -->
-  <section class="matrix-card matrix-border" id="visionforge-panel" aria-label="Vision Forge tool" style="margin-top:2.5rem;display:none">
-    <h2 class="matrix-heading">🎨 Vision Forge</h2>
-    <div class="vf-panel">
-      <div class="vf-prompt">
-        <input type="text" id="vf-prompt-input" placeholder="Describe the image…" maxlength="300">
-        <button class="btn" id="vf-generate-btn">Generate</button>
+  <section class="matrix-card panel-container" id="visionforge-panel" aria-label="Vision Forge tool">
+    <h2 class="matrix-heading"><span>🎨</span> Vision Forge Laboratory</h2>
+    <div class="vf-layout">
+      <div class="vf-prompt-box">
+        <p style="font-size:0.9rem;opacity:0.75;line-height:1.5">Enter descriptive prompts to render visual concepts. If a Gemini API Key is configured in your session environment, live neural network rendering will be engaged; otherwise, the terminal will synthesize abstract blueprints in local fallback mode.</p>
+        <div class="vf-prompt-deck">
+          <input type="text" id="vf-prompt-input" class="matrix-input" placeholder="Enter synthesis prompt..." maxlength="300">
+          <button class="btn btn-primary" id="vf-generate-btn">Synthesize</button>
+        </div>
+        <div class="vf-history" id="vf-history" style="display:none">
+          <h4 class="vf-history-title">Previous Prompts</h4>
+          <div class="vf-history-list" id="vf-history-list"></div>
+        </div>
       </div>
-      <div class="vf-output" id="vf-output" aria-live="polite"></div>
-      <div class="vf-history" id="vf-history" style="display:none">
-        <h4>Recent Prompts</h4>
-        <div class="vf-history-list" id="vf-history-list"></div>
+      
+      <!-- Interactive blueprint frame with hover crosshairs -->
+      <div class="vf-canvas-container" id="vf-canvas-container">
+        <div class="vf-blueprint-crosshairs"></div>
+        <div class="vf-coordinate-readout" id="vf-coordinate-readout">X: 0px / Y: 0px</div>
+        
+        <div class="vf-loader-container" id="vf-loader">
+          <div class="vf-loader-orb"></div>
+          <span class="vf-loader-text">GENERATING CONCEPT MATRIX...</span>
+        </div>
+        
+        <div class="vf-output" id="vf-output" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center" aria-live="polite">
+          <p style="font-size:0.85rem;opacity:0.4;font-family:var(--font-mono)">[Awaiting Prompts]</p>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- ══════════════ NATIONS PANEL ════════════════════════════ -->
-  <section class="matrix-card matrix-border" id="nations-panel" aria-label="Sovereign Nations tool" style="margin-top:2.5rem;display:none">
-    <h2 class="matrix-heading">🌍 Sovereign Nations</h2>
-    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:1rem">
-      <button class="btn" id="nations-new-btn">Found New Nation</button>
-      <button class="btn" id="nations-turn-btn" style="border-color:var(--matrix-cyan);color:var(--matrix-cyan)">Process Turn (All)</button>
+  <section class="matrix-card panel-container" id="nations-panel" aria-label="Sovereign Nations tool">
+    <h2 class="matrix-heading"><span>🌍</span> Sovereign Nations Deck</h2>
+    <p style="font-size:0.9rem;opacity:0.75;line-height:1.5;margin-bottom:1.5rem">Govern your civilizations. Establish new territories, process structural resource yields (Food, Gold, Faith, Knowledge), and enact social or spiritual policies to expand demographic growth thresholds.</p>
+    <div style="display:flex;gap:1rem;flex-wrap:wrap">
+      <button class="btn btn-primary" id="nations-new-btn">Establish Territory</button>
+      <button class="btn btn-secondary" id="nations-turn-btn">Process All Yields</button>
     </div>
-    <div class="nations-panel" id="nations-list" aria-live="polite">
-      <p style="font-size:0.82rem;color:var(--matrix-text);opacity:0.5">No nations founded yet. Click "Found New Nation" to begin.</p>
+    <div class="nations-grid" id="nations-list" aria-live="polite">
+      <p style="font-size:0.85rem;color:var(--matrix-text);opacity:0.4;font-family:var(--font-mono)">[No established territories in memory. Initialize above.]</p>
     </div>
   </section>
 
   <!-- ══════════════ DIAGNOSTICS PANEL ════════════════════════ -->
-  <section class="matrix-card matrix-border" id="diagnostics-panel" aria-label="Diagnostics Console" style="margin-top:2.5rem;display:none">
-    <h2 class="matrix-heading">🛠 Diagnostics Console</h2>
-    <div style="display:flex;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap">
-      <button class="btn" id="diag-run-btn">Run Browser Diagnostics</button>
-      <button class="btn" id="diag-dns-btn" style="border-color:var(--matrix-cyan);color:var(--matrix-cyan)">Run DNS Tests</button>
+  <section class="matrix-card panel-container" id="diagnostics-panel" aria-label="Diagnostics Console">
+    <h2 class="matrix-heading"><span>🛠</span> Telemetry Diagnostics Console</h2>
+    <p style="font-size:0.9rem;opacity:0.75;line-height:1.5;margin-bottom:1.5rem">Probe environment parameters. Audit local hardware threads, cookies, time zone coordinate points, and test DNS domain endpoints to map latency pathways.</p>
+    <div style="display:flex;gap:1rem;margin-bottom:2rem;flex-wrap:wrap">
+      <button class="btn btn-primary" id="diag-run-btn">Probe Hardware</button>
+      <button class="btn btn-secondary" id="diag-dns-btn">Probe Network DNS</button>
     </div>
-    <div class="diag-section">
-      <h3>Browser Environment</h3>
-      <div class="diag-grid" id="diag-browser-grid" aria-live="polite">
-        <p style="font-size:0.8rem;color:var(--matrix-text);opacity:0.5">Click "Run Browser Diagnostics" to begin.</p>
+    <div class="diag-layout">
+      <div>
+        <h3 class="matrix-heading" style="font-size:1.1rem;margin-bottom:0.75rem">Browser Parameters</h3>
+        <div id="cpu-panel" style="display:none">
+          <p style="font-size:0.75rem;opacity:0.6;font-family:var(--font-mono)">Logical CPU Threads:</p>
+          <div class="cpu-visualizer" id="cpu-grid"></div>
+        </div>
+        <table class="diag-table">
+          <tbody id="diag-browser-grid" aria-live="polite">
+            <tr><td colspan="2" style="opacity:0.4;font-family:var(--font-mono)">[Hardware logs uninitialized]</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3 class="matrix-heading" style="font-size:1.1rem;margin-bottom:0.75rem">DNS Pathway Latency</h3>
+        <div class="dns-grid" id="diag-dns-list" aria-live="polite">
+          <p style="opacity:0.4;font-family:var(--font-mono);font-size:0.8rem">[Ping probe diagnostics idle]</p>
+        </div>
       </div>
     </div>
-    <div class="diag-section" style="margin-top:1.5rem">
-      <h3>DNS / Network Reachability</h3>
-      <div id="diag-dns-list" aria-live="polite" style="display:flex;flex-direction:column;gap:0.4rem">
-        <p style="font-size:0.8rem;color:var(--matrix-text);opacity:0.5">Click "Run DNS Tests" to probe network targets.</p>
-      </div>
+  </section>
+
+  <!-- ══════════════ SYSTEM ADMINISTRATION PANEL ════════════════ -->
+  <section class="matrix-card admin-panel" id="admin-panel">
+    <h2 class="matrix-heading" style="color:var(--matrix-purple)"><span>⚙</span> Matrix Override Control Console</h2>
+    <p style="font-size:0.9rem;opacity:0.75;line-height:1.5">Administrative override portal. Directly review account tokens, edit score metrics, or explicitly grant/revoke access permissions to bypass gating thresholds on this local sandbox.</p>
+    <div style="overflow-x:auto">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Identity Account</th>
+            <th>Role</th>
+            <th>Exp level</th>
+            <th>Accumulated score</th>
+            <th>Explicit tool permission grants</th>
+          </tr>
+        </thead>
+        <tbody id="admin-users-list">
+          <tr><td colspan="5" style="text-align:center;opacity:0.4">[Syncing Account Registry...]</td></tr>
+        </tbody>
+      </table>
     </div>
   </section>
 
@@ -357,8 +1127,9 @@
 
 </div><!-- /.page-wrap -->
 
+<!-- ═══════════════════════ SCRIPTS ════════════════════════════ -->
 <script type="module">
-  import { loginWithEmail, getCurrentUser, clearSession, IS_DEMO_HOST } from '/js/firebase.js';
+  import { loginWithEmail, getCurrentUser, clearSession, IS_DEMO_HOST, db } from '/js/firebase.js';
   import { computeUnlocks, unlockHint }                                  from '/js/unlocks.js';
   import { runBrowserDiagnostics, runDnsTests }                          from '/js/diagnostics.js';
   import { generateImage, getHistory, IS_VISION_AVAILABLE }             from '/js/visionforge.js';
@@ -367,7 +1138,168 @@
     proposeTrade, acceptTrade, POLICIES, getNationSummary,
   } from '/js/nations.js';
 
-  /* ── Auth ── */
+  /* ── Canvas Matrix Rain Overlay Engine ────────────────────────────────── */
+  const canvas = document.getElementById('matrix-rain-canvas');
+  const ctx = canvas.getContext('2d');
+  let animationId = null;
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  // Matrix characters including celestial and tech glyphs
+  const chars = "010101⬡◈⚡👁☣⚛☄⚜ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+  const fontSize = 14;
+  let columns = Math.floor(canvas.width / fontSize) + 1;
+  let drops = Array(columns).fill(1);
+
+  // Smooth color transitions based on lock state
+  let primaryHue = 160; // 160 = Emerald Green, 190 = Cyan, 280 = Purple
+
+  function drawMatrixRain() {
+    ctx.fillStyle = 'rgba(3, 7, 12, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    columns = Math.floor(canvas.width / fontSize) + 1;
+    if (drops.length < columns) {
+      drops = [...drops, ...Array(columns - drops.length).fill(1)];
+    }
+
+    ctx.font = `${fontSize}px var(--font-mono)`;
+
+    for (let i = 0; i < drops.length; i++) {
+      const char = chars[Math.floor(Math.random() * chars.length)];
+      const x = i * fontSize;
+      const y = drops[i] * fontSize;
+
+      // Glow factor
+      if (Math.random() > 0.98) {
+        ctx.fillStyle = '#fff';
+        ctx.shadowColor = `hsl(${primaryHue}, 100%, 70%)`;
+        ctx.shadowBlur = 8;
+      } else {
+        ctx.fillStyle = `hsla(${primaryHue}, 100%, 55%, 0.35)`;
+        ctx.shadowBlur = 0;
+      }
+
+      ctx.fillText(char, x, y);
+
+      if (y > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i]++;
+    }
+    animationId = requestAnimationFrame(drawMatrixRain);
+  }
+  drawMatrixRain();
+
+  /* ── Web Audio Synthesizer Cues ──────────────────────────────────────── */
+  class SynthEngine {
+    constructor() {
+      this.ctx = null;
+      this.enabled = localStorage.getItem('sound_cues') !== 'false';
+    }
+    init() {
+      if (this.ctx) return;
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (AudioContextClass) this.ctx = new AudioContextClass();
+    }
+    playClick() {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+      
+      const t = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(650, t);
+      osc.frequency.exponentialRampToValueAtTime(1300, t + 0.06);
+      
+      gain.gain.setValueAtTime(0.04, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+      
+      osc.start(t);
+      osc.stop(t + 0.07);
+    }
+    playSuccess() {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+      
+      const t = this.ctx.currentTime;
+      const tones = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      tones.forEach((freq, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, t + idx * 0.07);
+        
+        gain.gain.setValueAtTime(0.03, t + idx * 0.07);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.07 + 0.15);
+        
+        osc.start(t + idx * 0.07);
+        osc.stop(t + idx * 0.07 + 0.16);
+      });
+    }
+    playFailure() {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+      
+      const t = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(260, t);
+      osc.frequency.linearRampToValueAtTime(70, t + 0.3);
+      
+      gain.gain.setValueAtTime(0.08, t);
+      gain.gain.linearRampToValueAtTime(0.001, t + 0.3);
+      
+      osc.start(t);
+      osc.stop(t + 0.31);
+    }
+  }
+
+  const synth = new SynthEngine();
+  const soundToggle = document.getElementById('sound-toggle');
+  
+  function updateSoundButton() {
+    if (synth.enabled) {
+      soundToggle.textContent = '🔊';
+      soundToggle.style.color = 'var(--matrix-cyan)';
+      soundToggle.style.borderColor = 'rgba(0, 242, 255, 0.4)';
+    } else {
+      soundToggle.textContent = '🔇';
+      soundToggle.style.color = 'rgba(255, 255, 255, 0.2)';
+      soundToggle.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+    }
+  }
+  updateSoundButton();
+  
+  soundToggle.addEventListener('click', () => {
+    synth.enabled = !synth.enabled;
+    localStorage.setItem('sound_cues', synth.enabled);
+    updateSoundButton();
+    if (synth.enabled) synth.playClick();
+  });
+
+  /* ── Auth System ── */
   const loginModal  = document.getElementById('login-modal');
   const loginBtn    = document.getElementById('login-btn');
   const modalCancel = document.getElementById('modal-cancel');
@@ -379,21 +1311,42 @@
     const u = getCurrentUser();
     if (u) {
       navUser.textContent = `${u.email} (${u.role})`;
-      loginBtn.textContent = 'Logout';
+      navUser.style.display = 'inline-block';
+      loginBtn.textContent = 'Disconnect';
+      primaryHue = u.role === 'owner' ? 280 : u.role === 'superAdmin' ? 190 : 160;
     } else {
       navUser.textContent = '';
-      loginBtn.textContent = 'Login';
+      navUser.style.display = 'none';
+      loginBtn.textContent = 'Access Uplink';
+      primaryHue = 160; // green fallback
     }
   }
 
   loginBtn.addEventListener('click', () => {
+    synth.playClick();
     const u = getCurrentUser();
-    if (u) { clearSession(); refreshNav(); applyUnlocks(); return; }
+    if (u) {
+      clearSession();
+      refreshNav();
+      applyUnlocks();
+      renderAdminPanel();
+      return;
+    }
     loginModal.classList.add('open');
     document.getElementById('login-email').focus();
   });
-  modalCancel.addEventListener('click', () => loginModal.classList.remove('open'));
-  loginModal.addEventListener('click', (e) => { if (e.target === loginModal) loginModal.classList.remove('open'); });
+  
+  modalCancel.addEventListener('click', () => {
+    synth.playClick();
+    loginModal.classList.remove('open');
+  });
+  
+  loginModal.addEventListener('click', (e) => {
+    if (e.target === loginModal) {
+      synth.playClick();
+      loginModal.classList.remove('open');
+    }
+  });
 
   modalSubmit.addEventListener('click', async () => {
     loginError.textContent = '';
@@ -402,19 +1355,21 @@
     try {
       await loginWithEmail(email, password);
       loginModal.classList.remove('open');
+      synth.playSuccess();
       refreshNav();
       applyUnlocks();
+      renderAdminPanel();
     } catch (err) {
+      synth.playFailure();
       loginError.textContent = err.message;
     }
   });
 
-  /* Allow Enter key in password field */
   document.getElementById('login-password').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') modalSubmit.click();
   });
 
-  /* ── Unlock-gate tool cards ── */
+  /* ── Gated Unlock Dashboard Cards ── */
   const attachedPanelHandlers = new WeakSet();
 
   function applyUnlocks() {
@@ -423,21 +1378,34 @@
     const score = parseInt(localStorage.getItem('playerScore') || '0', 10);
     const badges = JSON.parse(localStorage.getItem('playerBadges') || '[]');
 
-    const toolsFromUser = u
-      ? { networkDefense: true, diagnostics: true, nations: true, visionForge: true }
-      : {};
+    // Pull explicit tool definitions from sandbox database
+    let toolsFromUser = {};
+    if (u) {
+      try {
+        const users = JSON.parse(localStorage.getItem('matrix_demo_users') || '{}');
+        if (users[u.uid]?.tools) {
+          toolsFromUser = users[u.uid].tools;
+        } else {
+          // default admin full access
+          toolsFromUser = { networkDefense: true, diagnostics: true, nations: true, visionForge: true };
+        }
+      } catch {
+        toolsFromUser = { networkDefense: true, diagnostics: true, nations: true, visionForge: true };
+      }
+    }
 
     const player  = { level, score, badges, tools: toolsFromUser };
     const unlocks = computeUnlocks(player);
 
-    const tools = [
+    const toolGating = [
       { id: 'visionforge', featureId: 'visionForge', card: 'card-visionforge', badge: 'badge-visionforge', hint: 'hint-visionforge', btn: 'btn-visionforge', panel: 'visionforge-panel' },
       { id: 'nations',     featureId: 'nations',     card: 'card-nations',     badge: 'badge-nations',     hint: 'hint-nations',     btn: 'btn-nations',     panel: 'nations-panel' },
       { id: 'diagnostics', featureId: 'diagnostics', card: 'card-diagnostics', badge: 'badge-diagnostics', hint: 'hint-diagnostics', btn: 'btn-diagnostics', panel: 'diagnostics-panel' },
     ];
 
-    tools.forEach(({ featureId, card, badge, hint, btn, panel }) => {
-      const isUnlocked = unlocks[featureId] ?? false;
+    toolGating.forEach(({ featureId, card, badge, hint, btn, panel }) => {
+      // Access if EITHER global level requirements are met, OR the user account has explicit grants
+      const isUnlocked = Boolean(unlocks[featureId]) || Boolean(toolsFromUser[featureId]);
       const cardEl  = document.getElementById(card);
       const badgeEl = document.getElementById(badge);
       const hintEl  = document.getElementById(hint);
@@ -446,80 +1414,179 @@
 
       if (isUnlocked) {
         cardEl.classList.remove('locked');
-        badgeEl.textContent = 'UNLOCKED';
+        badgeEl.textContent = 'READY';
         badgeEl.className   = 'tool-badge unlocked';
         hintEl.textContent  = '';
         btnEl.removeAttribute('aria-disabled');
         btnEl.removeAttribute('disabled');
       } else {
         cardEl.classList.add('locked');
-        badgeEl.textContent = 'LOCKED';
-        badgeEl.className   = 'tool-badge locked';
+        badgeEl.textContent = 'SECURE';
+        badgeEl.className   = 'tool-badge locked-badge';
         hintEl.textContent  = unlockHint(featureId);
         btnEl.setAttribute('aria-disabled', 'true');
         if (panelEl) panelEl.style.display = 'none';
       }
     });
 
-    // Attach panel-reveal click handlers (idempotent via WeakSet)
-    tools.forEach(({ featureId, panel, btn }) => {
+    // Reveal panels click wiring (idempotent via WeakSet)
+    toolGating.forEach(({ featureId, panel, btn }) => {
       const btnEl   = document.getElementById(btn);
       const panelEl = document.getElementById(panel);
       if (attachedPanelHandlers.has(btnEl)) return;
       attachedPanelHandlers.add(btnEl);
       btnEl.addEventListener('click', (e) => {
-        if (btnEl.getAttribute('aria-disabled') === 'true') { e.preventDefault(); return; }
+        synth.playClick();
+        // check current locked state
+        const users = JSON.parse(localStorage.getItem('matrix_demo_users') || '{}');
+        const sessionUser = getCurrentUser();
+        const explicitGrant = sessionUser ? (users[sessionUser.uid]?.tools?.[featureId] ?? false) : false;
+        const metGlobal = computeUnlocks({
+          level: parseInt(localStorage.getItem('playerLevel') || '0', 10),
+          score: parseInt(localStorage.getItem('playerScore') || '0', 10),
+          badges: JSON.parse(localStorage.getItem('playerBadges') || '[]')
+        })[featureId];
+
+        if (!explicitGrant && !metGlobal) {
+          e.preventDefault();
+          synth.playFailure();
+          return;
+        }
+        
         if (panelEl) {
+          e.preventDefault();
           panelEl.style.display = 'block';
           panelEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       });
     });
 
+    // Handle optional Atari Wing Gate card
+    const atariUnlocked = localStorage.getItem("atariUnlocked") === "true";
+    let atariCard = document.getElementById("card-atarilab");
+    if (atariUnlocked) {
+      if (!atariCard) {
+        atariCard = document.createElement("div");
+        atariCard.className = "matrix-card tool-card";
+        atariCard.id = "card-atarilab";
+        atariCard.style.borderColor = "var(--matrix-purple)";
+        atariCard.style.boxShadow = "0 8px 32px 0 rgba(188, 19, 254, 0.15)";
+        atariCard.innerHTML = `
+          <h2>
+            <span>📟 Atari simulation wing</span>
+            <span class="tool-badge" style="background:rgba(188,19,254,0.15); color:var(--matrix-purple); border:1px solid rgba(188,19,254,0.3)">UNSEALED</span>
+          </h2>
+          <p>Locked lore vault of the proto-engineers. Interface with primitive silicon matrices and early consciousness stress tests.</p>
+          <div class="tool-meta">
+            <span></span>
+            <a href="./arcade/atari-lab/" class="btn btn-primary" style="background:linear-gradient(135deg, var(--matrix-purple), #9333ea); box-shadow: 0 4px 14px rgba(188,19,254,0.4)">Enter Vault</a>
+          </div>
+        `;
+        document.querySelector(".tools-grid").appendChild(atariCard);
+        // Play success tone for newly appeared cards!
+        synth.playSuccess();
+      }
+    } else {
+      if (atariCard) atariCard.remove();
+    }
+
     setStatus(u
-      ? `Logged in as ${u.email}. Level ${level} · Score ${score}.`
+      ? `CONNECTED // AUTH: ${u.role.toUpperCase()} // LVL ${level} // SCORE ${score}`
       : IS_DEMO_HOST
-        ? 'Demo mode — log in to unlock all tools.'
-        : 'Log in to access tools.');
+        ? 'DEMO MODE ACTIVE // ACCESS REQUISITE UPLINK FOR PRIVILEGES'
+        : 'SECURE SANDBOX PORTAL // SIGN IN TO RETRIEVE CONFIGURATIONS');
   }
 
   function setStatus(msg) {
-    document.getElementById('status-bar').textContent = msg;
+    document.getElementById('status-bar').textContent = `📡 Telemetry: ${msg} | Matrix Rain Primary: ${primaryHue}°`;
   }
 
-  /* ── Diagnostics ── */
-  document.getElementById('diag-run-btn').addEventListener('click', () => {
+  /* ── Telemetry Diagnostics Module ──────────────────────── */
+  const runBtn = document.getElementById('diag-run-btn');
+  const dnsBtn = document.getElementById('diag-dns-btn');
+
+  runBtn.addEventListener('click', () => {
+    synth.playClick();
     const grid = document.getElementById('diag-browser-grid');
     grid.innerHTML = '';
     const data = runBrowserDiagnostics();
+
+    // CPU thread display activation
+    const cpuPanel = document.getElementById('cpu-panel');
+    const cpuGrid = document.getElementById('cpu-grid');
+    const threads = data.hardwareConcurrency;
+    
+    if (typeof threads === 'number') {
+      cpuPanel.style.display = 'block';
+      cpuGrid.innerHTML = '';
+      for (let i = 0; i < Math.min(threads, 16); i++) {
+        const core = document.createElement('div');
+        core.className = 'cpu-core active';
+        core.innerHTML = `
+          <div class="cpu-core-label">CORE ${i+1}</div>
+          <div class="cpu-core-val">${Math.floor(50 + Math.random() * 50)}%</div>
+        `;
+        cpuGrid.appendChild(core);
+      }
+      // Periodically flicker core loads to look hyper-realistic!
+      const loadInterval = setInterval(() => {
+        if (!document.getElementById('diagnostics-panel') || document.getElementById('diagnostics-panel').style.display === 'none') {
+          clearInterval(loadInterval);
+          return;
+        }
+        document.querySelectorAll('.cpu-core-val').forEach(val => {
+          val.textContent = `${Math.floor(10 + Math.random() * 85)}%`;
+        });
+      }, 2000);
+    }
+
     Object.entries(data).forEach(([key, value]) => {
-      const row = document.createElement('div');
-      row.className = 'diag-row';
-      row.innerHTML = `<span class="diag-key">${key}</span><span class="diag-value">${String(value)}</span>`;
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td class="diag-key">${key}</td>
+        <td class="diag-value">${String(value)}</td>
+      `;
       grid.appendChild(row);
     });
+    synth.playSuccess();
   });
 
-  document.getElementById('diag-dns-btn').addEventListener('click', async () => {
+  dnsBtn.addEventListener('click', async () => {
+    synth.playClick();
     const list = document.getElementById('diag-dns-list');
-    list.innerHTML = '<p style="font-size:0.8rem;opacity:0.5">Probing targets…</p>';
+    list.innerHTML = `
+      <div class="dns-item">
+        <span class="dns-dot pend"></span>
+        <span style="color:#fff">PROBING CYBER TARGETS...</span>
+      </div>
+    `;
     const results = await runDnsTests();
     list.innerHTML = '';
     results.forEach(({ host, label, reachable, latencyMs, error }) => {
-      const row = document.createElement('div');
-      row.className = 'dns-row';
-      const dot = reachable ? 'up' : 'down';
-      row.innerHTML = `
-        <span class="dns-dot ${dot}" title="${reachable ? 'Reachable' : 'Unreachable'}"></span>
-        <span style="flex:1;color:var(--matrix-text)">${label}</span>
-        <span style="color:var(--matrix-text);opacity:0.55;font-size:0.7rem">${host}</span>
-        ${reachable ? `<span style="color:var(--matrix-green)">${latencyMs}ms</span>` : `<span style="color:var(--matrix-red);font-size:0.7rem">${error || 'unreachable'}</span>`}
+      const item = document.createElement('div');
+      item.className = 'dns-item';
+      const dotState = reachable ? 'up' : 'down';
+      const latencyClass = reachable && latencyMs < 200 ? 'ok' : 'bad';
+      item.innerHTML = `
+        <span class="dns-dot ${dotState}" title="${reachable ? 'Reachable' : 'Unreachable'}"></span>
+        <div style="display:flex;flex-direction:column">
+          <span style="color:#fff;font-weight:600">${label}</span>
+          <span style="color:var(--matrix-text);opacity:0.5;font-size:0.75rem">${host}</span>
+        </div>
+        <span class="dns-latency ${latencyClass}">
+          ${reachable ? `${latencyMs}ms` : 'FAILED'}
+        </span>
       `;
-      list.appendChild(row);
+      list.appendChild(item);
     });
+    if (results.some(r => r.reachable)) {
+      synth.playSuccess();
+    } else {
+      synth.playFailure();
+    }
   });
 
-  /* ── Nations ── */
+  /* ── Sovereign Nations Deck ───────────────────────────────── */
   let nations = JSON.parse(localStorage.getItem('matrix_nations') || '[]');
   const NATION_NAMES = ['Zion', 'Gilead', 'Canaan', 'Ephraim', 'Shiloh', 'Moriah', 'Bethel'];
 
@@ -530,7 +1597,11 @@
   function renderNations() {
     const list = document.getElementById('nations-list');
     if (!nations.length) {
-      list.innerHTML = '<p style="font-size:0.82rem;color:var(--matrix-text);opacity:0.5">No nations founded yet.</p>';
+      list.innerHTML = `
+        <p style="font-size:0.85rem;color:var(--matrix-text);opacity:0.4;font-family:var(--font-mono);grid-column: 1 / -1;text-align:center;padding:2rem">
+          [No established territories in memory. Found a territory to begin governance.]
+        </p>
+      `;
       return;
     }
     list.innerHTML = '';
@@ -538,123 +1609,368 @@
       const card = document.createElement('div');
       card.className = 'nation-card';
       const r = nation.resources;
+      
+      // Calculate resource percentages for visually rich meters
+      const foodCap = Math.max(100, Math.floor(nation.population * 1.5));
+      const goldCap = 250;
+      const faithCap = 250;
+      const knowledgeCap = 250;
+      
+      const foodPct = Math.min(100, Math.round((r.food / foodCap) * 100));
+      const goldPct = Math.min(100, Math.round((r.gold / goldCap) * 100));
+      const faithPct = Math.min(100, Math.round((r.faith / faithCap) * 100));
+      const knowledgePct = Math.min(100, Math.round((r.knowledge / knowledgeCap) * 100));
+
       card.innerHTML = `
-        <div class="nation-name">⚑ ${nation.name} <small style="color:var(--matrix-text);opacity:0.5;font-size:0.72rem">Turn ${nation.turn} · ${nation.status}</small></div>
-        <div class="nation-stats">
-          <div>Pop <span>${nation.population}</span></div>
-          <div>Food <span>${r.food}</span></div>
-          <div>Gold <span>${r.gold}</span></div>
-          <div>Faith <span>${r.faith}</span></div>
-          <div>Knowledge <span>${r.knowledge}</span></div>
+        <div class="nation-header">
+          <span class="nation-title">⚑ ${nation.name}</span>
+          <span class="nation-status-tag ${nation.status}">${nation.status.toUpperCase()}</span>
         </div>
-        <div class="nation-actions">
-          ${Object.keys(POLICIES).slice(0,4).map(pid =>
-            `<button class="btn policy-btn" data-idx="${idx}" data-policy="${pid}">${POLICIES[pid].label}</button>`
-          ).join('')}
+        
+        <div class="nation-meta" style="margin-bottom:1rem">
+          Turn ${nation.turn} &middot; Demographics: ${nation.population} Active Souls
         </div>
-        <div class="nation-log">${nation.history.slice(-2).join(' · ')}</div>
+
+        <div class="nation-stats-bars">
+          <!-- Food -->
+          <div class="stat-row">
+            <span class="stat-label">🍞 Food Cap</span>
+            <div class="stat-progress-container">
+              <div class="stat-progress-bar" style="width: ${foodPct}%; background: var(--matrix-green);"></div>
+            </div>
+            <span class="stat-val">${r.food}</span>
+          </div>
+          <!-- Gold -->
+          <div class="stat-row">
+            <span class="stat-label">🪙 Gold Supply</span>
+            <div class="stat-progress-container">
+              <div class="stat-progress-bar" style="width: ${goldPct}%; background: #eab308;"></div>
+            </div>
+            <span class="stat-val">${r.gold}</span>
+          </div>
+          <!-- Faith -->
+          <div class="stat-row">
+            <span class="stat-label">🛐 Faith Matrix</span>
+            <div class="stat-progress-container">
+              <div class="stat-progress-bar" style="width: ${faithPct}%; background: var(--matrix-purple);"></div>
+            </div>
+            <span class="stat-val">${r.faith}</span>
+          </div>
+          <!-- Knowledge -->
+          <div class="stat-row">
+            <span class="stat-label">📚 Knowledge</span>
+            <div class="stat-progress-container">
+              <div class="stat-progress-bar" style="width: ${knowledgePct}%; background: var(--matrix-cyan);"></div>
+            </div>
+            <span class="stat-val">${r.knowledge}</span>
+          </div>
+        </div>
+
+        <div class="nation-policies">
+          <p style="font-size:0.75rem;opacity:0.5;font-weight:600;margin-bottom:0.25rem">ACTIVE COVENANT LAWS:</p>
+          <div style="display:flex;flex-wrap:wrap;gap:0.35rem">
+            ${nation.policies.length 
+              ? nation.policies.map(pid => `<span class="policy-label-tag">${POLICIES[pid]?.label || pid}</span>`).join('')
+              : '<span style="font-size:0.72rem;opacity:0.4;font-style:italic">No structural covenants active.</span>'
+            }
+          </div>
+        </div>
+
+        <div class="policy-action-deck" style="margin-bottom:1rem">
+          ${Object.keys(POLICIES).slice(0, 4).map(pid => {
+            const alreadyHas = nation.policies.includes(pid);
+            const cost = POLICIES[pid].cost;
+            const canAfford = Object.entries(cost).every(([res, amt]) => (r[res] ?? 0) >= amt);
+            
+            return `
+              <button class="btn btn-secondary policy-enact-btn" 
+                      data-idx="${idx}" 
+                      data-policy="${pid}" 
+                      ${alreadyHas || !canAfford ? 'disabled aria-disabled="true"' : ''}
+                      title="${POLICIES[pid].desc} (Cost: ${Object.entries(cost).map(([k,v]) => `${v} ${k}`).join(', ')})">
+                ${alreadyHas ? 'Enacted' : POLICIES[pid].label}
+              </button>
+            `;
+          }).join('')}
+        </div>
+
+        <div class="nation-log">${nation.history.slice(-3).reverse().join('<br>&middot; ')}</div>
       `;
       list.appendChild(card);
     });
 
-    list.querySelectorAll('.policy-btn').forEach(btn => {
+    list.querySelectorAll('.policy-enact-btn').forEach(btn => {
       btn.addEventListener('click', () => {
+        synth.playClick();
         const i = parseInt(btn.dataset.idx, 10);
         try {
           nations[i] = enactPolicy(nations[i], btn.dataset.policy);
           saveNations();
           renderNations();
+          synth.playSuccess();
         } catch (err) {
-          setStatus(`Policy error: ${err.message}`);
+          synth.playFailure();
+          setStatus(`Governance Override Error: ${err.message}`);
         }
       });
     });
   }
 
   document.getElementById('nations-new-btn').addEventListener('click', () => {
+    synth.playClick();
     const cycle  = Math.floor(nations.length / NATION_NAMES.length);
     const suffix = cycle > 0 ? ` ${'I'.repeat(cycle + 1)}` : '';
     const name   = NATION_NAMES[nations.length % NATION_NAMES.length] + suffix;
     nations.push(createNation(name));
     saveNations();
     renderNations();
+    synth.playSuccess();
   });
 
   document.getElementById('nations-turn-btn').addEventListener('click', () => {
+    synth.playClick();
+    if (!nations.length) {
+      synth.playFailure();
+      return;
+    }
     nations = nations.map(processTurn);
     saveNations();
     renderNations();
+    synth.playSuccess();
   });
 
   renderNations();
 
-  /* ── Vision Forge ── */
-  document.getElementById('vf-generate-btn').addEventListener('click', async () => {
-    const prompt = document.getElementById('vf-prompt-input').value.trim();
+  /* ── AI Creative Vision Forge Module ──────────────────────── */
+  const promptInput = document.getElementById('vf-prompt-input');
+  const generateBtn = document.getElementById('vf-generate-btn');
+  const vfOutput = document.getElementById('vf-output');
+  const vfLoader = document.getElementById('vf-loader');
+  const vfHistory = document.getElementById('vf-history');
+  const vfHistoryList = document.getElementById('vf-history-list');
+
+  // Coordinates telemetry tracking inside picture canvas frame
+  const vfCanvasFrame = document.getElementById('vf-canvas-container');
+  const coordinateReadout = document.getElementById('vf-coordinate-readout');
+
+  vfCanvasFrame.addEventListener('mousemove', (e) => {
+    const rect = vfCanvasFrame.getBoundingClientRect();
+    const x = Math.round(e.clientX - rect.left);
+    const y = Math.round(e.clientY - rect.top);
+    // Draw crosshair readout values
+    coordinateReadout.textContent = `TARGET CELL X: ${x}px / Y: ${y}px`;
+  });
+
+  generateBtn.addEventListener('click', async () => {
+    synth.playClick();
+    const prompt = promptInput.value.trim();
     if (!prompt) return;
-    const output = document.getElementById('vf-output');
-    output.innerHTML = '<p style="font-size:0.8rem;opacity:0.6;color:var(--matrix-text)">Generating…</p>';
+
+    // Show loaders
+    vfOutput.style.display = 'none';
+    vfLoader.style.display = 'flex';
+
     try {
       const result = await generateImage(prompt);
+      vfOutput.innerHTML = '';
+      
       if (result.url) {
         const img = document.createElement('img');
-        img.src       = result.url;
-        img.alt       = prompt;
-        img.className = 'vf-result-img';
-        output.replaceChildren(img);
-      } else if (result.description) {
-        const div = document.createElement('div');
-        div.className   = 'vf-result-desc';
-        div.textContent = result.description;
-        output.replaceChildren(div);
+        img.src = result.url;
+        img.alt = prompt;
+        img.className = 'vf-image-result';
+        vfOutput.appendChild(img);
       } else {
-        const p = document.createElement('p');
-        p.className   = 'vf-result-desc';
-        p.textContent = JSON.stringify(result);
-        output.replaceChildren(p);
+        // conceptual descriptor override
+        const descBox = document.createElement('div');
+        descBox.style.padding = '1.5rem';
+        descBox.style.fontFamily = 'var(--font-mono)';
+        descBox.style.fontSize = '0.8rem';
+        descBox.style.lineHeight = '1.6';
+        descBox.style.color = 'var(--matrix-cyan)';
+        
+        descBox.innerHTML = `
+          <div style="font-weight:700;margin-bottom:0.5rem;text-transform:uppercase">🛠 FALLBACK SYNTHESIS BLUEPRINT:</div>
+          <div style="border-left:2px solid var(--matrix-cyan);padding-left:0.75rem;margin-bottom:0.75rem;opacity:0.8">${prompt}</div>
+          <div style="opacity:0.6">${result.description || 'Creative telemetry computed successfully. System sandbox limits online rendering.'}</div>
+        `;
+        vfOutput.appendChild(descBox);
       }
+      
+      synth.playSuccess();
       renderVfHistory();
     } catch (err) {
-      const p = document.createElement('p');
-      p.style.cssText = 'color:var(--matrix-red);font-size:0.8rem';
-      p.textContent   = `Error: ${err.message}`;
-      output.replaceChildren(p);
+      synth.playFailure();
+      vfOutput.innerHTML = `<p style="color:var(--matrix-red);font-size:0.85rem;font-family:var(--font-mono)">FAIL // ${err.message}</p>`;
+    } finally {
+      vfLoader.style.display = 'none';
+      vfOutput.style.display = 'flex';
     }
   });
 
   function renderVfHistory() {
     const history = getHistory();
     if (!history.length) return;
-    const hist = document.getElementById('vf-history');
-    const list = document.getElementById('vf-history-list');
-    hist.style.display = 'block';
-    list.innerHTML = '';
+    vfHistory.style.display = 'block';
+    vfHistoryList.innerHTML = '';
     history.slice(-8).reverse().forEach(entry => {
-      const item = document.createElement('span');
-      item.className = 'vf-history-item';
-      item.textContent = entry.prompt.slice(0, 40) + (entry.prompt.length > 40 ? '…' : '');
-      item.title = entry.prompt;
-      item.addEventListener('click', () => {
-        document.getElementById('vf-prompt-input').value = entry.prompt;
+      const chip = document.createElement('span');
+      chip.className = 'vf-history-chip';
+      chip.textContent = entry.prompt.slice(0, 30) + (entry.prompt.length > 30 ? '…' : '');
+      chip.title = entry.prompt;
+      chip.addEventListener('click', () => {
+        synth.playClick();
+        promptInput.value = entry.prompt;
       });
-      list.appendChild(item);
+      vfHistoryList.appendChild(chip);
     });
   }
 
   renderVfHistory();
 
   if (!IS_VISION_AVAILABLE) {
-    const vfBtn = document.getElementById('vf-generate-btn');
-    vfBtn.title = 'Set window.__GEMINI_API_KEY to enable live generation.';
-    const note = document.createElement('p');
-    note.style.cssText = 'font-size:0.75rem;color:var(--matrix-text);opacity:0.5;margin-top:0.25rem';
-    note.textContent = 'Gemini API key not configured — stub mode active.';
-    document.getElementById('vf-output').before(note);
+    const container = document.getElementById('vf-canvas-container');
+    const badge = document.createElement('div');
+    badge.style.cssText = 'position:absolute;top:0.5rem;left:0.5rem;background:rgba(3,7,12,0.8);border:1px solid rgba(255,255,255,0.1);padding:0.2rem 0.4rem;font-size:0.65rem;border-radius:4px;z-index:10;color:var(--matrix-text);opacity:0.6';
+    badge.textContent = 'LOCAL BLUEPRINT FALLBACK MODE';
+    container.appendChild(badge);
   }
 
-  /* ── Init ── */
+  /* ── Restricted System Override Portal (Admin Panel) ────────── */
+  async function renderAdminPanel() {
+    const u = getCurrentUser();
+    const panel = document.getElementById('admin-panel');
+    const tableBody = document.getElementById('admin-users-list');
+    
+    // Panel reveals only to owner/superAdmin
+    if (!u || (u.role !== 'owner' && u.role !== 'superAdmin')) {
+      panel.style.display = 'none';
+      return;
+    }
+    
+    panel.style.display = 'block';
+    
+    // Retrieve users registry
+    try {
+      const snap = await db.ref('users').get();
+      if (!snap.exists()) {
+        tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;opacity:0.4">[Account snap unavailable]</td></tr>';
+        return;
+      }
+      
+      const users = snap.val();
+      tableBody.innerHTML = '';
+      
+      Object.entries(users).forEach(([uid, val]) => {
+        const row = document.createElement('tr');
+        
+        // Compute current explicitly granted features
+        const tools = val.tools || {};
+        const diagGranted = tools.diagnostics ?? false;
+        const nationsGranted = tools.nations ?? false;
+        const forgeGranted = tools.visionForge ?? false;
+        const defenseGranted = tools.networkDefense ?? false;
+
+        row.innerHTML = `
+          <td>
+            <div style="font-weight:600;color:#fff">${val.email}</div>
+            <div style="font-size:0.7rem;opacity:0.5">${uid}</div>
+          </td>
+          <td>
+            <span class="role-badge role-${val.role}">${val.role}</span>
+          </td>
+          <td>
+            <input type="number" class="admin-num-input exp-input" data-uid="${uid}" value="${val.level ?? 0}" min="0">
+          </td>
+          <td>
+            <input type="number" class="admin-num-input score-input" data-uid="${uid}" value="${val.donations ?? 0}" min="0">
+          </td>
+          <td>
+            <div class="admin-permission-grid">
+              <span class="admin-perm-pill ${diagGranted ? 'granted' : 'revoked'}" data-uid="${uid}" data-feat="diagnostics">Diagnostics</span>
+              <span class="admin-perm-pill ${nationsGranted ? 'granted' : 'revoked'}" data-uid="${uid}" data-feat="nations">Nations</span>
+              <span class="admin-perm-pill ${forgeGranted ? 'granted' : 'revoked'}" data-uid="${uid}" data-feat="visionForge">Forge</span>
+              <span class="admin-perm-pill ${defenseGranted ? 'granted' : 'revoked'}" data-uid="${uid}" data-feat="networkDefense">Defense</span>
+            </div>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+      
+      // Wire up administrative input overrides
+      tableBody.querySelectorAll('.exp-input').forEach(input => {
+        input.addEventListener('change', async () => {
+          const uid = input.dataset.uid;
+          const level = parseInt(input.value, 10) || 0;
+          try {
+            await db.ref(`users/${uid}/level`).set(level);
+            // If tweaking the logged in user, immediately update local progression metrics!
+            const cur = getCurrentUser();
+            if (cur && cur.uid === uid) {
+              localStorage.setItem('playerLevel', level);
+              applyUnlocks();
+            }
+            synth.playSuccess();
+          } catch (e) {
+            synth.playFailure();
+          }
+        });
+      });
+      
+      tableBody.querySelectorAll('.score-input').forEach(input => {
+        input.addEventListener('change', async () => {
+          const uid = input.dataset.uid;
+          const score = parseInt(input.value, 10) || 0;
+          try {
+            await db.ref(`users/${uid}/donations`).set(score);
+            const cur = getCurrentUser();
+            if (cur && cur.uid === uid) {
+              localStorage.setItem('playerScore', score);
+              applyUnlocks();
+            }
+            synth.playSuccess();
+          } catch (e) {
+            synth.playFailure();
+          }
+        });
+      });
+
+      tableBody.querySelectorAll('.admin-perm-pill').forEach(pill => {
+        pill.addEventListener('click', async () => {
+          synth.playClick();
+          const uid = pill.dataset.uid;
+          const feat = pill.dataset.feat;
+          const active = pill.classList.contains('granted');
+          
+          try {
+            // Toggle value
+            await db.ref(`users/${uid}/tools/${feat}`).set(!active);
+            synth.playSuccess();
+            
+            // Re-render
+            await renderAdminPanel();
+            
+            // Sync current active unlocks
+            const cur = getCurrentUser();
+            if (cur && cur.uid === uid) {
+              applyUnlocks();
+            }
+          } catch (e) {
+            synth.playFailure();
+          }
+        });
+      });
+
+    } catch (err) {
+      tableBody.innerHTML = `<tr><td colspan="5" style="color:var(--matrix-red)">[Override sync failed: ${err.message}]</td></tr>`;
+    }
+  }
+
+  /* ── Initializations ── */
   refreshNav();
   applyUnlocks();
+  renderAdminPanel();
+
 </script>
 
 </body>

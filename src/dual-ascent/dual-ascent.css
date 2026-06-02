@@ -1,0 +1,202 @@
+.da-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 500;
+  overflow-y: auto;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+}
+
+.da-header {
+  padding: 40px;
+  text-align: center;
+}
+
+.da-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  opacity: 0.5;
+  text-transform: uppercase;
+}
+
+.da-header h1 {
+  font-size: 2rem;
+  margin-top: 10px;
+  letter-spacing: 0.1em;
+  font-weight: 300;
+}
+
+.da-content {
+  flex: 1;
+  padding: 0 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.da-quest-desc {
+  font-style: italic;
+  font-size: 1.1rem;
+  max-width: 600px;
+  text-align: center;
+  opacity: 0.8;
+  margin-bottom: 40px;
+}
+
+/* Harmonic Styles */
+.sheila-path {
+  background: radial-gradient(circle at center, #0c1a2b, #000);
+}
+
+.da-symbol-zone {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.da-resonant-line {
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent, #4fd1ff, transparent);
+  box-shadow: 0 0 20px #4fd1ff;
+}
+
+.da-harmonic-field {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border: 1px solid rgba(234, 179, 8, 0.4);
+  border-radius: 50%;
+  animation: rotate-harmonic 10s linear infinite;
+}
+
+@keyframes rotate-harmonic {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Fractal/RPG Styles */
+.yi-path {
+  background: radial-gradient(circle at center, #1a0b2e, #000);
+}
+
+.da-rpg-layout {
+  display: flex;
+  gap: 40px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.da-stats-panel {
+  width: 200px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.da-stats-panel ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 15px;
+}
+
+.da-stats-panel li {
+  font-family: monospace;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  color: #a78bfa;
+}
+
+.da-ability-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.da-ability-btn {
+  padding: 15px;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  transition: all 0.2s;
+}
+
+.da-ability-btn:hover {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: #a78bfa;
+}
+
+/* Mirror Layer Styles */
+.mirror-layer {
+  background: #000;
+}
+
+.da-mirror-split {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+.split-side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.side-harmonic h2 { color: #4fd1ff; letter-spacing: 0.2em; }
+.side-fractal h2 { color: #a78bfa; letter-spacing: 0.2em; }
+
+.split-divider {
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent, #fff, transparent);
+  opacity: 0.3;
+}
+
+.da-guardian-overlay {
+  position: absolute;
+  top: 15%;
+  width: 100%;
+  text-align: center;
+}
+
+.guardian-text {
+  font-style: italic;
+  color: #fff;
+  opacity: 0.6;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.da-resonance-controls {
+  position: absolute;
+  bottom: 20%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.da-footer {
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
