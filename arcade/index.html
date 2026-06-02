@@ -4,48 +4,215 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nexus Arcade | Amazing Grace</title>
+  <link rel="icon" type="image/png" href="../assets/logo.png" />
   <style>
-    body {
+    :root {
+      color-scheme: dark;
+    }
+    * {
+      box-sizing: border-box;
       margin: 0;
+      padding: 0;
+    }
+    body {
       min-height: 100vh;
-      background: #020617;
-      color: #ffffff;
-      font-family: 'Orbitron', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      color: #e2e8f0;
+      background: radial-gradient(circle at top, #1e293b 0%, #020617 60%, #020617 100%);
+      padding: 1rem;
     }
-    .redirect-card {
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(0, 242, 255, 0.3);
-      padding: 3rem;
-      border-radius: 16px;
+    .arcade-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    header {
       text-align: center;
-      box-shadow: 0 0 30px rgba(0, 242, 255, 0.1);
+      margin-bottom: 3rem;
     }
-    h1 { margin: 0 0 1rem; color: #00f2ff; }
-    p { color: #94a3b8; font-family: 'Inter', sans-serif; margin-bottom: 2rem; }
-    .btn {
-      background: rgba(188, 19, 254, 0.15);
-      border: 1px solid #bc13fe;
-      color: #ffffff;
-      padding: 1rem 2rem;
-      border-radius: 8px;
+    h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #00f2ff 0%, #bc13fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+    .tagline {
+      color: #94a3b8;
+      font-size: 1.1rem;
+    }
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .nav-links a {
+      color: #cbd5e1;
       text-decoration: none;
-      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+    .nav-links a:hover,
+    .nav-links a:focus-visible {
+      background: rgba(15, 23, 42, 0.6);
+      border-color: rgba(0, 242, 255, 0.3);
+      color: #00f2ff;
+    }
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .game-card {
+      background: rgba(15, 23, 42, 0.55);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .game-card:hover,
+    .game-card:focus-visible {
+      border-color: rgba(0, 242, 255, 0.5);
+      background: rgba(15, 23, 42, 0.8);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 242, 255, 0.15);
+    }
+    .game-card h2 {
+      font-size: 1.3rem;
+      margin-bottom: 0.75rem;
+      color: #00f2ff;
+      font-weight: 700;
+    }
+    .game-card p {
+      color: #94a3b8;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+    .game-category {
+      display: inline-block;
+      font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      transition: all 0.2s;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
     }
-    .btn:hover { background: #bc13fe; box-shadow: 0 0 20px rgba(188, 19, 254, 0.4); }
+    .cat-match3 {
+      background: rgba(168, 85, 247, 0.2);
+      color: #bc13fe;
+      border: 1px solid rgba(188, 19, 254, 0.3);
+    }
+    .cat-strategy {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .cat-story {
+      background: rgba(59, 130, 246, 0.2);
+      color: #3b82f6;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    .cat-system {
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+    footer {
+      text-align: center;
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(148, 163, 184, 0.2);
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+    @media (max-width: 640px) {
+      .games-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="redirect-card">
-    <h1>ARCADE UNIFIED</h1>
-    <p>All subsystems have been merged into the Central Matrix.</p>
-    <a href="../matrix.html" class="btn">Enter the Matrix</a>
+  <div class="arcade-container">
+    <header>
+      <h1>Nexus Arcade</h1>
+      <p class="tagline">Faith-Driven Games & Interactive Stories</p>
+    </header>
+
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="../">Home</a>
+      <a href="../library/">Library</a>
+      <a href="../ministry/">Ministry</a>
+      <a href="../contact/">Contact</a>
+    </nav>
+
+    <section class="games-grid">
+      <a href="./matrix-of-conscience/" class="game-card">
+        <span class="game-category cat-match3">Match-3</span>
+        <h2>Matrix of Conscience</h2>
+        <p>Strategic match-3 puzzle game with drag-and-drop mechanics. Clear the matrix and unlock your path forward.</p>
+      </a>
+
+      <a href="./star-matrix/" class="game-card">
+        <span class="game-category cat-match3">Match-3</span>
+        <h2>Star Matrix</h2>
+        <p>Match celestial gems in this cosmic puzzle challenge. Features special combos and explosive power-ups.</p>
+      </a>
+
+      <a href="./tower-defense/" class="game-card">
+        <span class="game-category cat-strategy">Strategy</span>
+        <h2>Tower Defense</h2>
+        <p>Defend your faith. Build towers, manage resources, and protect what matters most.</p>
+      </a>
+
+      <a href="./trinity/" class="game-card">
+        <span class="game-category cat-match3">Match-3</span>
+        <h2>Trinity</h2>
+        <p>A divine matching experience exploring the concept of three-in-one through gameplay.</p>
+      </a>
+
+      <a href="./seven-stars/" class="game-card">
+        <span class="game-category cat-story">Interactive Story</span>
+        <h2>Seven Stars</h2>
+        <p>Journey through the seven churches of Revelation in this immersive narrative experience.</p>
+      </a>
+
+      <a href="./syndicate-siege/" class="game-card">
+        <span class="game-category cat-strategy">Strategy</span>
+        <h2>Syndicate Siege</h2>
+        <p>Strategic gameplay inspired by spiritual warfare. Plan your moves and overcome challenges.</p>
+      </a>
+
+      <a href="./bible-study/" class="game-card">
+        <span class="game-category cat-system">Study Tool</span>
+        <h2>Bible Study</h2>
+        <p>Interactive scripture exploration and study system. Dive deeper into the Word.</p>
+      </a>
+
+      <a href="./certificates/" class="game-card">
+        <span class="game-category cat-system">Achievements</span>
+        <h2>Certificates</h2>
+        <p>View your earned certificates and track your progress through the Nexus Arcade system.</p>
+      </a>
+    </section>
+
+    <footer>
+      <p>&copy; 2026 Amazing Grace Home Living &mdash; Nexus Arcade</p>
+    </footer>
   </div>
 </body>
 </html>
