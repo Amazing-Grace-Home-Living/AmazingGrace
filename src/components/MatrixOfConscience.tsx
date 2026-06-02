@@ -32,6 +32,9 @@ import TempleHologram from "../temple3d/TempleHologram";
 import CelestialLadderScreen from "../ascension/CelestialLadderScreen";
 import PreOriginField from "../ascension/PreOriginField";
 import UnutterableConstant from "../ascension/UnutterableConstant";
+import SheilaPathScreen from "../dual-ascent/SheilaPathScreen";
+import YiPathScreen from "../dual-ascent/YiPathScreen";
+import MirrorLayerScreen from "../dual-ascent/MirrorLayerScreen";
 // @ts-ignore
 import AeonEngineScreen from "../aeon/AeonEngineScreen";
 // @ts-ignore
@@ -346,6 +349,18 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
         </div>
       </div>
     );
+  }
+
+  if (screen === "sheilaPath") {
+    return <SheilaPathScreen />;
+  }
+
+  if (screen === "yiPath") {
+    return <YiPathScreen />;
+  }
+
+  if (screen === "mirrorLayer") {
+    return <MirrorLayerScreen />;
   }
 
   if (screen === "guardian") {
@@ -668,5 +683,6 @@ function MetricRow({ label, value, color }: { label: string; value: number; colo
     </div>
   );
 }
+
 
 

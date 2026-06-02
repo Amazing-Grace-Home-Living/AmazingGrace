@@ -7,7 +7,6 @@
     <meta name="theme-color" content="#020617">
     <link rel="icon" type="image/png" href="../assets/logo.png">
     <link rel="stylesheet" href="../assets/css/unified-nav.css">
-  <link rel="stylesheet" href="../assets/css/rebellion-skin.css">
     <title>Audio Library | Amazing Grace Home Living</title>
 
     <style>
@@ -125,13 +124,42 @@
             border-color: var(--accent);
         }
 
-        .placeholder {
-            padding: 2rem;
+        .audio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .audio-card {
+            padding: 1.4rem;
             background: rgba(15, 23, 42, 0.92);
             border: 1px solid var(--border);
             border-radius: 1rem;
-            text-align: center;
+        }
+
+        .audio-card h2 {
+            margin: 0 0 0.75rem;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        .audio-card p {
+            margin: 0 0 0.9rem;
             color: var(--muted);
+        }
+
+        .media-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            color: var(--accent);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .media-link:hover {
+            color: #7dd3fc;
         }
 
         .footer {
@@ -174,9 +202,14 @@
         <h1>🎵 Audio Library</h1>
         <p class="subtitle">Audio recordings, sermons, and faith-based teachings from Amazing Grace Home Living.</p>
 
-        <div class="placeholder">
-            <p>Audio content coming soon.</p>
-            <p>Check back later for sermons, teachings, and other audio resources.</p>
+        <p>The audio library now includes a shared podcast link for the current Chapter 3 and Chapter 4 content package review.</p>
+
+        <div class="audio-grid">
+            <article class="audio-card">
+                <h2>Featured Copilot Podcast</h2>
+                <p>Open the shared Microsoft Copilot podcast requested for the package update and library archive.</p>
+                <a class="media-link" href="https://copilot.microsoft.com/shares/podcasts/HSYfLkwP2rGW7gy4SUrYv" target="_blank" rel="noopener noreferrer" aria-label="Listen to the shared podcast, opens in a new tab">Listen to the shared podcast ↗</a>
+            </article>
         </div>
     </main>
 
