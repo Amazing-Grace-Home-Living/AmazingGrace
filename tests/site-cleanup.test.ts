@@ -5,11 +5,14 @@ import viteConfig from '../vite.config';
 describe('site cleanup', () => {
   it('keeps listing assets local and removes Google Drive/gallery dependencies from the homepage', () => {
     const home = fs.readFileSync('index.html', 'utf8');
+    const listingData = fs.readFileSync('src/data/listings.ts', 'utf8');
 
     expect(home).toContain('./assets/logo.png');
-    expect(home).toContain('./assets/images/926-poinsettia/');
-    expect(home).toContain('./assets/images/1142-7th-street/');
-    expect(home).toContain('./assets/images/1144-7th-street/');
+    expect(listingData).toContain('./assets/images/926-poinsettia/');
+    expect(listingData).toContain('./assets/images/1142-7th-street/');
+    expect(listingData).toContain('./assets/images/1144-7th-street/');
+    expect(home).toContain('id="listing-search-root"');
+    expect(home).not.toContain('class="property-grid" style="display:none"');
     expect(home).not.toContain('drive.google.com');
     expect(home).not.toContain('/galleries/');
   });

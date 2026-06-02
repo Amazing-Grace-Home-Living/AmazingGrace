@@ -18,8 +18,11 @@ export const listings: Listing[] = [
     state: 'FL',
     price: 850,
     image: './assets/images/926-poinsettia/1000002510.jpg',
-    description: 'Comfortable all-inclusive housing in central Tampa.',
-    amenities: ['Utilities included', 'High-speed Wi-Fi'],
+    description: 'Comfortable all-inclusive housing in central Tampa designed to provide a stable and supportive living environment.',
+    amenities: [
+      'Washer & dryer access, high-speed Wi-Fi, utilities included, and parking available',
+      'Shared kitchen and common areas in a clean, maintained home'
+    ],
     gallery: []
   },
   {
@@ -29,8 +32,11 @@ export const listings: Listing[] = [
     state: 'FL',
     price: 1000,
     image: './assets/images/1142-7th-street/889bbd8f-3c61-431a-9da7-d21e0738ec8c.jpg',
-    description: 'Quiet housing in Largo.',
-    amenities: ['Utilities included', 'Shared kitchen'],
+    description: 'Quiet and comfortable housing in Largo offering a stable home base near the Gulf Coast.',
+    amenities: [
+      'Utilities included, washer & dryer access, high-speed Wi-Fi, and parking available',
+      'Shared kitchen access in a structured and respectful home setting'
+    ],
     gallery: [
       './assets/images/1142-7th-street/db43caca-6cf5-44db-9977-ea590b416bca.jpg',
       './assets/images/1142-7th-street/9b5c9a4e-78cf-4b3d-bc58-2e63de8971a7.jpg',
@@ -53,8 +59,11 @@ export const listings: Listing[] = [
     state: 'FL',
     price: 850,
     image: './assets/images/1144-7th-street/1144-7th-street-largo.jpg',
-    description: 'Spacious shared housing in Largo.',
-    amenities: ['Full kitchen access', 'Community living'],
+    description: 'Spacious shared housing adjacent to the primary Largo property with access to the same supportive and all-inclusive amenities.',
+    amenities: [
+      'Full kitchen access, washer & dryer, high-speed Wi-Fi, utilities included, and parking available',
+      'Spacious shared layout with stable and supportive community living'
+    ],
     gallery: [
       './assets/images/1144-7th-street/image.jpg',
       './assets/images/1144-7th-street/image_67125505.JPG',

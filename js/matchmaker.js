@@ -35,6 +35,14 @@ function gemType(gem) {
   return typeof gem === 'string' ? gem : gem.kind;
 }
 
+function cellKey(row, col) {
+  return row * GRID_SIZE + col;
+}
+
+function cellFromKey(key) {
+  return { row: Math.floor(key / GRID_SIZE), col: key % GRID_SIZE };
+}
+
 function makeGem(kind, special = null) {
   return special ? { kind, special, createdBy: null } : kind;
 }
@@ -125,7 +133,7 @@ export function findMatches(grid) {
       if (!curr || !prev || gemType(curr) !== gemType(prev)) {
         const len = c - runStart;
         if (len >= 3) {
-          for (let k = runStart; k < c; k++) matched.add(r * 100 + k);
+          for (let k = runStart; k < c; k++) matched.add(cellKey(r, k));
         }
         runStart = c;
       }
@@ -141,18 +149,14 @@ export function findMatches(grid) {
       if (!curr || !prev || gemType(curr) !== gemType(prev)) {
         const len = r - runStart;
         if (len >= 3) {
-          for (let k = runStart; k < r; k++) matched.add(k * 100 + c);
+          for (let k = runStart; k < r; k++) matched.add(cellKey(k, c));
         }
         runStart = r;
       }
     }
   }
 
-  const basicMatches = Array.from(matched).map((val) => {
-    const row = Math.floor(val / 100);
-    const col = val % 100;
-    return { row, col };
-  });
+  const basicMatches = Array.from(matched, cellFromKey);
 
   return classifyShapes(basicMatches);
 }
@@ -160,13 +164,13 @@ export function findMatches(grid) {
 function classifyShapes(basicMatches) {
   const byCell = new Map();
   for (const m of basicMatches) {
-    byCell.set(m.row * 100 + m.col, { ...m, neighbors: [] });
+    byCell.set(cellKey(m.row, m.col), { ...m, neighbors: [] });
   }
 
   // Build 4-directional adjacency within matched cells
   for (const cell of byCell.values()) {
     for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-      const key = (cell.row + dr) * 100 + (cell.col + dc);
+      const key = cellKey(cell.row + dr, cell.col + dc);
       if (byCell.has(key)) cell.neighbors.push(byCell.get(key));
     }
   }
@@ -175,7 +179,7 @@ function classifyShapes(basicMatches) {
   const visited = new Set();
 
   for (const cell of byCell.values()) {
-    const key = cell.row * 100 + cell.col;
+    const key = cellKey(cell.row, cell.col);
     if (visited.has(key)) continue;
 
     // BFS connected component
@@ -187,7 +191,7 @@ function classifyShapes(basicMatches) {
       const cur = queue[queueIndex++];
       comp.push(cur);
       for (const n of cur.neighbors) {
-        const nk = n.row * 100 + n.col;
+        const nk = cellKey(n.row, n.col);
         if (!visited.has(nk)) {
           visited.add(nk);
           queue.push(n);
@@ -219,7 +223,7 @@ export function findMatchesGrouped(grid) {
       if (!curr || !prev || gemType(curr) !== gemType(prev)) {
         const len = c - runStart;
         if (len >= 3) {
-          for (let k = runStart; k < c; k++) matched.add(r * 100 + k);
+          for (let k = runStart; k < c; k++) matched.add(cellKey(r, k));
         }
         runStart = c;
       }
@@ -234,7 +238,7 @@ export function findMatchesGrouped(grid) {
       if (!curr || !prev || gemType(curr) !== gemType(prev)) {
         const len = r - runStart;
         if (len >= 3) {
-          for (let k = runStart; k < r; k++) matched.add(k * 100 + c);
+          for (let k = runStart; k < r; k++) matched.add(cellKey(k, c));
         }
         runStart = r;
       }
@@ -254,11 +258,10 @@ export function findMatchesGrouped(grid) {
     visited.add(key);
     while (queueIndex < queue.length) {
       const cur = queue[queueIndex++];
-      const r = Math.floor(cur / 100);
-      const c = cur % 100;
+      const { row: r, col: c } = cellFromKey(cur);
       group.push({ r, c });
       for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-        const nk = (r + dr) * 100 + (c + dc);
+        const nk = cellKey(r + dr, c + dc);
         if (byCell.has(nk) && !visited.has(nk)) {
           visited.add(nk);
           queue.push(nk);
@@ -292,15 +295,15 @@ function classifyComponent(comp) {
 
   // T / L shape (5+ cells spanning 2+ rows and cols) → bomb at intersection
   if (comp.length >= 5 && height >= 2 && width >= 2) {
-    const compSet = new Set(comp.map((c) => c.row * 100 + c.col));
+    const compSet = new Set(comp.map((c) => cellKey(c.row, c.col)));
     const degrees = new Map(comp.map((cell) => [
-      cell.row * 100 + cell.col,
+      cellKey(cell.row, cell.col),
       [[0, 1], [0, -1], [1, 0], [-1, 0]].reduce(
-        (n, [dr, dc]) => n + (compSet.has((cell.row + dr) * 100 + (cell.col + dc)) ? 1 : 0), 0
+        (n, [dr, dc]) => n + (compSet.has(cellKey(cell.row + dr, cell.col + dc)) ? 1 : 0), 0
       ),
     ]));
     const intersection = comp.reduce((best, cell) =>
-      degrees.get(cell.row * 100 + cell.col) > degrees.get(best.row * 100 + best.col) ? cell : best
+      degrees.get(cellKey(cell.row, cell.col)) > degrees.get(cellKey(best.row, best.col)) ? cell : best
     , comp[0]);
     specials.push({ row: intersection.row, col: intersection.col, specialType: 'bomb' });
     return { specials };
@@ -336,7 +339,7 @@ function classifyComponent(comp) {
 export function applyMatches(grid, matchResult, comboLevel = 1) {
   const { matches, specials } = matchResult;
   const next = grid.map((row) => [...row]);
-  const toClear = new Set(matches.map((m) => m.row * 100 + m.col));
+  const toClear = new Set(matches.map((m) => cellKey(m.row, m.col)));
 
   // Capture pre-existing specials before clearing anything
   const preExistingSpecials = matches
@@ -350,7 +353,7 @@ export function applyMatches(grid, matchResult, comboLevel = 1) {
 
   // Place newly-created special gems (remove from clear list so they persist)
   for (const s of specials) {
-    const key = s.row * 100 + s.col;
+    const key = cellKey(s.row, s.col);
     if (toClear.has(key)) {
       toClear.delete(key);
       const cell = next[s.row][s.col];
@@ -365,8 +368,7 @@ export function applyMatches(grid, matchResult, comboLevel = 1) {
 
   // Clear remaining matched cells
   for (const key of toClear) {
-    const r = Math.floor(key / 100);
-    const c = key % 100;
+    const { row: r, col: c } = cellFromKey(key);
     next[r][c] = null;
   }
 
@@ -432,9 +434,12 @@ export function applyGravity(grid) {
     for (let r = GRID_SIZE - 1; r >= 0; r--) {
       if (next[r][c] !== null) gems.push(next[r][c]);
     }
-    let gemIndex = 0;
+    const compactedLength = gems.length;
     for (let r = GRID_SIZE - 1; r >= 0; r--) {
-      next[r][c] = gemIndex < gems.length ? gems[gemIndex++] : makeGem(randomGemType());
+      const compactedIndex = GRID_SIZE - 1 - r;
+      next[r][c] = compactedIndex < compactedLength
+        ? gems[compactedIndex]
+        : makeGem(randomGemType());
     }
   }
   return next;
