@@ -2,11 +2,29 @@ const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbys9acGtvMq-GgGUl
 
 // --- State Management ---
 const META_KEY = 'aghl_td_meta';
-let metaState = JSON.parse(localStorage.getItem(META_KEY)) || {
+const defaultState = {
     fragments: 0,
     upgrades: { integrity: 0, economy: 0, damage: 0 },
     playerName: ''
 };
+
+let metaState = defaultState;
+try {
+    const raw = localStorage.getItem(META_KEY);
+    if (raw) {
+        const parsed = JSON.parse(raw);
+        metaState = {
+            ...defaultState,
+            ...parsed,
+            upgrades: {
+                ...defaultState.upgrades,
+                ...(parsed && parsed.upgrades ? parsed.upgrades : {})
+            }
+        };
+    }
+} catch (e) {
+    console.warn("Failed to load local game metadata, using defaults:", e);
+}
 
 function saveMeta() {
     localStorage.setItem(META_KEY, JSON.stringify(metaState));
@@ -59,27 +77,31 @@ async function loadLeaderboard() {
         const response = await fetch(SHEET_API_URL);
         if (response.ok) {
             const scores = await response.json();
-            globalLeaderboard = scores;
+            if (Array.isArray(scores)) {
+                globalLeaderboard = scores;
 
-            // Check our rank
-            globalRank = null;
-            if (metaState.playerName) {
-                const myIndex = scores.findIndex(s => s.name.toUpperCase() === metaState.playerName.toUpperCase());
-                if (myIndex === 0) globalRank = 1;
-                else if (myIndex === 1) globalRank = 2;
-            }
+                // Check our rank
+                globalRank = null;
+                if (metaState.playerName) {
+                    const myIndex = scores.findIndex(s => s && s.name && s.name.toUpperCase() === metaState.playerName.toUpperCase());
+                    if (myIndex === 0) globalRank = 1;
+                    else if (myIndex === 1) globalRank = 2;
+                }
 
-            // Apply Discount Logic
-            if (globalRank === 1) discountMultiplier = 0.25; // 75% off
-            else if (globalRank === 2) discountMultiplier = 0.5; // 50% off
-            else discountMultiplier = 1;
+                // Apply Discount Logic
+                if (globalRank === 1) discountMultiplier = 0.25; // 75% off
+                else if (globalRank === 2) discountMultiplier = 0.5; // 50% off
+                else discountMultiplier = 1;
 
-            if (scores.length > 0) {
-                list.innerHTML = scores.slice(0, 10).map((s, i) => 
-                    `<div class="lb-entry"><span>#${i+1} ${s.name}</span> <span>Wave: ${s.wave} | Score: ${s.score}</span></div>`
-                ).join('');
+                if (scores.length > 0) {
+                    list.innerHTML = scores.slice(0, 10).map((s, i) => 
+                        `<div class="lb-entry"><span>#${i+1} ${s.name || 'UNKNOWN'}</span> <span>Wave: ${s.wave || 0} | Score: ${s.score || 0}</span></div>`
+                    ).join('');
+                } else {
+                    list.innerHTML = 'No records found.';
+                }
             } else {
-                list.innerHTML = 'No records found.';
+                throw new Error('API did not return a valid array of scores.');
             }
         } else {
             throw new Error('Network response was not ok.');
