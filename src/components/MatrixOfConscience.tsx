@@ -1732,13 +1732,7 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
                       color: "#10b981",
                       tag: "WAVE STRATEGY"
                     },
-                    {
-                      name: "Syndicate Siege",
-                      desc: "Defend tactical network lanes from unauthorized compromise waves.",
-                      path: "/arcade/syndicate-siege/index.html",
-                      color: "#ef4444",
-                      tag: "SIEGE COMBAT"
-                    },
+
                     {
                       name: "Holy Bible Study",
                       desc: "Scriptural learning modules and study session validation.",
@@ -1767,13 +1761,7 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
                       color: "#06b6d4",
                       tag: "COMMAND CENTER"
                     },
-                    {
-                      name: "Sovereign Certificates",
-                      desc: "Compile, register, and print your unlocked spiritual milestones.",
-                      path: "/arcade/certificates/index.html",
-                      color: "#64748b",
-                      tag: "ACHIEVEMENTS"
-                    }
+
                   ].map(game => (
                     <div key={game.name} style={{
                       background: 'rgba(2, 6, 23, 0.45)',
