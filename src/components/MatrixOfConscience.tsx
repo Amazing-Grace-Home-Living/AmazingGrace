@@ -1,5 +1,49 @@
 import { useEffect, useMemo, useState, createContext, useContext, useRef, useCallback } from "react";
 import "./matrix-of-conscience.css";
+// @ts-ignore
+import { useTowerDefenseHUD } from "../modules/tower-defense/useTowerDefenseHUD";
+// @ts-ignore
+import { useSevenStarsHUD } from "../modules/seven-stars/useSevenStarsHUD";
+// @ts-ignore
+import { useBibleStudyHUD } from "../modules/bible-study/useBibleStudyHUD";
+// @ts-ignore
+import SpiritualFormationPanel from "../spiritual/SpiritualFormationPanel";
+// @ts-ignore
+import InnerCourtScreen from "../inner-court/InnerCourtScreen";
+// @ts-ignore
+import { useNexusRouter } from "../router/useNexusRouter";
+// @ts-ignore
+import ThroneRoomScreen from "../throne/ThroneRoomScreen";
+// @ts-ignore
+import { useHUD } from "../hud/HUDContext";
+// @ts-ignore
+import TempleNavigationScreen from "../temple/TempleNavigationScreen";
+// @ts-ignore
+import HolyEncounterScreen from "../holy/HolyEncounterScreen";
+// @ts-ignore
+import VisionCodexScreen from "../oracle-chamber/VisionCodexScreen";
+// @ts-ignore
+import BookOfLifeScreen from "../book/BookOfLifeScreen";
+// @ts-ignore
+import GuardianScreen from "../temple-guardians/GuardianScreen";
+// @ts-ignore
+import TempleHologram from "../temple3d/TempleHologram";
+// @ts-ignore
+import CelestialLadderScreen from "../ascension/CelestialLadderScreen";
+import PreOriginField from "../ascension/PreOriginField";
+import UnutterableConstant from "../ascension/UnutterableConstant";
+import SheilaPathScreen from "../dual-ascent/SheilaPathScreen";
+import YiPathScreen from "../dual-ascent/YiPathScreen";
+import MirrorLayerScreen from "../dual-ascent/MirrorLayerScreen";
+// @ts-ignore
+import AeonEngineScreen from "../aeon/AeonEngineScreen";
+// @ts-ignore
+import EmpyreanSphereScreen from "../book/EmpyreanSphereScreen";
+// @ts-ignore
+import OriginPointScreen from "../book/OriginPointScreen";
+
+
+
 
 const TELEMETRY_ENDPOINT = "https://script.google.com/macros/s/AKfycbyq6jzCVGtoOTcid-LzD_njmuuOOSwJrhktU3ya1GKXLZI9jp6yCMJzlrdvyNb1fpkb/exec";
 
@@ -98,6 +142,13 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
   const [selectedStar, setSelectedStar] = useState<{ r: number; c: number } | null>(null);
   const currentUserId = activeUser;
 
+  // HUD hook integrations
+  const { showOverlay: startTowerDefense } = useTowerDefenseHUD();
+  const { openSevenStars } = useSevenStarsHUD();
+  const { openBibleStudy } = useBibleStudyHUD();
+  const { screen, go } = useNexusRouter();
+  const { hud } = useHUD();
+
   // Seven Stars local storage state and selection
   const [completedStars, setCompletedStars] = useState<string[]>(() => {
     try {
@@ -190,6 +241,139 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
     setTerminalLog("[Lattice Reset] All congregation coordinates released.");
   };
 
+  if (screen === "innerCourt") {
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <InnerCourtScreen />
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "throne") {
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <ThroneRoomScreen />
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "temple") {
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <TempleNavigationScreen />
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "holyOfHolies") {
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <HolyEncounterScreen />
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "oracleChamber") {
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <VisionCodexScreen />
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "bookOfLife") {
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <BookOfLifeScreen />
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "temple3d") {
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <TempleHologram />
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "ascension") {
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <CelestialLadderScreen />
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "aeon") {
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <AeonEngineScreen />
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "empyrean") {
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <EmpyreanSphereScreen />
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "origin") {
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <OriginPointScreen />
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "sheilaPath") {
+    return <SheilaPathScreen />;
+  }
+
+  if (screen === "yiPath") {
+    return <YiPathScreen />;
+  }
+
+  if (screen === "mirrorLayer") {
+    return <MirrorLayerScreen />;
+  }
+
+  if (screen === "guardian") {
+    const target = hud?.route?.target || "temple";
+    return (
+      <div className="mc-matrix-root">
+        <div className="mc-container" style={{ padding: 0 }}>
+          <GuardianScreen onPass={() => go(target)} onFail={() => go("temple")} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mc-matrix-root">
       <div className="mc-container">
@@ -202,6 +386,12 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
             </button>
             <button className={`mc-nav-btn ${activeTab === "sevenstars" ? "active" : ""}`} onClick={() => setActiveTab("sevenstars")}>
               Seven Stars Status
+            </button>
+            <button className={`mc-nav-btn ${activeTab === "formation" ? "active" : ""}`} onClick={() => setActiveTab("formation")}>
+              Spiritual Formation
+            </button>
+            <button className={`mc-nav-btn ${activeTab === "innercourt" ? "active" : ""}`} onClick={() => setActiveTab("innercourt")}>
+              Inner Court
             </button>
           </div>
         </header>
@@ -218,9 +408,97 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
             <div className="mc-console-log">
               <div className="mc-log-terminal">{terminalLog}</div>
             </div>
+            
+            <div style={{ marginTop: "1rem", display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div style={{ fontSize: "0.7rem", color: "#64748b", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.05em" }}>HUD Subsystems</div>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button 
+                  onClick={openSevenStars} 
+                  style={{
+                    flex: 1,
+                    padding: "0.5rem",
+                    fontSize: "0.75rem",
+                    background: "rgba(139, 92, 246, 0.1)",
+                    border: "1px solid rgba(139, 92, 246, 0.3)",
+                    color: "#a78bfa",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontWeight: "bold"
+                  }}
+                >
+                  🌠 Sync Seven Stars HUD
+                </button>
+                <button 
+                  onClick={openBibleStudy} 
+                  style={{
+                    flex: 1,
+                    padding: "0.5rem",
+                    fontSize: "0.75rem",
+                    background: "rgba(234, 179, 8, 0.1)",
+                    border: "1px solid rgba(234, 179, 8, 0.3)",
+                    color: "#facc15",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontWeight: "bold"
+                  }}
+                >
+                  📖 Engage Bible Study
+                </button>
+              </div>
+              <button 
+                onClick={() => startTowerDefense({ wave: 1, coresRemaining: 5, lives: 20, credits: 100 })} 
+                style={{
+                  width: "100%",
+                  padding: "0.5rem",
+                  fontSize: "0.75rem",
+                  background: "rgba(6, 182, 212, 0.1)",
+                  border: "1px solid rgba(6, 182, 212, 0.3)",
+                  color: "#22d3ee",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  marginBottom: "0.5rem"
+                }}
+              >
+                🛡️ Launch Tower Defense
+              </button>
+              <button 
+                onClick={() => go("innerCourt")} 
+                style={{
+                  width: "100%",
+                  padding: "0.5rem",
+                  fontSize: "0.75rem",
+                  background: "rgba(167, 139, 250, 0.1)",
+                  border: "1px solid rgba(167, 139, 250, 0.3)",
+                  color: "#a78bfa",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  marginBottom: "0.5rem"
+                }}
+              >
+                🚪 Enter Inner Court Cockpit
+              </button>
+              <button 
+                onClick={() => go("temple")} 
+                style={{
+                  width: "100%",
+                  padding: "0.5rem",
+                  fontSize: "0.75rem",
+                  background: "rgba(234, 179, 8, 0.1)",
+                  border: "1px solid rgba(234, 179, 8, 0.3)",
+                  color: "var(--neon-gold)",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontWeight: "bold"
+                }}
+              >
+                🕌 Open Temple Map Overworld
+              </button>
+            </div>
           </section>
 
-          {activeTab === "calibration" ? (
+          {activeTab === "calibration" && (
             <section className="mc-card mc-control-panel">
               <h2>M45 Constellation Shifter</h2>
               <p className="mc-panel-desc">Align neighbor nodes linearly to resolve localized database entropy metrics.</p>
@@ -243,7 +521,9 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
                 ))}
               </div>
             </section>
-          ) : (
+          )}
+
+          {activeTab === "sevenstars" && (
             <section className="mc-card mc-control-panel">
               <h2>Seven Stars Alignment</h2>
               {selectedChurchIndex === null ? (
@@ -371,6 +651,18 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
               )}
             </section>
           )}
+
+          {activeTab === "formation" && (
+            <section className="mc-card mc-control-panel">
+              <SpiritualFormationPanel />
+            </section>
+          )}
+
+          {activeTab === "innercourt" && (
+            <section className="mc-card mc-control-panel">
+              <InnerCourtScreen />
+            </section>
+          )}
         </div>
       </div>
     </div>
@@ -391,3 +683,6 @@ function MetricRow({ label, value, color }: { label: string; value: number; colo
     </div>
   );
 }
+
+
+

@@ -68,7 +68,7 @@ function LensBootSequence({ onComplete }) {
    Hex Grid Renderer
 ------------------------------*/
 
-function HexGrid({ segments, onSelect }) {
+const HexGrid = React.memo(function HexGrid({ segments, onSelect }) {
   return (
     <div className="lens-grid">
       {segments.map((seg, idx) => {

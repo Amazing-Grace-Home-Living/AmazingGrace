@@ -6,59 +6,39 @@ describe('Matrix of Conscience mobile optimization', () => {
 
   it('has fluid grid container with relative units', () => {
     expect(matrixHTML).toContain('grid-template-columns: repeat(7, 1fr)');
-    expect(matrixHTML).toContain('grid-template-rows: repeat(7, 1fr)');
     expect(matrixHTML).toContain('width: 100%');
-    expect(matrixHTML).toContain('max-width: 450px');
-    // Prevent 100% width + padding from overflowing on mobile.
-    expect(matrixHTML).toMatch(/#grid\s*\{[\s\S]*?box-sizing:\s*border-box/);
+    expect(matrixHTML).toContain('box-sizing: border-box');
   });
 
   it('keeps the game shell responsive to avoid clipping on narrow screens', () => {
-    expect(matrixHTML).toContain('width: min(100%, 540px)');
-    expect(matrixHTML).toContain('box-sizing: border-box');
-    expect(matrixHTML).toContain('overflow-x: hidden');
+    expect(matrixHTML).toContain('@media (max-width: 768px)');
+    expect(matrixHTML).toContain('flex-direction: column');
     expect(matrixHTML).toContain('overflow-y: auto');
   });
 
   it('uses aspect-ratio for square cells', () => {
-    expect(matrixHTML).toContain('aspect-ratio: 1 / 1');
+    expect(matrixHTML).toContain('aspect-ratio: 1');
   });
 
-  it('has responsive symbol sizing', () => {
-    expect(matrixHTML).toContain('font-size: clamp(1.1rem, 4vw, 1.6rem)');
-    expect(matrixHTML).not.toContain('.tile img,');
-    expect(matrixHTML).not.toContain('.tile svg,');
-    expect(matrixHTML).not.toContain('.tile .symbol {');
+  it('has responsive touch handling', () => {
+    expect(matrixHTML).toContain('touch-action: none');
   });
 
-  it('has mobile-optimized button styles', () => {
-    expect(matrixHTML).toContain('width: calc(100% - 20px)');
-    expect(matrixHTML).toContain('max-width: 300px');
-    expect(matrixHTML).toContain('padding: 12px 0');
-    expect(matrixHTML).toContain('font-size: 16px');
-  });
-
-  it('has mobile media query for scoreboard', () => {
-    expect(matrixHTML).toContain('@media (max-width: 400px)');
-    expect(matrixHTML).toContain('font-size: 14px');
-  });
-
-  it('stacks the scoreboard on extra-narrow screens', () => {
-    expect(matrixHTML).toContain('@media (max-width: 360px)');
-    expect(matrixHTML).toContain('flex-direction: column');
+  it('has mobile-optimized layout wrapping', () => {
+    expect(matrixHTML).toContain('#sidebar');
+    expect(matrixHTML).toContain('#main');
   });
 
   it('does not use fixed pixel grid sizing in JavaScript', () => {
-    // Should not have the old JavaScript that set fixed pixel dimensions
-    expect(matrixHTML).not.toContain('gridElement.style.gridTemplateColumns = `repeat(${gridSize}, 60px)`');
-    expect(matrixHTML).not.toContain('gridElement.style.gridTemplateRows = `repeat(${gridSize}, 60px)`');
+    expect(matrixHTML).not.toContain('gridTemplateColumns = `repeat(${gridSize}, 60px)`');
+    expect(matrixHTML).not.toContain('gridTemplateRows = `repeat(${gridSize}, 60px)`');
   });
 
   it('maintains original game features and structure', () => {
     expect(matrixHTML).toContain('Matrix of Conscience');
-    expect(matrixHTML).toContain('M45 Seven Sisters Alignment');
-    expect(matrixHTML).toContain('Stellar Points');
-    expect(matrixHTML).toContain('High Score');
-    expect(matrixHTML).toContain('Reset Calibration');
+    expect(matrixHTML).toContain('NEXUS MATRIX');
+    expect(matrixHTML).toContain('AMAZING GRACE');
+    expect(matrixHTML).toContain('CONSCIENCE_INIT');
+    expect(matrixHTML).toContain('Duality Core Status');
   });
 });

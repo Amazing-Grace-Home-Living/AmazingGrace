@@ -1,0 +1,19 @@
+manifest:
+  id: "seven_stars"
+  name: "Seven Stars"
+  version: "1.0.0"
+  description: "Mystery of the Seven Stars databank."
+  entrypoint: "seven-stars.sys"
+
+  capabilities:
+    hud_overlay: true
+    xp_rewards: true
+    virtue_rewards: true
+    pwr_rewards: true
+
+  sandbox: true
+
+runtime:
+  state: "idle"        # idle | active | paused | error
+  last_run: null
+  error_log: []

@@ -91,13 +91,14 @@ function checkMutationUpgrade() {
 
   if (baseCount >= 4 && !mutations.includes('cataclysmic')) {
     state.bossMutations.push('cataclysmic');
-    unlockLore && unlockLore('lf_archon_ascendant');
+    if (typeof window.unlockLore === 'function') window.unlockLore('lf_archon_ascendant');
   } else if (baseCount >= 3 && !mutations.includes('prime') && !mutations.includes('cataclysmic')) {
     state.bossMutations.push('prime');
-    unlockLore && unlockLore('lf_overseer_evolution_protocol');
+    if (typeof window.unlockLore === 'function') window.unlockLore('lf_overseer_evolution_protocol');
   } else if (baseCount >= 2 && !mutations.includes('hybrid') && !mutations.includes('prime') && !mutations.includes('cataclysmic')) {
     state.bossMutations.push('hybrid');
-    unlockLore && unlockLore('lf_core_fracture_analysis');
+    if (typeof window.unlockLore === 'function') window.unlockLore('lf_core_fracture_analysis');
+  }
   }
 }
 

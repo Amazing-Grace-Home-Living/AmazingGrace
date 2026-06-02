@@ -222,3 +222,1272 @@
   border: 1px solid var(--hud-danger);
   background: rgba(255, 79, 107, 0.15);
 }
+
+/* Seven Stars External Overlay Styles */
+.ext-seven-stars {
+  bottom: var(--hud-space-3);
+  right: var(--hud-space-3);
+  background: var(--hud-bg-overlay);
+  padding: var(--hud-space-3);
+  border-radius: var(--hud-radius-md);
+  border: var(--hud-border-width) solid var(--hud-accent-soft);
+  max-width: 260px;
+  font-size: var(--hud-font-size-xs);
+}
+
+.ext-seven-stars .ss-header {
+  font-size: var(--hud-font-size-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hud-accent);
+  margin-bottom: var(--hud-space-2);
+}
+
+.ext-seven-stars .ss-name {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.ext-seven-stars .ss-virtue,
+.ext-seven-stars .ss-verse {
+  color: var(--hud-text-muted);
+  margin-bottom: 2px;
+}
+
+.ext-seven-stars .ss-summary {
+  margin-top: var(--hud-space-2);
+}
+
+/* Bible Study Subsystem Styles */
+.ext-bible-study {
+  top: var(--hud-space-3);
+  right: var(--hud-space-3);
+  background: var(--hud-bg-overlay);
+  padding: var(--hud-space-3);
+  border-radius: var(--hud-radius-md);
+  border: var(--hud-border-width) solid var(--hud-accent-soft);
+  max-width: 280px;
+  font-size: var(--hud-font-size-xs);
+}
+
+.ext-bible-study .bs-header {
+  font-size: var(--hud-font-size-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hud-accent);
+  margin-bottom: var(--hud-space-2);
+}
+
+.ext-bible-study .bs-ref {
+  font-weight: bold;
+  color: var(--hud-accent);
+  margin-bottom: var(--hud-space-2);
+}
+
+.ext-bible-study .bs-text {
+  margin-bottom: var(--hud-space-3);
+  line-height: 1.4;
+}
+
+/* Seven Stars Constellation Map Styles */
+.ss-constellation {
+  position: relative;
+  width: 100%;
+  height: 120px;
+  background: radial-gradient(circle at top, #101426 0, #05060a 70%);
+  border-radius: var(--hud-radius-md);
+  border: var(--hud-border-width) solid var(--hud-border);
+  overflow: hidden;
+}
+
+.ss-star {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--hud-accent);
+  box-shadow: 0 0 6px rgba(79, 209, 255, 0.8);
+  animation: ss-twinkle 2.4s ease-in-out infinite alternate;
+}
+
+.ss-star-1 { left: 10%; top: 70%; }
+.ss-star-2 { left: 25%; top: 55%; }
+.ss-star-3 { left: 40%; top: 40%; }
+.ss-star-4 { left: 55%; top: 30%; }
+.ss-star-5 { left: 70%; top: 35%; }
+.ss-star-6 { left: 80%; top: 50%; }
+.ss-star-7 { left: 90%; top: 65%; }
+
+.ss-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ss-line {
+  fill: none;
+  stroke: rgba(79, 209, 255, 0.4);
+  stroke-width: 0.6;
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: ss-draw 2.8s ease-out forwards;
+}
+
+@keyframes ss-twinkle {
+  from { opacity: 0.4; transform: scale(0.9); }
+  to   { opacity: 1;   transform: scale(1.2); }
+}
+
+@keyframes ss-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Inner Court Core Layout Styles */
+.inner-court {
+  padding: var(--hud-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--hud-space-3);
+  background: rgba(5, 5, 5, 0.4);
+  border-radius: var(--hud-radius-lg);
+}
+
+.inner-court-header h1 {
+  margin: 0;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: var(--hud-font-size-lg);
+  color: var(--hud-accent);
+}
+
+.inner-court-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--hud-space-3);
+}
+
+.inner-court-footer {
+  display: flex;
+  gap: var(--hud-space-2);
+  margin-top: var(--hud-space-2);
+}
+
+/* Scroll of Destiny Panel Styles */
+.scroll-panel .sd-name {
+  font-size: var(--hud-font-size-md);
+  font-weight: 600;
+}
+
+.scroll-panel .sd-title {
+  color: var(--hud-text-muted);
+  margin-bottom: 2px;
+}
+
+.sd-section {
+  margin-top: var(--hud-space-2);
+}
+
+.sd-virtues {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: var(--hud-font-size-xs);
+}
+
+.sd-virtue-key {
+  text-transform: capitalize;
+}
+
+.sd-virtue-val {
+  float: right;
+}
+
+.sd-tags {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.sd-tags li {
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--hud-border);
+  font-size: var(--hud-font-size-xs);
+}
+
+/* Voice of the Oracle Panel Styles */
+.oracle-panel p {
+  font-size: var(--hud-font-size-sm);
+  color: var(--hud-text-muted);
+}
+
+/* Conscience Calibration Overlay Styles */
+.ext-conscience {
+  top: var(--hud-space-3);
+  right: var(--hud-space-3);
+  background: var(--hud-bg-overlay);
+  padding: var(--hud-space-3);
+  border-radius: var(--hud-radius-md);
+  border: var(--hud-border-width) solid var(--hud-accent-soft);
+  max-width: 280px;
+  font-size: var(--hud-font-size-xs);
+  box-shadow: 0 0 15px rgba(250, 204, 21, 0.2);
+}
+
+/* Seven Lamps Overlay Styles */
+.ext-seven_lamps {
+  bottom: var(--hud-space-3);
+  left: var(--hud-space-3);
+  background: var(--hud-bg-overlay);
+  padding: var(--hud-space-3);
+  border-radius: var(--hud-radius-md);
+  border: var(--hud-border-width) solid var(--hud-accent-soft);
+  max-width: 280px;
+  font-size: var(--hud-font-size-xs);
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+}
+
+/* Throne Room Support Styles */
+.throne-room {
+  transition: all 0.3s ease;
+}
+.throne-stats div {
+  transition: transform 0.2s ease;
+}
+.throne-stats div:hover {
+  transform: translateY(-2px);
+}
+
+/* Throne Judgment Cinematic Styles */
+.throne-cinematic {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.12), #000000);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  animation: throne-fade 1.5s ease-out forwards;
+  z-index: 10000;
+}
+
+.throne-light {
+  width: 80%;
+  height: 40%;
+  background: radial-gradient(circle, rgba(234, 179, 8, 0.4), transparent);
+  filter: blur(40px);
+  animation: throne-pulse 3s infinite alternate;
+}
+
+.throne-voice {
+  font-size: 1.2rem;
+  color: var(--hud-accent);
+  margin-top: 20px;
+  text-align: center;
+  max-width: 600px;
+}
+
+@keyframes throne-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes throne-pulse {
+  from { opacity: 0.4; }
+  to { opacity: 1; }
+}
+
+/* Temple Veil Cinematic Styles */
+.veil-cinematic {
+  position: absolute;
+  inset: 0;
+  background: #050505;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  animation: veil-fade 2s ease-out forwards;
+  z-index: 11000;
+}
+
+.veil-tear {
+  width: 2px;
+  height: 80%;
+  background: var(--hud-accent);
+  animation: veil-tear 1.5s ease-out forwards;
+}
+
+@keyframes veil-tear {
+  from { height: 0; }
+  to { height: 80%; }
+}
+
+.veil-text {
+  margin-top: 20px;
+  color: var(--hud-accent);
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+@keyframes veil-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Temple Navigation overworld styles */
+.temple-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.temple-node {
+  background: rgba(11, 15, 26, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--hud-radius-md);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.temple-node.unlocked:hover {
+  border-color: var(--hud-accent);
+  box-shadow: 0 0 15px rgba(234, 179, 8, 0.2);
+  transform: translateY(-4px);
+}
+
+.temple-node.unlocked:hover .temple-node-glow-effect {
+  opacity: 0.15;
+}
+
+.temple-node.locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.03);
+  background: rgba(5, 5, 8, 0.8);
+}
+
+.temple-node-glow-effect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, var(--hud-accent) 0%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+/* Holy of Holies screen glow keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Custom Scrollbars */
+.holy-dialogue::-webkit-scrollbar,
+.vision-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.holy-dialogue::-webkit-scrollbar-thumb,
+.vision-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+/* Temple Node sweep hover animation */
+.temple-node:hover .temple-node-sweep {
+  left: 150% !important;
+}
+
+/* Pulsing guardian shields keyframe */
+@keyframes guardianPulse {
+  0% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(244, 63, 94, 0.4)); opacity: 0.85; }
+  50% { transform: scale(1.08); filter: drop-shadow(0 0 12px rgba(244, 63, 94, 0.8)); opacity: 1; }
+  100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(244, 63, 94, 0.4)); opacity: 0.85; }
+}
+
+/* Flowing pathway line animation */
+@keyframes pathFlow {
+  from { stroke-dashoffset: 20; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* Ambient Oracle whispers anim */
+@keyframes whisperFade {
+  0% { opacity: 0.3; transform: translateY(0); }
+  50% { opacity: 0.75; transform: translateY(-3px); }
+  100% { opacity: 0.3; transform: translateY(0); }
+}
+
+/* TEMPLE NAVIGATION SYSTEM - ASCENDED EDITION */
+
+.temple-pathway {
+  width: 4px;
+  height: 80px;
+  margin: 0 auto;
+  background: linear-gradient(to bottom, transparent, #4fd1ff33, transparent);
+  opacity: 0.2;
+  transition: opacity 0.4s ease-out;
+}
+
+.temple-pathway.active {
+  opacity: 1;
+  background: linear-gradient(to bottom, transparent, #4fd1ff, transparent);
+  animation: temple-path-pulse 2s infinite ease-in-out;
+}
+
+@keyframes temple-path-pulse {
+  0% { box-shadow: 0 0 6px #4fd1ff; }
+  50% { box-shadow: 0 0 18px #4fd1ff; }
+  100% { box-shadow: 0 0 6px #4fd1ff; }
+}
+
+.guardian-node {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  margin: 0 auto;
+  opacity: 0.4;
+  transition: opacity 0.3s ease-out;
+}
+
+.guardian-node.active {
+  opacity: 1;
+}
+
+.guardian-eye {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #4fd1ff, #0a1a22);
+  box-shadow: 0 0 12px #4fd1ff;
+  animation: guardian-blink 4s infinite;
+}
+
+@keyframes guardian-blink {
+  0%, 90% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+  100% { transform: scaleY(1); }
+}
+
+.guardian-message {
+  margin-top: 6px;
+  font-size: 0.7rem;
+  color: var(--hud-accent);
+  text-align: center;
+}
+
+.veil-tear-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000000dd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: veil-fade-in 0.8s ease-out forwards;
+  z-index: 99999;
+}
+
+.veil-tear-line {
+  width: 2px;
+  height: 0;
+  background: var(--hud-accent);
+  animation: veil-tear-grow 1.4s ease-out forwards;
+}
+
+.veil-tear-light {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, #4fd1ff44, transparent);
+  animation: veil-light-pulse 2s infinite alternate;
+}
+
+@keyframes veil-tear-grow {
+  to { height: 80%; }
+}
+
+@keyframes veil-light-pulse {
+  from { opacity: 0.2; }
+  to { opacity: 0.6; }
+}
+
+@keyframes veil-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.oracle-whispers {
+  position: fixed;
+  bottom: 40px;
+  width: 100%;
+  text-align: center;
+  color: var(--hud-accent);
+  opacity: 0;
+  animation: whisper-fade 8s infinite;
+}
+
+@keyframes whisper-fade {
+  0% { opacity: 0; }
+  20% { opacity: 0.6; }
+  80% { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+
+/* Chamber Resonance Hover Borders */
+.temple-node.unlocked:hover {
+  box-shadow: 0 0 18px var(--hud-accent);
+  transform: translateY(-3px);
+}
+
+.temple-node[data-chamber="throneRoom"]:hover {
+  box-shadow: 0 0 24px #ffdd55 !important;
+}
+
+.temple-node[data-chamber="holyOfHolies"]:hover {
+  box-shadow: 0 0 28px #ffffff !important;
+}
+
+.temple-node[data-chamber="oracleChamber"]:hover {
+  box-shadow: 0 0 24px #4fd1ff !important;
+}
+
+.temple-node[data-chamber="bookOfLife"]:hover {
+  box-shadow: 0 0 24px #55ff99 !important;
+}
+
+/* 3D HOLOGRAM MODE STYLES */
+
+.holo-scanline {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(79, 209, 255, 0) 0%,
+    rgba(79, 209, 255, 0.08) 50%,
+    rgba(79, 209, 255, 0) 100%
+  );
+  pointer-events: none;
+  animation: scanlineSweep 6s linear infinite;
+  z-index: 2;
+  opacity: 0.7;
+}
+
+@keyframes scanlineSweep {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(100%); }
+}
+
+.holo-grid-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(rgba(79, 209, 255, 0.08) 1.5px, transparent 1.5px),
+    linear-gradient(rgba(79, 209, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79, 209, 255, 0.02) 1px, transparent 1px);
+  background-size: 24px 24px, 48px 48px, 48px 48px;
+  background-position: center;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.6;
+}
+
+.holo-radar-sweep {
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  width: 320px;
+  height: 320px;
+  border: 1px solid rgba(79, 209, 255, 0.12);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  pointer-events: none;
+  z-index: 1;
+  animation: radarPulse 4s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+}
+
+@keyframes radarPulse {
+  0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0.8; }
+  50% { opacity: 0.4; }
+  100% { transform: translate(-50%, -50%) scale(1.4); opacity: 0; }
+}
+
+.holo-3d-tilt-container {
+  transform-style: preserve-3d;
+  transition: transform 0.15s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.holo-float-node {
+  transform-style: preserve-3d;
+  transform: translateZ(45px);
+}
+
+/* ==========================================================================
+   CELESTIAL LADDER STYLES
+   ========================================================================== */
+
+.celestial-ladder {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: radial-gradient(circle at center, #070c1a 0%, #030408 80%, #000000 100%);
+  color: #ffffff;
+  padding: 30px;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid rgba(79, 209, 255, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+}
+
+/* Parallax Scrolling Starfield Backdrops */
+.ladder-background {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.starfield-far {
+  background-image: 
+    radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+    radial-gradient(1.5px 1.5px at 60px 110px, #e2e8f0, rgba(0,0,0,0)),
+    radial-gradient(1px 1px at 120px 220px, #ffffff, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 180px 80px, #cbd5e1, rgba(0,0,0,0)),
+    radial-gradient(1px 1px at 240px 310px, #ffffff, rgba(0,0,0,0)),
+    radial-gradient(1.5px 1.5px at 290px 170px, #cbd5e1, rgba(0,0,0,0));
+  background-size: 320px 400px;
+  animation: star-scroll-far 45s linear infinite;
+  opacity: 0.25;
+}
+
+.starfield-close {
+  background-image: 
+    radial-gradient(2px 2px at 15px 15px, #ffffff, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 115px 235px, #4fd1ff, rgba(0,0,0,0)),
+    radial-gradient(2.5px 2.5px at 215px 75px, #ffffff, rgba(0,0,0,0)),
+    radial-gradient(1.5px 1.5px at 275px 335px, #4fd1ff, rgba(0,0,0,0));
+  background-size: 350px 450px;
+  animation: star-scroll-close 25s linear infinite;
+  opacity: 0.45;
+}
+
+@keyframes star-scroll-far {
+  from { transform: translateY(0); }
+  to { transform: translateY(-400px); }
+}
+
+@keyframes star-scroll-close {
+  from { transform: translateY(0); }
+  to { transform: translateY(-450px); }
+}
+
+.ladder-scanlines {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  ), linear-gradient(
+    90deg, 
+    rgba(255, 0, 0, 0.06), 
+    rgba(0, 255, 0, 0.02), 
+    rgba(0, 0, 255, 0.06)
+  );
+  background-size: 100% 4px, 6px 100%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.45;
+}
+
+/* Header styling */
+.ladder-header {
+  text-align: center;
+  z-index: 2;
+  margin-bottom: 25px;
+}
+
+.ladder-title {
+  font-family: var(--hud-font-family);
+  font-size: 2.2rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #4fd1ff;
+  text-shadow: 0 0 15px rgba(79, 209, 255, 0.5);
+  margin: 0 0 5px 0;
+}
+
+.ladder-subtitle {
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Split Workspace */
+.ladder-workspace {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 30px;
+  flex: 1;
+  z-index: 2;
+  min-height: 0;
+  margin-bottom: 25px;
+}
+
+@media (max-width: 900px) {
+  .ladder-workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Left panel: climber view */
+.ladder-climber-view {
+  background: rgba(5, 7, 15, 0.65);
+  border: 1px solid rgba(79, 209, 255, 0.15);
+  border-radius: 12px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+  overflow-y: auto;
+  max-height: 60vh;
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.ladder-column-container {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Central light beam elevator */
+.ladder-beam {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  transform: translateX(-50%);
+  background: linear-gradient(to bottom, #4fd1ff 0%, rgba(79, 209, 255, 0.1) 85%, transparent 100%);
+  animation: beam-pulse-glow 4s infinite ease-in-out;
+  box-shadow: 0 0 15px rgba(79, 209, 255, 0.4);
+  z-index: 1;
+}
+
+@keyframes beam-pulse-glow {
+  0%, 100% { opacity: 0.4; width: 4px; box-shadow: 0 0 10px rgba(79, 209, 255, 0.3); }
+  50% { opacity: 1; width: 6px; box-shadow: 0 0 22px rgba(79, 209, 255, 0.7); }
+}
+
+.ladder-column {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  z-index: 2;
+}
+
+/* Ladder Node Rung Item styling */
+.ladder-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  opacity: 0.35;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  cursor: default;
+}
+
+.ladder-node:hover {
+  opacity: 0.65;
+  transform: scale(1.03);
+}
+
+.ladder-node.active {
+  opacity: 1;
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 15px rgba(79, 209, 255, 0.5));
+}
+
+.ladder-glyph {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, #0f172a 30%, #020617 100%);
+  border: 2px solid rgba(79, 209, 255, 0.3);
+  color: #4fd1ff;
+  font-family: var(--hud-font-family);
+  font-size: 1.2rem;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0 0 10px rgba(79, 209, 255, 0.5);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+  transition: border var(--hud-anim-normal), box-shadow var(--hud-anim-normal);
+}
+
+.ladder-node.active .ladder-glyph {
+  border-color: #4fd1ff;
+  background: radial-gradient(circle at center, #1e293b 20%, #0f172a 100%);
+  box-shadow: 0 0 25px rgba(79, 209, 255, 0.8), inset 0 0 10px rgba(79, 209, 255, 0.4);
+}
+
+.ladder-label {
+  margin-top: 10px;
+  font-family: var(--hud-font-family);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #cbd5e1;
+  text-align: center;
+  transition: color var(--hud-anim-normal);
+}
+
+.ladder-node.active .ladder-label {
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Right panel: telemetry */
+.ladder-telemetry {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+/* Virtues Calibrator Card container styling */
+.virtues-calibrator {
+  background: linear-gradient(135deg, rgba(11, 15, 26, 0.75), rgba(5, 6, 15, 0.75));
+  border: 1px solid rgba(79, 209, 255, 0.15);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.virtues-description {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 5px 0 15px 0;
+  line-height: 1.4;
+}
+
+.virtues-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.virtue-card {
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(79, 209, 255, 0.08);
+  border-radius: 8px;
+  padding: 12px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border var(--hud-anim-normal);
+}
+
+.virtue-card:hover {
+  border-color: rgba(79, 209, 255, 0.25);
+}
+
+.virtue-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.virtue-name {
+  font-family: var(--hud-font-family);
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #cbd5e1;
+}
+
+.virtue-val {
+  font-family: var(--hud-font-family);
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #4fd1ff;
+  text-shadow: 0 0 6px rgba(79, 209, 255, 0.3);
+}
+
+.virtue-bar-bg {
+  height: 5px;
+  background: #090d16;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.virtue-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4fd1ff, #38bdf8);
+  border-radius: 999px;
+  transition: width 0.5s ease-out;
+}
+
+.virtue-calibrate-btn {
+  align-self: flex-end;
+  font-family: var(--hud-font-family);
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #4fd1ff;
+  background: rgba(79, 209, 255, 0.08);
+  border: 1px solid rgba(79, 209, 255, 0.25);
+  border-radius: 4px;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: background var(--hud-anim-fast), color var(--hud-anim-fast), border var(--hud-anim-fast);
+}
+
+.virtue-calibrate-btn:hover {
+  background: rgba(79, 209, 255, 0.2);
+  color: #ffffff;
+  border-color: #4fd1ff;
+}
+
+/* History panel adjustments */
+.ascension-history {
+  background: linear-gradient(135deg, rgba(11, 15, 26, 0.75), rgba(5, 6, 15, 0.75));
+  border: 1px solid rgba(79, 209, 255, 0.15);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.ascension-history h3 {
+  color: #4fd1ff;
+  text-shadow: 0 0 10px rgba(79, 209, 255, 0.3);
+}
+
+.history-empty {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-style: italic;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.ascension-history ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 150px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ascension-history li {
+  background: rgba(15, 23, 42, 0.3);
+  border: 1px solid rgba(79, 209, 255, 0.05);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.history-layer {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.history-realm {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Footer controls */
+.ladder-controls-bar {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  z-index: 2;
+  margin-top: 10px;
+}
+
+.ascend-trigger-btn {
+  background: linear-gradient(90deg, #0284c7 0%, #0369a1 100%) !important;
+  border-color: #0284c7 !important;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  box-shadow: 0 0 15px rgba(2, 132, 199, 0.4) !important;
+}
+
+.ascend-trigger-btn:hover {
+  background: linear-gradient(90deg, #0ea5e9 0%, #0284c7 100%) !important;
+  border-color: #0ea5e9 !important;
+  box-shadow: 0 0 25px rgba(14, 165, 233, 0.7) !important;
+}
+
+/* ==========================================================================
+   3D HOLOGRAM CELESTIAL LADDER & AEON ENGINE
+   ========================================================================== */
+
+.ladder3d-wrapper {
+  perspective: 1500px;
+  width: 100%;
+  height: 480px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at center, rgba(15, 23, 42, 0.3) 0%, transparent 80%);
+}
+
+.ladder3d {
+  width: 240px;
+  height: 380px;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ladder3d-beam {
+  position: absolute;
+  left: 50%;
+  top: -10%;
+  width: 8px;
+  height: 120%;
+  transform: translateX(-50%) translateZ(0);
+  background: linear-gradient(to bottom, #4fd1ff, rgba(79, 209, 255, 0.15) 80%, transparent 100%);
+  animation: beam-pulse-glow 3s infinite ease-in-out;
+  box-shadow: 0 0 20px rgba(79, 209, 255, 0.3);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.ladder3d-node {
+  position: absolute;
+  transform-style: preserve-3d;
+  text-align: center;
+  opacity: 0.3;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+
+.ladder3d-node.active {
+  opacity: 1;
+  transform: translateX(-50%) scale(1.15) !important;
+  filter: drop-shadow(0 0 20px rgba(79, 209, 255, 0.6));
+}
+
+.ladder3d-glyph {
+  font-family: var(--hud-font-family);
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #4fd1ff;
+  text-shadow: 0 0 15px rgba(79, 209, 255, 0.8);
+}
+
+.ladder3d-node.active .ladder3d-glyph {
+  color: #ffffff;
+  text-shadow: 0 0 25px rgba(79, 209, 255, 1), 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.ladder3d-label {
+  font-family: var(--hud-font-family);
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin-top: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.ladder3d-node.active .ladder3d-label {
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.ladder3d-controls {
+  position: absolute;
+  bottom: 15px;
+  display: flex;
+  gap: 12px;
+  z-index: 3;
+}
+
+.holo-rotate-btn {
+  font-family: var(--hud-font-family);
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #4fd1ff;
+  background: rgba(79, 209, 255, 0.08);
+  border: 1px solid rgba(79, 209, 255, 0.25);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  transition: background var(--hud-anim-fast), color var(--hud-anim-fast), border var(--hud-anim-fast), transform var(--hud-anim-fast);
+}
+
+.holo-rotate-btn:hover {
+  background: rgba(79, 209, 255, 0.2);
+  color: #ffffff;
+  border-color: #4fd1ff;
+  transform: translateY(-1px);
+}
+
+/* Aeon Engine Reactor layout styling */
+.aeon-reactor-core {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, #0b081c 20%, #030208 80%, #000000 100%);
+  border: 2px solid rgba(139, 92, 246, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: inset 0 0 30px rgba(139, 92, 246, 0.2), 0 0 30px rgba(0, 0, 0, 0.6);
+  align-self: center;
+  margin: 15px 0;
+}
+
+.aeon-cycle-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+}
+
+.aeon-cycle-label {
+  font-family: var(--hud-font-family);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: #a78bfa;
+  font-weight: bold;
+  opacity: 0.8;
+}
+
+.aeon-cycle-value {
+  font-family: var(--hud-font-family);
+  font-size: 4rem;
+  font-weight: 900;
+  color: #c084fc;
+  text-shadow: 0 0 25px rgba(167, 139, 250, 0.9), 0 0 10px rgba(192, 132, 252, 0.5);
+  line-height: 1;
+}
+
+.aeon-core-glow {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  animation: aeonPulseGlow 4s infinite linear;
+}
+
+@keyframes aeonPulseGlow {
+  0% { transform: scale(0.98); opacity: 0.3; box-shadow: 0 0 15px rgba(139, 92, 246, 0.15); }
+  50% { transform: scale(1.03); opacity: 0.8; box-shadow: 0 0 35px rgba(139, 92, 246, 0.4); border-color: rgba(167, 139, 250, 0.4); }
+  100% { transform: scale(0.98); opacity: 0.3; box-shadow: 0 0 15px rgba(139, 92, 246, 0.15); }
+}
+
+/* ==========================================================================
+   APEX CONSTRUCTS: HYPERCUBE, WEATHER STORMS, & EMPYREAN TRANSMUTATION
+   ========================================================================== */
+
+/* 4D Hypercube drift animation */
+@keyframes hypercube-drift {
+  0% { background-position: 0% 0%; filter: hue-rotate(0deg); }
+  50% { background-position: 100% 100%; filter: hue-rotate(180deg) brightness(1.2); }
+  100% { background-position: 0% 0%; filter: hue-rotate(360deg); }
+}
+
+/* 3D Node Echo / after-image drift styling */
+.ladder3d-node.active-echo {
+  pointer-events: none;
+  animation: hypercube-ghost-fade 2s infinite ease-in-out;
+}
+
+@keyframes hypercube-ghost-fade {
+  0%, 100% { opacity: 0.1; filter: blur(6px) grayscale(0.5); }
+  50% { opacity: 0.35; filter: blur(3px) grayscale(0); }
+}
+
+/* Virtue Storm weather screen flashes */
+@keyframes pulse-storm {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.75; }
+}
+
+.overdrive-active {
+  animation: reactor-shake 0.5s infinite ease-in-out;
+}
+
+@keyframes reactor-shake {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(0.5px, 0.5px) rotate(0.1deg); }
+  50% { transform: translate(-0.5px, 0.5px) rotate(-0.1deg); }
+  75% { transform: translate(0.5px, -0.5px) rotate(0deg); }
+}
+
+/* Empyrean Sphere screen adjustments */
+.empyrean-screen {
+  transition: background 2s ease, border-color 2s ease;
+}
+
+/* Pure light column for Ladder of Radiant Ascent */
+.radiant-ascent-beam {
+  pointer-events: none;
+  z-index: 1;
+  transition: width 1s ease, box-shadow 1s ease;
+}
+
+@keyframes wave-float {
+  from { background-position: 0 0; }
+  to { background-position: 300px 0; }
+}
+
+/* Zero-state unconditioned void visual styles */
+@keyframes primordial-breath {
+  0%, 100% { opacity: 0.25; filter: brightness(1); }
+  50% { opacity: 0.65; filter: brightness(1.3); }
+}
+
+.origin-screen .aeon-core-glow {
+  animation: primordial-breath 6s infinite ease-in-out !important;
+}
+
+
+
+
+
+
+
+
+
