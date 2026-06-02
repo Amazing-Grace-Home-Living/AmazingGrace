@@ -311,7 +311,7 @@
 
   <script>
     (function () {
-      var state = {
+      const state = {
         world: 'HARMONIC',
         harmonicAnchor: false,
         fractalAnchor: false,
@@ -319,15 +319,15 @@
         synced: false
       };
 
-      var harmonicWorld = document.getElementById('harmonicWorld');
-      var fractalWorld = document.getElementById('fractalWorld');
-      var harmonicNode = document.getElementById('harmonicNode');
-      var fractalNode = document.getElementById('fractalNode');
-      var bridgeNode = document.getElementById('bridgeNode');
-      var syncNode = document.getElementById('syncNode');
-      var playerPos = document.getElementById('playerPos');
-      var echoState = document.getElementById('echoState');
-      var status = document.getElementById('status');
+      const harmonicWorld = document.getElementById('harmonicWorld');
+      const fractalWorld = document.getElementById('fractalWorld');
+      const harmonicNode = document.getElementById('harmonicNode');
+      const fractalNode = document.getElementById('fractalNode');
+      const bridgeNode = document.getElementById('bridgeNode');
+      const syncNode = document.getElementById('syncNode');
+      const playerPos = document.getElementById('playerPos');
+      const echoState = document.getElementById('echoState');
+      const status = document.getElementById('status');
 
       function setNode(node, okText, offText, active) {
         node.classList.toggle('ok', !!active);
@@ -342,10 +342,10 @@
         setNode(harmonicNode, 'Stable', 'Offline', state.harmonicAnchor);
         setNode(fractalNode, 'Stable', 'Offline', state.fractalAnchor);
 
-        var bridgeStable = state.harmonicAnchor && state.fractalAnchor;
+        const bridgeStable = state.harmonicAnchor && state.fractalAnchor;
         setNode(bridgeNode, 'Stable', 'Unstable', bridgeStable);
 
-        var canSync = bridgeStable;
+        const canSync = bridgeStable;
         syncNode.classList.toggle('ok', canSync);
         syncNode.lastElementChild.textContent = state.synced ? 'Active' : canSync ? 'Available' : 'Locked';
 
@@ -396,8 +396,10 @@
       });
 
       document.getElementById('fullscreenBtn').addEventListener('click', function () {
-        if (!document.fullscreenElement) {
-          document.documentElement.requestFullscreen?.();
+        if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen();
+        } else if (!document.fullscreenElement) {
+          status.textContent = 'Fullscreen is not supported in this browser.';
         } else {
           document.exitFullscreen?.();
         }
