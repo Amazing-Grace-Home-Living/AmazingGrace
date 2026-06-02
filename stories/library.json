@@ -243,6 +243,26 @@
       ],
       "summary": "Zyko Learn — Faith-based interactive learning through the Seven Stars Arcade, Amazing Grace Home Living.",
       "published": "May 2026"
+    },
+    {
+      "title": "The Chronicles of Nexus: The Four Chapters (Podcast)",
+      "author": "Amazing Grace Audio Team",
+      "genre": "Sci-Fi / Metaphysical Audio",
+      "series": "Seven-Star Canon",
+      "slug": "podcast-script",
+      "path": "./podcast-script.html",
+      "tags": [
+        "podcast",
+        "audio",
+        "matrix",
+        "temple",
+        "ladder",
+        "aeon-engine",
+        "empyrean",
+        "lore"
+      ],
+      "summary": "Join hosts Elliot and Sarah as they dissect the four evolutionary layers of the Metaphysical Conscience Engine: from the baseline Matrix to the Empyrean Protocol.",
+      "published": "June 2026"
     }
   ],
   "searchIndex": {

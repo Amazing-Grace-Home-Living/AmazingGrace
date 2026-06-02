@@ -70,6 +70,34 @@ const CHURCHES = [
   { name: 'Laodicea', message: 'Laodicea was called lukewarm—neither hot nor cold—and was warned against complacency.', question: 'How was Laodicea described?', options: ['Faithful', 'Bold', 'Lukewarm', 'Joyful'], answer: 'Lukewarm' }
 ];
 
+function playUnsealSound() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const audioCtx = new AudioCtx();
+    const now = audioCtx.currentTime;
+    
+    const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50];
+    notes.forEach((freq, idx) => {
+      const osc = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+      
+      gainNode.gain.setValueAtTime(0.15, now + idx * 0.1);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.1 + 0.3);
+      
+      osc.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      osc.start(now + idx * 0.1);
+      osc.stop(now + idx * 0.1 + 0.35);
+    });
+  } catch (e) {
+    console.warn("Web Audio API not supported or blocked:", e);
+  }
+}
+
 export default function MatrixOfConscience() {
   return (
     <ConscienceProvider>
@@ -83,7 +111,109 @@ function MatrixCoreMaster() {
   const [terminalLog, setTerminalLog] = useState("System online. Standalone Unification Model deployed safely.");
   const [activeTab, setActiveTab] = useState("calibration");
   const [selectedTile, setSelectedTile] = useState(null);
+  const [extSubsystem, setExtSubsystem] = useState(null);
+
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const ext = params.get('ext');
+      if (ext) {
+        let normalizedExt = ext;
+        if (normalizedExt.startsWith('../')) {
+          normalizedExt = '/arcade/' + normalizedExt.substring(3);
+        }
+        setExtSubsystem(normalizedExt);
+        setTerminalLog(`[Nexus Link] Mounting external subsystem: ${normalizedExt}`);
+      }
+    } catch (e) {
+      console.warn("Could not parse query parameters:", e);
+    }
+  }, []);
   
+  const [isUnsealing, setIsUnsealing] = useState(false);
+  const [unsealProgress, setUnsealProgress] = useState(0);
+  const [badgeClickCount, setBadgeClickCount] = useState(0);
+  const [isAtariUnlocked, setIsAtariUnlocked] = useState(() => {
+    try {
+      return localStorage.getItem("atariUnlocked") === "true";
+    } catch {
+      return false;
+    }
+  });
+
+  const sequence = useMemo(() => [
+    "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown",
+    "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight",
+    "b", "a"
+  ], []);
+  
+  const seqIndexRef = useRef(0);
+
+  useEffect(() => {
+    function handler(e) {
+      if (e.key === sequence[seqIndexRef.current]) {
+        seqIndexRef.current++;
+        if (seqIndexRef.current === sequence.length) {
+          seqIndexRef.current = 0;
+          try {
+            localStorage.setItem("atariUnlocked", "true");
+          } catch {}
+          setIsUnsealing(true);
+          setUnsealProgress(0);
+          playUnsealSound();
+          
+          let progress = 0;
+          const interval = setInterval(() => {
+            progress += 5;
+            setUnsealProgress(progress);
+            if (progress >= 100) {
+              clearInterval(interval);
+              setTimeout(() => {
+                setIsUnsealing(false);
+                setIsAtariUnlocked(true);
+                setTerminalLog("[NEXUS OS] 🔓 SUB-CHAMBER SEALS MELTED. Proto-Simulation Lab fully unsealed at /arcade/atari-lab/.");
+              }, 1200);
+            }
+          }, 100);
+        }
+      } else {
+        seqIndexRef.current = e.key === sequence[0] ? 1 : 0;
+      }
+    }
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [sequence]);
+
+  const handleBadgeClick = () => {
+    const nextCount = badgeClickCount + 1;
+    if (nextCount >= 8) {
+      setBadgeClickCount(0);
+      try {
+        localStorage.setItem("atariUnlocked", "true");
+      } catch {}
+      setIsUnsealing(true);
+      setUnsealProgress(0);
+      playUnsealSound();
+      
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 5;
+        setUnsealProgress(progress);
+        if (progress >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            setIsUnsealing(false);
+            setIsAtariUnlocked(true);
+            setTerminalLog("[NEXUS OS] 🔓 SUB-CHAMBER SEALS MELTED. Proto-Simulation Lab fully unsealed at /arcade/atari-lab/.");
+          }, 1200);
+        }
+      }, 100);
+    } else {
+      setBadgeClickCount(nextCount);
+      setTerminalLog(`[Attunement Diagnostics] Tap sequence received: ${nextCount}/8.`);
+    }
+  };
+
   // Quiz State
   const [completedStars, setCompletedStars] = useState(JSON.parse(localStorage.getItem("aghl_sevenStarsCompleted") || "[]"));
   const [activeChurch, setActiveChurch] = useState(null);
@@ -187,22 +317,34 @@ function MatrixCoreMaster() {
     <div className="mc-matrix-root">
       <div className="mc-container">
         <header className="mc-header">
-          <p className="mc-badge">NEXUS ARCADE // CORE UNIFICATION</p>
+          <p className="mc-badge" onClick={handleBadgeClick} style={{ cursor: 'pointer', userSelect: 'none' }}>NEXUS ARCADE // CORE UNIFICATION</p>
           <h1>MATRIX OF CONSCIENCE</h1>
           <div className="mc-nav-row">
-            <button className={`mc-nav-btn ${activeTab === "calibration" ? "active" : ""}`} onClick={() => {setActiveTab("calibration"); setActiveChurch(null);}}>
+            <button className={`mc-nav-btn ${activeTab === "calibration" && !extSubsystem ? "active" : ""}`} onClick={() => {setActiveTab("calibration"); setActiveChurch(null); setExtSubsystem(null);}}>
               M45 Grid
             </button>
-            <button className={`mc-nav-btn ${activeTab === "sevenstars" ? "active" : ""}`} onClick={() => setActiveTab("sevenstars")}>
+            <button className={`mc-nav-btn ${activeTab === "sevenstars" && !extSubsystem ? "active" : ""}`} onClick={() => {setActiveTab("sevenstars"); setExtSubsystem(null);}}>
               Seven Stars
             </button>
-            <button className={`mc-nav-btn ${activeTab === "exchange" ? "active" : ""}`} onClick={() => {setActiveTab("exchange"); setActiveChurch(null);}}>
+            <button className={`mc-nav-btn ${activeTab === "exchange" && !extSubsystem ? "active" : ""}`} onClick={() => {setActiveTab("exchange"); setActiveChurch(null); setExtSubsystem(null);}}>
               Nexus Exchange
             </button>
           </div>
         </header>
 
         <div className="mc-main-layout">
+          {extSubsystem ? (
+            <div className="mc-card" style={{ gridColumn: "1 / -1", padding: 0, overflow: 'hidden', height: '620px', position: 'relative', border: '1px solid rgba(0, 242, 255, 0.3)', borderRadius: '12px', boxShadow: '0 0 25px rgba(0, 242, 255, 0.15)' }}>
+              <iframe 
+                id="ext-frame" 
+                src={extSubsystem} 
+                style={{ width: '100%', height: '100%', border: 'none', background: '#020617', display: 'block' }} 
+                title="External Subsystem"
+                allow="autoplay; fullscreen"
+              />
+            </div>
+          ) : (
+            <>
           {/* Constant Telemetry Panel */}
           <section className="mc-card mc-telemetry-panel">
             <h2>System Telemetry</h2>
@@ -221,6 +363,32 @@ function MatrixCoreMaster() {
             <div className="mc-console-log">
               <div className="mc-log-terminal">{terminalLog}</div>
             </div>
+            {isAtariUnlocked && (
+              <a 
+                href="/arcade/atari-lab/"
+                style={{
+                  width: "100%",
+                  padding: "0.5rem",
+                  fontSize: "0.75rem",
+                  background: "rgba(16, 185, 129, 0.15)",
+                  border: "1px solid rgba(16, 185, 129, 0.4)",
+                  color: "#10b981",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  textDecoration: "none",
+                  textAlign: "center",
+                  display: "block",
+                  boxShadow: "0 0 15px rgba(16, 185, 129, 0.2)",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  boxSizing: "border-box",
+                  marginTop: "0.5rem"
+                }}
+              >
+                📟 Atari Wing — Simulation Lab
+              </a>
+            )}
           </section>
 
           {/* Dynamic Right Panel */}
@@ -317,8 +485,67 @@ function MatrixCoreMaster() {
               </>
             )}
           </section>
+            </>
+          )}
         </div>
       </div>
+      {isUnsealing && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(2, 6, 23, 0.98)',
+          zIndex: 99999,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontFamily: 'Courier New, monospace',
+          color: '#10b981',
+          textShadow: '0 0 10px rgba(16, 185, 129, 0.6)',
+          pointerEvents: 'all'
+        }}>
+          <style>{`
+            @keyframes scan {
+              0% { top: 0%; }
+              100% { top: 100%; }
+            }
+          `}</style>
+          <div style={{
+            position: 'absolute',
+            width: '100%',
+            height: '4px',
+            background: 'rgba(16, 185, 129, 0.3)',
+            boxShadow: '0 0 20px #10b981',
+            animation: 'scan 2s linear infinite',
+            top: 0
+          }} />
+          <h1 style={{ fontSize: '2rem', margin: '0 0 1.5rem 0', letterSpacing: '0.15em', textAlign: 'center', fontWeight: 'bold' }}>
+            ⚠️ ACCESSING FORBIDDEN SUBSYSTEM...
+          </h1>
+          <p style={{ fontSize: '1rem', opacity: 0.8, marginBottom: '2rem', textAlign: 'center', maxWidth: '600px', lineHeight: '1.6' }}>
+            "You have accessed a chamber not meant for the uninitiated. Retrieving proto-silicon simulations of early consciousness stress tests..."
+          </p>
+          <div style={{
+            width: '400px',
+            height: '8px',
+            background: '#064e3b',
+            borderRadius: '4px',
+            overflow: 'hidden',
+            border: '1px solid #10b981'
+          }}>
+            <div style={{
+              width: `${unsealProgress}%`,
+              height: '100%',
+              background: '#10b981',
+              boxShadow: '0 0 10px #10b981',
+              transition: 'width 0.1s linear'
+            }} />
+          </div>
+          <div style={{ marginTop: '1.5rem', fontSize: '0.9rem', fontStyle: 'italic', color: '#a7f3d0' }}>
+            {unsealProgress < 100 ? `SYNCHRONIZING FIRST ARCHITECT MATRIX: ${unsealProgress}%` : "CALIBRATION ENGINES DEPLOYED. RETRO CHAMBER UNSEALED."}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -18,6 +18,7 @@ export default defineConfig({
         arcade:            resolve(__dirname, "arcade/index.html"),
         arcadeMatrix:      resolve(__dirname, "arcade/matrix-of-conscience/index.html"),
         arcadeMatrixTerminal: resolve(__dirname, "arcade/matrix-of-conscience-terminal/index.html"),
+        arcadeAtariLab:    resolve(__dirname, "arcade/atari-lab/index.html"),
         arcadeLoreArchive: resolve(__dirname, "arcade/lore-archive/lore-archive.html"),
         matrixConscienceIndex: resolve(__dirname, "matrix-of-conscience/index.html"),
         arcadeCertificates: resolve(__dirname, "arcade/certificates/index.html"),

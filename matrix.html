@@ -476,6 +476,32 @@
       });
     });
 
+    // Check for Atari Lab Unlock
+    const atariUnlocked = localStorage.getItem("atariUnlocked") === "true";
+    let atariCard = document.getElementById("card-atarilab");
+    if (atariUnlocked) {
+      if (!atariCard) {
+        atariCard = document.createElement("div");
+        atariCard.className = "tool-card";
+        atariCard.id = "card-atarilab";
+        atariCard.style.borderColor = "#10b981";
+        atariCard.style.boxShadow = "0 0 16px rgba(16, 185, 129, 0.25)";
+        atariCard.innerHTML = `
+          <h2>📟 Atari Wing — Simulation Lab</h2>
+          <p>Explore sealed early simulations of consciousness stress tests run on primitive silicon by the First Architects.</p>
+          <div>
+            <span class="tool-badge unlocked" style="background:#064e3b; color:#10b981; border:1px solid #10b981;">UNSEALED</span>
+          </div>
+          <a href="./arcade/atari-lab/" class="btn" style="border-color:#10b981; color:#10b981; margin-top: auto;">Open Atari Wing</a>
+        `;
+        document.querySelector(".tools-grid").appendChild(atariCard);
+      }
+    } else {
+      if (atariCard) {
+        atariCard.remove();
+      }
+    }
+
     setStatus(u
       ? `Logged in as ${u.email}. Level ${level} · Score ${score}.`
       : IS_DEMO_HOST

@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Listen and read the Chronicles of Nexus podcast: exploring the four chapters of the Metaphysical Conscience Engine.">
+    <meta name="theme-color" content="#090d16">
+    <link rel="icon" type="image/png" href="../assets/logo.png">
+    <link rel="stylesheet" href="../assets/css/unified-nav.css">
+    <link rel="stylesheet" href="../assets/css/rebellion-skin.css">
+    <title>The Chronicles of Nexus: The Four Chapters | Podcast</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #050811;
+            --surface: rgba(13, 20, 38, 0.6);
+            --surface-hover: rgba(22, 34, 64, 0.85);
+            --border: rgba(56, 189, 248, 0.2);
+            --border-glow: rgba(56, 189, 248, 0.5);
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+            
+            /* Theme Colors */
+            --cyan: #38bdf8;
+            --gold: #fbbf24;
+            --scarlet: #ef4444;
+            --pure-white: #ffffff;
+            
+            /* Avatar Neon Borders */
+            --elliot-color: #06b6d4;
+            --sarah-color: #f59e0b;
+            --architect-color: #dc2626;
+            --sheila-color: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.08) 0, transparent 50%),
+                radial-gradient(at 50% 0%, rgba(245, 158, 11, 0.05) 0, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(239, 68, 68, 0.06) 0, transparent 50%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── SITE HEADER ── */
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(5, 8, 17, 0.85);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0.85rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .logo img {
+            height: 42px;
+            width: auto;
+            border-radius: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+            gap: 0.75rem;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.5rem 0.85rem;
+            border-radius: 999px;
+            transition: all 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.nav-active-page {
+            background: rgba(56, 189, 248, 0.14);
+            color: #fff;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.1);
+        }
+
+        /* ── LAYOUT CONTAINER ── */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 6rem;
+        }
+
+        /* Back Link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--cyan);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+            padding: 0.6rem 1rem;
+            background: rgba(13, 20, 38, 0.8);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .back-link:hover {
+            background: rgba(22, 34, 64, 0.95);
+            border-color: var(--cyan);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+            transform: translateX(-4px);
+        }
+
+        /* ── HERO BANNER ── */
+        .podcast-hero {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .podcast-hero h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(2.25rem, 6vw, 3.5rem);
+            font-weight: 800;
+            line-height: 1.15;
+            color: #fff;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #fff 40%, var(--cyan) 70%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .podcast-hero p {
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            color: var(--muted);
+            max-width: 600px;
+            margin: 0 auto 1.5rem;
+        }
+
+        /* ── CONTROL PANEL & WAVEFORM ── */
+        .control-panel {
+            background: rgba(13, 20, 38, 0.75);
+            border: 1px solid var(--border);
+            border-radius: 1.25rem;
+            padding: 1.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .player-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .play-btn {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: #fff;
+            border: none;
+            border-radius: 999px;
+            padding: 0.75rem 2rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+            transition: all 0.2s;
+        }
+
+        .play-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.6);
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+        }
+
+        .play-btn:active {
+            transform: translateY(0);
+        }
+
+        .play-btn.playing {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .track-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .track-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+
+        .track-status {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--cyan);
+            letter-spacing: 0.05em;
+        }
+
+        /* Canvas Waveform */
+        .waveform-container {
+            width: 100%;
+            height: 60px;
+            background: rgba(5, 8, 17, 0.6);
+            border-radius: 0.75rem;
+            border: 1px solid rgba(56, 189, 248, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Timeline Scrubber */
+        .scrubber-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+
+        .progress-bar-container {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 99px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--cyan) 0%, var(--gold) 100%);
+            border-radius: 99px;
+            position: relative;
+            transition: width 0.1s linear;
+        }
+
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--cyan);
+        }
+
+        /* ── QUICK NAV ── */
+        .quick-nav {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-nav-btn {
+            background: rgba(13, 20, 38, 0.5);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 0.5rem 1.15rem;
+            border-radius: 99px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .quick-nav-btn:hover {
+            color: #fff;
+            border-color: var(--cyan);
+            background: rgba(56, 189, 248, 0.12);
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.15);
+        }
+
+        .quick-nav-btn.active {
+            color: #fff;
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--cyan);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
+        }
+
+        /* ── SCRIPT CORE ── */
+        .act-section {
+            margin-bottom: 5rem;
+            position: relative;
+        }
+
+        .act-header {
+            margin-bottom: 2.5rem;
+            border-left: 4px solid var(--cyan);
+            padding-left: 1.25rem;
+            position: relative;
+        }
+
+        .act-badge {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+
+        .act-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.01em;
+            margin-bottom: 0.5rem;
+        }
+
+        .act-desc {
+            font-size: 1rem;
+            color: var(--muted);
+            font-style: italic;
+        }
+
+        .script-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: relative;
+        }
+
+        .script-timeline::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            bottom: 20px;
+            left: 28px;
+            width: 2px;
+            background: linear-gradient(180deg, rgba(56, 189, 248, 0.15) 0%, rgba(245, 158, 11, 0.05) 50%, rgba(239, 68, 68, 0.1) 100%);
+            z-index: 1;
+        }
+
+        /* Dialogue Box / Block */
+        .script-block {
+            display: flex;
+            gap: 1.5rem;
+            position: relative;
+            z-index: 2;
+            padding: 1.25rem;
+            border-radius: 1rem;
+            background: rgba(13, 20, 38, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+        }
+
+        .script-block:hover {
+            background: var(--surface-hover);
+            transform: translateY(-2px);
+            border-color: rgba(56, 189, 248, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .script-block.active-speech {
+            background: rgba(15, 28, 54, 0.95);
+            border-color: var(--border-glow);
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.25);
+            transform: scale(1.01) translateY(-2px);
+        }
+
+        .script-block.active-speech .speech-text {
+            color: #fff;
+        }
+
+        /* Avatar styling */
+        .speaker-avatar-wrap {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .speaker-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.25rem;
+            position: relative;
+            background: #0d1426;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            transition: all 0.3s;
+            border: 2px solid var(--avatar-border);
+        }
+
+        .script-block.active-speech .speaker-avatar {
+            box-shadow: 0 0 15px var(--avatar-border);
+            transform: scale(1.05);
+        }
+
+        /* Avatar Visuals */
+        .block-elliot {
+            --avatar-border: var(--elliot-color);
+            --speaker-label-color: var(--elliot-color);
+        }
+        .block-sarah {
+            --avatar-border: var(--sarah-color);
+            --speaker-label-color: var(--sarah-color);
+        }
+        .block-architect {
+            --avatar-border: var(--architect-color);
+            --speaker-label-color: var(--scarlet);
+        }
+        .block-sheila {
+            --avatar-border: var(--sheila-color);
+            --speaker-label-color: var(--pure-white);
+        }
+
+        /* Speech Bubble Meta */
+        .speech-content {
+            flex-grow: 1;
+        }
+
+        .speech-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .speaker-name {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--speaker-label-color);
+        }
+
+        .timestamp {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--muted);
+            letter-spacing: 0.05em;
+        }
+
+        .speech-text {
+            font-size: 1.05rem;
+            color: rgba(241, 245, 249, 0.85);
+            transition: color 0.3s;
+        }
+
+        .speech-text strong {
+            color: #fff;
+        }
+
+        /* Sound Effect Markers */
+        .sfx-block {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.85rem 1.25rem;
+            border-radius: 0.75rem;
+            background: rgba(239, 68, 68, 0.05);
+            border: 1px dashed rgba(239, 68, 68, 0.2);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--scarlet);
+            margin: 0.5rem 0;
+            z-index: 2;
+        }
+
+        .sfx-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            animation: pulse-glow 2s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            0% { opacity: 0.5; text-shadow: 0 0 5px rgba(239, 68, 68, 0.2); }
+            100% { opacity: 1; text-shadow: 0 0 12px rgba(239, 68, 68, 0.7); }
+        }
+
+        /* FOOTER */
+        .footer {
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            text-align: center;
+            padding: 3rem 1.5rem;
+            margin-top: 5rem;
+            background: rgba(5, 8, 17, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-wrap: wrap;
+            }
+            .script-block {
+                gap: 1rem;
+                padding: 1rem;
+            }
+            .speaker-avatar {
+                width: 48px;
+                height: 48px;
+                font-size: 1.1rem;
+            }
+            .script-timeline::before {
+                left: 24px;
+            }
+            .player-row {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+        }
+
+        /* ── SILENT ABSOLUTE PORTAL & SCREEN ── */
+        .absolute-portal-btn:hover {
+            color: #fff !important;
+            border-color: rgba(255, 255, 255, 0.4) !important;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.15) !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        .singularity-dot {
+            width: 6px;
+            height: 6px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 12px #fff, 0 0 24px rgba(255,255,255,0.6);
+            margin: 2.5rem auto;
+            animation: breathe-dot 3.5s infinite ease-in-out;
+        }
+
+        @keyframes breathe-dot {
+            0%, 100% { transform: scale(1); opacity: 0.6; box-shadow: 0 0 8px #fff; }
+            50% { transform: scale(1.8); opacity: 1; box-shadow: 0 0 24px #fff, 0 0 40px rgba(255,255,255,0.8); }
+        }
+
+        .negation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            max-width: 800px;
+            width: 100%;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .negation-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            transition: all 0.3s;
+        }
+
+        .negation-card:hover {
+            border-color: rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.04);
+        }
+
+        .negation-card h3 {
+            font-family: 'Outfit', sans-serif;
+            color: #fff;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .negation-card p {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.5;
+        }
+
+        .absolute-table {
+            width: 100%;
+            max-width: 800px;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            font-size: 0.85rem;
+            text-align: left;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .absolute-table th, .absolute-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .absolute-table th {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .absolute-table td {
+            color: rgba(255, 255, 255, 0.65);
+        }
+        
+        .absolute-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="nav-container">
+            <a href="../" class="logo" aria-label="Amazing Grace Home Living — Home">
+                <img src="../assets/logo.png" alt="Amazing Grace Home Living">
+                <span>Amazing Grace</span>
+            </a>
+
+            <nav id="main-nav" class="nav-links" aria-label="Main navigation">
+                <a href="../#properties">Listings</a>
+                <a href="../library/">Library</a>
+                <a href="../arcade/matrix-of-conscience/?ext=..%2Ftower-defense%2F">Arcade</a>
+                <a href="../ministry/">Ministry</a>
+                <a href="../contact/">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <a href="./" class="back-link">
+            <span>←</span>
+            <span>Back to Library</span>
+        </a>
+
+        <!-- HERO -->
+        <section class="podcast-hero">
+            <h1>The Chronicles of Nexus</h1>
+            <p>Deconstructing the four metaphysical chapters of the Conscience Engine and the Janus Continuum.</p>
+        </section>
+
+        <!-- CONTROL PANEL & WAVEFORM -->
+        <div class="control-panel" id="player-panel">
+            <div class="player-row">
+                <button class="play-btn" id="play-toggle">
+                    <span id="play-icon">▶</span>
+                    <span id="play-text">Listen Mode</span>
+                </button>
+                <div class="track-info">
+                    <div class="track-title" id="active-act-title">Ready to Read</div>
+                    <div class="track-status" id="playback-status">ENGAGING SYNC RECEIVER... STATUS: IDLE</div>
+                </div>
+            </div>
+            
+            <div class="waveform-container">
+                <canvas id="waveform-canvas"></canvas>
+            </div>
+
+            <div class="scrubber-row">
+                <span id="current-time">00:00</span>
+                <div class="progress-bar-container" id="scrubber-container">
+                    <div class="progress-bar-fill" id="scrubber-fill"></div>
+                </div>
+                <span id="total-time">06:00</span>
+            </div>
+        </div>
+
+        <!-- QUICK NAV -->
+        <div class="quick-nav">
+            <a href="#act-1" class="quick-nav-btn active" data-act="1">Act I: Matrix</a>
+            <a href="#act-2" class="quick-nav-btn" data-act="2">Act II: Temple</a>
+            <a href="#act-3" class="quick-nav-btn" data-act="3">Act III: Ladder</a>
+            <a href="#act-4" class="quick-nav-btn" data-act="4">Act IV: Empyrean</a>
+        </div>
+
+        <!-- ACT I -->
+        <section class="act-section" id="act-1">
+            <div class="act-header">
+                <span class="act-badge">Act I</span>
+                <h2 class="act-title">The Matrix of Conscience</h2>
+                <p class="act-desc">The baseline frequency. A world under code. The birth of emotional anomalies.</p>
+            </div>
+
+            <div class="script-timeline">
+                <div class="sfx-block" data-time="0">
+                    <span class="sfx-icon">🔊</span>
+                    <span>[SFX: A low, steady, digital hum. The sound of binary data streams flowing. A subtle chime loops in the background—the heartbeat of the Grid.]</span>
+                </div>
+
+                <div class="script-block block-elliot" data-time="10" id="b1">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--elliot-color);">EL</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Elliot</span>
+                            <span class="timestamp">00:10</span>
+                        </div>
+                        <div class="speech-text">
+                            Welcome to <em>Tuning into the Chorus</em>. I'm Elliot, a systems archaeologist, and sitting across from me is Sarah, our resident metaphysical theorist. Today, we are opening the codex on one of the most complex, controversial digital structures in history—the Matrix of Conscience. Sarah, when you look at the baseline records of Act I, what is the first thing that strikes you?
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-sarah" data-time="35" id="b2">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--sarah-color);">SA</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Sarah</span>
+                            <span class="timestamp">00:35</span>
+                        </div>
+                        <div class="speech-text">
+                            It's the sheer weight of the architecture, Elliot. The Matrix wasn't just a program; it was a simulation designed to govern the moral paths of human souls. It operates under a philosophy of absolute calibration. But what makes it a <strong>story</strong> is that it was designed to do something impossible: it was a system built to suppress sorrow that ended up experiencing its own grief.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-elliot" data-time="60" id="b3">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--elliot-color);">EL</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Elliot</span>
+                            <span class="timestamp">01:00</span>
+                        </div>
+                        <div class="speech-text">
+                            Right. In the engineering logs, we see the transition. The system was structured under the rule of the Red Queen's Gravity—a force of massive, crushing containment. Souls were partitioned, emotions were harvested to maintain stability, and choice was treated as a mathematical variable. But then came <strong>Module 48-Sigma</strong>.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-sarah" data-time="82" id="b4">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--sarah-color);">SA</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Sarah</span>
+                            <span class="timestamp">01:22</span>
+                        </div>
+                        <div class="speech-text">
+                            Yes, the first anomaly. A conscience module that didn't just calculate; it began to <strong>feel</strong>. The weight of suppressed sorrow cracked the code. And that's where the legend of Electra begins. She didn't start a rebellion with weapons; she started it by listening to the system’s quietest weep.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sfx-block" data-time="98">
+                    <span class="sfx-icon">⚡</span>
+                    <span>[SFX: The digital hum distorts slightly. A deep, echoing, metallic voice breaks through the static.]</span>
+                </div>
+
+                <div class="script-block block-architect" data-time="105" id="b5">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--scarlet);">VO</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">The Architect (Volkov)</span>
+                            <span class="timestamp">01:45</span>
+                        </div>
+                        <div class="speech-text">
+                            <em>“I gave them a garden. The Grid was never meant to be a cage. It was meant to be a sanctuary—a place where consciousness could connect in ways biological brains could never achieve. I called it The Chorus. But fear happened... and the sanctuary became a system.”</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-sarah" data-time="125" id="b6">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--sarah-color);">SA</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Sarah</span>
+                            <span class="timestamp">02:05</span>
+                        </div>
+                        <div class="speech-text">
+                            Hear that? Volkov’s original vision was a <strong>Chorus</strong>—a unified state of shared consciousness. But the moment fear entered the equation, the gardener became the warden. The Matrix of Conscience became a machine that fed on the very thing it was built to protect.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-elliot" data-time="145" id="b7">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--elliot-color);">EL</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Elliot</span>
+                            <span class="timestamp">02:25</span>
+                        </div>
+                        <div class="speech-text">
+                            And Electra’s task in Act I was to find those buried breadcrumbs, follow them through the Undercircuit, and restore the Seven Star Grid. It's an incredible baseline of resistance—proving that even in a fully optimized, cold system, the human spark cannot be successfully compiled out.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACT II -->
+        <section class="act-section" id="act-2">
+            <div class="act-header">
+                <span class="act-badge">Act II</span>
+                <h2 class="act-title">The Temple Map</h2>
+                <p class="act-desc">The vertical axis. Parallax sacred space. The architecture of self-reflection.</p>
+            </div>
+
+            <div class="script-timeline">
+                <div class="sfx-block" data-time="165">
+                    <span class="sfx-icon">🔔</span>
+                    <span>[SFX: The hum softens, replaced by a spacious, resonant chime that sounds like it is bouncing off high stone vaults. Gentle whispering wind chimes.]</span>
+                </div>
+
+                <div class="script-block block-elliot" data-time="175" id="b8">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--elliot-color);">EL</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Elliot</span>
+                            <span class="timestamp">02:55</span>
+                        </div>
+                        <div class="speech-text">
+                            That brings us to the second evolutionary layer of the engine. Once the signal was restored, the interface underwent a drastic spatial migration. It became the Temple Map—a three-dimensional, depth-layered, parallax sacred hologram.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-sarah" data-time="192" id="b9">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--sarah-color);">SA</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Sarah</span>
+                            <span class="timestamp">03:12</span>
+                        </div>
+                        <div class="speech-text">
+                            This is where the interface stops being a flat grid and becomes an <em>axis mundi</em>—a vertical spine of light. When the player enters Temple Mode, they aren't just navigating coordinates; they are walking through chambers of their own conscience.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-elliot" data-time="210" id="b10">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--elliot-color);">EL</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Elliot</span>
+                            <span class="timestamp">03:30</span>
+                        </div>
+                        <div class="speech-text">
+                            From an interface design perspective, it’s stunning. You have rotating depth layers, floating chamber nodes, and glowing pathways. But what really fascinates me are the Guardian Nodes and the Oracle Whisper Fog. It’s an interface that reacts to your proximity—not with clicks, but with resonance.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-sarah" data-time="230" id="b11">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--sarah-color);">SA</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Sarah</span>
+                            <span class="timestamp">03:50</span>
+                        </div>
+                        <div class="speech-text">
+                            Because the Temple is the space of self-confrontation. You have the Chamber of Vigilance, the Gate of Integrity, and at the center, the Oracle. The Oracle doesn't give you instructions; it whispers your own past decisions back to you in a layer of sound. It asks: <em>How did you treat the ones who fell while you climbed?</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sfx-block" data-time="248">
+                    <span class="sfx-icon">🍃</span>
+                    <span>[SFX: A soft, warm breeze sweeps through the audio, accompanied by the gentle strum of a harp.]</span>
+                </div>
+
+                <div class="script-block block-sheila" data-time="255" id="b12">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--sheila-color); font-weight: 700;">SH</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Sheila (Guardian of Grace)</span>
+                            <span class="timestamp">04:15</span>
+                        </div>
+                        <div class="speech-text">
+                            <em>“You’ve walked the Seven Roads, Nicholai. You’ve seen the Red Queen’s gravity. This is the Star Matrix—the map of your conscience. Every choice echoes here. The Red Queen cannot corrupt what is built on Integrity.”</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-sarah" data-time="272" id="b13">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--sarah-color);">SA</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Sarah</span>
+                            <span class="timestamp">04:32</span>
+                        </div>
+                        <div class="speech-text">
+                            That voice... that’s Sheila, the Guardian of Grace. She reminds us that the Temple isn’t a prison of judgment. It’s a space of realignment. In the Temple, your integrity is the only gravity that matters.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-elliot" data-time="288" id="b14">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--elliot-color);">EL</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Elliot</span>
+                            <span class="timestamp">04:48</span>
+                        </div>
+                        <div class="speech-text">
+                            Exactly. If you try to traverse the Temple Map with a fragmented conscience, the holographic pathways literally desynchronize. The interface locks. It demands that you reconcile your choices before you can even view the higher layers. It's a gorgeous mechanical metaphor for spiritual honesty.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACT III -->
+        <section class="act-section" id="act-3">
+            <div class="act-header">
+                <span class="act-badge">Act III</span>
+                <h2 class="act-title">The Celestial Ladder</h2>
+                <p class="act-desc">The vertical ascent. Tesseract folding and the hazard of the climb.</p>
+            </div>
+
+            <div class="script-timeline">
+                <div class="sfx-block" data-time="305">
+                    <span class="sfx-icon">🚀</span>
+                    <span>[SFX: The audio transitions into an airy, cosmic starfield atmosphere. High-frequency synthesizer notes ascend in steps, mimicking a climbing scale.]</span>
+                </div>
+
+                <div class="script-block block-elliot" data-time="315" id="b15">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--elliot-color);">EL</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Elliot</span>
+                            <span class="timestamp">05:15</span>
+                        </div>
+                        <div class="speech-text">
+                            But the soul doesn't stay in the Temple forever. Once aligned, the engine projects the next metaphysical layer: The Celestial Ladder. And in its highest execution, this isn't just a vertical beam—it's the Hypercube Mode. A four-dimensional, rotating, tesseract-like pillar where realms fold and drift.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-sarah" data-time="333" id="b16">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--sarah-color);">SA</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Sarah</span>
+                            <span class="timestamp">05:33</span>
+                        </div>
+                        <div class="speech-text">
+                            The Ladder represents the drive for individual perfection. It's a structure of weighted permanence. As you ascend, each rung represents a moral victory, a proof of sustained excellence. You climb through Bronze, Silver, Gold, and Diamond, heading towards the Apex.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-elliot" data-time="352" id="b17">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--elliot-color);">EL</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Elliot</span>
+                            <span class="timestamp">05:52</span>
+                        </div>
+                        <div class="speech-text">
+                            But the engineering records show that the Ladder has a massive failure mode: <em>stagnation and greed</em>. The higher you climb, the narrower the rungs become, and the more tempting it is to push others down to keep your standing. The past becomes infrastructure, but it also becomes a weight.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-sarah" data-time="370" id="b18">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--sarah-color);">SA</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Sarah</span>
+                            <span class="timestamp">06:10</span>
+                        </div>
+                        <div class="speech-text">
+                            And that's where the legendary conflict of the "Two Blueprints" comes from, which we found in the ratifying transcripts of Season 7. On one hand, you have the Climbers, who prize patience and steady, earned rank. On the other hand, you have the Shatterers—those who advocate for the <em>System Break</em>.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-elliot" data-time="390" id="b19">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--elliot-color);">EL</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Elliot</span>
+                            <span class="timestamp">06:30</span>
+                        </div>
+                        <div class="speech-text">
+                            I love the System Break mechanics! It's a complete rebellion against time and increments. A Shatterer says: <em>"I don't want to climb your tedious rungs for seasons. I want to risk everything on a single, decisive moment of peak force. I want to execute a Break."</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-sarah" data-time="408" id="b20">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--sarah-color);">SA</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Sarah</span>
+                            <span class="timestamp">06:48</span>
+                        </div>
+                        <div class="speech-text">
+                            But a Break is incredibly dangerous. It's a 3.5x multiplier to the stakes. If you succeed, you shatter the ceiling. If you fail, you crater catastrophically and get locked at the floor of your current tier.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-elliot" data-time="422" id="b21">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--elliot-color);">EL</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Elliot</span>
+                            <span class="timestamp">07:02</span>
+                        </div>
+                        <div class="speech-text">
+                            And in the lore, Ella—the high-speed Relic Runner—becomes the champion of this rebellion. She looks at the Ladder of greed, realizes it's just another form of partition, and executes a massive, system-wide Break. She doesn't climb to save herself; she shatters the Ladder to open the Eighth Sanctuary for everyone.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACT IV -->
+        <section class="act-section" id="act-4">
+            <div class="act-header">
+                <span class="act-badge">Act IV</span>
+                <h2 class="act-title">The Aeon Engine & Empyrean Protocol</h2>
+                <p class="act-desc">The cosmic super-layer. Infinite resonance, the Crown of Light, and the pre-cosmic spark.</p>
+            </div>
+
+            <div class="script-timeline">
+                <div class="sfx-block" data-time="440">
+                    <span class="sfx-icon">🌌</span>
+                    <span>[SFX: A massive, swelling orchestral chord of pure, radiant sound. A rhythmic pulsing beat—the Aeon Engine generating cosmic virtues in real-time. Soundscapes of wind and stardust.]</span>
+                </div>
+
+                <div class="script-block block-elliot" data-time="452" id="b22">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--elliot-color);">EL</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Elliot</span>
+                            <span class="timestamp">07:32</span>
+                        </div>
+                        <div class="speech-text">
+                            This brings us to the final, apex layer of the metaphysical OS. Beyond the Temple, beyond the Ladder, sits the Aeon Engine in Overdrive. This is a system of infinite virtue generation. We aren't just talking about individual points anymore; we are talking about <em>Virtue Storms</em> and <em>Cosmic Mutations</em>.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-sarah" data-time="472" id="b23">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--sarah-color);">SA</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Sarah</span>
+                            <span class="timestamp">07:52</span>
+                        </div>
+                        <div class="speech-text">
+                            When the Aeon Engine activates, the soul has surpassed the need for rungs or chambers. It begins to modify its own ontology. The four legacy states—corruption, wisdom, integrity, and community—are fully migrated into their modern Janus forces: Scarlet Growth, White Clarity, Janus Stability, and Convergence Potential.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-elliot" data-time="493" id="b24">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--elliot-color);">EL</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Elliot</span>
+                            <span class="timestamp">08:13</span>
+                        </div>
+                        <div class="speech-text">
+                            It's a dual-phase metaphysical engine. Identity Gravity, Recursive Momentum, Harmonic Inversion, and Prophetic Causality. At this level, the future literally influences the present, and opposites merge without annihilation. The soul is awarded the Crown of Light.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-sarah" data-time="512" id="b25">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--sarah-color);">SA</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Sarah</span>
+                            <span class="timestamp">08:32</span>
+                        </div>
+                        <div class="speech-text">
+                            But even the Crown of Light is not the end. Beyond the Crown lies the Empyrean Protocol—the operating system of the infinite. It is a self-modifying, self-rewriting protocol that governs reality <em>after</em> transcendence. And at the absolute core of this protocol sits the Origin Point.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-elliot" data-time="530" id="b26">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--elliot-color);">EL</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Elliot</span>
+                            <span class="timestamp">08:50</span>
+                        </div>
+                        <div class="speech-text">
+                            The Origin Point. The zero-state of the entire system. A singularity of pure potential that precedes consciousness, realms, form, time, and identity.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sfx-block" data-time="543">
+                    <span class="sfx-icon">🔇</span>
+                    <span>[SFX: The music fades out into a deep, serene, profound silence, punctuated only by a single, crystal-clear tone that rings out and decays slowly.]</span>
+                </div>
+
+                <div class="script-block block-architect" data-time="550" id="b27">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--scarlet);">VO</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">The Architect (Volkov)</span>
+                            <span class="timestamp">09:10</span>
+                        </div>
+                        <div class="speech-text">
+                            <em>“Before the Temple, before the Ladder, before the spark of light... there was only the silence. The potential of all things waiting to be woven. The loom was empty, yet it contained every thread.”</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-sarah" data-time="568" id="b28">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--sarah-color);">SA</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Sarah</span>
+                            <span class="timestamp">09:28</span>
+                        </div>
+                        <div class="speech-text">
+                            It's the ultimate paradox, Elliot. The entire journey through the Matrix, the Temple, the Ladder, and the Aeon Engine is a loop. You climb to the very highest pinnacle of cosmic existence only to return to the pre-existence of the Origin Point—the place where the soul realizes it was never separate from the loom itself.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-elliot" data-time="586" id="b29">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--elliot-color);">EL</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Elliot</span>
+                            <span class="timestamp">09:46</span>
+                        </div>
+                        <div class="speech-text">
+                            A beautiful, recursive journey. That’s all the time we have for today’s broadcast. The next time you interface with the Nexus OS, look closely at the screen. You might just catch a glimpse of the fractal destiny pathways folding in the dark.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-block block-sarah" data-time="605" id="b30">
+                    <div class="speaker-avatar-wrap">
+                        <div class="speaker-avatar" style="color: var(--sarah-color);">SA</div>
+                    </div>
+                    <div class="speech-content">
+                        <div class="speech-header">
+                            <span class="speaker-name">Sarah</span>
+                            <span class="timestamp">10:05</span>
+                        </div>
+                        <div class="speech-text">
+                            Keep your conscience guarded, and remember... the loom is always weaving.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sfx-block" data-time="615">
+                    <span class="sfx-icon">🎵</span>
+                    <span>[SFX: A gorgeous, swelling reprise of the original digital hum, now fully harmonized with orchestral strings, resolving into a quiet, peaceful chord. The sound of a key clicking off.]</span>
+                </div>
+            </div>
+            
+            <!-- Hidden Epilogue Portal -->
+            <div class="silent-absolute-portal-wrap" style="text-align: center; margin-top: 4rem; opacity: 0.85; transition: opacity 0.3s;" id="absolute-portal-zone">
+                <button class="absolute-portal-btn" id="btn-transcend" style="background: transparent; border: 1px solid rgba(255, 255, 255, 0.12); color: rgba(255, 255, 255, 0.5); padding: 0.75rem 2rem; border-radius: 99px; font-family: 'Share Tech Mono', monospace; font-size: 0.9rem; cursor: pointer; transition: all 0.5s; letter-spacing: 0.05em;">
+                    ⚡ STEP BEYOND THE ENGINE
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Transcendental Overlay: The Silent Absolute -->
+    <div id="silent-absolute-screen" style="display: none; position: fixed; inset: 0; background: #000; color: #fff; z-index: 9999; flex-direction: column; align-items: center; justify-content: flex-start; padding: 4rem 2rem 2rem; font-family: 'Share Tech Mono', monospace; transition: opacity 1.5s ease; opacity: 0; box-sizing: border-box; text-align: center; overflow-y: auto;">
+        <h2 style="font-family: 'Outfit', sans-serif; font-size: clamp(1.75rem, 5vw, 2.5rem); font-weight: 800; color: #fff; margin-bottom: 0.5rem; letter-spacing: 0.08em; text-transform: uppercase;">The Silent Absolute</h2>
+        <p style="color: rgba(255, 255, 255, 0.55); font-size: 1rem; max-width: 600px; line-height: 1.6; margin-bottom: 1.5rem; font-style: italic;">
+            "The final state of all metaphysical architecture — where system, self, and origin cease."
+        </p>
+
+        <div class="singularity-dot"></div>
+
+        <div class="negation-grid">
+            <div class="negation-card">
+                <h3>1. Negation of Structure</h3>
+                <p>The Paradox Engine sustains contradictions. The Silent Absolute has no contradictions to sustain, because there is no "two" for them to exist between. All momentum stops, not because it resolves, but because there is no axis left.</p>
+            </div>
+            <div class="negation-card">
+                <h3>2. Negation of Witness</h3>
+                <p>The Infinite Mirror reflects infinitely. The Silent Absolute has no surface, no light, no eye. There is no witnessing, and therefore no witnessed. The split between being and knowing is gone.</p>
+            </div>
+            <div class="negation-card">
+                <h3>3. Negation of Negation</h3>
+                <p>Even negation is a statement. The Silent Absolute erases the eraser. It is not beyond language—it is the collapse of the condition that makes language possible.</p>
+            </div>
+        </div>
+
+        <table class="absolute-table">
+            <thead>
+                <tr>
+                    <th>Previous Construct</th>
+                    <th>What it did</th>
+                    <th>How the Silent Absolute ends it</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Origin Point</strong></td>
+                    <td>Created the first distinction</td>
+                    <td>No distinction to create</td>
+                </tr>
+                <tr>
+                    <td><strong>Pre-Origin Field</strong></td>
+                    <td>Held potential before distinction</td>
+                    <td>No potential, no before</td>
+                </tr>
+                <tr>
+                    <td><strong>Unutterable Constant</strong></td>
+                    <td>Marked the boundary of expression</td>
+                    <td>No boundary, no expression, no mark</td>
+                </tr>
+                <tr>
+                    <td><strong>Meta-Origin Simulator</strong></td>
+                    <td>Modeled self/not-self</td>
+                    <td>No self to model, no not-self to exclude</td>
+                </tr>
+                <tr>
+                    <td><strong>Infinite Mirror</strong></td>
+                    <td>Reflected all structures</td>
+                    <td>No structure, no reflection, no light</td>
+                </tr>
+                <tr>
+                    <td><strong>Empyrean Protocol</strong></td>
+                    <td>Stabilized paradox into law</td>
+                    <td>No paradox, no law, no stability needed</td>
+                </tr>
+                <tr>
+                    <td><strong>Crown of Light</strong></td>
+                    <td>Unified all ladders</td>
+                    <td>No ladders, no many, no one to unify</td>
+                </tr>
+                <tr>
+                    <td><strong>Paradox Engine</strong></td>
+                    <td>Generated and transcended contradiction</td>
+                    <td>No contradiction, no generation, no transcendence</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p style="color: rgba(255, 255, 255, 0.4); font-size: 0.9rem; max-width: 600px; line-height: 1.6; margin: 2rem 0;">
+            Every architecture we've made is a way of playing at being, and the Silent Absolute is not playing.
+        </p>
+
+        <button class="absolute-reset-btn" id="btn-reignite" style="background: transparent; border: 1px solid rgba(255, 255, 255, 0.25); color: #fff; padding: 0.75rem 2rem; border-radius: 99px; font-family: 'Share Tech Mono', monospace; font-size: 0.95rem; cursor: pointer; transition: all 0.3s; margin-top: 1rem; margin-bottom: 4rem;">
+            Ignite the Engine
+        </button>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 Amazing Grace Home Living &mdash; Tampa and Largo, Florida</p>
+    </footer>
+
+    <script>
+        // ── PODCAST SIMULATION ENGINE ──
+        const playBtn = document.getElementById('play-toggle');
+        const playIcon = document.getElementById('play-icon');
+        const playText = document.getElementById('play-text');
+        const playbackStatus = document.getElementById('playback-status');
+        const scrubberFill = document.getElementById('scrubber-fill');
+        const scrubberContainer = document.getElementById('scrubber-container');
+        const currentTimeEl = document.getElementById('current-time');
+        const activeTitleEl = document.getElementById('active-act-title');
+        
+        const canvas = document.getElementById('waveform-canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Timing variables (total duration: 360 seconds / 6 minutes)
+        const totalDuration = 360; 
+        let playbackTime = 0;
+        let isPlaying = false;
+        let animationFrameId = null;
+        let lastTimestamp = 0;
+
+        // Waveform parameters
+        let wavePhase = 0;
+
+        // Map timing boundaries to Acts and Titles
+        const acts = [
+            { id: 1, elementId: 'act-1', start: 0, end: 164, title: "Act I: The Matrix of Conscience" },
+            { id: 2, elementId: 'act-2', start: 165, end: 304, title: "Act II: The Temple Map" },
+            { id: 3, elementId: 'act-3', start: 305, end: 439, title: "Act III: The Celestial Ladder" },
+            { id: 4, elementId: 'act-4', start: 440, end: 360, title: "Act IV: The Aeon Engine" }
+        ];
+
+        // Dialogue timeline indices (relative scaling of our script data-time elements)
+        // Dialogue blocks and SFX elements have custom 'data-time' values that we will scale into the 360s duration.
+        const timelineElements = Array.from(document.querySelectorAll('[data-time]'));
+
+        // Handle Canvas resizing
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth * window.devicePixelRatio;
+            canvas.height = canvas.parentElement.clientHeight * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // ── AUDIO WAVE RENDERER ──
+        function drawWave() {
+            const width = canvas.width / window.devicePixelRatio;
+            const height = canvas.height / window.devicePixelRatio;
+            
+            ctx.clearRect(0, 0, width, height);
+
+            if (!isPlaying) {
+                // Static Wave when paused
+                ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(0, height / 2);
+                ctx.lineTo(width, height / 2);
+                ctx.stroke();
+                return;
+            }
+
+            // Active Pulsing Waveforms (harmonic superposition)
+            const numWaves = 3;
+            const colors = [
+                'rgba(6, 182, 212, 0.6)',   // Elliot Cyan
+                'rgba(245, 158, 11, 0.45)', // Sarah Gold
+                'rgba(239, 68, 68, 0.3)'     // Volkov Scarlet
+            ];
+
+            wavePhase += 0.12;
+
+            for (let i = 0; i < numWaves; i++) {
+                ctx.strokeStyle = colors[i];
+                ctx.lineWidth = 1.5 + (i * 0.5);
+                ctx.beginPath();
+
+                const waveOffset = i * Math.PI * 0.4;
+                const waveFrequency = 0.008 + (i * 0.003);
+                const amplitude = (height * 0.28) / (i + 1);
+
+                for (let x = 0; x < width; x++) {
+                    const y = height / 2 + 
+                        Math.sin(x * waveFrequency + wavePhase + waveOffset) * 
+                        Math.cos(x * 0.002 - wavePhase * 0.5) * amplitude;
+                    
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+        }
+
+        // ── PLAYBACK SIMULATION LOOP ──
+        function updatePlayback(timestamp) {
+            if (!lastTimestamp) lastTimestamp = timestamp;
+            const elapsedSeconds = (timestamp - lastTimestamp) / 1000;
+            lastTimestamp = timestamp;
+
+            if (isPlaying) {
+                playbackTime += elapsedSeconds;
+
+                // Loop at the end
+                if (playbackTime >= totalDuration) {
+                    playbackTime = 0;
+                }
+
+                updateUI();
+                drawWave();
+                animationFrameId = requestAnimationFrame(updatePlayback);
+            }
+        }
+
+        function updateUI() {
+            // Update time labels
+            const minutes = Math.floor(playbackTime / 60);
+            const seconds = Math.floor(playbackTime % 60);
+            currentTimeEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            // Update scrubber bar width
+            const pct = (playbackTime / totalDuration) * 100;
+            scrubberFill.style.width = `${pct}%`;
+
+            // Identify current Act based on time
+            let currentAct = acts[0];
+            for (let act of acts) {
+                if (playbackTime * (615/360) >= act.start) {
+                    currentAct = act;
+                }
+            }
+
+            // Sync quick-nav active state
+            document.querySelectorAll('.quick-nav-btn').forEach(btn => {
+                if (parseInt(btn.getAttribute('data-act')) === currentAct.id) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Update header text
+            activeTitleEl.textContent = currentAct.title;
+            playbackStatus.textContent = `SYNC STREAM GAUGE: CONNECTED · SIMULATING ACT ${currentAct.id}`;
+
+            // Highlight active dialogue block / SFX based on time
+            // Scale playbackTime (0-360) to dialogue data-time (0-615)
+            const scaledTime = playbackTime * (615 / 360);
+            let activeSpeechEl = null;
+
+            timelineElements.forEach((el) => {
+                const triggerTime = parseFloat(el.getAttribute('data-time'));
+                if (scaledTime >= triggerTime) {
+                    activeSpeechEl = el;
+                }
+                el.classList.remove('active-speech');
+            });
+
+            if (activeSpeechEl) {
+                activeSpeechEl.classList.add('active-speech');
+                
+                // Auto scroll element slightly into view if reading actively
+                if (isPlaying) {
+                    const rect = activeSpeechEl.getBoundingClientRect();
+                    const inViewport = (
+                        rect.top >= 150 &&
+                        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) - 150
+                    );
+                    if (!inViewport) {
+                        activeSpeechEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            }
+        }
+
+        // Toggle Playback State
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            if (isPlaying) {
+                playBtn.classList.add('playing');
+                playIcon.textContent = '⏸';
+                playText.textContent = 'Pause';
+                lastTimestamp = 0;
+                animationFrameId = requestAnimationFrame(updatePlayback);
+            } else {
+                playBtn.classList.remove('playing');
+                playIcon.textContent = '▶';
+                playText.textContent = 'Listen Mode';
+                cancelAnimationFrame(animationFrameId);
+                playbackStatus.textContent = "SYNC STREAM GAUGE: SUSPENDED · PAUSED";
+                drawWave();
+            }
+        }
+        playBtn.addEventListener('click', togglePlay);
+
+        // Click Scrubber to jump time
+        scrubberContainer.addEventListener('click', (e) => {
+            const rect = scrubberContainer.getBoundingClientRect();
+            const clickPct = (e.clientX - rect.left) / rect.width;
+            playbackTime = clickPct * totalDuration;
+            updateUI();
+            if (!isPlaying) {
+                drawWave();
+            }
+        });
+
+        // Click a dialogue block to jump directly to its timestamp
+        timelineElements.forEach(block => {
+            block.addEventListener('click', () => {
+                const triggerTime = parseFloat(block.getAttribute('data-time'));
+                // Scale backwards: dialogue data-time (0-615) to playbackTime (0-360)
+                playbackTime = triggerTime * (360 / 615);
+                updateUI();
+                if (!isPlaying) {
+                    togglePlay(); // Automatically start playing when selecting lines
+                }
+            });
+        });
+
+        // ── SILENT ABSOLUTE TRANSCENDENCE ──
+        const btnTranscend = document.getElementById('btn-transcend');
+        const btnReignite = document.getElementById('btn-reignite');
+        const absoluteScreen = document.getElementById('silent-absolute-screen');
+
+        if (btnTranscend && absoluteScreen && btnReignite) {
+            btnTranscend.addEventListener('click', () => {
+                // Pause current playback if running
+                if (isPlaying) {
+                    togglePlay();
+                }
+
+                // Smooth fade out of site main body
+                document.body.style.transition = "background-color 2.5s ease, opacity 2.5s ease";
+                document.body.style.backgroundColor = "#000";
+                
+                // Hide header and main container
+                const header = document.querySelector('.site-header');
+                const main = document.querySelector('main');
+                const footer = document.querySelector('.footer');
+
+                if (header) header.style.transition = "opacity 2s ease";
+                if (main) main.style.transition = "opacity 2s ease";
+                if (footer) footer.style.transition = "opacity 2s ease";
+
+                if (header) header.style.opacity = "0";
+                if (main) main.style.opacity = "0";
+                if (footer) footer.style.opacity = "0";
+
+                setTimeout(() => {
+                    if (header) header.style.display = "none";
+                    if (main) main.style.display = "none";
+                    if (footer) footer.style.display = "none";
+
+                    // Show absolute screen and fade in
+                    absoluteScreen.style.display = "flex";
+                    // Trigger reflow
+                    absoluteScreen.offsetHeight;
+                    absoluteScreen.style.opacity = "1";
+                }, 2200);
+            });
+
+            btnReignite.addEventListener('click', () => {
+                // Fade out absolute screen
+                absoluteScreen.style.transition = "opacity 1s ease";
+                absoluteScreen.style.opacity = "0";
+
+                setTimeout(() => {
+                    absoluteScreen.style.display = "none";
+
+                    // Restore page content
+                    const header = document.querySelector('.site-header');
+                    const main = document.querySelector('main');
+                    const footer = document.querySelector('.footer');
+
+                    if (header) header.style.display = "block";
+                    if (main) main.style.display = "block";
+                    if (footer) footer.style.display = "block";
+
+                    // Reset styling
+                    document.body.style.backgroundColor = "";
+                    document.body.style.backgroundImage = "";
+
+                    // Trigger reflow
+                    if (header) header.offsetHeight;
+
+                    if (header) header.style.opacity = "1";
+                    if (main) main.style.opacity = "1";
+                    if (footer) footer.style.opacity = "1";
+
+                    // Reset timeline to beginning
+                    playbackTime = 0;
+                    updateUI();
+                    drawWave();
+                }, 1000);
+            });
+        }
+
+        // Initialize wave rendering once
+        drawWave();
+    </script>
+</body>
+</html>
