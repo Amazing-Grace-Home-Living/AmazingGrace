@@ -21,7 +21,7 @@ export function useTempleRouter() {
     if (!unlocked[screen]) return;
     
     // Intercept transitions to sacred chambers to go through the Guardian Screen
-    if (["throne", "holyOfHolies", "oracleChamber", "bookOfLife"].includes(screen)) {
+    if (["throne", "holyOfHolies", "oracleChamber", "bookOfLife", "sheilaPath", "yiPath", "mirrorLayer"].includes(screen)) {
       setHUD(h => ({
         ...h,
         route: { screen: "guardian", target: screen }
@@ -36,3 +36,4 @@ export function useTempleRouter() {
 
   return { unlocked, go };
 }
+

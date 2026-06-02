@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useTempleRouter } from "./useTempleRouter";
+import { useTempleRouter } from "./useTempleRouter";    
 import { useHUD } from "../hud/HUDContext";
 import { useOracleWhispers } from "./useOracleWhispers";
 import TempleNode from "./TempleNode";
 import GuardianNode from "./GuardianNode";
 import OracleWhispers from "./OracleWhispers";
-import VeilTearOverlay from "./VeilTearOverlay";
+import VeilTearOverlay from "./VeilTearOverlay";        
 
-export default function TempleNavigationScreen() {
+export default function TempleNavigationScreen() {      
   const { unlocked, go } = useTempleRouter();
   const { hud, setHUD } = useHUD();
   const whisper = useOracleWhispers(hud);
@@ -34,11 +34,11 @@ export default function TempleNavigationScreen() {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left - rect.width / 2;
     const y = e.clientY - rect.top - rect.height / 2;
-    
+
     // Limits rotation to ~10 degrees max
     const tiltX = -(y / (rect.height / 2)) * 10;
     const tiltY = (x / (rect.width / 2)) * 10;
-    
+
     setTilt({ x: tiltX, y: tiltY });
   }
 
@@ -76,13 +76,13 @@ export default function TempleNavigationScreen() {
         >
           THE SACRED TEMPLE
         </h1>
-        <p style={{ color: "#475569", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "3px", fontWeight: "bold" }}>
+        <p style={{ color: "#475569", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "3px", fontWeight: "bold" }}>     
           Temple Navigation System — Ascended Edition
         </p>
       </header>
 
       {/* Manual toggle view bar */}
-      <div style={{ display: "flex", justifyContent: "center", gap: "10px", marginBottom: "30px", position: "relative", zIndex: 10 }}>
+      <div style={{ display: "flex", justifyContent: "center", gap: "10px", marginBottom: "30px", position: "relative", zIndex: 10 }}> 
         <button
           style={{
             padding: "6px 16px",
@@ -235,6 +235,28 @@ export default function TempleNavigationScreen() {
               filter: unlocked.bookOfLife ? "drop-shadow(0 0 4px #10b981)" : "none"
             }}
           />
+
+          {/* Book of Life to Sheila Path */}
+          <line
+            x1="78%"
+            y1="18%"
+            x2="70%"
+            y2="5%"
+            stroke={unlocked.sheilaPath ? "var(--neon-blue)" : "rgba(255,255,255,0.06)"}
+            strokeWidth={1.5}
+            strokeDasharray="4, 4"
+          />
+
+          {/* Book of Life to Yi Path */}
+          <line
+            x1="78%"
+            y1="18%"
+            x2="86%"
+            y2="5%"
+            stroke={unlocked.yiPath ? "var(--neon-purple)" : "rgba(255,255,255,0.06)"}
+            strokeWidth={1.5}
+            strokeDasharray="4, 4"
+          />
         </svg>
 
         {/* Nodes layer (Floating forward in 3D space) */}
@@ -312,6 +334,32 @@ export default function TempleNavigationScreen() {
             <div style={{ position: "absolute", top: "-30px", left: "50%", transform: "translateX(-50%) translateZ(10px)" }}>
               <GuardianNode active={!unlocked.oracleChamber} message="Locked" />
             </div>
+          </div>
+
+          {/* Sheila Path */}
+          <div className="holo-float-node" style={{ position: "absolute", left: "70%", top: "5%", width: "150px", transform: "translate(-50%, -50%) translateZ(60px)" }}>
+            <TempleNode
+              label="Sheila's Path"
+              unlocked={unlocked.sheilaPath}
+              onClick={() => go("sheilaPath")}
+              requirements="Low Corruption"
+              resonanceColor="var(--neon-blue)"
+              isGuardianGated={true}
+              chamber="sheila"
+            />
+          </div>
+
+          {/* Yi's Path */}
+          <div className="holo-float-node" style={{ position: "absolute", left: "86%", top: "5%", width: "150px", transform: "translate(-50%, -50%) translateZ(60px)" }}>
+            <TempleNode
+              label="Yi's Path"
+              unlocked={unlocked.yiPath}
+              onClick={() => go("yiPath")}
+              requirements="High Corruption"
+              resonanceColor="var(--neon-purple)"
+              isGuardianGated={true}
+              chamber="yi"
+            />
           </div>
 
           {/* Book of Life */}
