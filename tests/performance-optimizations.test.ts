@@ -3,22 +3,49 @@ import fs from 'node:fs';
 
 describe('performance optimization fixes', () => {
   const homepage = fs.readFileSync('index.html', 'utf8');
+  const serviceWorker = fs.readFileSync('public/sw.js', 'utf8');
+  const matchmaker = fs.readFileSync('js/matchmaker.js', 'utf8');
+  const starMatrix = fs.readFileSync('arcade/star-matrix/index.html', 'utf8');
   const viteConfig = fs.readFileSync('vite.config.ts', 'utf8');
   const lensBoard = fs.readFileSync('arcade/matrix-of-conscience/LensBoard.jsx', 'utf8');
   const matrixConscience = fs.readFileSync('src/components/MatrixOfConscience.tsx', 'utf8');
   const arcadeMain = fs.readFileSync('src/arcade-main.tsx', 'utf8');
   const familyStatsContext = fs.readFileSync('src/context/FamilyStatsContext.tsx', 'utf8');
 
-  it('adds listing search UI and debounced filtering script', () => {
-    expect(homepage).toContain('id="property-search"');
-    expect(homepage).toContain('id="search-clear"');
-    expect(homepage).toContain("setTimeout(() => applyFilter(searchInput.value), 150)");
-    expect(homepage).toContain("const index = cards.map((card) =>");
+  it('keeps a single React listing UI and removes legacy hidden listing/search markup', () => {
+    expect(homepage).toContain('id="listing-search-root"');
+    expect(homepage).toContain('src="/src/listings-main.tsx"');
+    expect(homepage).not.toContain('id="property-search"');
+    expect(homepage).not.toContain('id="search-clear"');
+    expect(homepage).not.toContain('#property-grid .property-card');
+    expect(homepage).not.toContain('class="property-grid" style="display:none"');
   });
 
-  it('lazy loads listing images with async decoding', () => {
-    expect(homepage).toContain('loading="lazy"');
-    expect(homepage).toContain('decoding="async"');
+  it('trims service-worker precache/runtime image caching overhead', () => {
+    expect(serviceWorker).toContain("const CACHE_NAME = 'amazing-grace-v10'");
+    expect(serviceWorker).toContain("const ASSETS_TO_CACHE = [");
+    expect(serviceWorker).toContain("    './arcade/matrix-of-conscience/index.html',");
+    expect(serviceWorker).not.toContain("    './arcade/star-matrix/index.html',");
+    expect(serviceWorker).not.toContain("    './arcade/trinity/index.html',");
+    expect(serviceWorker).not.toContain("    './arcade/bible-study/index.html',");
+    expect(serviceWorker).not.toContain("    './arcade/certificates/index.html',");
+    expect(serviceWorker).not.toContain("    './ministry/index.html',");
+    expect(serviceWorker).toContain("const STATIC_DESTINATIONS = new Set(['style', 'script', 'font', 'manifest']);");
+    expect(serviceWorker).not.toContain('png|jpg|jpeg|svg|gif|webp|avif|ico');
+  });
+
+  it('uses O(1) gravity fill indexing instead of shift() in matchmaker hot loop', () => {
+    expect(matchmaker).toContain('const compactedLength = gems.length;');
+    expect(matchmaker).toContain('const compactedIndex = GRID_SIZE - 1 - r;');
+    expect(matchmaker).not.toContain('gems.shift()');
+  });
+
+  it('uses delegated pointer handlers for star-matrix drag interactions', () => {
+    expect(starMatrix).toContain("boardEl.addEventListener('pointerdown', onPointerDown);");
+    expect(starMatrix).toContain("boardEl.addEventListener('pointermove', onPointerMove);");
+    expect(starMatrix).toContain("boardEl.addEventListener('pointerup', onPointerUp);");
+    expect(starMatrix).toContain("boardEl.addEventListener('pointercancel', onPointerCancel);");
+    expect(starMatrix).not.toContain("cell.addEventListener('pointerdown', onPointerDown);");
   });
 
   it('splits firebase and framer-motion chunks with lower warning limit', () => {

@@ -358,13 +358,13 @@
       function onPointerDown(e) {
         if (isProcessing) return;
         if (dragStartTile || activePointerId !== null) return;
-        const cell = e.currentTarget;
+        const cell = e.target instanceof Element ? e.target.closest('.star-cell') : null;
         if (!(cell instanceof HTMLElement)) return;
 
         activePointerId = e.pointerId;
         dragStartTile = cell;
         dragStartPos = { x: e.clientX, y: e.clientY };
-        cell.setPointerCapture(e.pointerId);
+        boardEl.setPointerCapture(e.pointerId);
         cell.classList.add('selected');
         cell.setAttribute('aria-selected', 'true');
       }
@@ -384,11 +384,17 @@
         } else {
           resetDragState();
         }
+        if (boardEl.hasPointerCapture(e.pointerId)) {
+          boardEl.releasePointerCapture(e.pointerId);
+        }
       }
 
       function onPointerCancel(e) {
         if (e.pointerId !== activePointerId) return;
         resetDragState();
+        if (boardEl.hasPointerCapture(e.pointerId)) {
+          boardEl.releasePointerCapture(e.pointerId);
+        }
       }
 
       function initBoard() {
@@ -402,11 +408,6 @@
             cell.setAttribute('role', 'gridcell');
             cell.setAttribute('aria-selected', 'false');
 
-            cell.addEventListener('pointerdown', onPointerDown);
-            cell.addEventListener('pointermove', onPointerMove);
-            cell.addEventListener('pointerup', onPointerUp);
-            cell.addEventListener('pointercancel', onPointerCancel);
-
             tiles.push(cell);
             boardEl.appendChild(cell);
           }
@@ -417,9 +418,12 @@
       certificateLink.addEventListener('click', () => {
         window.location.href = '../certificates/';
       });
+      boardEl.addEventListener('pointerdown', onPointerDown);
+      boardEl.addEventListener('pointermove', onPointerMove);
+      boardEl.addEventListener('pointerup', onPointerUp);
+      boardEl.addEventListener('pointercancel', onPointerCancel);
       initBoard();
       renderBoard();
     </script>
   </body>
 </html>
-

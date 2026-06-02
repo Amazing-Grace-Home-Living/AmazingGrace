@@ -429,8 +429,12 @@ export function applyGravity(grid) {
     for (let r = GRID_SIZE - 1; r >= 0; r--) {
       if (next[r][c] !== null) gems.push(next[r][c]);
     }
+    const compactedLength = gems.length;
     for (let r = GRID_SIZE - 1; r >= 0; r--) {
-      next[r][c] = gems.length > 0 ? gems.shift() : makeGem(randomGemType());
+      const compactedIndex = GRID_SIZE - 1 - r;
+      next[r][c] = compactedIndex < compactedLength
+        ? gems[compactedIndex]
+        : makeGem(randomGemType());
     }
   }
   return next;
