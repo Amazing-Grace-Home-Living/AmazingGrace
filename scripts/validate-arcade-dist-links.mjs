@@ -51,7 +51,7 @@ async function resolveBuiltPath(fromHtmlFile, rawRef) {
   let resolved;
 
   if (cleanRef.startsWith('/')) {
-    resolved = path.join(DIST_DIR, cleanRef);
+    resolved = path.join(DIST_DIR, cleanRef.slice(1));
   } else {
     resolved = path.resolve(path.dirname(fromHtmlFile), cleanRef);
   }

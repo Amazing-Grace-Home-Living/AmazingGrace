@@ -41,12 +41,15 @@ export const WalletManager = {
   spendPoints: async (userId, cost) => {
     const wallets = getWallets();
     if (!wallets[userId]) {
-      wallets[userId] = { balance: 0, spent_total: 0 };
+      wallets[userId] = { balance: 0, lastUpdated: null, lastSource: null, spent_total: 0 };
     }
+    const balance = Number(wallets[userId].balance) || 0;
+    const amount = Number(cost) || 0;
     let success = false;
-    if (wallets[userId].balance >= cost) {
-      wallets[userId].balance -= cost;
-      wallets[userId].spent_total = (wallets[userId].spent_total || 0) + cost;
+    if (balance >= amount) {
+      wallets[userId].balance = balance - amount;
+      wallets[userId].lastUpdated = Date.now();
+      wallets[userId].spent_total = (Number(wallets[userId].spent_total) || 0) + amount;
       success = true;
       saveWallets(wallets);
     }
