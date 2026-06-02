@@ -5,6 +5,10 @@ import { FamilyStatsProvider, useFamilyStatsContext } from './context/FamilyStat
 import { useNexusRouter } from './router/useNexusRouter';
 import styles from './arcade-main.module.css';
 import { mountScarletLattice, type ScarletLatticeController } from './fx/scarletLattice';
+// @ts-ignore
+import { HUDProvider } from './hud/HUDContext';
+// @ts-ignore
+import { DualAscentProvider } from './dual-ascent/DualAscentContext';
 
 type FamilyStats = {
   karma: number;
@@ -137,7 +141,11 @@ if (!container) {
 createRoot(container!).render(
   <React.StrictMode>
     <FamilyStatsProvider>
-      <ArcadeApp />
+      <HUDProvider>
+        <DualAscentProvider>
+          <ArcadeApp />
+        </DualAscentProvider>
+      </HUDProvider>
     </FamilyStatsProvider>
   </React.StrictMode>
 );

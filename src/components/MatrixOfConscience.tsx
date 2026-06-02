@@ -1747,13 +1747,7 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
                       color: "#a78bfa",
                       tag: "SOUL CHANNELS"
                     },
-                    {
-                      name: "Atari Wing",
-                      desc: "Silicon consciousness retro stress sandboxes (Pong, Breakout).",
-                      path: "/arcade/atari-lab/index.html",
-                      color: "#f59e0b",
-                      tag: "ARCHITECT VAULT"
-                    },
+
                     {
                       name: "Trinity Terminal",
                       desc: "Access command-line simulation triggers directly via DOS console.",
