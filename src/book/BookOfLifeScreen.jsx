@@ -20,10 +20,10 @@ export default function BookOfLifeScreen() {
     const starsCount = stars?.length || 0;
     const lampsCount = lamps?.length || 0;
 
-    if (corruption >= 10) return { title: "Unresolved", message: \\, your path is obscured. The light awaits your return.\ };
-    if (starsCount === 7 && lampsCount === 7 && love >= 7) return { title: "Sealed", message: \\, the Seven Stars and Seven Lamps bear witness. Your name is sealed in light.\ };
-    if (humility >= 5) return { title: "Growing", message: \\, humility guides your steps. Continue in grace.\ };
-    return { title: "In Progress", message: \\, your story is still being written.\ };
+    if (corruption >= 10) return { title: "Unresolved", message: `${character.name}, your path is obscured. The light awaits your return.` };
+    if (starsCount === 7 && lampsCount === 7 && love >= 7) return { title: "Sealed", message: `${character.name}, the Seven Stars and Seven Lamps bear witness. Your name is sealed in light.` };
+    if (humility >= 5) return { title: "Growing", message: `${character.name}, humility guides your steps. Continue in grace.` };
+    return { title: "In Progress", message: `${character.name}, your story is still being written.` };
   }
   const verdict = getVerdict();
 
@@ -244,4 +244,5 @@ export default function BookOfLifeScreen() {
     </div>
   );
 }
+
 

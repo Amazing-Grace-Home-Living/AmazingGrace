@@ -2,6 +2,7 @@ import React, { memo, useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import MatrixOfConscience from './components/MatrixOfConscience';
 import { FamilyStatsProvider, useFamilyStatsContext } from './context/FamilyStatsContext';
+import { useNexusRouter } from './router/useNexusRouter';
 import styles from './arcade-main.module.css';
 import { mountScarletLattice, type ScarletLatticeController } from './fx/scarletLattice';
 
@@ -140,3 +141,4 @@ createRoot(container!).render(
     </FamilyStatsProvider>
   </React.StrictMode>
 );
+
