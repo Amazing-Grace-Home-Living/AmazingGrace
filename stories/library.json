@@ -182,6 +182,38 @@
       "summary": "A cinematic prelude to Matrix of Conscience: witness Electra's uprising in Nexus Prime and the birth of ethical resistance."
     },
     {
+      "title": "Chapter 3 — The Mirror Path",
+      "author": "Amazing Grace Story Team",
+      "genre": "Sci-Fi / Story-Game",
+      "series": "Two Paths, One Bridge",
+      "slug": "mirror-path",
+      "path": "./mirror-path/",
+      "tags": [
+        "mirror path",
+        "phase shift",
+        "reflection jump",
+        "chapter 3",
+        "prototype"
+      ],
+      "summary": "The Mirror Layer opens between worlds. Stabilize harmonic and fractal anchors, cross the silver bridge, and trigger the first Paradox-Harmony Sync."
+    },
+    {
+      "title": "Chapter 4 — The Collapse Engine",
+      "author": "Amazing Grace Story Team",
+      "genre": "Sci-Fi / Story-Game",
+      "series": "Two Paths, One Bridge",
+      "slug": "collapse-engine",
+      "path": "./collapse-engine/",
+      "tags": [
+        "collapse engine",
+        "boss",
+        "dual resonance",
+        "chapter 4",
+        "prototype loop"
+      ],
+      "summary": "At the Collapse Threshold, both worlds converge in a three-phase boss encounter where containment, not destruction, saves both realms."
+    },
+    {
       "title": "More Articles Are on the Way",
       "author": "Amazing Grace Home Living",
       "genre": "News / Article",

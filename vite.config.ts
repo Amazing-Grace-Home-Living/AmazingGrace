@@ -38,6 +38,8 @@ export default defineConfig({
         storiesNoahAndTheArk: resolve(__dirname, "stories/noah-and-the-ark/index.html"),
         storiesNexusPrime2087: resolve(__dirname, "stories/nexus-prime-2087/index.html"),
         storiesOurCovenant: resolve(__dirname, "stories/our-covenant-of-new-beginnings/index.html"),
+        storiesMirrorPath: resolve(__dirname, "stories/mirror-path/index.html"),
+        storiesCollapseEngine: resolve(__dirname, "stories/collapse-engine/index.html"),
         storiesRebellion2027: resolve(__dirname, "stories/rebellion2027/index.html"),
         storiesFixingCopilotRulesetBypass: resolve(__dirname, "stories/fixing-copilot-ruleset-bypass-errors/index.html"),
         storiesGithubBypassSetupApp: resolve(__dirname, "stories/github-bypass-setup-app/index.html"),
@@ -80,6 +82,16 @@ export default defineConfig({
             resolve(__dirname, 'stories/library.json'),
             resolve(__dirname, 'dist/stories/library.json')
           );
+          cpSync(
+            resolve(__dirname, 'stories/chapter-34-package'),
+            resolve(__dirname, 'dist/stories/chapter-34-package'),
+            { recursive: true }
+          );
+          cpSync(
+            resolve(__dirname, 'OST'),
+            resolve(__dirname, 'dist/OST'),
+            { recursive: true }
+          );
           // Preserve legacy non-module arcade runtime scripts required by
           // syndicate-siege, lore-archive, and matrix-of-conscience-terminal pages.
           cpSync(
@@ -88,6 +100,7 @@ export default defineConfig({
             { recursive: true }
           );
           console.log('? Copied stories/library.json to dist/stories/');
+          console.log('? Copied chapter-34-package and OST package files.');
           console.log('? Copied arcade runtime scripts to dist/arcade/js/');
         } catch (err) {
           console.error('Failed to copy build artifacts:', err);
@@ -96,4 +109,3 @@ export default defineConfig({
     }
   ]
 });
-
