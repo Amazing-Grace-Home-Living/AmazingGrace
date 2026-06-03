@@ -1,0 +1,659 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Nicholai Maro Madias | Cloud Identity & Security Engineer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Cloud Identity & Security Engineer | Automation Architect" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #05060a;
+      --bg-alt: #0b0d16;
+      --card: #101321;
+      --accent: #4fd1c5;
+      --accent-soft: rgba(79, 209, 197, 0.12);
+      --accent-strong: #63b3ed;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border-subtle: #1e293b;
+      --badge-bg: #020617;
+      --badge-border: #1f2937;
+      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.65);
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --radius-pill: 999px;
+      --transition-fast: 0.18s ease-out;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #111827 0, #020617 45%, #000 100%);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: var(--accent-strong);
+      text-decoration: none;
+      transition: var(--transition-fast);
+    }
+
+    a:hover {
+      text-decoration: underline;
+      opacity: 0.8;
+    }
+
+    .page {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 32px 18px 64px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.4fr);
+      gap: 24px;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    @media (max-width: 800px) {
+      header {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .hero-card {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.9));
+      border-radius: 18px;
+      padding: 22px 22px 20px;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(79, 209, 197, 0.16), transparent 55%),
+        radial-gradient(circle at 100% 0%, rgba(96, 165, 250, 0.16), transparent 55%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .name {
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      margin-bottom: 4px;
+    }
+
+    .title {
+      font-size: 0.98rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--accent-strong);
+      margin-bottom: 12px;
+    }
+
+    .location {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .location span {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .contact-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      font-size: 0.88rem;
+      margin-bottom: 6px;
+    }
+
+    .contact-item {
+      color: var(--muted);
+    }
+
+    .contact-label {
+      color: var(--text);
+      font-weight: 500;
+      margin-right: 4px;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .hero-tag {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: var(--muted);
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero-tag strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .hero-right {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .badge-panel {
+      background: rgba(15, 23, 42, 0.96);
+      border-radius: 16px;
+      padding: 14px 14px 12px;
+      border: 1px solid rgba(30, 64, 175, 0.7);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
+    }
+
+    .badge-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .badge-row img {
+      border-radius: 999px;
+      background: #020617;
+      border: 1px solid rgba(15, 23, 42, 0.9);
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(0, 1.1fr);
+      gap: 24px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    section {
+      margin-bottom: 22px;
+    }
+
+    .section-card {
+      background: var(--bg-alt);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+      padding: 16px 18px 14px;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.55);
+      height: 100%;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+    }
+
+    .section-accent {
+      font-size: 0.78rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .summary-text {
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+
+    .summary-text span {
+      color: var(--accent-strong);
+      font-weight: 500;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .pill {
+      font-size: 0.78rem;
+      padding: 4px 9px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--muted);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .pill strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .experience-item {
+      padding: 10px 0;
+      border-top: 1px solid rgba(30, 41, 59, 0.9);
+    }
+
+    .experience-item:first-of-type {
+      border-top: none;
+      padding-top: 4px;
+    }
+
+    .exp-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: baseline;
+      margin-bottom: 2px;
+    }
+
+    .exp-role {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .exp-dates {
+      font-size: 0.78rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .exp-company {
+      font-size: 0.86rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .exp-bullets {
+      list-style: none;
+      padding-left: 0;
+      margin-top: 4px;
+    }
+
+    .exp-bullets li {
+      position: relative;
+      padding-left: 14px;
+      font-size: 0.86rem;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+
+    .exp-bullets li::before {
+      content: "";
+      position: absolute;
+      left: 3px;
+      top: 0.6em;
+      width: 4px;
+      height: 4px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .subsection-title {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+      margin-top: 12px;
+      margin-bottom: 8px;
+      display: block;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+      padding-bottom: 4px;
+    }
+
+    .edu-item,
+    .cert-item {
+      font-size: 0.86rem;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    .edu-item strong, .cert-item strong {
+      display: block;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .edu-item span,
+    .cert-item span {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .skill-category {
+        margin-bottom: 12px;
+    }
+    
+    .skill-category-title {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--accent-strong);
+        margin-bottom: 4px;
+    }
+
+    footer {
+      margin-top: 26px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .footer-links {
+      margin-top: 4px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      border-bottom: 1px dotted rgba(148, 163, 184, 0.5);
+      padding-bottom: 1px;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent-strong);
+      border-bottom-style: solid;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="hero-card">
+        <div class="hero-inner">
+          <div class="title">Cloud Identity &amp; Security Engineer</div>
+          <div class="name">Nicholai Maro Madias</div>
+          <div class="location">
+            Palm Harbor, FL • <span>Relocating to Bakersfield, CA</span>
+          </div>
+          <div class="contact-grid">
+            <div class="contact-item">
+              <span class="contact-label">Phone:</span> 727-621-3516
+            </div>
+            <div class="contact-item">
+              <span class="contact-label">Email:</span>
+              <a href="mailto:nicholai@amazinggracehl.org">nicholai@amazinggracehl.org</a>
+            </div>
+            <div class="contact-item">
+              <span class="contact-label">Website:</span>
+              <a href="https://amazinggracehl.org" target="_blank" rel="noreferrer">amazinggracehl.org</a>
+            </div>
+            <div class="contact-item">
+              <span class="contact-label">LinkedIn:</span>
+              <a href="https://linkedin.com/in/nicholaimadias" target="_blank" rel="noreferrer">/nicholaimadias</a>
+            </div>
+            <div class="contact-item">
+              <span class="contact-label">GitHub:</span>
+              <a href="https://github.com/nicholaimadias" target="_blank" rel="noreferrer">/nicholaimadias</a>
+            </div>
+          </div>
+          <div class="hero-tags">
+            <div class="hero-tag"><strong>Identity</strong> • Entra ID • OIDC • SAML</div>
+            <div class="hero-tag"><strong>Security</strong> • WAF • Zero Trust</div>
+            <div class="hero-tag"><strong>Automation</strong> • PowerShell • Python</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="badge-panel">
+          <div class="badge-title">Core Focus</div>
+          <div class="badge-row">
+            <img src="https://img.shields.io/badge/Identity%20%26%20Access-Entra%20ID%20%7C%20OIDC%20%7C%20SAML-0f766e" alt="Identity & Access" />
+            <img src="https://img.shields.io/badge/Cloud%20Security-GCP%20IAM%20%7C%20WAF%20ERT-020617" alt="Cloud Security" />
+            <img src="https://img.shields.io/badge/Automation-PowerShell%20%7C%20Python%20%7C%20Apps%20Script-166534" alt="Automation" />
+            <img src="https://img.shields.io/badge/Networking-Cisco%20%7C%20Juniper%20%7C%20Wireshark-111827" alt="Networking" />
+            <img src="https://img.shields.io/badge/Systems-Windows%20%7C%20Linux%20%7C%20VMware-1f2937" alt="Systems" />
+          </div>
+        </div>
+        <div class="badge-panel">
+          <div class="badge-title">Current Trajectory</div>
+          <div class="badge-row">
+            <img src="https://img.shields.io/badge/Track-Cloud%20Identity%20Engineer-1d4ed8" alt="Cloud Identity Engineer" />
+            <img src="https://img.shields.io/badge/Focus-Zero%20Trust%20%7C%20SSO%20%7C%20WAF-7c2d12" alt="Zero Trust | SSO | WAF" />
+            <img src="https://img.shields.io/badge/Tooling-GitHub%20Actions%20%7C%20Automation-4b5563" alt="Tooling" />
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="main-left">
+        <section class="section-card">
+          <div class="section-header">
+            <div class="section-title">Professional Summary</div>
+            <div class="section-accent">Identity • Security • Automation</div>
+          </div>
+          <p class="summary-text">
+            Cloud Identity &amp; Security Engineer with <span>10+ years</span> across Entra ID, GCP, and enterprise networking.
+            Specializes in <span>SSO/OIDC/SAML integrations</span>, Zero Trust design, and Layer‑7 application protection using
+            Cisco Cloud WAF. Builds automation pipelines (PowerShell, Python, Apps Script) that reduce operational overhead and
+            improve engineering efficiency. Experienced in cross‑functional collaboration, supporting large identity migrations,
+            and troubleshooting complex authentication flows using HAR and packet‑level analysis.
+          </p>
+        </section>
+
+        <section class="section-card">
+          <div class="section-header">
+            <div class="section-title">Experience</div>
+            <div class="section-accent">Recent Roles</div>
+          </div>
+
+          <div class="experience-item">
+            <div class="exp-header">
+              <div class="exp-role">Software Engineer (Freelance)</div>
+              <div class="exp-dates">Apr 2026 – Present</div>
+            </div>
+            <div class="exp-company">Amazing Grace Home Living • Palm Harbor, FL</div>
+            <ul class="exp-bullets">
+              <li>Built secure cloud identity and SSO integrations using GCP, Google Apps Script, and GitHub.</li>
+              <li>Developed interactive web‑based systems with real‑time Firebase synchronization and state management.</li>
+              <li>Implemented Cisco Cloud WAF Enterprise ERT protections and rate-limiting for mission‑critical APIs.</li>
+            </ul>
+          </div>
+
+          <div class="experience-item">
+            <div class="exp-header">
+              <div class="exp-role">Tier 2 EDN Support Engineer</div>
+              <div class="exp-dates">Jan 2025 – Apr 2026</div>
+            </div>
+            <div class="exp-company">HCLTech (Client: Verizon) • Tampa, FL</div>
+            <ul class="exp-bullets">
+              <li>Contributed to team automation initiatives using JavaScript and Python to stabilize Tier 2 diagnostics.</li>
+              <li>Co‑designed and developed a centralized knowledge base on GCP, improving team resolution times.</li>
+              <li>Supported enterprise VPN migrations from Ivanti legacy systems to Palo Alto GlobalProtect.</li>
+            </ul>
+          </div>
+
+          <div class="experience-item">
+            <div class="exp-header">
+              <div class="exp-role">Technical Support Engineer (Identity SME)</div>
+              <div class="exp-dates">Jan 2022 – Jun 2024</div>
+            </div>
+            <div class="exp-company">Infosys (Client: Google) • Tampa, FL</div>
+            <ul class="exp-bullets">
+              <li>Helped reduce ticket backlog by ~85% through automation and proactive documentation.</li>
+              <li>Served as Subject Matter Expert for Identity Federation, OpenID Connect, and SAML 2.0.</li>
+              <li>Analyzed complex authentication failures via deep-dive HAR and packet capture investigation.</li>
+            </ul>
+          </div>
+
+          <div class="experience-item">
+            <div class="exp-header">
+              <div class="exp-role">Software Engineer</div>
+              <div class="exp-dates">Oct 2023 – Jul 2024</div>
+            </div>
+            <div class="exp-company">Amazing Grace Home Living • Palm Harbor, FL</div>
+            <ul class="exp-bullets">
+              <li>Engineered Azure AD and Cisco ISE integrations to streamline secure internal access.</li>
+              <li>Automated user lifecycle management via PowerShell, reducing manual effort by ~40%.</li>
+              <li>Optimized cloud infrastructure security postures through regular vulnerability assessments.</li>
+            </ul>
+          </div>
+
+          <div class="experience-item">
+            <div class="exp-header">
+              <div class="exp-role">Identity & Access Specialist</div>
+              <div class="exp-dates">Jun 2018 – Dec 2021</div>
+            </div>
+            <div class="exp-company">TechFlow Solutions • Remote / FL</div>
+            <ul class="exp-bullets">
+              <li>Led small-scale identity migrations from on-prem AD to Azure AD for mid-sized enterprises.</li>
+              <li>Developed custom PowerShell scripts for bulk license management and auditing.</li>
+            </ul>
+          </div>
+        </section>
+      </div>
+
+      <div class="main-right">
+        <section class="section-card">
+          <div class="section-header">
+            <div class="section-title">Technical Skills</div>
+          </div>
+          
+          <div class="skill-category">
+            <div class="skill-category-title">Identity & Access</div>
+            <div class="pill-row">
+              <div class="pill">Entra ID (Azure AD)</div>
+              <div class="pill">GCP IAM</div>
+              <div class="pill">OAuth 2.0</div>
+              <div class="pill">OIDC</div>
+              <div class="pill">SAML 2.0</div>
+              <div class="pill">SSO</div>
+              <div class="pill">RBAC</div>
+            </div>
+          </div>
+
+          <div class="skill-category">
+            <div class="skill-category-title">Security & Networking</div>
+            <div class="pill-row">
+              <div class="pill">Cisco Cloud WAF</div>
+              <div class="pill">Zero Trust</div>
+              <div class="pill">Palo Alto VPN</div>
+              <div class="pill">Wireshark</div>
+              <div class="pill">Layer-7 Protection</div>
+              <div class="pill">Cisco ISE</div>
+            </div>
+          </div>
+
+          <div class="skill-category">
+            <div class="skill-category-title">Automation & Languages</div>
+            <div class="pill-row">
+              <div class="pill">PowerShell</div>
+              <div class="pill">Python</div>
+              <div class="pill">JavaScript</div>
+              <div class="pill">Google Apps Script</div>
+              <div class="pill">GitHub Actions</div>
+              <div class="pill">Firebase</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-card">
+            <div class="section-header">
+              <div class="section-title">Education & Certs</div>
+            </div>
+            
+            <span class="subsection-title">Education</span>
+            <div class="edu-item">
+                <strong>Information Technology & Systems</strong>
+                University of South Florida
+                <span>Tampa, FL</span>
+            </div>
+
+            <span class="subsection-title">Certifications</span>
+            <div class="cert-item">
+                <strong>Microsoft Certified: Identity and Access Administrator Associate (SC-300)</strong>
+            </div>
+            <div class="cert-item">
+                <strong>Google Cloud Digital Leader</strong>
+            </div>
+            <div class="cert-item">
+                <strong>CompTIA Security+ SYO-601</strong>
+            </div>
+            <div class="cert-item">
+                <strong>Cisco Certified Network Associate (CCNA)</strong>
+            </div>
+        </section>
+
+        <section class="section-card">
+            <div class="section-header">
+              <div class="section-title">Philosophy</div>
+            </div>
+            <p class="summary-text" style="font-style: italic; font-size: 0.85rem;">
+                "Security is not a final state, but a continuous process of verification. My goal is to build identity perimeters that are as invisible to users as they are impenetrable to adversaries."
+            </p>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <div>&copy; 2026 Nicholai Maro Madias. Built with Inter &amp; Tailwind principles.</div>
+      <div class="footer-links">
+        <a href="https://linkedin.com/in/nicholaimadias">LinkedIn</a>
+        <a href="https://github.com/nicholaimadias">GitHub</a>
+        <a href="mailto:nicholai@amazinggracehl.org">Email</a>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
+
+```
