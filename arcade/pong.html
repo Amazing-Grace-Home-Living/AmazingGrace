@@ -6,21 +6,19 @@
   <meta name="description" content="Play a fast, mobile-friendly Pong game with single-player, two-player, sound, and powerup settings." />
   <meta name="theme-color" content="#0f172a" />
   <title>Pong Game | Amazing Grace</title>
-  <link rel="stylesheet" href="../theme.css" />
+  <link rel="stylesheet" href="pong.css" />
 </head>
 <body>
-  <header class="page-header">
-    <h1>Pong Game</h1>
-    <p class="subtitle">Fast, responsive arcade gameplay optimized for mobile and desktop.</p>
-  </header>
+  <main class="pong-page">
+    <header class="page-header">
+      <h1>Pong Game</h1>
+      <p class="subtitle">Fast, responsive arcade gameplay optimized for mobile and desktop.</p>
+    </header>
 
-  <main class="game-page">
     <section class="game-toolbar" aria-label="Game controls">
       <button id="mode-btn" type="button">Switch to 2 Player Mode</button>
       <button id="theme-btn" type="button">Switch to Light Theme</button>
-      <button id="settings-btn" type="button" aria-haspopup="dialog" aria-controls="settings-modal">
-        Game Settings ⚙️
-      </button>
+      <button id="settings-btn" type="button" aria-haspopup="dialog" aria-controls="settings-modal">Game Settings ⚙️</button>
       <button id="fullscreen-btn" type="button">Fullscreen</button>
     </section>
 
@@ -34,52 +32,47 @@
 
     <section class="game-shell" aria-label="Pong game area">
       <div class="canvas-wrap">
-        <canvas id="pong" width="800" height="500" aria-label="Pong game canvas" role="img"></canvas>
+        <canvas id="pong" width="800" height="500" aria-label="Pong game canvas"></canvas>
       </div>
-
       <div id="message" aria-live="polite" role="status"></div>
-
       <button id="restart-btn" type="button" hidden>Restart Game</button>
     </section>
 
     <section class="game-details" aria-label="Instructions and game details">
       <h2>How to Play</h2>
-      <p>Use the controls to switch modes, adjust sound and powerups, and restart when a match ends.</p>
-      <p>For the best mobile experience, use fullscreen mode and keep your device in landscape orientation.</p>
+      <p>Move your paddle with mouse, touch, or keyboard. Use W/S for Player 1 and Arrow Up/Down for Player 2.</p>
+      <p>Instructions and settings stay below the game for a cleaner fullscreen mobile layout.</p>
     </section>
   </main>
 
-  <div id="settings-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="settings-title" aria-hidden="true">
+  <div id="settings-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="settings-title" aria-hidden="true" hidden>
     <div class="modal-content">
       <button id="close-modal" class="close" type="button" aria-label="Close settings">&times;</button>
-
       <h2 id="settings-title">Game Settings</h2>
 
       <label for="win-score-input">Winning Score</label>
       <input type="number" id="win-score-input" min="1" max="20" value="5" />
 
       <label for="ball-speed-input">Ball Speed</label>
-      <input type="range" id="ball-speed-input" min="3" max="15" value="6" />
-      <span id="ball-speed-label">6</span>
+      <div class="range-row">
+        <input type="range" id="ball-speed-input" min="3" max="15" value="6" />
+        <span id="ball-speed-label">6</span>
+      </div>
 
-      <label for="sound-toggle">
+      <label class="toggle-row" for="sound-toggle">
         <input type="checkbox" id="sound-toggle" checked />
-        Enable Sound
+        <span>Enable Sound</span>
       </label>
 
-      <label for="powerup-toggle">
+      <label class="toggle-row" for="powerup-toggle">
         <input type="checkbox" id="powerup-toggle" checked />
-        Enable Powerups
+        <span>Enable Powerups</span>
       </label>
 
       <button id="apply-settings-btn" type="button">Apply</button>
     </div>
   </div>
 
-  <audio id="sound-paddle" preload="auto" src="https://cdn.pixabay.com/audio/2022/07/26/audio_123rf1.mp3"></audio>
-  <audio id="sound-wall" preload="auto" src="https://cdn.pixabay.com/audio/2022/07/26/audio_123rf2.mp3"></audio>
-  <audio id="sound-score" preload="auto" src="https://cdn.pixabay.com/audio/2022/07/26/audio_123rf3.mp3"></audio>
-
-  <script src="../script.js"></script>
+  <script src="pong.js"></script>
 </body>
 </html>
