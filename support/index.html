@@ -341,7 +341,7 @@
         <p>&copy; 2026 Amazing Grace Home Living &mdash; <a href="../">amazinggracehl.org</a></p>
     </footer>
 
-    <!-- ── Voice of Jesus Ministries Donation Modal ──────────────────── -->
+    <!-- ── Mission Support Donation Modal ────────────────────────────── -->
     <div id="donation-modal" role="dialog" aria-modal="true" aria-labelledby="donation-modal-title"
          style="display:none;position:fixed;inset:0;z-index:10000;align-items:center;justify-content:center;padding:1rem">
 
@@ -360,11 +360,11 @@
             <div style="text-align:center;margin-bottom:1.5rem">
                 <div style="font-size:2.5rem;margin-bottom:.5rem">✝️</div>
                 <h2 id="donation-modal-title" style="font-family:'Playfair Display',serif;font-size:1.5rem;color:#f59e0b;margin:0 0 .4rem">
-                    Voice of Jesus Ministries
+                    Mission Support
                 </h2>
                 <p style="color:#94a3b8;font-size:.875rem;line-height:1.5;margin:0">
-                    Your gift provides stable housing, faith education, and community support.<br>
-                    <strong style="color:#7effd8">Supporters unlock the Bonus Game Vault 🎮</strong>
+                    Select an amount, then email or call us to complete your gift directly.<br>
+                    <strong style="color:#7effd8">If your support is for summer camp, mention it and we will earmark it.</strong>
                 </p>
             </div>
 
@@ -406,14 +406,18 @@
 
             </div>
 
-            <!-- PayPal button -->
+            <!-- Direct contact actions -->
             <div style="text-align:center">
-                <a id="paypal-donate-btn" href="#" target="_blank" rel="noopener noreferrer"
+                <a id="donation-email-btn" href="#"
                    style="display:inline-flex;align-items:center;gap:.5rem;background:#f59e0b;color:#000;font-weight:700;padding:.75rem 2rem;border-radius:10px;text-decoration:none;font-size:1rem;transition:background .2s;border:none">
-                    <img src="https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-34px.png" alt="PayPal" style="height:20px;vertical-align:middle"> Donate via PayPal
+                    ✉️ Email Your Gift
+                </a>
+                <a href="tel:+17274202873"
+                   style="display:inline-flex;align-items:center;gap:.5rem;margin-left:.75rem;background:rgba(255,255,255,0.06);color:#e2e8f0;font-weight:700;padding:.75rem 1.5rem;border-radius:10px;text-decoration:none;font-size:1rem;transition:background .2s;border:1px solid rgba(245,158,11,0.25)">
+                    📞 Call 727-420-2873
                 </a>
                 <p style="color:#64748b;font-size:.75rem;margin-top:.75rem;line-height:1.4">
-                    After your donation, PayPal will redirect you back to unlock the Bonus Game Vault.
+                    Online PayPal giving is temporarily unavailable, so we will follow up personally to complete your donation.
                 </p>
             </div>
 
@@ -449,26 +453,33 @@
 
     <script>
     (function () {
-        var PAYPAL_BUSINESS = 'admin@amazinggracehl.org';
-        var RETURN_URL = 'https://amazinggracehl.org/arcade/?unlock=bonus_games';
-        var CANCEL_URL = 'https://amazinggracehl.org/support/';
+        var CONTACT_EMAIL = 'admin@amazinggracehl.org';
 
         var modal = document.getElementById('donation-modal');
         var openBtn = document.getElementById('open-donation-modal');
         var closeBtn = document.getElementById('close-donation-modal');
         var backdrop = document.getElementById('donation-backdrop');
-        var paypalBtn = document.getElementById('paypal-donate-btn');
+        var emailBtn = document.getElementById('donation-email-btn');
         var selectedAmount = 40;
         var selectedLabel = 'Chromebook Sponsorship';
 
-        function buildPayPalUrl(amount, itemName) {
-            return 'https://www.paypal.com/donate/?business=' +
-                encodeURIComponent(PAYPAL_BUSINESS) +
-                '&amount=' + encodeURIComponent(amount) +
-                '&currency_code=USD' +
-                '&item_name=' + encodeURIComponent(itemName) +
-                '&return=' + encodeURIComponent(RETURN_URL) +
-                '&cancel_return=' + encodeURIComponent(CANCEL_URL);
+        function buildEmailUrl(amount, itemName) {
+            var subject = 'Mission Support — ' + itemName + ' ($' + amount + ')';
+            var body = [
+                'Hello Amazing Grace Home Living,',
+                '',
+                'I would like to support the mission with a $' + amount + ' gift for ' + itemName + '.',
+                'If this donation is for summer camp, please earmark it for summer camp.',
+                'Otherwise, please apply it to the most urgent outreach need.',
+                '',
+                'Please contact me with the next steps to complete the donation.',
+                '',
+                'Thank you.'
+            ].join('\n');
+
+            return 'mailto:' + CONTACT_EMAIL +
+                '?subject=' + encodeURIComponent(subject) +
+                '&body=' + encodeURIComponent(body);
         }
 
         function selectTier(btn) {
@@ -480,7 +491,7 @@
             btn.setAttribute('aria-pressed', 'true');
             selectedAmount = btn.dataset.amount;
             selectedLabel  = btn.dataset.label;
-            paypalBtn.href = buildPayPalUrl(selectedAmount, selectedLabel);
+            if (emailBtn) emailBtn.href = buildEmailUrl(selectedAmount, selectedLabel);
         }
 
         // Pre-select the $40 Chromebook tier
