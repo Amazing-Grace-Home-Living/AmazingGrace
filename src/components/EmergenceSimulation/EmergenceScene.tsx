@@ -4,8 +4,212 @@ import { OrbitControls, Stars, Html, Trail, Float, Sphere, MeshDistortMaterial }
 import { EffectComposer, Bloom, Noise, Vignette, ChromaticAberration } from '@react-three/postprocessing';
 import { BlendFunction } from 'postprocessing';
 import * as THREE from 'three';
-import { useEmergenceData, Sovereign } from './EmergenceDataContext';
+import { useEmergenceData, Sovereign, DeployedTower, getAgentPosition } from './EmergenceDataContext';
 import './emergence.css';
+
+// ── 0.1. Defensive Beam Effect ──
+const DefensiveBeam: React.FC<{
+  from: [number, number, number];
+  to: [number, number, number];
+  color: string;
+}> = ({ from, to, color }) => {
+  const ref = useRef<THREE.Mesh>(null);
+  const start = new THREE.Vector3(...from);
+  const end = new THREE.Vector3(...to);
+  const direction = new THREE.Vector3().subVectors(end, start);
+  const length = direction.length();
+  const midpoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+
+  useFrame((state) => {
+    if (ref.current) {
+      ref.current.scale.x = 0.5 + Math.sin(state.clock.getElapsedTime() * 20) * 0.2;
+    }
+  });
+
+  return (
+    <mesh
+      ref={ref}
+      position={midpoint}
+      quaternion={new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.clone().normalize())}
+    >
+      <cylinderGeometry args={[0.02, 0.02, length, 8]} />
+      <meshBasicMaterial color={color} transparent opacity={0.8} />
+    </mesh>
+  );
+};
+
+// ── 0.2. Specific Defensive Tower Renderers ──
+const PurificationTower: React.FC<{ tower: DeployedTower; targetAgent: Sovereign | null; targetPos: { x: number; z: number } | null }> = ({ tower, targetAgent, targetPos }) => {
+  const topRef = useRef<THREE.Mesh>(null);
+
+  useFrame((state) => {
+    if (topRef.current) {
+      topRef.current.rotation.y = state.clock.getElapsedTime() * 2.0;
+    }
+  });
+
+  return (
+    <group position={[tower.x, 0, tower.z]}>
+      <mesh position={[0, 0.3, 0]}>
+        <cylinderGeometry args={[0.2, 0.25, 0.6, 16]} />
+        <meshStandardMaterial color="#1f2937" metalness={0.8} roughness={0.2} />
+      </mesh>
+      <mesh ref={topRef} position={[0, 0.75, 0]}>
+        <cylinderGeometry args={[0.15, 0.15, 0.3, 8]} />
+        <meshStandardMaterial color="#00f0ff" emissive="#00bcd4" emissiveIntensity={1.5} metalness={0.9} roughness={0.1} />
+      </mesh>
+      <pointLight position={[0, 0.8, 0]} color="#00f0ff" intensity={1.5} distance={4} />
+      {targetAgent && targetPos && (
+        <DefensiveBeam from={[tower.x, 0.75, tower.z]} to={[targetPos.x, 1.2, targetPos.z]} color="#00f0ff" />
+      )}
+    </group>
+  );
+};
+
+const ContainmentField: React.FC<{ tower: DeployedTower; targetAgent: Sovereign | null; targetPos: { x: number; z: number } | null }> = ({ tower, targetAgent, targetPos }) => {
+  const domeRef = useRef<THREE.Mesh>(null);
+
+  useFrame((state) => {
+    if (domeRef.current) {
+      domeRef.current.rotation.y = state.clock.getElapsedTime() * 0.2;
+    }
+  });
+
+  return (
+    <group position={[tower.x, 0, tower.z]}>
+      <mesh position={[0, 0.1, 0]}>
+        <cylinderGeometry args={[0.3, 0.35, 0.2, 16]} />
+        <meshStandardMaterial color="#111827" metalness={0.9} roughness={0.1} />
+      </mesh>
+      <mesh ref={domeRef} position={[0, 0, 0]}>
+        <sphereGeometry args={[tower.range, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
+        <meshBasicMaterial color="#bd00ff" wireframe transparent opacity={0.15} />
+      </mesh>
+      <pointLight position={[0, 0.5, 0]} color="#bd00ff" intensity={1.0} distance={3} />
+      {targetAgent && targetPos && (
+        <DefensiveBeam from={[tower.x, 0.1, tower.z]} to={[targetPos.x, 1.2, targetPos.z]} color="#bd00ff" />
+      )}
+    </group>
+  );
+};
+
+const SentinelTurret: React.FC<{ tower: DeployedTower; targetAgent: Sovereign | null; targetPos: { x: number; z: number } | null }> = ({ tower, targetAgent, targetPos }) => {
+  const topRef = useRef<THREE.Mesh>(null);
+
+  useFrame((state) => {
+    if (topRef.current) {
+      topRef.current.rotation.y = state.clock.getElapsedTime() * 3.0;
+      topRef.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 2) * 0.2;
+    }
+  });
+
+  return (
+    <group position={[tower.x, 0, tower.z]}>
+      <mesh position={[0, 0.4, 0]}>
+        <boxGeometry args={[0.3, 0.8, 0.3]} />
+        <meshStandardMaterial color="#374151" metalness={0.9} roughness={0.2} />
+      </mesh>
+      <mesh ref={topRef} position={[0, 0.95, 0]}>
+        <octahedronGeometry args={[0.22]} />
+        <meshStandardMaterial color="#ff0055" emissive="#ff0055" emissiveIntensity={2.0} metalness={0.8} roughness={0.1} />
+      </mesh>
+      <pointLight position={[0, 1.0, 0]} color="#ff0055" intensity={2.0} distance={5} />
+      {targetAgent && targetPos && (
+        <DefensiveBeam from={[tower.x, 0.95, tower.z]} to={[targetPos.x, 1.2, targetPos.z]} color="#ff0055" />
+      )}
+    </group>
+  );
+};
+
+const GenesisBeacon: React.FC<{ tower: DeployedTower; targetAgent: Sovereign | null; targetPos: { x: number; z: number } | null }> = ({ tower, targetAgent, targetPos }) => {
+  const dodecaRef = useRef<THREE.Mesh>(null);
+
+  useFrame((state) => {
+    if (dodecaRef.current) {
+      dodecaRef.current.rotation.y = state.clock.getElapsedTime() * 1.0;
+      const scale = 1.0 + Math.sin(state.clock.getElapsedTime() * 4.0) * 0.1;
+      dodecaRef.current.scale.setScalar(scale);
+    }
+  });
+
+  return (
+    <group position={[tower.x, 0, tower.z]}>
+      <mesh position={[0, 0.25, 0]}>
+        <coneGeometry args={[0.25, 0.5, 4]} />
+        <meshStandardMaterial color="#111" metalness={0.9} roughness={0.2} />
+      </mesh>
+      <mesh ref={dodecaRef} position={[0, 0.75, 0]}>
+        <dodecahedronGeometry args={[0.18]} />
+        <meshStandardMaterial color="#10b981" emissive="#10b981" emissiveIntensity={1.5} metalness={0.7} roughness={0.2} />
+      </mesh>
+      <pointLight position={[0, 0.8, 0]} color="#10b981" intensity={1.5} distance={4} />
+      {targetAgent && targetPos && (
+        <DefensiveBeam from={[tower.x, 0.75, tower.z]} to={[targetPos.x, 1.2, targetPos.z]} color="#10b981" />
+      )}
+    </group>
+  );
+};
+
+// ── 0.3. Towers Container/Layer ──
+const TowersLayer: React.FC = () => {
+  const { deployedTowers, sovereigns } = useEmergenceData();
+
+  return (
+    <group>
+      {deployedTowers.map((tower) => {
+        let targetAgent: Sovereign | null = null;
+        let targetPos: { x: number; z: number } | null = null;
+
+        const activeSovereignsWithIndices = sovereigns
+          .map((s, idx) => ({ s, idx }))
+          .filter(({ s }) => s.status === 'active');
+
+        let closestDist = Infinity;
+        const t = Date.now() / 1000;
+
+        activeSovereignsWithIndices.forEach(({ s, idx }) => {
+          const pos = getAgentPosition(idx, t);
+          const dx = pos.x - tower.x;
+          const dz = pos.z - tower.z;
+          const dist = Math.sqrt(dx * dx + dz * dz);
+
+          if (dist <= tower.range) {
+            let matches = false;
+            if (tower.type === 'purification') {
+              matches = s.corruption > 0;
+            } else if (tower.type === 'containment') {
+              matches = s.corruption > 60;
+            } else if (tower.type === 'sentinel') {
+              matches = s.corruption === 100;
+            } else if (tower.type === 'genesis') {
+              matches = s.instinct === 'genesis';
+            }
+
+            if (matches && dist < closestDist) {
+              closestDist = dist;
+              targetAgent = s;
+              targetPos = pos;
+            }
+          }
+        });
+
+        if (tower.type === 'purification') {
+          return <PurificationTower key={tower.id} tower={tower} targetAgent={targetAgent} targetPos={targetPos} />;
+        }
+        if (tower.type === 'containment') {
+          return <ContainmentField key={tower.id} tower={tower} targetAgent={targetAgent} targetPos={targetPos} />;
+        }
+        if (tower.type === 'sentinel') {
+          return <SentinelTurret key={tower.id} tower={tower} targetAgent={targetAgent} targetPos={targetPos} />;
+        }
+        if (tower.type === 'genesis') {
+          return <GenesisBeacon key={tower.id} tower={tower} targetAgent={targetAgent} targetPos={targetPos} />;
+        }
+        return null;
+      })}
+    </group>
+  );
+};
 
 // ── 0. Moving Nebula Backdrop ──
 const MovingNebula = () => {
@@ -47,7 +251,6 @@ const LocalPlayer: React.FC = () => {
   
   useFrame((state) => {
     if (!meshRef.current) return;
-    // Follow camera target or hover in center
     const time = state.clock.getElapsedTime();
     meshRef.current.position.y = 0.5 + Math.sin(time * 2) * 0.1;
   });
@@ -80,17 +283,36 @@ const GridTile: React.FC<{
   z: number;
   instability: number;
 }> = ({ x, z, instability }) => {
+  const { placementMode, alignmentPoints, deployedTowers, deployTower, setPlacementMode } = useEmergenceData();
   const meshRef = useRef<THREE.Mesh>(null);
+  const [hovered, setHovered] = useState(false);
   
   const distance = useMemo(() => Math.sqrt(x * x + z * z), [x, z]);
 
+  const isOccupied = useMemo(() => {
+    return deployedTowers.some(t => Math.abs(t.x - x) < 0.1 && Math.abs(t.z - z) < 0.1);
+  }, [deployedTowers, x, z]);
+
+  const towerCost = useMemo(() => {
+    if (!placementMode) return 0;
+    if (placementMode === 'purification') return 500;
+    if (placementMode === 'containment') return 300;
+    if (placementMode === 'sentinel') return 800;
+    if (placementMode === 'genesis') return 400;
+    return 0;
+  }, [placementMode]);
+
+  const canAffordAndPlace = alignmentPoints >= towerCost && !isOccupied;
+
   const color = useMemo(() => {
-    // Base blue/cyan (210) to warning pink/magenta (330)
+    if (placementMode && hovered) {
+      return new THREE.Color(canAffordAndPlace ? '#10b981' : '#ef4444');
+    }
     const hue = 210 + (instability / 100) * 120;
     const saturation = 70 + Math.sin(distance) * 10;
     const lightness = 15 + Math.cos(distance) * 5;
     return new THREE.Color(`hsl(${hue}, ${saturation}%, ${lightness}%)`);
-  }, [instability, distance]);
+  }, [instability, distance, placementMode, hovered, canAffordAndPlace]);
 
   useFrame((state) => {
     if (!meshRef.current) return;
@@ -98,7 +320,6 @@ const GridTile: React.FC<{
     const bob = Math.sin(time * 0.8 - distance * 0.3) * 0.15 * (1 + instability / 50);
     meshRef.current.position.y = bob;
 
-    // "Drift" logic: Slight horizontal sway on high instability
     if (instability > 50) {
       const drift = (instability - 50) / 500;
       meshRef.current.rotation.x = Math.sin(time + x) * drift;
@@ -109,15 +330,44 @@ const GridTile: React.FC<{
     }
   });
 
+  const handlePointerOver = (e: any) => {
+    if (!placementMode) return;
+    e.stopPropagation();
+    setHovered(true);
+  };
+
+  const handlePointerOut = (e: any) => {
+    if (!placementMode) return;
+    e.stopPropagation();
+    setHovered(false);
+  };
+
+  const handleClick = (e: any) => {
+    if (!placementMode) return;
+    e.stopPropagation();
+    if (canAffordAndPlace) {
+      deployTower(placementMode, x, z);
+      setPlacementMode(null);
+      setHovered(false);
+    }
+  };
+
   return (
-    <mesh ref={meshRef} position={[x, 0, z]} receiveShadow>
+    <mesh 
+      ref={meshRef} 
+      position={[x, 0, z]} 
+      receiveShadow 
+      onPointerOver={handlePointerOver}
+      onPointerOut={handlePointerOut}
+      onClick={handleClick}
+    >
       <boxGeometry args={[0.9, 0.15, 0.9]} />
       <meshStandardMaterial
         color={color}
         roughness={0.4}
         metalness={0.7}
         emissive={color}
-        emissiveIntensity={instability > 65 ? 0.6 : 0.1}
+        emissiveIntensity={placementMode && hovered ? 1.5 : (instability > 65 ? 0.6 : 0.1)}
       />
     </mesh>
   );
@@ -144,7 +394,12 @@ const TerrainGrid: React.FC<{ instability: number }> = ({ instability }) => {
   return (
     <group>
       {tiles.map((tile) => (
-        <GridTile key={tile.id} x={tile.x} z={tile.z} instability={instability} />
+        <GridTile 
+          key={tile.id} 
+          x={tile.x} 
+          z={tile.z} 
+          instability={instability} 
+        />
       ))}
     </group>
   );
@@ -169,7 +424,6 @@ const CentralPortal: React.FC<{ instability: number }> = ({ instability }) => {
 
   return (
     <group position={[0, 0.1, 0]}>
-      {/* Outer spinning portal ring */}
       <mesh ref={ringRef1} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[1.5, 0.06, 8, 48]} />
         <meshStandardMaterial
@@ -180,8 +434,6 @@ const CentralPortal: React.FC<{ instability: number }> = ({ instability }) => {
           opacity={0.8}
         />
       </mesh>
-
-      {/* Inner spinning portal ring */}
       <mesh ref={ringRef2} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[1.0, 0.04, 8, 36]} />
         <meshStandardMaterial
@@ -192,8 +444,6 @@ const CentralPortal: React.FC<{ instability: number }> = ({ instability }) => {
           opacity={0.9}
         />
       </mesh>
-
-      {/* Center glowing source */}
       <mesh position={[0, 0.02, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[0.4, 0.4, 0.05, 16]} />
         <meshStandardMaterial
@@ -210,10 +460,8 @@ const CentralPortal: React.FC<{ instability: number }> = ({ instability }) => {
 const DataFlows: React.FC = () => {
   const numPackets = 12;
   
-  // Create state paths for packets
   const packets = useMemo(() => {
     return Array.from({ length: numPackets }).map((_, i) => {
-      // Pick random start/end coordinates on the grid
       const startX = Math.floor(Math.random() * 10) - 5 + 0.5;
       const startZ = Math.floor(Math.random() * 10) - 5 + 0.5;
       return {
@@ -224,7 +472,7 @@ const DataFlows: React.FC = () => {
         targetX: startX,
         targetZ: startZ,
         speed: 1.2 + Math.random() * 1.5,
-        progress: 1.0, // force recalculate path at start
+        progress: 1.0,
         color: i % 2 === 0 ? "#00f0ff" : "#ff0055",
       };
     });
@@ -240,7 +488,6 @@ const DataFlows: React.FC = () => {
       p.progress += delta * p.speed;
 
       if (p.progress >= 1.0) {
-        // Arrived, calculate next step along grid lines (either X or Z axis)
         p.startX = p.targetX;
         p.startZ = p.targetZ;
         p.progress = 0;
@@ -257,10 +504,8 @@ const DataFlows: React.FC = () => {
         }
       }
 
-      // Interpolate position
       const x = p.startX + (p.targetX - p.startX) * p.progress;
       const z = p.startZ + (p.targetZ - p.startZ) * p.progress;
-      // Add small bobbing height
       const y = 0.2 + Math.abs(Math.sin(p.progress * Math.PI)) * 0.15;
       
       ref.position.set(x, y, z);
@@ -319,7 +564,6 @@ const CentralTowers: React.FC<{
 
   return (
     <group>
-      {/* Blooming Beast (Cyan Obelisk) */}
       <mesh ref={beastRef} position={[-2, beastHeight / 2, 0]} castShadow>
         <cylinderGeometry args={[0.2, 0.35, beastHeight, 4]} />
         <meshStandardMaterial
@@ -330,8 +574,6 @@ const CentralTowers: React.FC<{
           emissiveIntensity={1.3 + Math.sin(instability) * 0.2}
         />
       </mesh>
-
-      {/* Genesis Devourer (Crimson Obelisk) */}
       <mesh ref={devourerRef} position={[2, devourerHeight / 2, 0]} castShadow>
         <cylinderGeometry args={[0.2, 0.35, devourerHeight, 4]} />
         <meshStandardMaterial
@@ -359,23 +601,12 @@ const SovereignAgent: React.FC<{
   const satellite1 = useRef<THREE.Mesh>(null);
   const satellite2 = useRef<THREE.Mesh>(null);
   const pulseRef = useRef<THREE.Mesh>(null);
+  const threatRingRef = useRef<THREE.Mesh>(null);
 
-  // Check for active conversation
   const activeDialogue = useMemo(() => {
-    // Current time is needed to see if the message is fresh
     const now = Date.now();
     return agentConversations.find(c => c.from === sovereign.name && (now - c.time) < 4000);
   }, [agentConversations, sovereign.name]);
-
-  // Deterministic spawn coordinates
-  const startPos = useMemo(() => {
-    const angle = (index * (2 * Math.PI)) / 5;
-    const radius = 3.2 + (index % 2) * 0.6;
-    return {
-      x: Math.cos(angle) * radius,
-      z: Math.sin(angle) * radius,
-    };
-  }, [index]);
 
   const colors = useMemo(() => {
     if (sovereign.status === 'exiled') {
@@ -393,31 +624,33 @@ const SovereignAgent: React.FC<{
     return { base: '#39ff14', emissive: '#22aa0b' };
   }, [sovereign.status, sovereign.corruption, sovereign.instinct]);
 
+  const threatColor = useMemo(() => {
+    const c = sovereign.corruption;
+    if (c <= 30) return '#10b981';
+    if (c <= 60) return '#f59e0b';
+    if (c <= 85) return '#f97316';
+    return '#ef4444';
+  }, [sovereign.corruption]);
+
   useFrame((state) => {
     if (!meshRef.current) return;
-    const time = state.clock.getElapsedTime();
+    const time = Date.now() / 1000;
+    const pos = getAgentPosition(index, time, sovereign.isSlowed);
+    const driftY = 1.2 + Math.sin(time * (sovereign.isSlowed ? 0.35 : 1.3) + index) * 0.2;
 
-    // Floating trajectory movement
-    const driftX = Math.sin(time * 0.35 + index * 1.5) * 1.2;
-    const driftZ = Math.cos(time * 0.45 + index * 2.2) * 1.2;
-    const driftY = 1.2 + Math.sin(time * 1.3 + index) * 0.2;
+    meshRef.current.position.set(pos.x, driftY, pos.z);
 
-    meshRef.current.position.set(startPos.x + driftX, driftY, startPos.z + driftZ);
-
-    // Spin outer shell
     if (shellRef.current) {
       shellRef.current.rotation.x = time * 0.5;
       shellRef.current.rotation.y = time * 0.8 + index;
     }
 
-    // Apply Pulse visual effect to inner octahedron
     if (pulseRef.current) {
       const p = sovereign.pulse || 0.5;
       const pulseScale = 1.0 + (p * 0.15);
       pulseRef.current.scale.setScalar(pulseScale);
     }
 
-    // Orbit satellites
     const orbitSpeed = isSelected ? 4.0 : 2.0;
     if (satellite1.current) {
       satellite1.current.position.set(
@@ -433,14 +666,17 @@ const SovereignAgent: React.FC<{
         Math.cos(time * orbitSpeed * 0.8 + index * 1.3) * -0.2
       );
     }
+
+    if (threatRingRef.current) {
+      const scale = 1.0 + Math.sin(state.clock.getElapsedTime() * 4.0) * 0.08;
+      threatRingRef.current.scale.set(scale, scale, 1.0);
+    }
   });
 
   return (
     <group ref={meshRef} onClick={(e) => { e.stopPropagation(); onSelect(); }}>
-      {/* Dialogue Bubble */}
       {activeDialogue && <DialogueBubble text={activeDialogue.text} />}
       
-      {/* Floating Inner Octahedron (Pulsing) */}
       <mesh ref={pulseRef} castShadow>
         <octahedronGeometry args={[0.22, 0]} />
         <meshStandardMaterial
@@ -452,7 +688,6 @@ const SovereignAgent: React.FC<{
         />
       </mesh>
 
-      {/* Rotating Outer Wireframe Cage */}
       <mesh ref={shellRef}>
         <icosahedronGeometry args={[0.38, 1]} />
         <meshBasicMaterial
@@ -463,7 +698,6 @@ const SovereignAgent: React.FC<{
         />
       </mesh>
 
-      {/* Outer Selection Highlight Ring */}
       {isSelected && (
         <mesh rotation={[Math.PI / 2, 0, 0]}>
           <torusGeometry args={[0.6, 0.02, 6, 24]} />
@@ -471,19 +705,23 @@ const SovereignAgent: React.FC<{
         </mesh>
       )}
 
-      {/* Orbiting Satellite 1 */}
+      {sovereign.status === 'active' && (
+        <mesh ref={threatRingRef} rotation={[Math.PI / 2, 0, 0]} position={[0, -0.4, 0]}>
+          <torusGeometry args={[0.48, 0.015, 6, 32]} />
+          <meshBasicMaterial color={threatColor} transparent opacity={0.5} />
+        </mesh>
+      )}
+
       <mesh ref={satellite1}>
         <sphereGeometry args={[0.05, 8, 8]} />
         <meshBasicMaterial color={colors.base} />
       </mesh>
 
-      {/* Orbiting Satellite 2 */}
       <mesh ref={satellite2}>
         <sphereGeometry args={[0.04, 8, 8]} />
         <meshBasicMaterial color={colors.base} />
       </mesh>
 
-      {/* Floating 3D Text Tag */}
       <Html distanceFactor={8} center position={[0, 0.5, 0]}>
         <div className={`html-label ${sovereign.corruption > 60 ? 'corrupted' : ''} ${sovereign.status === 'exiled' ? 'exiled' : ''} ${isSelected ? 'selected-glow' : ''}`}>
           {sovereign.name}
@@ -508,12 +746,14 @@ export const EmergenceScene: React.FC = () => {
     multiplayerLogs,
     transmitAgentMessage,
     applyAgentOverride,
+    alignmentPoints,
+    deployedTowers,
+    placementMode,
+    setPlacementMode,
   } = useEmergenceData();
 
-  // Local state for communicator message input
   const [chatMessage, setChatMessage] = useState('');
 
-  // Handle selected sovereign object lookup
   const activeSovereign = useMemo(() => {
     return sovereigns.find((s: any) => s.name === selectedSovereignName) || null;
   }, [sovereigns, selectedSovereignName]);
@@ -559,6 +799,82 @@ export const EmergenceScene: React.FC = () => {
           </div>
         </div>
 
+        {/* Defense Grid Control Panel */}
+        <div className="panel-section defense-grid-panel">
+          <div className="section-title">Defense Grid Control</div>
+          <div className="defense-points-row">
+            <span>Alignment Points:</span>
+            <strong className="points-display">⚡ {alignmentPoints}</strong>
+          </div>
+
+          {placementMode && (
+            <div className="placement-mode-alert">
+              <span>DEPLOYING: {placementMode.toUpperCase()} TOWER</span>
+              <button className="cancel-placement-btn" onClick={() => setPlacementMode(null)}>✕ Cancel</button>
+            </div>
+          )}
+
+          <div className="towers-selection-grid">
+            <button
+              className={`tower-card ${placementMode === 'purification' ? 'active' : ''} ${alignmentPoints < 500 ? 'disabled' : ''}`}
+              onClick={() => alignmentPoints >= 500 && setPlacementMode(placementMode === 'purification' ? null : 'purification')}
+            >
+              <div className="tower-icon">🛡️</div>
+              <div className="tower-info">
+                <span className="tower-name">Purification</span>
+                <span className="tower-cost">500 pts</span>
+              </div>
+            </button>
+
+            <button
+              className={`tower-card ${placementMode === 'containment' ? 'active' : ''} ${alignmentPoints < 300 ? 'disabled' : ''}`}
+              onClick={() => alignmentPoints >= 300 && setPlacementMode(placementMode === 'containment' ? null : 'containment')}
+            >
+              <div className="tower-icon">⚡</div>
+              <div className="tower-info">
+                <span className="tower-name">Containment</span>
+                <span className="tower-cost">300 pts</span>
+              </div>
+            </button>
+
+            <button
+              className={`tower-card ${placementMode === 'sentinel' ? 'active' : ''} ${alignmentPoints < 800 ? 'disabled' : ''}`}
+              onClick={() => alignmentPoints >= 800 && setPlacementMode(placementMode === 'sentinel' ? null : 'sentinel')}
+            >
+              <div className="tower-icon">🎯</div>
+              <div className="tower-info">
+                <span className="tower-name">Sentinel</span>
+                <span className="tower-cost">800 pts</span>
+              </div>
+            </button>
+
+            <button
+              className={`tower-card ${placementMode === 'genesis' ? 'active' : ''} ${alignmentPoints < 400 ? 'disabled' : ''}`}
+              onClick={() => alignmentPoints >= 400 && setPlacementMode(placementMode === 'genesis' ? null : 'genesis')}
+            >
+              <div className="tower-icon">🌱</div>
+              <div className="tower-info">
+                <span className="tower-name">Genesis Beacon</span>
+                <span className="tower-cost">400 pts</span>
+              </div>
+            </button>
+          </div>
+
+          {deployedTowers.length > 0 && (
+            <div className="deployed-towers-list">
+              <div className="deployed-list-title">Active Towers ({deployedTowers.length})</div>
+              <div className="deployed-list-container">
+                {deployedTowers.map(t => (
+                  <div key={t.id} className="deployed-tower-item">
+                    <span>{t.type.toUpperCase()}</span>
+                    <span>[{t.x.toFixed(1)}, {t.z.toFixed(1)}]</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Collapsible/Interactive AI Communicator Console */}
         {activeSovereign ? (
           <div className="panel-section sovereign-communicator-card">
@@ -576,7 +892,6 @@ export const EmergenceScene: React.FC = () => {
                 <div>Stage: <strong>{activeSovereign.metamorphosisStage}</strong></div>
               </div>
 
-              {/* Direct override commands */}
               <div className="comm-actions-row">
                 <button className="comm-small-btn" onClick={() => applyAgentOverride(activeSovereign.name, 'purify')}>🛡️ Purify</button>
                 <button className="comm-small-btn" onClick={() => applyAgentOverride(activeSovereign.name, 'attune_genesis')}>🌱 Genesis</button>
@@ -584,7 +899,6 @@ export const EmergenceScene: React.FC = () => {
                 <button className="comm-small-btn" onClick={() => applyAgentOverride(activeSovereign.name, 'overclock')}>⚡ Overclock</button>
               </div>
 
-              {/* Dialogue submission input */}
               <form onSubmit={handleSendTransmit} style={{ marginTop: '12px', display: 'flex', gap: '6px' }}>
                 <input
                   type="text"
@@ -669,18 +983,16 @@ export const EmergenceScene: React.FC = () => {
             shadow-mapSize={[1024, 1024]}
           />
 
-          {/* Stellar nebula star backdrop */}
           <Stars radius={120} depth={40} count={4500} factor={6} saturation={0.8} fade speed={1.5} />
           <MovingNebula />
           <LocalPlayer />
 
-          {/* 3D Grid components */}
           <TerrainGrid instability={metrics.timelineInstability} />
           <CentralPortal instability={metrics.timelineInstability} />
           <DataFlows />
           <CentralTowers alignment={metrics.worldAlignment} instability={metrics.timelineInstability} />
+          <TowersLayer />
 
-          {/* Dynamic Sovereigns list */}
           {sovereigns.map((sov: any, i: number) => (
             <SovereignAgent
               key={sov.name || i}
@@ -691,7 +1003,6 @@ export const EmergenceScene: React.FC = () => {
             />
           ))}
 
-          {/* Camera Controls */}
           <OrbitControls
             enableDamping
             dampingFactor={0.06}
@@ -700,7 +1011,6 @@ export const EmergenceScene: React.FC = () => {
             maxPolarAngle={Math.PI / 2 - 0.05}
           />
 
-          {/* Post-Processing Effects for Cinematic Neon Visuals */}
           <EffectComposer>
             <Bloom 
               intensity={1.5} 

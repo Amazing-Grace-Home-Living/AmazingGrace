@@ -645,3 +645,159 @@ body, html {
   box-shadow: 0 0 10px rgba(57, 255, 20, 0.3) !important;
   font-weight: 800;
 }
+
+/* Tower Defense Security System Upgrade Styles */
+.defense-grid-panel {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.defense-points-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.points-display {
+  font-size: 1.1rem;
+  color: var(--neon-green);
+  text-shadow: 0 0 8px rgba(57, 255, 20, 0.4);
+  font-family: monospace;
+}
+
+.placement-mode-alert {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 0, 85, 0.1);
+  border: 1px solid var(--neon-magenta);
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.5px;
+  animation: pulse-glow 2s infinite alternate;
+}
+
+.cancel-placement-btn {
+  background: transparent;
+  border: none;
+  color: var(--neon-magenta);
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 0.8rem;
+  transition: opacity 0.2s ease;
+}
+
+.cancel-placement-btn:hover {
+  opacity: 0.8;
+}
+
+.towers-selection-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tower-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  outline: none;
+}
+
+.tower-card:hover:not(.disabled) {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.tower-card.active {
+  border-color: var(--neon-cyan);
+  background: rgba(0, 240, 255, 0.05);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.15);
+}
+
+.tower-card.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.tower-icon {
+  font-size: 1.25rem;
+}
+
+.tower-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.tower-name {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.tower-cost {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  font-family: monospace;
+}
+
+.deployed-towers-list {
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
+.deployed-list-title {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.deployed-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 80px;
+  overflow-y: auto;
+}
+
+.deployed-tower-item {
+  display: flex;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.65rem;
+  font-family: monospace;
+  color: #e2e8f0;
+}
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 4px rgba(255, 0, 85, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 12px rgba(255, 0, 85, 0.5);
+  }
+}
