@@ -99,7 +99,6 @@ function checkMutationUpgrade() {
     state.bossMutations.push('hybrid');
     if (typeof window.unlockLore === 'function') window.unlockLore('lf_core_fracture_analysis');
   }
-  }
 }
 
 /**
