@@ -647,17 +647,19 @@ export const EmergenceScene: React.FC = () => {
   const hoverPlacement = hoverCell ? validateTowerPlacement(hoverCell.x, hoverCell.z) : null;
   const selectedTowerRange = selectedTower ? towerConfig[selectedTower].range : 0;
 
+  const snapToGridCenter = (value: number) => Math.floor(value) + 0.5;
+
   const handleGridPointerMove = (event: ThreeEvent<PointerEvent>) => {
     if (!selectedTower) return;
-    const gridX = Math.round(event.point.x);
-    const gridZ = Math.round(event.point.z);
+    const gridX = snapToGridCenter(event.point.x);
+    const gridZ = snapToGridCenter(event.point.z);
     setHoverCell({ x: gridX, z: gridZ });
   };
 
   const handleGridClick = (event: ThreeEvent<MouseEvent>) => {
     if (!selectedTower) return;
-    const gridX = Math.round(event.point.x);
-    const gridZ = Math.round(event.point.z);
+    const gridX = snapToGridCenter(event.point.x);
+    const gridZ = snapToGridCenter(event.point.z);
     placeTower(gridX, gridZ);
     setHoverCell(null);
   };
