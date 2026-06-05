@@ -6,14 +6,17 @@
     <title>Matrix of Conscience — Duality Core</title>
     <link rel="icon" type="image/png" href="../../assets/logo.png">
     <script src="../../assets/vendor/hosted-only.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
             --neon-cyan: #00f3ff;
             --neon-magenta: #ff0055;
-            --matrix-dark: #07070d;
-            --glass-bg: rgba(15, 15, 30, 0.75);
-            --glass-border: rgba(0, 243, 255, 0.15);
-            --text-glow: 0 0 8px rgba(0, 243, 255, 0.6);
+            --neon-green: #00ff66;
+            --matrix-dark: #050508;
+            --glass-bg: rgba(10, 10, 18, 0.85);
+            --glass-border: rgba(0, 243, 255, 0.25);
+            --text-glow: 0 0 10px rgba(0, 243, 255, 0.8), 0 0 20px rgba(0, 243, 255, 0.4);
+            --magenta-glow: 0 0 10px rgba(255, 0, 85, 0.8), 0 0 20px rgba(255, 0, 85, 0.4);
         }
 
         body, html {
@@ -21,10 +24,25 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            background: var(--matrix-dark);
+            background: radial-gradient(circle at center, #11111a 0%, var(--matrix-dark) 100%);
             color: #fff;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-family: 'Share Tech Mono', monospace;
             overflow: hidden;
+        }
+
+        /* CRT Scanline Overlay */
+        body::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
         }
 
         #root {
@@ -33,49 +51,63 @@
             display: grid;
             grid-template-columns: 320px 1fr 380px;
             box-sizing: border-box;
-            padding: 10px;
-            gap: 10px;
+            padding: 15px;
+            gap: 15px;
+            position: relative;
+            z-index: 3;
         }
 
         .node-panel {
             background: var(--glass-bg);
-            backdrop-filter: blur(16px);
+            backdrop-filter: blur(12px);
             border: 1px solid var(--glass-border);
-            border-radius: 4px;
+            border-radius: 8px;
             padding: 20px;
             display: flex;
             flex-direction: column;
             box-sizing: border-box;
             overflow-y: auto;
+            box-shadow: inset 0 0 20px rgba(0, 243, 255, 0.05), 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .node-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+        .node-panel::-webkit-scrollbar-thumb {
+            background: var(--neon-cyan);
+            border-radius: 3px;
         }
 
         h2 {
-            font-size: 1.1rem;
-            font-family: monospace;
+            font-size: 1.2rem;
+            font-family: 'Share Tech Mono', monospace;
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-top: 0;
             border-bottom: 1px solid var(--glass-border);
-            padding-bottom: 8px;
+            padding-bottom: 10px;
             color: var(--neon-cyan);
             text-shadow: var(--text-glow);
         }
 
         .metric-group {
             margin-bottom: 20px;
-            font-family: monospace;
+            position: relative;
         }
 
         .metric-label {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
-            color: #aaa;
+            color: #7ab;
             margin-bottom: 4px;
+            letter-spacing: 1px;
         }
 
         .metric-value {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: bold;
+            text-shadow: 0 0 10px currentColor;
+            transition: color 0.3s ease;
         }
 
         #canvas-container {
@@ -83,76 +115,156 @@
             flex-grow: 1;
             width: 100%;
             height: 100%;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
         }
 
         canvas {
             width: 100%;
             height: 100%;
             display: block;
-            background: #020205;
+            background: transparent;
         }
 
         .slider-group {
-            margin-bottom: 15px;
-            font-family: monospace;
+            margin-bottom: 20px;
         }
         
         input[type=range] {
+            -webkit-appearance: none;
             width: 100%;
-            background: #222;
-            accent-color: var(--neon-cyan);
+            background: transparent;
+            margin-top: 8px;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #2a2a35;
+            border-radius: 2px;
+            border: 1px solid var(--glass-border);
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: var(--neon-cyan);
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -6px;
+            box-shadow: var(--text-glow);
         }
 
         .action-btn {
-            background: transparent;
+            background: rgba(0, 243, 255, 0.05);
             border: 1px solid var(--neon-cyan);
             color: #fff;
-            padding: 12px;
-            font-family: monospace;
-            font-size: 0.85rem;
+            padding: 14px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
             text-transform: uppercase;
+            letter-spacing: 1px;
             cursor: pointer;
-            margin-bottom: 10px;
-            transition: all 0.2s ease;
+            margin-bottom: 12px;
+            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             text-align: center;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .action-btn:hover::before {
+            left: 100%;
         }
 
         .action-btn:hover {
             background: rgba(0, 243, 255, 0.2);
-            box-shadow: var(--text-glow);
+            box-shadow: var(--text-glow), inset 0 0 10px rgba(0, 243, 255, 0.2);
+            text-shadow: 0 0 5px #fff;
+            transform: translateY(-2px);
         }
 
         .action-btn:disabled {
-            border-color: #444;
-            color: #444;
+            border-color: #333;
+            color: #555;
+            background: rgba(0,0,0,0.2);
             cursor: not-allowed;
             box-shadow: none;
+            transform: none;
+        }
+
+        #btn-cycle {
+            border-color: var(--neon-magenta);
+            background: rgba(255, 0, 85, 0.05);
+        }
+        #btn-cycle:hover {
+            background: rgba(255, 0, 85, 0.2);
+            box-shadow: var(--magenta-glow), inset 0 0 10px rgba(255, 0, 85, 0.2);
+        }
+        #btn-cycle::before {
+            background: linear-gradient(90deg, transparent, rgba(255, 0, 85, 0.2), transparent);
         }
 
         #event-card {
-            background: rgba(255, 0, 85, 0.05);
-            border-left: 3px solid var(--neon-magenta);
-            padding: 12px;
-            margin-bottom: 15px;
-            font-size: 0.85rem;
-            font-family: monospace;
-            line-height: 1.4;
+            background: rgba(255, 0, 85, 0.08);
+            border-left: 4px solid var(--neon-magenta);
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            border-radius: 0 4px 4px 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        #event-card strong {
+            color: var(--neon-magenta);
+            text-shadow: var(--magenta-glow);
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 8px;
         }
 
         #log-box {
-            background: rgba(0,0,0,0.5);
-            border: 1px solid #222;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(0, 255, 102, 0.2);
+            border-radius: 4px;
             flex-grow: 1;
-            padding: 10px;
-            font-size: 0.75rem;
-            font-family: monospace;
+            padding: 12px;
+            font-size: 0.8rem;
             overflow-y: auto;
-            color: #00ff66;
+            color: var(--neon-green);
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
         }
 
         .log-entry {
-            margin-bottom: 6px;
-            line-height: 1.3;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            opacity: 0;
+            animation: fadeIn 0.3s forwards;
+            border-left: 2px solid var(--neon-green);
+            padding-left: 8px;
+        }
+        
+        .log-entry.critical {
+            color: var(--neon-magenta);
+            border-left-color: var(--neon-magenta);
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
         }
 
         @media (max-width: 1024px) {
@@ -306,18 +418,17 @@
 
             initParticles() {
                 this.particles = [];
-                const cols = Math.floor(this.canvas.width / 40);
-                const rows = Math.floor(this.canvas.height / 40);
-                for (let i = 0; i < cols; i++) {
-                    for (let j = 0; j < rows; j++) {
-                        this.particles.push({
-                            x: i * 40 + 20,
-                            y: j * 40 + 20,
-                            baseRadius: 2,
-                            pulseSpeed: 0.02 + Math.random() * 0.03,
-                            angle: Math.random() * Math.PI
-                        });
-                    }
+                const numParticles = Math.floor((this.canvas.width * this.canvas.height) / 8000);
+                for (let i = 0; i < numParticles; i++) {
+                    this.particles.push({
+                        x: Math.random() * this.canvas.width,
+                        y: Math.random() * this.canvas.height,
+                        vx: (Math.random() - 0.5) * 1.5,
+                        vy: (Math.random() - 0.5) * 1.5,
+                        baseRadius: 1.5 + Math.random() * 2,
+                        pulseSpeed: 0.02 + Math.random() * 0.03,
+                        angle: Math.random() * Math.PI
+                    });
                 }
             }
 
@@ -415,7 +526,7 @@
             }
 
             render() {
-                this.ctx.fillStyle = 'rgba(7, 7, 13, 0.3)';
+                this.ctx.fillStyle = 'rgba(7, 7, 13, 0.25)';
                 this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
                 let systemHue = 180; 
@@ -423,18 +534,53 @@
                     systemHue = 180 - ((this.state.entropy - 50) * 3.6); 
                 }
 
+                const speedMult = 0.5 + (this.state.throughput / 50);
+
+                // Update and draw particles
                 this.particles.forEach(p => {
+                    // Movement
+                    p.x += p.vx * speedMult;
+                    p.y += p.vy * speedMult;
+
+                    // Bounce off edges
+                    if (p.x < 0 || p.x > this.canvas.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > this.canvas.height) p.vy *= -1;
+
                     p.angle += p.pulseSpeed;
-                    const scaleFactor = 1 + (this.state.entropy / 25);
+                    const scaleFactor = 1 + (this.state.entropy / 30);
                     const dynamicRadius = p.baseRadius + Math.sin(p.angle) * scaleFactor;
 
                     this.ctx.beginPath();
                     this.ctx.arc(p.x, p.y, Math.max(0.5, dynamicRadius), 0, Math.PI * 2);
                     
-                    const alpha = 0.15 + (this.state.alignment / 100) * 0.4;
-                    this.ctx.fillStyle = `hsla(${systemHue}, 100%, 50%, ${alpha})`;
+                    const alpha = 0.2 + (this.state.alignment / 100) * 0.5;
+                    this.ctx.fillStyle = `hsla(${systemHue}, 100%, 60%, ${alpha})`;
+                    this.ctx.shadowBlur = 10;
+                    this.ctx.shadowColor = `hsla(${systemHue}, 100%, 50%, 0.8)`;
                     this.ctx.fill();
+                    this.ctx.shadowBlur = 0; // reset
                 });
+
+                // Draw connecting lines
+                this.ctx.lineWidth = 1.0;
+                for (let i = 0; i < this.particles.length; i++) {
+                    for (let j = i + 1; j < this.particles.length; j++) {
+                        const p1 = this.particles[i];
+                        const p2 = this.particles[j];
+                        const dx = p1.x - p2.x;
+                        const dy = p1.y - p2.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < 120) {
+                            const opacity = 1 - (dist / 120);
+                            this.ctx.beginPath();
+                            this.ctx.moveTo(p1.x, p1.y);
+                            this.ctx.lineTo(p2.x, p2.y);
+                            this.ctx.strokeStyle = `hsla(${systemHue}, 100%, 60%, ${opacity * 0.5})`;
+                            this.ctx.stroke();
+                        }
+                    }
+                }
 
                 requestAnimationFrame(() => this.render());
             }
