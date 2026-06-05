@@ -623,11 +623,19 @@ export const EmergenceScene: React.FC = () => {
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key.toLowerCase() === 't') {
+      const target = event.target as HTMLElement | null;
+      const isTypingTarget =
+        !!target &&
+        (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
+
+      if (!isTypingTarget && event.key.toLowerCase() === 't') {
         event.preventDefault();
         toggleTowerPlacementMode();
       }
     };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [toggleTowerPlacementMode]);
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [toggleTowerPlacementMode]);
@@ -647,17 +655,19 @@ export const EmergenceScene: React.FC = () => {
   const hoverPlacement = hoverCell ? validateTowerPlacement(hoverCell.x, hoverCell.z) : null;
   const selectedTowerRange = selectedTower ? towerConfig[selectedTower].range : 0;
 
+  const snapToGridCenter = (value: number) => Math.floor(value) + 0.5;
+
   const handleGridPointerMove = (event: ThreeEvent<PointerEvent>) => {
     if (!selectedTower) return;
-    const gridX = Math.round(event.point.x);
-    const gridZ = Math.round(event.point.z);
+    const gridX = snapToGridCenter(event.point.x);
+    const gridZ = snapToGridCenter(event.point.z);
     setHoverCell({ x: gridX, z: gridZ });
   };
 
   const handleGridClick = (event: ThreeEvent<MouseEvent>) => {
     if (!selectedTower) return;
-    const gridX = Math.round(event.point.x);
-    const gridZ = Math.round(event.point.z);
+    const gridX = snapToGridCenter(event.point.x);
+    const gridZ = snapToGridCenter(event.point.z);
     placeTower(gridX, gridZ);
     setHoverCell(null);
   };
