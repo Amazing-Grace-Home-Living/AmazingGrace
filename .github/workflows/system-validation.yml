@@ -23,7 +23,23 @@ jobs:
           cache: npm
 
       - name: Install dependencies
+        # Temporary guard: Vite 7 and @vitejs/plugin-react peer ranges can conflict in CI.
+        # Remove --legacy-peer-deps after the plain npm ci probe below succeeds consistently.
         run: npm ci --legacy-peer-deps
+
+      - name: Probe plain npm ci compatibility
+        id: plain_npm_ci_probe
+        continue-on-error: true
+        run: |
+          probe_dir="$(mktemp -d)"
+          cp package.json package-lock.json "$probe_dir"/
+          cd "$probe_dir"
+          npm ci
+
+      - name: Report peer dependency compatibility debt
+        if: steps.plain_npm_ci_probe.outcome == 'failure'
+        run: |
+          echo "::warning::Plain npm ci failed in compatibility probe. Keep --legacy-peer-deps for now and align peer dependency versions."
 
       - name: Theme schema validation
         run: npm test -- tests/text-contrast-theme-vars.test.ts tests/rebellion-skin-integration.test.ts
