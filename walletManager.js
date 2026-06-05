@@ -30,11 +30,13 @@ export const WalletManager = {
     if (!wallets[userId]) {
       wallets[userId] = { balance: 0, lastUpdated: null, lastSource: null };
     }
-    wallets[userId].balance += amount;
+    const balance = Number(wallets[userId].balance) || 0;
+    const addedAmount = Number(amount) || 0;
+    wallets[userId].balance = balance + addedAmount;
     wallets[userId].lastUpdated = Date.now();
     wallets[userId].lastSource = source;
     saveWallets(wallets);
-    console.log(`Synced ${amount} points from ${source}`);
+    console.log(`Synced ${addedAmount} points from ${source}`);
   },
 
   // Deduct points for store purchases
