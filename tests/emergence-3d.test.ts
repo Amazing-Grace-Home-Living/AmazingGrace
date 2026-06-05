@@ -46,6 +46,7 @@ describe('Emergence 3D Simulation Frontend Integration', () => {
     );
     expect(contextContent).toContain('selectedSovereignName');
     expect(contextContent).toContain('multiplayerLogs');
+    expect(contextContent).toContain('agentConversations');
     expect(contextContent).toContain('transmitAgentMessage');
     expect(contextContent).toContain('applyAgentOverride');
     expect(contextContent).toContain('attune_genesis');
