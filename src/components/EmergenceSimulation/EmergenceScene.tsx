@@ -636,9 +636,6 @@ export const EmergenceScene: React.FC = () => {
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [toggleTowerPlacementMode]);
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [toggleTowerPlacementMode]);
 
   // Handle selected sovereign object lookup
   const activeSovereign = useMemo(() => {
