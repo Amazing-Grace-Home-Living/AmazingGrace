@@ -299,17 +299,20 @@
                         </div>
                     </li>
 
-                    <li class="support-way" style="border-left-color:#f59e0b">
-                        <span class="support-way-icon">💛</span>
-                        <div class="support-way-content">
-                            <h4>Financial Giving</h4>
-                            <p>
-                                Your donation directly funds stable housing, faith education, and community outreach.
-                                Every gift — large or small — makes a tangible difference.
-                            </p>
-                            <button
-                                id="open-donation-modal"
-                                style="margin-top:.6rem;background:#f59e0b;color:#000;font-weight:700;border:none;padding:.5rem 1.25rem;border-radius:8px;cursor:pointer;font-size:.875rem;transition:background .2s"
+	                    <li class="support-way" style="border-left-color:#f59e0b">
+	                        <span class="support-way-icon">💛</span>
+	                        <div class="support-way-content">
+	                            <h4>Financial Giving</h4>
+	                            <p>
+	                                Your support directly funds stable housing, faith education, and ministry outreach.
+	                                <strong>Current fundraiser:</strong> Keeping Hope Afloat (lifeline boat engine, solar for camp, and clean water).<br>
+	                                <a href="https://gofund.me/90bb6b695" target="_blank" rel="noopener" style="color:#f59e0b;font-weight:700">
+	                                    Donate on GoFundMe →
+	                                </a>
+	                            </p>
+	                            <button
+	                                id="open-donation-modal"
+	                                style="margin-top:.6rem;background:#f59e0b;color:#000;font-weight:700;border:none;padding:.5rem 1.25rem;border-radius:8px;cursor:pointer;font-size:.875rem;transition:background .2s"
                                 aria-haspopup="dialog"
                                 onmouseover="this.style.background='#d97706'"
                                 onmouseout="this.style.background='#f59e0b'">
@@ -362,64 +365,68 @@
                 <h2 id="donation-modal-title" style="font-family:'Playfair Display',serif;font-size:1.5rem;color:#f59e0b;margin:0 0 .4rem">
                     Mission Support
                 </h2>
-                <p style="color:#94a3b8;font-size:.875rem;line-height:1.5;margin:0">
-                    Select an amount, then email or call us to complete your gift directly.<br>
-                    <strong style="color:#7effd8">If your support is for summer camp, mention it and we will earmark it.</strong>
-                </p>
-            </div>
+	                <p style="color:#94a3b8;font-size:.875rem;line-height:1.5;margin:0">
+	                    Select an amount, then give online via GoFundMe (fastest) or contact us directly.<br>
+	                    <strong style="color:#7effd8">If you want your gift applied to the boat engine, solar camp power, or clean water, mention it.</strong>
+	                </p>
+	            </div>
 
             <!-- Donation tiers -->
             <div id="donation-tiers" role="group" aria-label="Select donation amount" style="display:grid;gap:.75rem;margin-bottom:1.5rem">
 
-                <button class="donation-tier" aria-pressed="false" data-amount="10" data-label="Prayer Partner" data-desc="Prayer Partner">
-                    <span class="tier-amount">$10</span>
-                    <span class="tier-info">
-                        <strong>Prayer Partner</strong>
-                        <span>Monthly basic support — stand with us in faith</span>
-                    </span>
-                </button>
+	                <button class="donation-tier" aria-pressed="false" data-amount="5" data-label="Bible Study Partner" data-desc="Bible Study Partner">
+	                    <span class="tier-amount">$5</span>
+	                    <span class="tier-info">
+	                        <strong>Bible Study Partner</strong>
+	                        <span>Helps fuel our weekly live Bible Study digital setup</span>
+	                    </span>
+	                </button>
 
-                <button class="donation-tier" aria-pressed="false" data-amount="25" data-label="Monthly Partner" data-desc="Monthly Partner">
-                    <span class="tier-amount">$25</span>
-                    <span class="tier-info">
-                        <strong>Monthly Partner</strong>
-                        <span>Building community one person at a time</span>
-                    </span>
-                </button>
+	                <button class="donation-tier" aria-pressed="false" data-amount="20" data-label="Student Sponsor" data-desc="Student Sponsor">
+	                    <span class="tier-amount">$20</span>
+	                    <span class="tier-info">
+	                        <strong>Student Sponsor</strong>
+	                        <span>Covers food, nutritional care, and daily supplies for one student</span>
+	                    </span>
+	                </button>
 
-                <button class="donation-tier tier-featured" aria-pressed="false" data-amount="40" data-label="Chromebook Sponsorship" data-desc="Chromebook Sponsorship">
-                    <span class="tier-amount">$40</span>
-                    <span class="tier-info">
-                        <strong>Chromebook Sponsorship ⭐</strong>
-                        <span>Equip a student with a device for faith-based learning</span>
-                    </span>
-                    <span class="tier-popular-badge">Most Impactful</span>
-                </button>
+	                <button class="donation-tier tier-featured" aria-pressed="false" data-amount="40" data-label="Chromebook Sponsor" data-desc="Chromebook Sponsor">
+	                    <span class="tier-amount">$40</span>
+	                    <span class="tier-info">
+	                        <strong>Chromebook Sponsorship ⭐</strong>
+	                        <span>Equip a student with a dedicated Chromebook for learning</span>
+	                    </span>
+	                    <span class="tier-popular-badge">Most Impactful</span>
+	                </button>
 
-                <button class="donation-tier" aria-pressed="false" data-amount="100" data-label="Housing Angel" data-desc="Housing Angel">
-                    <span class="tier-amount">$100</span>
-                    <span class="tier-info">
-                        <strong>Housing Angel</strong>
-                        <span>Emergency housing fund — shelter someone in need</span>
-                    </span>
-                </button>
+	                <button class="donation-tier" aria-pressed="false" data-amount="100" data-label="Village Infrastructure" data-desc="Village Infrastructure">
+	                    <span class="tier-amount">$100</span>
+	                    <span class="tier-info">
+	                        <strong>Village Infrastructure</strong>
+	                        <span>Pushes forward the boat engine, solar expansion, and clean water system</span>
+	                    </span>
+	                </button>
 
             </div>
 
-            <!-- Direct contact actions -->
-            <div style="text-align:center">
-                <a id="donation-email-btn" href="#"
-                   style="display:inline-flex;align-items:center;gap:.5rem;background:#f59e0b;color:#000;font-weight:700;padding:.75rem 2rem;border-radius:10px;text-decoration:none;font-size:1rem;transition:background .2s;border:none">
-                    ✉️ Email Your Gift
-                </a>
-                <a href="tel:+17274202873"
-                   style="display:inline-flex;align-items:center;gap:.5rem;margin-left:.75rem;background:rgba(255,255,255,0.06);color:#e2e8f0;font-weight:700;padding:.75rem 1.5rem;border-radius:10px;text-decoration:none;font-size:1rem;transition:background .2s;border:1px solid rgba(245,158,11,0.25)">
-                    📞 Call 727-420-2873
-                </a>
-                <p style="color:#64748b;font-size:.75rem;margin-top:.75rem;line-height:1.4">
-                    Online PayPal giving is temporarily unavailable, so we will follow up personally to complete your donation.
-                </p>
-            </div>
+	            <!-- Direct contact actions -->
+	            <div style="text-align:center">
+	                <a href="https://gofund.me/90bb6b695" target="_blank" rel="noopener"
+	                   style="display:inline-flex;align-items:center;gap:.5rem;background:#22c55e;color:#04120b;font-weight:800;padding:.75rem 2rem;border-radius:10px;text-decoration:none;font-size:1rem;transition:background .2s;border:none">
+	                    ❤️ Donate on GoFundMe
+	                </a>
+	                <a id="donation-email-btn" href="#"
+	                   style="display:inline-flex;align-items:center;gap:.5rem;background:#f59e0b;color:#000;font-weight:700;padding:.75rem 2rem;border-radius:10px;text-decoration:none;font-size:1rem;transition:background .2s;border:none;margin-left:.75rem">
+	                    ✉️ Email Us
+	                </a>
+	                <a href="tel:+17274202873"
+	                   style="display:inline-flex;align-items:center;gap:.5rem;margin-left:.75rem;background:rgba(255,255,255,0.06);color:#e2e8f0;font-weight:700;padding:.75rem 1.5rem;border-radius:10px;text-decoration:none;font-size:1rem;transition:background .2s;border:1px solid rgba(245,158,11,0.25)">
+	                    📞 Call 727-420-2873
+	                </a>
+	                <p style="color:#64748b;font-size:.75rem;margin-top:.75rem;line-height:1.4">
+	                    For immediate online giving, use the GoFundMe fundraiser link above. For other giving options, email or call and we will respond personally.
+	                </p>
+	            </div>
 
         </div>
     </div>
@@ -463,19 +470,21 @@
         var selectedAmount = 40;
         var selectedLabel = 'Chromebook Sponsorship';
 
-        function buildEmailUrl(amount, itemName) {
-            var subject = 'Mission Support — ' + itemName + ' ($' + amount + ')';
-            var body = [
-                'Hello Amazing Grace Home Living,',
-                '',
-                'I would like to support the mission with a $' + amount + ' gift for ' + itemName + '.',
-                'If this donation is for summer camp, please earmark it for summer camp.',
-                'Otherwise, please apply it to the most urgent outreach need.',
-                '',
-                'Please contact me with the next steps to complete the donation.',
-                '',
-                'Thank you.'
-            ].join('\n');
+	        function buildEmailUrl(amount, itemName) {
+	            var subject = 'Mission Support — ' + itemName + ' ($' + amount + ')';
+	            var body = [
+	                'Hello Amazing Grace Home Living,',
+	                '',
+	                'I would like to support the mission with a $' + amount + ' gift for ' + itemName + '.',
+	                'If this gift is intended for a specific need (lifeline boat engine, solar for camp, or clean water), please earmark it accordingly.',
+	                'Otherwise, please apply it to the most urgent field need.',
+	                '',
+	                'GoFundMe fundraiser link (for reference): https://gofund.me/90bb6b695',
+	                '',
+	                'Please contact me with the next steps to complete the donation.',
+	                '',
+	                'Thank you.'
+	            ].join('\n');
 
             return 'mailto:' + CONTACT_EMAIL +
                 '?subject=' + encodeURIComponent(subject) +
