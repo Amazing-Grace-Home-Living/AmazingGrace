@@ -352,6 +352,7 @@ const towerConfig = {
   sentinel: { range: 3, cost: 800, icon: '🎯', label: 'Sentinel' },
   genesis: { range: 2.5, cost: 400, icon: '🌱', label: 'Genesis' },
 } as const;
+const towerTypes = Object.keys(towerConfig) as Array<keyof typeof towerConfig>;
 
 const PurificationTower: React.FC<{ tower: any }> = ({ tower }) => {
   const towerRef = useRef<THREE.Mesh>(null);
@@ -768,7 +769,13 @@ export const EmergenceScene: React.FC = () => {
           <div className="button-grid" style={{ gap: '6px' }}>
             <button className="cyber-btn" onClick={() => triggerSystemEvent('creation')}>🌱 Genesis</button>
             <button className="cyber-btn danger" onClick={() => triggerSystemEvent('predator')}>⚔️ Hunt</button>
-            <button className={`cyber-btn ${selectedTower ? 'active-mode' : ''}`} onClick={toggleTowerPlacementMode}>🧱 Toggle Towers (T)</button>
+            <button
+              className={`cyber-btn ${selectedTower ? 'active-mode' : ''}`}
+              onClick={toggleTowerPlacementMode}
+              aria-label="Toggle tower placement mode, keyboard shortcut T"
+            >
+              🧱 Toggle Towers (T)
+            </button>
           </div>
         </div>
 
@@ -776,7 +783,7 @@ export const EmergenceScene: React.FC = () => {
           <div className="section-title">Defense Towers</div>
           <div className="defense-budget">Defense Budget: <strong>{alignmentPoints}</strong></div>
           <div className="tower-grid">
-            {(Object.keys(towerConfig) as Array<keyof typeof towerConfig>).map((towerType) => (
+            {towerTypes.map((towerType) => (
               <button
                 key={towerType}
                 className={`tower-btn ${selectedTower === towerType ? 'active' : ''}`}
@@ -845,16 +852,16 @@ export const EmergenceScene: React.FC = () => {
           ))}
 
           {/* Dynamic Sovereigns list */}
-          {sovereigns.map((sov: any, i: number) => (
+          {sovereigns.map((sovereign: any, i: number) => (
             <SovereignAgent
-              key={sov.name || i}
-              sovereign={sov}
+              key={sovereign.name || i}
+              sovereign={sovereign}
               index={i}
-              isSelected={selectedSovereignName === sov.name}
-              slowed={Boolean(slowedSovereigns[sov.name])}
-              threatFlash={Boolean(threatFlashes[sov.name])}
-              threatLevel={getThreatLevel(sov.corruption)}
-              onSelect={() => selectSovereign(sov.name)}
+              isSelected={selectedSovereignName === sovereign.name}
+              slowed={Boolean(slowedSovereigns[sovereign.name])}
+              threatFlash={Boolean(threatFlashes[sovereign.name])}
+              threatLevel={getThreatLevel(sovereign.corruption)}
+              onSelect={() => selectSovereign(sovereign.name)}
             />
           ))}
 
@@ -879,6 +886,17 @@ export const EmergenceScene: React.FC = () => {
                 <planeGeometry args={[0.9, 0.9]} />
                 <meshBasicMaterial color={hoverPlacement?.valid ? '#39ff14' : '#ef4444'} transparent opacity={0.25} />
               </mesh>
+              <Html position={[0, 0.2, 0]} center>
+                <div
+                  className="html-label"
+                  style={{
+                    borderColor: hoverPlacement?.valid ? '#39ff14' : '#ef4444',
+                    borderStyle: hoverPlacement?.valid ? 'solid' : 'dashed'
+                  }}
+                >
+                  {hoverPlacement?.valid ? '✓ VALID' : '✗ BLOCKED'}
+                </div>
+              </Html>
             </group>
           )}
 

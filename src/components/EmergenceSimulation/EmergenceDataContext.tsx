@@ -23,6 +23,11 @@ const towerConfigs: Record<TowerType, { range: number; cost: number }> = {
   genesis: { range: 2.5, cost: 400 },
 };
 
+// Balance values tuned for the corruption thresholds below:
+// crossing 100 corruption (forced exile) is a large penalty, while recovering below 86 (critical) grants a smaller recovery reward.
+const EXILE_PENALTY = 200;
+const CRITICAL_RECOVERY_REWARD = 100;
+
 const getDistance = (a: { x: number; z: number }, b: { x: number; z: number }) => {
   const dx = a.x - b.x;
   const dz = a.z - b.z;
@@ -263,12 +268,12 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
       const nextThreatFlashes: Record<string, boolean> = {};
       const timeString = new Date().toTimeString().split(' ')[0];
       const workingTowers = towers;
-      let nextSovereignsSnapshot: any[] = [];
+      let nextSovereigns: any[] = [];
 
       setEngineState((prev: any) => {
-        const nextSovereigns = prev.sovereigns.map((agent: any, index: number) => {
-          const pos = getSovereignGridPosition(index, agent);
-          const previousCorruption = previousCorruptionRef.current[agent.name] ?? agent.corruption;
+        const updatedSovereigns = prev.sovereigns.map((sovereign: any, index: number) => {
+          const pos = getSovereignGridPosition(index, sovereign);
+          const previousCorruption = previousCorruptionRef.current[sovereign.name] ?? sovereign.corruption;
           const purifierCount = workingTowers.filter((tower) => (
             tower.type === 'purify' && getDistance(pos, tower.position) <= tower.range
           )).length;
@@ -280,58 +285,58 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
           ));
           const contained = workingTowers.some((tower) => (
             tower.type === 'contain' &&
-            agent.corruption > 60 &&
+            sovereign.corruption > 60 &&
             getDistance(pos, tower.position) <= tower.range
           ));
 
-          nextSlowed[agent.name] = contained;
+          nextSlowed[sovereign.name] = contained;
 
-          let nextCorruption = agent.corruption;
+          let nextCorruption = sovereign.corruption;
           if (purifierCount > 0) {
             nextCorruption = Math.max(0, nextCorruption - (5 * purifierCount));
           }
 
           if (previousCorruption < 100 && nextCorruption >= 100) {
-            budgetDelta -= 200;
+            budgetDelta -= EXILE_PENALTY;
           }
 
           if (previousCorruption >= 86 && nextCorruption < 86) {
-            budgetDelta += 100;
+            budgetDelta += CRITICAL_RECOVERY_REWARD;
           }
 
           if (nextCorruption - previousCorruption > 10) {
-            nextThreatFlashes[agent.name] = true;
+            nextThreatFlashes[sovereign.name] = true;
             logsToAdd.push({
-              id: `threat-spike-${agent.name}-${Date.now()}`,
+              id: `threat-spike-${sovereign.name}-${Date.now()}`,
               time: timeString,
               operator: 'System',
-              text: `THREAT DETECTED: ${agent.name} corruption spike (${nextCorruption.toFixed(0)}%).`,
+              text: `THREAT DETECTED [RAPID INCREASE]: ${sovereign.name} corruption surged to ${nextCorruption.toFixed(0)}%.`,
               type: 'error'
             });
           }
 
           if (previousCorruption < 86 && nextCorruption >= 86) {
             logsToAdd.push({
-              id: `threat-critical-${agent.name}-${Date.now()}`,
+              id: `threat-critical-${sovereign.name}-${Date.now()}`,
               time: timeString,
               operator: 'System',
-              text: `THREAT DETECTED: ${agent.name} entering critical corruption (${nextCorruption.toFixed(0)}%).`,
+              text: `THREAT DETECTED [CRITICAL]: ${sovereign.name} crossed critical corruption (${nextCorruption.toFixed(0)}%).`,
               type: 'error'
             });
           }
 
-          previousCorruptionRef.current[agent.name] = nextCorruption;
+          previousCorruptionRef.current[sovereign.name] = nextCorruption;
 
           return {
-            ...agent,
+            ...sovereign,
             corruption: nextCorruption,
-            loyalty: agent.instinct === 'genesis' ? Math.min(100, agent.loyalty + (10 * genesisCount)) : agent.loyalty,
-            status: sentinelInRange && nextCorruption >= 100 ? 'exiled' : agent.status,
+            loyalty: sovereign.instinct === 'genesis' ? Math.min(100, sovereign.loyalty + (10 * genesisCount)) : sovereign.loyalty,
+            status: sentinelInRange && nextCorruption >= 100 ? 'exiled' : sovereign.status,
           };
         });
-        nextSovereignsSnapshot = nextSovereigns;
+        nextSovereigns = updatedSovereigns;
 
-        return { ...prev, sovereigns: nextSovereigns };
+        return { ...prev, sovereigns: updatedSovereigns };
       });
 
       setThreatFlashes(nextThreatFlashes);
@@ -345,9 +350,9 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       setTowers((prev) => prev.map((tower) => {
-        const underAttack = nextSovereignsSnapshot.some((agent: any, index: number) => {
-          const pos = getSovereignGridPosition(index, agent);
-          return agent.corruption > 60 && getDistance(pos, tower.position) <= tower.range;
+        const underAttack = nextSovereigns.some((sovereign: any, index: number) => {
+          const pos = getSovereignGridPosition(index, sovereign);
+          return sovereign.corruption > 60 && getDistance(pos, tower.position) <= tower.range;
         });
         return { ...tower, underAttack };
       }));
