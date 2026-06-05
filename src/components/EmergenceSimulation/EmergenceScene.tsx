@@ -1,9 +1,78 @@
 import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { Canvas, useFrame, ThreeEvent } from '@react-three/fiber';
-import { OrbitControls, Stars, Html } from '@react-three/drei';
+import { OrbitControls, Stars, Html, Trail, Float, Sphere, MeshDistortMaterial } from '@react-three/drei';
+import { EffectComposer, Bloom, Noise, Vignette, ChromaticAberration } from '@react-three/postprocessing';
+import { BlendFunction } from 'postprocessing';
 import * as THREE from 'three';
-import { useEmergenceData } from './EmergenceDataContext';
+import { useEmergenceData, Sovereign } from './EmergenceDataContext';
 import './emergence.css';
+
+// ── 0. Moving Nebula Backdrop ──
+const MovingNebula = () => {
+  const meshRef = useRef<THREE.Mesh>(null);
+  useFrame((state) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.y = state.clock.getElapsedTime() * 0.05;
+      meshRef.current.rotation.z = state.clock.getElapsedTime() * 0.03;
+    }
+  });
+
+  return (
+    <mesh ref={meshRef} scale={[100, 100, 100]}>
+      <sphereGeometry args={[1, 64, 64]} />
+      <meshBasicMaterial
+        color="#0a0514"
+        side={THREE.BackSide}
+        transparent
+        opacity={0.4}
+      />
+    </mesh>
+  );
+};
+
+// ── 0.5. Dialogue Bubble Component ──
+const DialogueBubble: React.FC<{ text: string }> = ({ text }) => {
+  return (
+    <Html distanceFactor={10} center position={[0, 1.2, 0]}>
+      <div className="agent-dialogue-bubble">
+        {text}
+      </div>
+    </Html>
+  );
+};
+
+// ── 0.6. Local Player Avatar ──
+const LocalPlayer: React.FC = () => {
+  const meshRef = useRef<THREE.Group>(null);
+  
+  useFrame((state) => {
+    if (!meshRef.current) return;
+    // Follow camera target or hover in center
+    const time = state.clock.getElapsedTime();
+    meshRef.current.position.y = 0.5 + Math.sin(time * 2) * 0.1;
+  });
+
+  return (
+    <group ref={meshRef}>
+      <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
+        <Sphere args={[0.2, 16, 16]}>
+          <MeshDistortMaterial
+            color="#39ff14"
+            speed={4}
+            distort={0.4}
+            radius={1}
+            emissive="#39ff14"
+            emissiveIntensity={1.5}
+          />
+        </Sphere>
+      </Float>
+      <Html distanceFactor={8} center position={[0, 0.6, 0]}>
+        <div className="html-label player-label">Local Architect (You)</div>
+      </Html>
+      <pointLight color="#39ff14" intensity={1} distance={3} />
+    </group>
+  );
+};
 
 // ── 1. Individual bobbing grid tile component ──
 const GridTile: React.FC<{
@@ -28,6 +97,16 @@ const GridTile: React.FC<{
     const time = state.clock.getElapsedTime();
     const bob = Math.sin(time * 0.8 - distance * 0.3) * 0.15 * (1 + instability / 50);
     meshRef.current.position.y = bob;
+
+    // "Drift" logic: Slight horizontal sway on high instability
+    if (instability > 50) {
+      const drift = (instability - 50) / 500;
+      meshRef.current.rotation.x = Math.sin(time + x) * drift;
+      meshRef.current.rotation.z = Math.cos(time + z) * drift;
+    } else {
+      meshRef.current.rotation.x = 0;
+      meshRef.current.rotation.z = 0;
+    }
   });
 
   return (
@@ -38,7 +117,7 @@ const GridTile: React.FC<{
         roughness={0.4}
         metalness={0.7}
         emissive={color}
-        emissiveIntensity={instability > 65 ? 0.25 : 0.05}
+        emissiveIntensity={instability > 65 ? 0.6 : 0.1}
       />
     </mesh>
   );
@@ -127,9 +206,9 @@ const CentralPortal: React.FC<{ instability: number }> = ({ instability }) => {
   );
 };
 
-// ── 4. Dynamic Data Flows Component (Grid Edge Particles) ──
+// ── 4. Dynamic Data Flows Component (Grid Edge Particles with Trails) ──
 const DataFlows: React.FC = () => {
-  const numPackets = 8;
+  const numPackets = 12;
   
   // Create state paths for packets
   const packets = useMemo(() => {
@@ -144,8 +223,9 @@ const DataFlows: React.FC = () => {
         startZ,
         targetX: startX,
         targetZ: startZ,
-        speed: 0.8 + Math.random() * 0.8,
+        speed: 1.2 + Math.random() * 1.5,
         progress: 1.0, // force recalculate path at start
+        color: i % 2 === 0 ? "#00f0ff" : "#ff0055",
       };
     });
   }, []);
@@ -191,11 +271,18 @@ const DataFlows: React.FC = () => {
     <group>
       {packets.map((p, idx) => (
         <group key={p.id} ref={(el) => { if (el) refs.current[idx] = el; }}>
-          <mesh>
-            <sphereGeometry args={[0.08, 8, 8]} />
-            <meshBasicMaterial color={idx % 2 === 0 ? "#00f0ff" : "#ff0055"} />
-          </mesh>
-          <pointLight color={idx % 2 === 0 ? "#00f0ff" : "#ff0055"} intensity={0.5} distance={1.0} />
+          <Trail
+            width={0.8}
+            length={4}
+            color={new THREE.Color(p.color)}
+            attenuation={(t) => t * t}
+          >
+            <mesh>
+              <sphereGeometry args={[0.06, 8, 8]} />
+              <meshBasicMaterial color={p.color} />
+            </mesh>
+          </Trail>
+          <pointLight color={p.color} intensity={1.5} distance={1.5} />
         </group>
       ))}
     </group>
@@ -344,7 +431,7 @@ const DefenseTower: React.FC<{ tower: any }> = ({ tower }) => {
 
 // ── 6. Advanced Floating Sovereign agent avatar ──
 const SovereignAgent: React.FC<{
-  sovereign: any;
+  sovereign: Sovereign;
   index: number;
   isSelected: boolean;
   slowed: boolean;
@@ -352,10 +439,19 @@ const SovereignAgent: React.FC<{
   threatFlash: boolean;
   onSelect: () => void;
 }> = ({ sovereign, index, isSelected, slowed, threatLevel, threatFlash, onSelect }) => {
+  const { agentConversations } = useEmergenceData();
   const meshRef = useRef<THREE.Group>(null);
   const shellRef = useRef<THREE.Mesh>(null);
   const satellite1 = useRef<THREE.Mesh>(null);
   const satellite2 = useRef<THREE.Mesh>(null);
+  const pulseRef = useRef<THREE.Mesh>(null);
+
+  // Check for active conversation
+  const activeDialogue = useMemo(() => {
+    // Current time is needed to see if the message is fresh
+    const now = Date.now();
+    return agentConversations.find(c => c.from === sovereign.name && (now - c.time) < 4000);
+  }, [agentConversations, sovereign.name]);
 
   // Deterministic spawn coordinates
   const startPos = useMemo(() => {
@@ -401,6 +497,13 @@ const SovereignAgent: React.FC<{
       shellRef.current.rotation.y = time * 0.8 + index;
     }
 
+    // Apply Pulse visual effect to inner octahedron
+    if (pulseRef.current) {
+      const p = sovereign.pulse || 0.5;
+      const pulseScale = 1.0 + (p * 0.15);
+      pulseRef.current.scale.setScalar(pulseScale);
+    }
+
     // Orbit satellites
     const orbitSpeed = isSelected ? 4.0 : 2.0;
     if (satellite1.current) {
@@ -421,8 +524,11 @@ const SovereignAgent: React.FC<{
 
   return (
     <group ref={meshRef} onClick={(e) => { e.stopPropagation(); onSelect(); }}>
-      {/* Floating Inner Octahedron */}
-      <mesh castShadow>
+      {/* Dialogue Bubble */}
+      {activeDialogue && <DialogueBubble text={activeDialogue.text} />}
+      
+      {/* Floating Inner Octahedron (Pulsing) */}
+      <mesh ref={pulseRef} castShadow>
         <octahedronGeometry args={[0.22, 0]} />
         <meshStandardMaterial
           color={colors.base}
@@ -715,17 +821,19 @@ export const EmergenceScene: React.FC = () => {
           }}
         >
           {/* Lighting */}
-          <ambientLight intensity={0.35} />
-          <pointLight position={[8, 12, 8]} intensity={1.8} castShadow />
+          <ambientLight intensity={0.4} />
+          <pointLight position={[8, 12, 8]} intensity={2.5} castShadow />
           <directionalLight
             position={[-8, 10, -8]}
-            intensity={0.7}
+            intensity={1.0}
             castShadow
             shadow-mapSize={[1024, 1024]}
           />
 
           {/* Stellar nebula star backdrop */}
           <Stars radius={120} depth={40} count={4500} factor={6} saturation={0.8} fade speed={1.5} />
+          <MovingNebula />
+          <LocalPlayer />
 
           {/* 3D Grid components */}
           <TerrainGrid instability={metrics.timelineInstability} />
@@ -782,6 +890,22 @@ export const EmergenceScene: React.FC = () => {
             maxDistance={22}
             maxPolarAngle={Math.PI / 2 - 0.05}
           />
+
+          {/* Post-Processing Effects for Cinematic Neon Visuals */}
+          <EffectComposer>
+            <Bloom 
+              intensity={1.5} 
+              luminanceThreshold={0.2} 
+              luminanceSmoothing={0.9} 
+              mipmapBlur 
+            />
+            <Noise opacity={0.05} />
+            <Vignette eskil={false} offset={0.1} darkness={1.1} />
+            <ChromaticAberration
+              blendFunction={BlendFunction.NORMAL}
+              offset={new THREE.Vector2(0.0005, 0.0005)}
+            />
+          </EffectComposer>
         </Canvas>
       </div>
     </div>
