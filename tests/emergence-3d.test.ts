@@ -8,8 +8,17 @@ describe('Emergence 3D Simulation Frontend Integration', () => {
     expect(htmlExists).toBe(true);
 
     const htmlContent = fs.readFileSync(path.resolve(__dirname, '../arcade/emergence-3d/index.html'), 'utf8');
-    expect(htmlContent).toContain('<div id="root">');
-    expect(htmlContent).toContain('src/emergence-main.tsx');
+    expect(htmlContent).toContain('<div id="emergence-root"></div>');
+    expect(htmlContent).toContain('src="./main.tsx"');
+    expect(htmlContent).toContain('href="../"');
+  });
+
+  it('verifies local Emergence 3D React entry point exists and mounts correctly', () => {
+    const mainContent = fs.readFileSync(path.resolve(__dirname, '../arcade/emergence-3d/main.tsx'), 'utf8');
+    expect(mainContent).toContain("getElementById('emergence-root')");
+    expect(mainContent).toContain('createRoot');
+    expect(mainContent).toContain('EmergenceDataProvider');
+    expect(mainContent).toContain('EmergenceScene');
   });
 
   it('verifies vite.config.ts exposes the multi-page entry point route', () => {
