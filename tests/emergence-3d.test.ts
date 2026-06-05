@@ -55,9 +55,30 @@ describe('Emergence 3D Simulation Frontend Integration', () => {
     );
     expect(contextContent).toContain('selectedSovereignName');
     expect(contextContent).toContain('multiplayerLogs');
+    expect(contextContent).toContain('agentConversations');
     expect(contextContent).toContain('transmitAgentMessage');
     expect(contextContent).toContain('applyAgentOverride');
-    expect(contextContent).toContain('attune_genesis');
-    expect(contextContent).toContain('attune_hunt');
+  });
+
+  it('verifies Tower Defense features and hooks are defined in context and scene', () => {
+    const contextContent = fs.readFileSync(
+      path.resolve(__dirname, '../src/components/EmergenceSimulation/EmergenceDataContext.tsx'),
+      'utf8'
+    );
+    expect(contextContent).toContain('alignmentPoints');
+    expect(contextContent).toContain('deployedTowers');
+    expect(contextContent).toContain('placementMode');
+    expect(contextContent).toContain('deployTower');
+    expect(contextContent).toContain('getAgentPosition');
+
+    const sceneContent = fs.readFileSync(
+      path.resolve(__dirname, '../src/components/EmergenceSimulation/EmergenceScene.tsx'),
+      'utf8'
+    );
+    expect(sceneContent).toContain('PurificationTower');
+    expect(sceneContent).toContain('ContainmentField');
+    expect(sceneContent).toContain('SentinelTurret');
+    expect(sceneContent).toContain('GenesisBeacon');
+    expect(sceneContent).toContain('TowersLayer');
   });
 });
