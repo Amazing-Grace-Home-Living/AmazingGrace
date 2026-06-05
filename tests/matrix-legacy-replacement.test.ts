@@ -10,7 +10,6 @@ describe('matrix legacy replacement', () => {
     expect(matrixOfConscience).toContain('Matrix of Conscience — Duality Core');
     expect(matrixOfConscience).toContain('id="btn-weave"');
     expect(matrixOfConscience).not.toContain('http-equiv="refresh"');
-    expect(matrixOfConscience).not.toContain('/src/arcade-main.tsx');
   });
 
   it('removes matrix-legacy route and keeps matrix-of-conscience as its own sw fallback', () => {

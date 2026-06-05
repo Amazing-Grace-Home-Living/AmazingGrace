@@ -1728,8 +1728,8 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
                     },
                     {
                       name: "Nexus Defense",
-                      desc: "Deploy blasters and EMP firewalls to protect database sectors.",
-                      path: "/arcade/tower-defense/index.html",
+                      desc: "Deploy defensive towers to protect database sectors in a 3D isometric simulation.",
+                      path: "/arcade/emergence-3d/index.html",
                       color: "#10b981",
                       tag: "WAVE STRATEGY"
                     },
