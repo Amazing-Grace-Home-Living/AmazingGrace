@@ -50,5 +50,17 @@ describe('Emergence 3D Simulation Frontend Integration', () => {
     expect(contextContent).toContain('applyAgentOverride');
     expect(contextContent).toContain('attune_genesis');
     expect(contextContent).toContain('attune_hunt');
+    expect(contextContent).toContain('placeTower');
+    expect(contextContent).toContain('alignmentPoints');
+    expect(contextContent).toContain('THREAT DETECTED');
+    expect(contextContent).toContain('toggleTowerPlacementMode');
+
+    const sceneContent = fs.readFileSync(
+      path.resolve(__dirname, '../src/components/EmergenceSimulation/EmergenceScene.tsx'),
+      'utf8'
+    );
+    expect(sceneContent).toContain('Defense Towers');
+    expect(sceneContent).toContain('DefenseTower');
+    expect(sceneContent).toContain('Toggle Towers (T)');
   });
 });

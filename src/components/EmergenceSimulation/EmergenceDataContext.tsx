@@ -4,6 +4,40 @@ import { runIntelligentEngineCycle, createInitialIntelligentEngineState } from '
 // @ts-ignore
 import { createOmniversalRuntime, createWorldState } from '../../../js/omniversal-runtime.js';
 
+type TowerType = 'purify' | 'contain' | 'sentinel' | 'genesis';
+type ThreatLevel = 'safe' | 'warning' | 'danger' | 'critical';
+
+interface Tower {
+  id: string;
+  type: TowerType;
+  position: { x: number; z: number };
+  range: number;
+  cost: number;
+  underAttack: boolean;
+}
+
+const towerConfigs: Record<TowerType, { range: number; cost: number }> = {
+  purify: { range: 2, cost: 500 },
+  contain: { range: 1.5, cost: 300 },
+  sentinel: { range: 3, cost: 800 },
+  genesis: { range: 2.5, cost: 400 },
+};
+
+const getDistance = (a: { x: number; z: number }, b: { x: number; z: number }) => {
+  const dx = a.x - b.x;
+  const dz = a.z - b.z;
+  return Math.sqrt(dx * dx + dz * dz);
+};
+
+const getSovereignGridPosition = (index: number, sovereign: any) => {
+  if (sovereign.position && typeof sovereign.position.x === 'number' && typeof sovereign.position.z === 'number') {
+    return { x: sovereign.position.x, z: sovereign.position.z };
+  }
+  const angle = (index * (2 * Math.PI)) / 5;
+  const radius = 3.2 + (index % 2) * 0.6;
+  return { x: Math.cos(angle) * radius, z: Math.sin(angle) * radius };
+};
+
 interface EmergenceContextType {
   metrics: {
     worldAlignment: number;
@@ -37,6 +71,16 @@ interface EmergenceContextType {
   multiplayerLogs: Array<{ id: string; time: string; text: string; operator: string; type: string }>;
   transmitAgentMessage: (name: string, text: string) => void;
   applyAgentOverride: (name: string, actionType: string) => void;
+  towers: Tower[];
+  alignmentPoints: number;
+  selectedTower: TowerType | null;
+  slowedSovereigns: Record<string, boolean>;
+  threatFlashes: Record<string, boolean>;
+  setSelectedTower: (tower: TowerType | null) => void;
+  toggleTowerPlacementMode: () => void;
+  placeTower: (gridX: number, gridZ: number) => void;
+  validateTowerPlacement: (gridX: number, gridZ: number) => { valid: boolean; reason?: string };
+  getThreatLevel: (corruption: number) => ThreatLevel;
 }
 
 const EmergenceDataContext = createContext<EmergenceContextType | null>(null);
@@ -59,6 +103,12 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
     { id: '1', time: '15:20:00', operator: 'System', text: 'Multiplayer Lobby Node operational. Listening for peers...', type: 'system' },
     { id: '2', time: '15:20:05', operator: 'Operator_Bakersfield', text: 'Attuned Bakersfield gateway, streaming telemetry data.', type: 'network' },
   ]);
+  const [towers, setTowers] = useState<Tower[]>([]);
+  const [alignmentPoints, setAlignmentPoints] = useState(1000);
+  const [selectedTower, setSelectedTower] = useState<TowerType | null>(null);
+  const [slowedSovereigns, setSlowedSovereigns] = useState<Record<string, boolean>>({});
+  const [threatFlashes, setThreatFlashes] = useState<Record<string, boolean>>({});
+  const previousCorruptionRef = useRef<Record<string, number>>({});
 
   useEffect(() => {
     // Instantiate the omniversal runtime locally
@@ -101,6 +151,194 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
 
     return () => clearInterval(interval);
   }, [engineState]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setAlignmentPoints((prev) => {
+        if (engineState.worldAlignment > 0) return prev + 50;
+        if (engineState.worldAlignment < 0) return Math.max(0, prev - 30);
+        return prev;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [engineState.worldAlignment]);
+
+  const getThreatLevel = (corruption: number): ThreatLevel => {
+    if (corruption <= 30) return 'safe';
+    if (corruption <= 60) return 'warning';
+    if (corruption <= 85) return 'danger';
+    return 'critical';
+  };
+
+  const validateTowerPlacement = (gridX: number, gridZ: number) => {
+    const occupiedByTower = towers.some((tower) => getDistance(tower.position, { x: gridX, z: gridZ }) < 0.5);
+    if (occupiedByTower) {
+      return { valid: false, reason: 'Grid cell occupied by another tower.' };
+    }
+
+    const occupiedByAgent = engineState.sovereigns.some((sovereign: any, index: number) => {
+      const pos = getSovereignGridPosition(index, sovereign);
+      return Math.abs(pos.x - gridX) < 0.5 && Math.abs(pos.z - gridZ) < 0.5;
+    });
+    if (occupiedByAgent) {
+      return { valid: false, reason: 'Grid cell occupied by sovereign agent.' };
+    }
+
+    return { valid: true };
+  };
+
+  const placeTower = (gridX: number, gridZ: number) => {
+    if (!selectedTower) return;
+    const config = towerConfigs[selectedTower];
+    if (alignmentPoints < config.cost) {
+      const timeString = new Date().toTimeString().split(' ')[0];
+      setMultiplayerLogs((prev) => [...prev, {
+        id: `insufficient-${Date.now()}`,
+        time: timeString,
+        operator: 'System',
+        text: `Insufficient alignment budget. Need ${config.cost} points.`,
+        type: 'error'
+      }].slice(-30));
+      return;
+    }
+
+    const validation = validateTowerPlacement(gridX, gridZ);
+    if (!validation.valid) {
+      const timeString = new Date().toTimeString().split(' ')[0];
+      setMultiplayerLogs((prev) => [...prev, {
+        id: `tower-invalid-${Date.now()}`,
+        time: timeString,
+        operator: 'System',
+        text: validation.reason || 'Invalid placement location.',
+        type: 'error'
+      }].slice(-30));
+      return;
+    }
+
+    const tower: Tower = {
+      id: `tower-${Date.now()}`,
+      type: selectedTower,
+      position: { x: gridX, z: gridZ },
+      range: config.range,
+      cost: config.cost,
+      underAttack: false
+    };
+    const timeString = new Date().toTimeString().split(' ')[0];
+    setTowers((prev) => [...prev, tower]);
+    setAlignmentPoints((prev) => prev - config.cost);
+    setSelectedTower(null);
+    setMultiplayerLogs((prev) => [...prev, {
+      id: `tower-place-${Date.now()}`,
+      time: timeString,
+      operator: 'You (Architect)',
+      text: `Deployed ${tower.type} tower at grid [${gridX}, ${gridZ}]`,
+      type: 'command'
+    }].slice(-30));
+  };
+
+  const toggleTowerPlacementMode = () => {
+    setSelectedTower((prev) => prev ? null : 'purify');
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      let budgetDelta = 0;
+      const logsToAdd: Array<{ id: string; time: string; text: string; operator: string; type: string }> = [];
+      const nextSlowed: Record<string, boolean> = {};
+      const nextThreatFlashes: Record<string, boolean> = {};
+      const timeString = new Date().toTimeString().split(' ')[0];
+      const workingTowers = towers;
+      let nextSovereignsSnapshot: any[] = [];
+
+      setEngineState((prev: any) => {
+        const nextSovereigns = prev.sovereigns.map((agent: any, index: number) => {
+          const pos = getSovereignGridPosition(index, agent);
+          const previousCorruption = previousCorruptionRef.current[agent.name] ?? agent.corruption;
+          const purifierCount = workingTowers.filter((tower) => (
+            tower.type === 'purify' && getDistance(pos, tower.position) <= tower.range
+          )).length;
+          const genesisCount = workingTowers.filter((tower) => (
+            tower.type === 'genesis' && getDistance(pos, tower.position) <= tower.range
+          )).length;
+          const sentinelInRange = workingTowers.some((tower) => (
+            tower.type === 'sentinel' && getDistance(pos, tower.position) <= tower.range
+          ));
+          const contained = workingTowers.some((tower) => (
+            tower.type === 'contain' &&
+            agent.corruption > 60 &&
+            getDistance(pos, tower.position) <= tower.range
+          ));
+
+          nextSlowed[agent.name] = contained;
+
+          let nextCorruption = agent.corruption;
+          if (purifierCount > 0) {
+            nextCorruption = Math.max(0, nextCorruption - (5 * purifierCount));
+          }
+
+          if (previousCorruption < 100 && nextCorruption >= 100) {
+            budgetDelta -= 200;
+          }
+
+          if (previousCorruption >= 86 && nextCorruption < 86) {
+            budgetDelta += 100;
+          }
+
+          if (nextCorruption - previousCorruption > 10) {
+            nextThreatFlashes[agent.name] = true;
+            logsToAdd.push({
+              id: `threat-spike-${agent.name}-${Date.now()}`,
+              time: timeString,
+              operator: 'System',
+              text: `THREAT DETECTED: ${agent.name} corruption spike (${nextCorruption.toFixed(0)}%).`,
+              type: 'error'
+            });
+          }
+
+          if (previousCorruption < 86 && nextCorruption >= 86) {
+            logsToAdd.push({
+              id: `threat-critical-${agent.name}-${Date.now()}`,
+              time: timeString,
+              operator: 'System',
+              text: `THREAT DETECTED: ${agent.name} entering critical corruption (${nextCorruption.toFixed(0)}%).`,
+              type: 'error'
+            });
+          }
+
+          previousCorruptionRef.current[agent.name] = nextCorruption;
+
+          return {
+            ...agent,
+            corruption: nextCorruption,
+            loyalty: agent.instinct === 'genesis' ? Math.min(100, agent.loyalty + (10 * genesisCount)) : agent.loyalty,
+            status: sentinelInRange && nextCorruption >= 100 ? 'exiled' : agent.status,
+          };
+        });
+        nextSovereignsSnapshot = nextSovereigns;
+
+        return { ...prev, sovereigns: nextSovereigns };
+      });
+
+      setThreatFlashes(nextThreatFlashes);
+      if (Object.keys(nextThreatFlashes).length > 0) {
+        setTimeout(() => setThreatFlashes({}), 900);
+      }
+      setSlowedSovereigns(nextSlowed);
+      setAlignmentPoints((prev) => Math.max(0, prev + budgetDelta));
+      if (logsToAdd.length > 0) {
+        setMultiplayerLogs((prev) => [...prev, ...logsToAdd].slice(-30));
+      }
+
+      setTowers((prev) => prev.map((tower) => {
+        const underAttack = nextSovereignsSnapshot.some((agent: any, index: number) => {
+          const pos = getSovereignGridPosition(index, agent);
+          return agent.corruption > 60 && getDistance(pos, tower.position) <= tower.range;
+        });
+        return { ...tower, underAttack };
+      }));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [towers]);
 
   // 3. Simulated Multiplayer Operator loop
   useEffect(() => {
@@ -288,7 +526,17 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
       selectSovereign,
       multiplayerLogs,
       transmitAgentMessage,
-      applyAgentOverride
+      applyAgentOverride,
+      towers,
+      alignmentPoints,
+      selectedTower,
+      slowedSovereigns,
+      threatFlashes,
+      setSelectedTower,
+      toggleTowerPlacementMode,
+      placeTower,
+      validateTowerPlacement,
+      getThreatLevel
     }}>
       {children}
     </EmergenceDataContext.Provider>
