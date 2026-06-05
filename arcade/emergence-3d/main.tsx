@@ -13,4 +13,6 @@ if (root) {
       </EmergenceDataProvider>
     </StrictMode>
   );
+} else {
+  throw new Error('Root container #emergence-root was not found in index.html. Ensure the page includes <div id="emergence-root"></div>.');
 }
