@@ -65,6 +65,7 @@ export function createSovereign(overrides = {}) {
     adaptation: toFiniteNumber(overrides.adaptation, 0),
     corruption: toFiniteNumber(overrides.corruption, 0),
     fear: toFiniteNumber(overrides.fear, 0),
+    aggression: toFiniteNumber(overrides.aggression, 0),
     status: overrides.status || 'active',
   };
 }
@@ -123,6 +124,10 @@ function evolveSovereigns(sovereigns, emotions, mutationNames) {
     const next = { ...sovereign };
     next.fear = clamp((next.fear || 0) + emotions.fear * 0.05, SYSTEM_MIN, SYSTEM_MAX);
     next.corruption = clamp((next.corruption || 0) + emotions.rage * 0.05, SYSTEM_MIN, SYSTEM_MAX);
+    
+    // Aggression increases with corruption and rage
+    const aggressionRise = (emotions.rage * 0.1) + (next.corruption > 50 ? 0.2 : 0);
+    next.aggression = clamp((next.aggression || 0) + aggressionRise, SYSTEM_MIN, SYSTEM_MAX);
 
     if (mutationNames.includes('dynasty-schism')) {
       next.loyalty = clamp((next.loyalty || 0) - 15, SYSTEM_MIN, SYSTEM_MAX);
