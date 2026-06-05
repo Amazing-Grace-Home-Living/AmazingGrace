@@ -598,3 +598,50 @@ body, html {
   border-color: #39ff14 !important;
   box-shadow: 0 0 15px rgba(57, 255, 20, 0.6) !important;
 }
+
+/* Agent Dialogue Bubbles */
+.agent-dialogue-bubble {
+  background: rgba(10, 15, 30, 0.9);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--neon-cyan);
+  border-radius: 12px;
+  padding: 10px 16px;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  max-width: 180px;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+  pointer-events: none;
+  animation: bubble-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+}
+
+.agent-dialogue-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid var(--neon-cyan);
+}
+
+@keyframes bubble-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.5) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.player-label {
+  border-color: var(--neon-green) !important;
+  color: var(--neon-green) !important;
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.3) !important;
+  font-weight: 800;
+}

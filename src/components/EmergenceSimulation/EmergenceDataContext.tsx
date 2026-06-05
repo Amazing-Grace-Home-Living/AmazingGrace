@@ -4,6 +4,20 @@ import { runIntelligentEngineCycle, createInitialIntelligentEngineState } from '
 // @ts-ignore
 import { createOmniversalRuntime, createWorldState } from '../../../js/omniversal-runtime.js';
 
+export interface Sovereign {
+  name: string;
+  instinct: 'hunt' | 'genesis' | string;
+  trauma: number;
+  loyalty: number;
+  metamorphosisStage: number;
+  desire: string;
+  adaptation: number;
+  corruption: number;
+  fear: number;
+  status: 'active' | 'exiled' | string;
+  pulse?: number; // Normalized pulse 0-1
+}
+
 interface EmergenceContextType {
   metrics: {
     worldAlignment: number;
@@ -12,18 +26,7 @@ interface EmergenceContextType {
     sovereignAffinity: number;
   };
   veilState: string;
-  sovereigns: Array<{
-    name: string;
-    instinct: string;
-    trauma: number;
-    loyalty: number;
-    metamorphosisStage: number;
-    desire: string;
-    adaptation: number;
-    corruption: number;
-    fear: number;
-    status: string;
-  }>;
+  sovereigns: Sovereign[];
   recentEvents: any[];
   recentMutations: any[];
   lastNarrative: string;
@@ -35,6 +38,7 @@ interface EmergenceContextType {
   selectedSovereignName: string | null;
   selectSovereign: (name: string | null) => void;
   multiplayerLogs: Array<{ id: string; time: string; text: string; operator: string; type: string }>;
+  agentConversations: Array<{ id: string; from: string; to: string; text: string; time: number }>;
   transmitAgentMessage: (name: string, text: string) => void;
   applyAgentOverride: (name: string, actionType: string) => void;
 }
@@ -59,6 +63,7 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
     { id: '1', time: '15:20:00', operator: 'System', text: 'Multiplayer Lobby Node operational. Listening for peers...', type: 'system' },
     { id: '2', time: '15:20:05', operator: 'Operator_Bakersfield', text: 'Attuned Bakersfield gateway, streaming telemetry data.', type: 'network' },
   ]);
+  const [agentConversations, setAgentConversations] = useState<Array<{ id: string; from: string; to: string; text: string; time: number }>>([]);
 
   useEffect(() => {
     // Instantiate the omniversal runtime locally
@@ -94,6 +99,17 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
             stabilityResistance: (nextRender.metrics.timelineInstability / 100) * 0.8,
           };
           const { state: nextEngine } = runIntelligentEngineCycle(prev, pressures, 1);
+          
+          // Inject dynamic pulse data for the 3D visualization
+          nextEngine.sovereigns = nextEngine.sovereigns.map((s: any) => {
+            const time = Date.now() / 1000;
+            const frequency = 0.5 + (s.metamorphosisStage * 0.5) + (s.corruption / 50);
+            return {
+              ...s,
+              pulse: (Math.sin(time * Math.PI * frequency) + 1) / 2
+            };
+          });
+
           return nextEngine;
         });
       }
@@ -133,7 +149,55 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => clearInterval(interval);
   }, []);
 
-  // 4. User Controls mapping
+  // 4. Simulated Agent-to-Agent dialogue loop
+  useEffect(() => {
+    const dialogueLines = [
+      "Targeting coordinates for hunt cycle 442.",
+      "The whiteClarity frequency is drifting. Calibrating...",
+      "I sense a fracture in the local lattice. Are you witnessing this?",
+      "Genesis protocol initiated. Preparing for blooming phase.",
+      "Corruption levels rising in the scarletGrowth sector. Caution recommended.",
+      "Awaiting directive from the Architect. Do you have signal?",
+    ];
+
+    const interval = setInterval(() => {
+      if (engineState.sovereigns.length < 2) return;
+      
+      const fromIdx = Math.floor(Math.random() * engineState.sovereigns.length);
+      let toIdx = Math.floor(Math.random() * engineState.sovereigns.length);
+      while (toIdx === fromIdx) toIdx = Math.floor(Math.random() * engineState.sovereigns.length);
+
+      const fromAgent = engineState.sovereigns[fromIdx];
+      const toAgent = engineState.sovereigns[toIdx];
+      const text = dialogueLines[Math.floor(Math.random() * dialogueLines.length)];
+
+      const newConv = {
+        id: `${Date.now()}`,
+        from: fromAgent.name,
+        to: toAgent.name,
+        text,
+        time: Date.now()
+      };
+
+      setAgentConversations((prev) => [...prev, newConv].slice(-5));
+      
+      const timeString = new Date().toTimeString().split(' ')[0];
+      setMultiplayerLogs((prev) => [
+        ...prev,
+        {
+          id: `conv-${Date.now()}`,
+          time: timeString,
+          operator: fromAgent.name,
+          text: `[Intercepted] To ${toAgent.name}: "${text}"`,
+          type: 'network'
+        }
+      ].slice(-30));
+    }, 12000);
+
+    return () => clearInterval(interval);
+  }, [engineState.sovereigns]);
+
+  // 5. User Controls mapping
   const triggerSystemEvent = (key: string) => {
     if (!runtimeRef.current) return;
     runtimeRef.current.triggerEvent(key);
@@ -287,6 +351,7 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
       selectedSovereignName,
       selectSovereign,
       multiplayerLogs,
+      agentConversations,
       transmitAgentMessage,
       applyAgentOverride
     }}>
