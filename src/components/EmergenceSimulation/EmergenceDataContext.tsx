@@ -349,13 +349,19 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
         setMultiplayerLogs((prev) => [...prev, ...logsToAdd].slice(-30));
       }
 
-      setTowers((prev) => prev.map((tower) => {
-        const underAttack = nextSovereigns.some((sovereign: any, index: number) => {
-          const pos = getSovereignGridPosition(index, sovereign);
-          return sovereign.corruption > 60 && getDistance(pos, tower.position) <= tower.range;
+      setTowers((prev) => {
+        let changed = false;
+        const next = prev.map((tower) => {
+          const underAttack = nextSovereigns.some((sovereign: any, index: number) => {
+            const pos = getSovereignGridPosition(index, sovereign);
+            return sovereign.corruption > 60 && getDistance(pos, tower.position) <= tower.range;
+          });
+          if (tower.underAttack === underAttack) return tower;
+          changed = true;
+          return { ...tower, underAttack };
         });
-        return { ...tower, underAttack };
-      }));
+        return changed ? next : prev;
+      });
     }, 1000);
     return () => clearInterval(interval);
   }, [towers]);
