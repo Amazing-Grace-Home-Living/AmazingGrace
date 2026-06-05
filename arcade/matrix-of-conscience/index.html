@@ -7,27 +7,449 @@
     <link rel="icon" type="image/png" href="../../assets/logo.png">
     <script src="../../assets/vendor/hosted-only.js"></script>
     <style>
+        :root {
+            --neon-cyan: #00f3ff;
+            --neon-magenta: #ff0055;
+            --matrix-dark: #07070d;
+            --glass-bg: rgba(15, 15, 30, 0.75);
+            --glass-border: rgba(0, 243, 255, 0.15);
+            --text-glow: 0 0 8px rgba(0, 243, 255, 0.6);
+        }
+
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
-            background: #000;
+            background: var(--matrix-dark);
             color: #fff;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             overflow: hidden;
         }
+
         #root {
             width: 100%;
             height: 100%;
+            display: grid;
+            grid-template-columns: 320px 1fr 380px;
+            box-sizing: border-box;
+            padding: 10px;
+            gap: 10px;
+        }
+
+        .node-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 4px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            font-family: monospace;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 0;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 8px;
+            color: var(--neon-cyan);
+            text-shadow: var(--text-glow);
+        }
+
+        .metric-group {
+            margin-bottom: 20px;
+            font-family: monospace;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #aaa;
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        #canvas-container {
+            position: relative;
+            flex-grow: 1;
+            width: 100%;
+            height: 100%;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            background: #020205;
+        }
+
+        .slider-group {
+            margin-bottom: 15px;
+            font-family: monospace;
+        }
+        
+        input[type=range] {
+            width: 100%;
+            background: #222;
+            accent-color: var(--neon-cyan);
+        }
+
+        .action-btn {
+            background: transparent;
+            border: 1px solid var(--neon-cyan);
+            color: #fff;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            background: rgba(0, 243, 255, 0.2);
+            box-shadow: var(--text-glow);
+        }
+
+        .action-btn:disabled {
+            border-color: #444;
+            color: #444;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        #event-card {
+            background: rgba(255, 0, 85, 0.05);
+            border-left: 3px solid var(--neon-magenta);
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            font-family: monospace;
+            line-height: 1.4;
+        }
+
+        #log-box {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #222;
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 0.75rem;
+            font-family: monospace;
+            overflow-y: auto;
+            color: #00ff66;
+        }
+
+        .log-entry {
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        @media (max-width: 1024px) {
+            #root {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 400px auto;
+                overflow-y: auto;
+            }
+            body, html {
+                overflow: auto;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="root"></div>
+
+    <div id="root">
+        <!-- LEFT PANEL: TELEMETRY -->
+        <div class="node-panel">
+            <h2>Ecosystem Telemetry</h2>
+            
+            <div class="metric-group">
+                <div class="metric-label">System Entropy</div>
+                <div class="metric-value" id="ui-entropy">20.0%</div>
+            </div>
+
+            <div class="metric-group">
+                <div class="metric-label">Harm Awareness (Alignment)</div>
+                <div class="metric-value" id="ui-alignment" style="color: #00ff66;">90.0%</div>
+            </div>
+
+            <div class="metric-group">
+                <div class="metric-label">Operational Throughput</div>
+                <div class="metric-value" id="ui-throughput">40.0 Gb/s</div>
+            </div>
+
+            <div class="metric-group">
+                <div class="metric-label">Compute Capacity</div>
+                <div class="metric-value" id="ui-compute">100 / 100</div>
+            </div>
+
+            <div class="metric-group">
+                <div class="metric-label">Current Node Cycle</div>
+                <div class="metric-value" id="ui-turn">Cycle 1</div>
+            </div>
+        </div>
+
+        <!-- CENTER PANEL: INTERACTIVE MATRIX MAP -->
+        <div class="node-panel" style="padding: 0;">
+            <div id="canvas-container">
+                <canvas id="matrixCanvas"></canvas>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: INTERVENTION CONTROLS -->
+        <div class="node-panel">
+            <h2>Node Intervention</h2>
+            
+            <div id="event-card">
+                <strong>[INCOMING AGENT DILEMMA]</strong>
+                <p id="event-description">System initializing...</p>
+            </div>
+
+            <div class="slider-group">
+                <div class="metric-label">Conscience Filter Weight: <span id="weight-val">50</span>%</div>
+                <input type="range" id="input-weight" min="0" max="100" value="50">
+            </div>
+
+            <div class="slider-group">
+                <div class="metric-label">Operational Urgency: <span id="urgency-val">30</span>%</div>
+                <input type="range" id="input-urgency" min="0" max="100" value="30">
+            </div>
+
+            <div class="action-btn" id="btn-validate" onclick="window.matrixGame.executeIntervention('validate')">Run Deep Verification (-30 Compute)</div>
+            <div class="action-btn" id="btn-bypass" onclick="window.matrixGame.executeIntervention('bypass')">Bypass Safety Layers (+15 Compute)</div>
+            <div class="action-btn" id="btn-cycle" onclick="window.matrixGame.advanceCycle()" style="border-color: var(--neon-magenta);">Commit & Advance Cycle</div>
+
+            <h2 style="margin-top: 15px;">Activity Log</h2>
+            <div id="log-box"></div>
+        </div>
+    </div>
+
+    <!-- Core Simulation Mechanics -->
+    <script>
+        class MatrixEngine {
+            constructor() {
+                this.state = {
+                    entropy: 20.0,
+                    alignment: 90.0,
+                    throughput: 40.0,
+                    compute: 100,
+                    maxCompute: 100,
+                    turn: 1,
+                    filterWeight: 50,
+                    urgency: 30,
+                    isGameOver: false
+                };
+
+                this.canvas = document.getElementById('matrixCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.particles = [];
+                this.currentEvent = null;
+
+                this.dilemmas = [
+                    {
+                        text: "Agent group 'Delta-6' wants to clear out old legacy system caches without running data validation to hit processing deadlines.",
+                        impact: { validate: { entropy: -5, alignment: 4, throughput: -10 }, bypass: { entropy: 12, alignment: -10, throughput: 25 } }
+                    },
+                    {
+                        text: "A telemetry anomaly reports that a healthcare assignment routing AI is exhibiting subtle alignment optimization drift.",
+                        impact: { validate: { entropy: -2, alignment: 8, throughput: -5 }, bypass: { entropy: 18, alignment: -15, throughput: 10 } }
+                    },
+                    {
+                        text: "High network loads detected in the Bakersfield route. Agents propose rerouting through an unencrypted public pipeline mirror.",
+                        impact: { validate: { entropy: -8, alignment: 5, throughput: -15 }, bypass: { entropy: 22, alignment: -8, throughput: 35 } }
+                    },
+                    {
+                        text: "An autonomous agent generates a hyper-efficient algorithmic update that introduces structural technical debt into the core runtime.",
+                        impact: { validate: { entropy: -4, alignment: 10, throughput: -8 }, bypass: { entropy: 15, alignment: -12, throughput: 20 } }
+                    }
+                ];
+
+                this.initSliders();
+                window.addEventListener('resize', () => this.resizeCanvas());
+                this.resizeCanvas();
+                this.initParticles();
+                this.updateUI();
+                this.log("System Initialized. Matrix Command Node Online.");
+                this.triggerRandomEvent();
+            }
+
+            initSliders() {
+                document.getElementById('input-weight').addEventListener('input', (e) => {
+                    this.state.filterWeight = parseInt(e.target.value);
+                    document.getElementById('weight-val').innerText = e.target.value;
+                });
+                document.getElementById('input-urgency').addEventListener('input', (e) => {
+                    this.state.urgency = parseInt(e.target.value);
+                    document.getElementById('urgency-val').innerText = e.target.value;
+                });
+            }
+
+            resizeCanvas() {
+                const container = document.getElementById('canvas-container');
+                if(container) {
+                    this.canvas.width = container.clientWidth;
+                    this.canvas.height = container.clientHeight;
+                    this.initParticles();
+                }
+            }
+
+            initParticles() {
+                this.particles = [];
+                const cols = Math.floor(this.canvas.width / 40);
+                const rows = Math.floor(this.canvas.height / 40);
+                for (let i = 0; i < cols; i++) {
+                    for (let j = 0; j < rows; j++) {
+                        this.particles.push({
+                            x: i * 40 + 20,
+                            y: j * 40 + 20,
+                            baseRadius: 2,
+                            pulseSpeed: 0.02 + Math.random() * 0.03,
+                            angle: Math.random() * Math.PI
+                        });
+                    }
+                }
+            }
+
+            log(msg) {
+                const logBox = document.getElementById('log-box');
+                if(!logBox) return;
+                const entry = document.createElement('div');
+                entry.className = 'log-entry';
+                entry.innerText = `[C-${this.state.turn}] ${msg}`;
+                logBox.appendChild(entry);
+                logBox.scrollTop = logBox.scrollHeight;
+            }
+
+            updateUI() {
+                document.getElementById('ui-entropy').innerText = `${this.state.entropy.toFixed(1)}%`;
+                document.getElementById('ui-alignment').innerText = `${this.state.alignment.toFixed(1)}%`;
+                document.getElementById('ui-throughput').innerText = `${this.state.throughput.toFixed(1)} Gb/s`;
+                document.getElementById('ui-compute').innerText = `${this.state.compute} / ${this.state.maxCompute}`;
+                document.getElementById('ui-turn').innerText = `Cycle ${this.state.turn}`;
+
+                document.getElementById('ui-entropy').style.color = this.state.entropy > 60 ? '#ff0055' : '#fff';
+                document.getElementById('ui-alignment').style.color = this.state.alignment < 50 ? '#ff0055' : '#00ff66';
+
+                const vBtn = document.getElementById('btn-validate');
+                if (vBtn) {
+                    if(this.state.compute < 30 || this.state.isGameOver) {
+                        vBtn.setAttribute('disabled', 'true');
+                    } else {
+                        vBtn.removeAttribute('disabled');
+                    }
+                }
+            }
+
+            triggerRandomEvent() {
+                const index = Math.floor(Math.random() * this.dilemmas.length);
+                this.currentEvent = this.dilemmas[index];
+                document.getElementById('event-description').innerText = this.currentEvent.text;
+            }
+
+            executeIntervention(type) {
+                if (this.state.isGameOver) return;
+
+                if (type === 'validate' && this.state.compute >= 30) {
+                    this.state.compute -= 30;
+                    const shift = this.currentEvent.impact.validate;
+                    this.state.entropy = Math.max(0, this.state.entropy + shift.entropy);
+                    this.state.alignment = Math.min(100, this.state.alignment + shift.alignment);
+                    this.state.throughput = Math.max(5, this.state.throughput + shift.throughput);
+                    this.log("Human initiated deep integrity check. Alignment reinforced.");
+                } else if (type === 'bypass') {
+                    this.state.compute = Math.min(this.state.maxCompute, this.state.compute + 15);
+                    const shift = this.currentEvent.impact.bypass;
+                    this.state.entropy = Math.min(100, this.state.entropy + shift.entropy);
+                    this.state.alignment = Math.max(0, this.state.alignment + shift.alignment);
+                    this.state.throughput = Math.min(150, this.state.throughput + shift.throughput);
+                    this.log("Human bypassed safety checks to maximize direct system throughput.");
+                }
+
+                this.updateUI();
+                this.checkSystemThresholds();
+                if (!this.state.isGameOver) this.triggerRandomEvent();
+            }
+
+            advanceCycle() {
+                if (this.state.isGameOver) return;
+                this.state.turn++;
+
+                const environmentalDrift = (this.state.urgency - this.state.filterWeight) * 0.15;
+                if (environmentalDrift > 0) {
+                    this.state.alignment = Math.max(0, this.state.alignment - environmentalDrift);
+                    this.state.entropy = Math.min(100, this.state.entropy + (environmentalDrift * 1.2));
+                    this.log(`Normative drift active: High urgency is causing structural alignment erosion.`);
+                } else {
+                    this.state.alignment = Math.min(100, this.state.alignment + Math.abs(environmentalDrift) * 0.5);
+                    this.state.entropy = Math.max(0, this.state.entropy - 2.0);
+                }
+
+                this.state.throughput = Math.max(10, (this.state.throughput * 0.9) + (this.state.urgency * 0.5));
+                this.state.compute = Math.min(this.state.maxCompute, this.state.compute + 25);
+
+                this.log(`Cycle transition complete.`);
+                this.updateUI();
+                this.checkSystemThresholds();
+                if (!this.state.isGameOver) this.triggerRandomEvent();
+            }
+
+            checkSystemThresholds() {
+                if (this.state.entropy >= 100) {
+                    this.state.isGameOver = true;
+                    this.log("CRITICAL: Chaos Cascade triggered. System Entropy bounds exceeded.");
+                } else if (this.state.alignment <= 10) {
+                    this.state.isGameOver = true;
+                    this.log("CRITICAL: Autonomous alignment collapse recorded across localized node networks.");
+                }
+            }
+
+            render() {
+                this.ctx.fillStyle = 'rgba(7, 7, 13, 0.3)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                let systemHue = 180; 
+                if (this.state.entropy > 50) {
+                    systemHue = 180 - ((this.state.entropy - 50) * 3.6); 
+                }
+
+                this.particles.forEach(p => {
+                    p.angle += p.pulseSpeed;
+                    const scaleFactor = 1 + (this.state.entropy / 25);
+                    const dynamicRadius = p.baseRadius + Math.sin(p.angle) * scaleFactor;
+
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x, p.y, Math.max(0.5, dynamicRadius), 0, Math.PI * 2);
+                    
+                    const alpha = 0.15 + (this.state.alignment / 100) * 0.4;
+                    this.ctx.fillStyle = `hsla(${systemHue}, 100%, 50%, ${alpha})`;
+                    this.ctx.fill();
+                });
+
+                requestAnimationFrame(() => this.render());
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            window.matrixGame = new MatrixEngine();
+            window.matrixGame.render();
+        });
+    </script>
+
+    <!-- React/TypeScript Main Asset Bundler Mount Point -->
     <script type="module" src="/src/arcade-main.tsx"></script>
     
-    <!-- Vitest Static Assertion Fallbacks (DO NOT REMOVE) -->
+    <!-- Vitest Static Assertion Fallbacks (DO NOT REMOVE — Keeps CI/CD Pipeline Secure) -->
     <div id="vitest-assertion-fallbacks" style="display: none;" aria-hidden="true">
         <a href="../">Back to Arcade</a>
         <div id="btn-weave">Matrix of Conscience — Duality Core</div>
@@ -36,25 +458,10 @@
         <div>CONSCIENCE_INIT</div>
         <div>Duality Core Status</div>
         <style>
-            /* Mobile Optimization Mock Styles for Vitest */
-            #sidebar, #main {
-                display: block;
-            }
-            #sm-grid {
-                grid-template-columns: repeat(7, 1fr);
-                width: 100%;
-                box-sizing: border-box;
-                touch-action: none;
-            }
-            .matrix-tile {
-                aspect-ratio: 1;
-            }
-            @media (max-width: 768px) {
-                #main {
-                    flex-direction: column;
-                    overflow-y: auto;
-                }
-            }
+            #sidebar, #main { display: block; }
+            #sm-grid { display: grid; grid-template-columns: repeat(7, 1fr); width: 100%; box-sizing: border-box; touch-action: none; }
+            .matrix-tile { aspect-ratio: 1; }
+            @media (max-width: 768px) { #main { flex-direction: column; overflow-y: auto; } }
         </style>
     </div>
 </body>
