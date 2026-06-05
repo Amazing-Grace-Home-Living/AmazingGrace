@@ -1046,6 +1046,7 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
                     extSubsystem.includes("syndicate-siege") ? "SYNDICATE SIEGE" :
                     extSubsystem.includes("bible-study") ? "HOLY BIBLE STUDY" :
                     extSubsystem.includes("seven-stars") ? "SEVEN STARS" :
+                    extSubsystem.includes("emergence-3d") ? "EMERGENCE 3D" :
                     extSubsystem.includes("atari-lab") ? "ATARI WING" :
                     extSubsystem.includes("matrix-of-conscience-terminal") ? "TRINITY TERMINAL" :
                     extSubsystem.includes("certificates") ? "SOVEREIGN CERTIFICATES" : "EXTERNAL NODE"
@@ -1746,6 +1747,13 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
                       path: "/arcade/seven-stars/index.html",
                       color: "#a78bfa",
                       tag: "SOUL CHANNELS"
+                    },
+                    {
+                      name: "Emergence 3D",
+                      desc: "Monitor active sovereign agents, timeline drifts, and co-apex pressure fields in 3D space.",
+                      path: "/arcade/emergence-3d/index.html",
+                      color: "#00f0ff",
+                      tag: "3D SIMULATION"
                     },
 
                     {

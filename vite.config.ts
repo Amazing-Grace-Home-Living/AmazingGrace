@@ -28,6 +28,7 @@ export default defineConfig({
         arcadeTowerDefense: resolve(__dirname, "arcade/tower-defense/index.html"),
         arcadeStarMatrix:  resolve(__dirname, "arcade/star-matrix/index.html"),
         arcadeTrinity:     resolve(__dirname, "arcade/trinity/index.html"),
+        arcadeEmergence3D: resolve(__dirname, "arcade/emergence-3d/index.html"),
         ministry:          resolve(__dirname, "ministry/index.html"),
         ministryBibleJourney: resolve(__dirname, "ministry/bible-journey.html"),
         ministryTheRedQueen:  resolve(__dirname, "ministry/the-red-queen.html"),

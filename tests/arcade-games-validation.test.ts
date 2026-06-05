@@ -33,6 +33,7 @@ describe('Arcade Games Validation', () => {
       { name: 'Certificates', path: 'arcade/certificates/index.html' },
       { name: 'Seven Stars', path: 'arcade/seven-stars/index.html' },
       { name: 'Tower Defense', path: 'arcade/tower-defense/index.html' },
+      { name: 'Emergence 3D', path: 'arcade/emergence-3d/index.html' },
     ];
 
     games.forEach(game => {
@@ -63,6 +64,7 @@ describe('Arcade Games Validation', () => {
       { name: 'arcadeCertificates', entry: 'arcade/certificates/index.html' },
       { name: 'arcadeSevenStars', entry: 'arcade/seven-stars/index.html' },
       { name: 'arcadeTowerDefense', entry: 'arcade/tower-defense/index.html' },
+      { name: 'arcadeEmergence3D', entry: 'arcade/emergence-3d/index.html' },
       { name: 'arcadeRedirect', entry: 'arcade.html' },
     ];
 
