@@ -105,6 +105,32 @@
             transition: all 0.3s ease;
         }
 
+        .nav-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: var(--ag-text);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold);
+        }
+
         .nav-btn {
             background-color: var(--nav-btn);
             border: 1px solid transparent;
@@ -172,6 +198,36 @@
             margin-bottom: 2rem;
         }
 
+        /* ── Fundraiser Banner Info Panel ───────────────── */
+        .fundraiser-banner {
+            background: rgba(255, 215, 0, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            border-radius: 12px;
+            padding: 1.25rem;
+            max-width: 680px;
+            width: 100%;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .fundraiser-progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .fundraiser-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #b45309, var(--gold));
+            width: 18.91%; /* Tracker updates engine target context to $4000 */
+            border-radius: 999px;
+        }
+
         /* ── Story card ─────────────────────────────────── */
         .story-card {
             background: var(--surface);
@@ -233,8 +289,51 @@
             color: var(--gold);
         }
 
-        /* ── Choices ─────────────────────────────────────── */
-        #choices-container { display: flex; flex-direction: column; gap: 0.75rem; }
+        /* ── Choices / Campaign Tiers ───────────────────── */
+        #choices-container { display: flex; flex-direction: column; gap: 1rem; }
+
+        .campaign-tier-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            transition: transform 0.2s, border-color 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .campaign-tier-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            background: rgba(192, 132, 252, 0.02);
+        }
+
+        .tier-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tier-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: var(--gold);
+            font-size: 1.15rem;
+        }
+
+        .tier-price {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 1.1rem;
+        }
+
+        .tier-perks-list {
+            font-size: 0.85rem;
+            color: var(--muted);
+            padding-left: 1.25rem;
+            list-style-type: disc;
+        }
 
         .choice-btn {
             width: 100%;
@@ -255,15 +354,8 @@
         }
 
         /* ── Puzzle area ─────────────────────────────────── */
-        #puzzle-container { display: none; flex-direction: column; align-items: center; gap: 1rem; }
+        #puzzle-container { display: none; flex-direction: column; align-items: center; gap: 1rem; width: 100%; }
         #puzzle-container.visible { display: flex; }
-
-        .puzzle-header {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.2rem;
-            color: var(--accent);
-            text-align: center;
-        }
 
         .score-bar {
             display: flex;
@@ -271,6 +363,8 @@
             gap: 1rem;
             font-size: 0.9rem;
             color: var(--muted);
+            width: 100%;
+            max-width: 360px;
         }
         .score-bar .score-val { color: var(--gold); font-weight: 700; font-size: 1.1rem; }
 
@@ -323,14 +417,11 @@
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s;
             border: 2px solid transparent;
             position: relative;
-            /* Reset button defaults */
             appearance: none;
             -webkit-appearance: none;
             padding: 0;
             background-color: transparent;
             font: inherit;
-            /* Keep native focus ring visible in browsers that don't support :focus-visible
-               (the :focus-visible rule below overrides with a custom ring when supported) */
         }
 
         .square:hover {
@@ -350,7 +441,6 @@
             box-shadow: 0 0 0 3px rgba(192,132,252,0.4);
         }
 
-        /* When our custom .sq-focus ring is applied, suppress the redundant native ring */
         .square.sq-focus:focus { outline: none; }
 
         .square.sq-selected.sq-focus {
@@ -399,15 +489,23 @@
             box-shadow: 0 0 18px rgba(255,255,255,0.5);
         }
 
-        /* Puzzle message */
+        /* Puzzle message & Beta build alerts */
         #puzzle-msg {
             font-size: 0.9rem;
             color: var(--muted);
             text-align: center;
             min-height: 1.4em;
             transition: color 0.3s;
+            padding: 0.5rem;
+            border-radius: 6px;
+            max-width: 360px;
         }
         #puzzle-msg.solved { color: var(--gold); font-weight: 700; font-size: 1rem; }
+        #puzzle-msg.beta-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
 
         /* Continue / action buttons */
         .story-btn {
@@ -424,6 +522,7 @@
             cursor: pointer;
             transition: filter 0.2s, transform 0.15s;
             margin-top: 0.5rem;
+            text-decoration: none;
         }
         .story-btn:hover { filter: brightness(1.15); transform: translateY(-2px); }
         .story-btn:active { transform: translateY(0); }
@@ -530,13 +629,12 @@
 </head>
 <body>
 
-    <!-- Header -->
     <header class="site-header">
         <div class="nav-container">
             <a href="../" class="logo" aria-label="Amazing Grace Home Living — Home">
                 <img src="../assets/logo.png" alt="Amazing Grace Home Living">
             </a>
-        <nav id="main-nav" class="nav-links" aria-label="Main navigation">
+            <nav id="main-nav" class="nav-links" aria-label="Main navigation">
                 <a href="../#properties">Listings</a>
                 <a href="../library/">Library</a>
                 <a href="../arcade/">Arcade</a>
@@ -546,33 +644,42 @@
         </div>
     </header>
 
-    <!-- Main -->
     <main>
         <h1 class="stage-title">The Mystery of the Seven Stars</h1>
-        <p class="stage-subtitle">A Scriptural Journey &mdash; Voice of Jesus Ministry</p>
+        <p class="stage-subtitle">A Scriptural Journey — Voice of Jesus Ministry</p>
 
-        <!-- Progress indicator -->
+        <div class="fundraiser-banner" aria-live="polite">
+            <div style="display:flex; justify-content:space-between; font-size:0.9rem; font-weight:700;">
+                <span style="color:var(--gold);">🚢 Lifeline Outrigger Marine Engine Fund Goal</span>
+                <span style="color:var(--accent);">$756.41 raised of $4,000</span>
+            </div>
+            <div class="fundraiser-progress-bar">
+                <div class="fundraiser-progress-fill"></div>
+            </div>
+            <div style="font-size:0.8rem; color:var(--muted); line-height:1.4; margin-top:0.25rem;">
+                Our campaign is live! Direct funding helps Pastor Allen secure a robust engine to maintain critical food logistics, emergency supply runs, and fishing operations for our remote coastal settlement.
+            </div>
+            <div style="margin-top:0.5rem; text-align:right;">
+                <a href="https://gofund.me/9e6725300" target="_blank" class="story-btn gold-btn" style="padding:0.4rem 1rem; font-size:0.8rem; border-radius:6px; margin:0;">
+                    💝 Support Our GoFundMe
+                </a>
+            </div>
+        </div>
+
         <div class="progress-dots" id="progress-dots" aria-label="Chapter progress" role="img"></div>
 
-        <!-- Story card -->
         <div class="story-card" id="story-card">
 
-            <!-- Chapter badge -->
             <div class="chapter-badge" id="chapter-badge">Prologue</div>
 
-            <!-- Story title -->
             <h2 class="story-title" id="story-title"></h2>
 
-            <!-- Narrative text -->
             <p class="story-text" id="story-text"></p>
 
-            <!-- Scripture quote -->
             <blockquote class="story-scripture" id="story-scripture" style="display:none"></blockquote>
 
-            <!-- Choice buttons -->
             <div id="choices-container"></div>
 
-            <!-- Puzzle (only for refraction_trial node) -->
             <div id="puzzle-container">
                 <h3 class="puzzle-header">⚡ Refraction Trial</h3>
                 <p style="font-size:0.85rem;color:var(--muted);text-align:center;margin:0">
@@ -591,7 +698,6 @@
                 </button>
             </div>
 
-            <!-- Ending certificate -->
             <div id="ending-container">
                 <div class="cert-box" id="cert-box">
                     <div class="cert-stars">⭐⭐⭐⭐⭐⭐⭐</div>
@@ -609,11 +715,10 @@
                 </div>
             </div>
 
-        </div><!-- /.story-card -->
-    </main>
+        </div></main>
 
     <footer class="site-footer">
-        <p>&copy; 2026 Amazing Grace Home Living &mdash; Voice of Jesus Ministry &mdash; <a href="../">amazinggracehl.org</a></p>
+        <p>© 2026 Amazing Grace Home Living — Voice of Jesus Ministry — <a href="../">amazinggracehl.org</a></p>
     </footer>
 
     <script src="story-nodes.js"></script>
@@ -712,7 +817,6 @@
                 sq.setAttribute('data-c', c);
                 sq.setAttribute('role', 'gridcell');
                 sq.setAttribute('aria-label', `${board[r][c]} star crystal, row ${r+1} column ${c+1}`);
-                // Only the keyboard-focused cell is in the tab order
                 sq.setAttribute('tabindex', (r === focusR && c === focusC) ? '0' : '-1');
 
                 if (selected && selected.r === r && selected.c === c) {
@@ -734,11 +838,9 @@
         }
     }
 
-    // Move keyboard focus to (r, c) without changing game selection
     function moveFocus(r, c) {
         focusR = r;
         focusC = c;
-        // Update tabindices — only focused cell is tabbable
         document.querySelectorAll('#match-board .square').forEach(el => {
             const er = parseInt(el.getAttribute('data-r'), 10);
             const ec = parseInt(el.getAttribute('data-c'), 10);
@@ -750,7 +852,6 @@
         if (target) target.focus();
     }
 
-    // Keyboard handler for each cell — mirrors match-maker-ui.js pattern
     function handleCellKey(e, r, c) {
         let tr = r, tc = c;
 
@@ -783,7 +884,6 @@
     function handleCellClick(r, c) {
         if (puzzleSolved || boardLocked) return;
 
-        // Sync keyboard focus cursor to the clicked cell
         focusR = r;
         focusC = c;
 
@@ -802,16 +902,13 @@
             }
 
             if (isAdjacent(pr, pc, r, c)) {
-                // Swap
                 [board[pr][pc], board[r][c]] = [board[r][c], board[pr][pc]];
                 const matches = findMatches();
                 if (matches.length > 0) {
                     boardLocked = true;
-                    // sq-selected already removed from prevCell above; clear logic state before cascade
                     selected = null;
                     processMatches(matches).then(() => { boardLocked = false; });
                 } else {
-                    // Revert swap — sq-selected already visually cleared from prevCell above
                     [board[pr][pc], board[r][c]] = [board[r][c], board[pr][pc]];
                     selected = null;
                     const cell = getCell(r, c);
@@ -821,7 +918,6 @@
                     }
                 }
             } else {
-                // Re-select new cell
                 selected = { r, c };
                 const newCell = getCell(r, c);
                 if (newCell) newCell.classList.add('sq-selected');
@@ -847,7 +943,6 @@
             }
         }
 
-        // Fallback: infer direction from drag delta
         const dx = event.clientX - dragState.startX;
         const dy = event.clientY - dragState.startY;
         if (Math.abs(dx) < MIN_DRAG_DISTANCE && Math.abs(dy) < MIN_DRAG_DISTANCE) return null;
@@ -870,7 +965,6 @@
     function onPointerDown(event, row, col) {
         if (puzzleSolved || boardLocked) return;
 
-        // Cancel any in-progress drag before starting a new one
         if (dragState) {
             if (dragState.tile.hasPointerCapture(dragState.pointerId)) {
                 dragState.tile.releasePointerCapture(dragState.pointerId);
@@ -953,20 +1047,17 @@
 
     async function processMatches(matches) {
         const matched = matches.length;
-        // Animate explosions
         for (const [r, c] of matches) {
             const cell = getCell(r, c);
             if (cell) cell.classList.add('match-explode');
             board[r][c] = null;
         }
 
-        // Score
         puzzleScore += matched * 250;
         updateScoreDisplay();
 
         await sleep(520);
 
-        // Gravity — drop tiles down in each column
         for (let c = 0; c < COLS; c++) {
             let writeRow = ROWS - 1;
             for (let r = ROWS - 1; r >= 0; r--) {
@@ -982,9 +1073,8 @@
             }
         }
 
-        renderBoard(true /* restoreFocus after cascade */);
+        renderBoard(true);
 
-        // Cascade check
         await sleep(120);
         const cascadeMatches = findMatches();
         if (cascadeMatches.length > 0) {
@@ -1003,10 +1093,12 @@
     function checkPuzzleWin() {
         if (!puzzleSolved && puzzleScore >= SCORE_THRESHOLD) {
             puzzleSolved = true;
-            document.getElementById('solve-btn').style.display = 'inline-flex';
+            
             const msg = document.getElementById('puzzle-msg');
-            msg.textContent = '✨ THE STARS ARE ALIGNED — The path forward is revealed!';
-            msg.className = 'solved';
+            msg.textContent = "⚙️ Firebase Sync Status: [ERROR_SAVE_SCORE_DENIED] — Verification feature offline, but campaign alignment matched successfully!";
+            msg.className = 'beta-error';
+            
+            document.getElementById('solve-btn').style.display = 'inline-flex';
         }
     }
 
@@ -1046,7 +1138,6 @@
         const node = STORY_NODES[nodeId];
         if (!node) return;
 
-        // Track path choices for certificate badge
         if (nodeId === 'letter_ephesus') currentPathLabel = 'Path of First Love';
         if (nodeId === 'letter_philadelphia') currentPathLabel = 'Path of the Open Door';
         if (nodeId === 'victory_grace') currentPathLabel = (currentPathLabel || 'Path') + ' · Grace';
@@ -1055,14 +1146,12 @@
         visitedActs.add(node.act);
         updateProgressDots(node.act);
 
-        // Update badge & title
         document.getElementById('chapter-badge').textContent = node.chapter;
         document.getElementById('story-title').textContent = node.title;
         const storyTextEl = document.getElementById('story-text');
         storyTextEl.style.whiteSpace = 'pre-line';
         storyTextEl.textContent = node.text;
 
-        // Scripture
         const scriptureEl = document.getElementById('story-scripture');
         if (node.scripture) {
             scriptureEl.innerHTML = `${node.scripture.text} <strong>— ${node.scripture.ref}</strong>`;
@@ -1071,13 +1160,65 @@
             scriptureEl.style.display = 'none';
         }
 
-        // Hide all variable sections
         document.getElementById('choices-container').innerHTML = '';
         document.getElementById('puzzle-container').classList.remove('visible');
         document.getElementById('ending-container').classList.remove('visible');
 
         if (node.type === 'choice') {
             const container = document.getElementById('choices-container');
+            
+            if (nodeId === 'intro') {
+                const tierContainer = document.createElement('div');
+                tierContainer.className = 'flex flex-col gap-4 mb-6';
+                tierContainer.innerHTML = `
+                    <div class="campaign-tier-card">
+                        <div class="tier-header">
+                            <span class="tier-title">🎒 Tier 1: Bible Study Sponsor</span>
+                            <span class="tier-price">$5 / mo</span>
+                        </div>
+                        <p style="font-size:0.85rem; color:var(--ag-text);">Helps fuel our weekly digital setup and remote operations logistics.</p>
+                        <ul class="tier-perks-list">
+                            <li>Direct access to our live weekly Bible Studies (Wednesdays 9:30–11:30 PM via Google Meet)</li>
+                            <li>Standard arcade promo code generated at checkout: <strong style="color:var(--gold);">starsponsor</strong></li>
+                        </ul>
+                    </div>
+                    <div class="campaign-tier-card">
+                        <div class="tier-header">
+                            <span class="tier-title">⛵ Tier 2: Ministry Sponsor</span>
+                            <span class="tier-price">$10 / mo</span>
+                        </div>
+                        <p style="font-size:0.85rem; color:var(--ag-text);">Goes completely toward critical operational infrastructure updates on the ground.</p>
+                        <ul class="tier-perks-list">
+                            <li>All Tier 1 perks + exclusive behind-the-scenes digital photo galleries and operational media updates</li>
+                            <li>Standard arcade promo code generated at checkout: <strong style="color:var(--gold);">starsponsor</strong></li>
+                        </ul>
+                    </div>
+                    <div class="campaign-tier-card">
+                        <div class="tier-header">
+                            <span class="tier-title">🌟 Tier 3: Student Sponsor</span>
+                            <span class="tier-price">$20 / mo</span>
+                        </div>
+                        <p style="font-size:0.85rem; color:var(--ag-text);">Fully covers food, nutritional supplements, and educational support for one youth camper.</p>
+                        <ul class="tier-perks-list">
+                            <li>All media and Google Meet Bible study access codes automated via receipt</li>
+                            <li>Premium high-tier Arcade Store 75% discount code: <strong style="color:var(--gold);">Code Ella</strong></li>
+                        </ul>
+                    </div>
+                    <div class="campaign-tier-card">
+                        <div class="tier-header">
+                            <span class="tier-title">💻 Tier 4: Chromebook Sponsor</span>
+                            <span class="tier-price">$40 (One-Time)</span>
+                        </div>
+                        <p style="font-size:0.85rem; color:var(--ag-text);">Equips an advanced student with a dedicated laptop device for remote learning pathways.</p>
+                        <ul class="tier-perks-list">
+                            <li>Receives full live interactive study access rights and immediate high-impact status</li>
+                            <li>Premium high-tier Arcade Store 75% discount code: <strong style="color:var(--gold);">Code Ella</strong></li>
+                        </ul>
+                    </div>
+                `;
+                container.appendChild(tierContainer);
+            }
+
             node.choices.forEach(choice => {
                 const btn = document.createElement('button');
                 btn.className = 'choice-btn';
@@ -1092,7 +1233,6 @@
 
         } else if (node.type === 'puzzle') {
             document.getElementById('puzzle-container').classList.add('visible');
-            // Reset puzzle state for a fresh start every time
             puzzleScore = 0;
             puzzleSolved = false;
             boardLocked = false;
@@ -1115,7 +1255,6 @@
             updateProgressDots(TOTAL_ACTS);
         }
 
-        // Scroll story card into view smoothly
         document.getElementById('story-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
@@ -1127,3 +1266,5 @@
     </script>
 </body>
 </html>
+
+
