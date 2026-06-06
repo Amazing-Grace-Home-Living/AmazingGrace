@@ -627,54 +627,61 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
   // 5. Simulated Agent-to-Agent dialogue loop
   useEffect(() => {
     const interval = setInterval(() => {
-      if (engineState.sovereigns.length < 2) return;
-      
-      const fromIdx = Math.floor(Math.random() * engineState.sovereigns.length);
-      let toIdx = Math.floor(Math.random() * engineState.sovereigns.length);
-      while (toIdx === fromIdx) toIdx = Math.floor(Math.random() * engineState.sovereigns.length);
+      let fromAgent: Sovereign | null = null;
+      let toAgent: Sovereign | null = null;
+      let dialogueText = '';
 
-      const fromAgent = normalizeSovereign(engineState.sovereigns[fromIdx]);
-      const toAgent = normalizeSovereign(engineState.sovereigns[toIdx]);
-      const text = buildContextAwareDialogue(fromAgent, toAgent);
+      setEngineState((prev: any) => {
+        const sovereigns: Sovereign[] = prev.sovereigns || [];
+        if (sovereigns.length < 2) return prev;
 
-      const newConv = {
-        id: `${Date.now()}`,
-        from: fromAgent.name,
-        to: toAgent.name,
-        text,
-        time: Date.now()
-      };
+        const fromIdx = Math.floor(Math.random() * sovereigns.length);
+        let toIdx = Math.floor(Math.random() * sovereigns.length);
+        while (toIdx === fromIdx) toIdx = Math.floor(Math.random() * sovereigns.length);
 
-      setAgentConversations((prev) => [...prev, newConv].slice(-5));
-      setEngineState((prev: any) => ({
-        ...prev,
-        sovereigns: (prev.sovereigns || []).map((candidate: any) => {
-          const normalized = normalizeSovereign(candidate);
-          if (normalized.name === fromAgent.name) {
-            return {
-              ...normalized,
-              memory: pushMemory(normalized.memory, `Messaged ${toAgent.name}: ${text}`, 0.4)
-            };
+        fromAgent = normalizeSovereign(sovereigns[fromIdx]);
+        toAgent = normalizeSovereign(sovereigns[toIdx]);
+        dialogueText = buildContextAwareDialogue(fromAgent, toAgent);
+
+        return {
+          ...prev,
+          sovereigns: sovereigns.map((candidate: any) => {
+            const normalized = normalizeSovereign(candidate);
+            if (normalized.name === fromAgent!.name) {
+              return {
+                ...normalized,
+                memory: pushMemory(normalized.memory, `Messaged ${toAgent!.name}: ${dialogueText}`, 0.4)
+              };
+            }
+            return normalized;
+          })
+        };
+      });
+
+      if (fromAgent && toAgent) {
+        const from = (fromAgent as Sovereign).name;
+        const to = (toAgent as Sovereign).name;
+        const text = dialogueText;
+        setAgentConversations((prev) => [
+          ...prev,
+          { id: `${Date.now()}`, from, to, text, time: Date.now() }
+        ].slice(-5));
+        const timeString = new Date().toTimeString().split(' ')[0];
+        setMultiplayerLogs((prev) => [
+          ...prev,
+          {
+            id: `conv-${Date.now()}`,
+            time: timeString,
+            operator: from,
+            text: `[Intercepted] To ${to}: "${text}"`,
+            type: 'network'
           }
-          return normalized;
-        })
-      }));
-      
-      const timeString = new Date().toTimeString().split(' ')[0];
-      setMultiplayerLogs((prev) => [
-        ...prev,
-        {
-          id: `conv-${Date.now()}`,
-          time: timeString,
-          operator: fromAgent.name,
-          text: `[Intercepted] To ${toAgent.name}: "${text}"`,
-          type: 'network'
-        }
-      ].slice(-30));
+        ].slice(-30));
+      }
     }, 12000);
 
     return () => clearInterval(interval);
-  }, [engineState.sovereigns]);
+  }, []);
 
   // 5. User Controls mapping
   const triggerSystemEvent = (key: string) => {
