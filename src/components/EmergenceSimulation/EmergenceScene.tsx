@@ -1,4 +1,5 @@
 import React, { useRef, useMemo, useState, useEffect } from 'react';
+import { useConscience } from '../ConscienceProvider';
 import { Canvas, useFrame, ThreeEvent } from '@react-three/fiber';
 import { OrbitControls, Stars, Html, Trail, Float, Sphere, MeshDistortMaterial } from '@react-three/drei';
 import { EffectComposer, Bloom, Noise, Vignette, ChromaticAberration } from '@react-three/postprocessing';
@@ -621,6 +622,17 @@ export const EmergenceScene: React.FC = () => {
   const [chatMessage, setChatMessage] = useState('');
   const [hoverCell, setHoverCell] = useState<{ x: number; z: number } | null>(null);
 
+  const { globalCollapseRisk } = useConscience();
+
+  useEffect(() => {
+    if (globalCollapseRisk > 0.5) {
+      document.body.style.setProperty('--glitch-intensity', `${globalCollapseRisk}`);
+    }
+    if (globalCollapseRisk > 0.8) {
+      console.log("[JANUS]: Collapse Engine resonance critical.");
+    }
+  }, [globalCollapseRisk]);
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
@@ -670,7 +682,15 @@ export const EmergenceScene: React.FC = () => {
   };
 
   return (
-    <div className="emergence-viewport" onClick={() => selectSovereign(null)}>
+    <div 
+      className="emergence-viewport" 
+      onClick={() => selectSovereign(null)}
+      style={{
+        filter: globalCollapseRisk > 0.6 
+          ? `hue-rotate(${globalCollapseRisk * 90}deg) contrast(${1 + globalCollapseRisk * 0.5})`
+          : 'none'
+      }}
+    >
       {/* 1. Left Telemetry Dashboard */}
       <div className="telemetry-sidebar" onClick={(e) => e.stopPropagation()}>
         <div className="sidebar-header">

@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import MatrixOfConscience, { ConscienceProvider } from '../src/components/MatrixOfConscience';
+import MatrixOfConscience from '../src/components/MatrixOfConscience';
+import { ConscienceProvider } from '../src/components/ConscienceProvider';
 
 const root = document.getElementById('matrix-root');
 

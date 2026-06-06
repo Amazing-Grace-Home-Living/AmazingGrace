@@ -1,6 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import AtariLab from './AtariLab';
+import { ConscienceProvider } from '../../components/ConscienceProvider';
 
 const container = document.getElementById('root');
 
@@ -10,6 +11,8 @@ if (!container) {
 
 createRoot(container).render(
   <React.StrictMode>
-    <AtariLab />
+    <ConscienceProvider>
+      <AtariLab />
+    </ConscienceProvider>
   </React.StrictMode>
 );
