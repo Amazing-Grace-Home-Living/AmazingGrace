@@ -1,0 +1,1 @@
+import{u as e}from"./firebase-auth-CTwDEd1t.js";e(`firebase`,`12.14.0`,`app`);
