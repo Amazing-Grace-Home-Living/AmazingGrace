@@ -12,6 +12,12 @@
     - `wisdom` → `whiteClarity` (Inversion)
     - `integrity` → `janusStability` (Gravity)
     - `community` → `convergencePotential` (Causality)
+## Arcade Architecture (Standalone Default)
+- **Standalone Subsystems**: All new Arcade games and Nexus interfaces must be built as standalone React applications using Vite, rather than inline vanilla JS scripts.
+- **Entry Points**: Each subsystem must have its own `arcade/<subsystem-name>/index.html` and a `.tsx`/`.jsx` module entrypoint (e.g. `main.tsx`).
+- **Module Enforced**: The `index.html` MUST use `<script type="module" src="./main.tsx"></script>` to load the app.
+- **Vite Configuration**: Always register new subsystems in `vite.config.ts` under `build.rollupOptions.input`.
+- **Global Context**: Utilize `ConscienceProvider` (or similar top-level providers) to synchronize global state across iframe/window boundaries.
 
 ## Workflows
 - **Ella:** Unified operations for review suggestions and automated patches.

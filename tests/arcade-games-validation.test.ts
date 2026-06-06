@@ -119,6 +119,35 @@ describe('Arcade Games Validation', () => {
     });
   });
 
+  describe('Standalone Default Architecture', () => {
+    const standaloneGames = [
+      { name: 'Matrix of Conscience', dir: 'arcade/matrix-of-conscience' },
+      { name: 'Tower Defense', dir: 'arcade/tower-defense' },
+      { name: 'Emergence 3D', dir: 'arcade/emergence-3d' },
+      { name: 'Atari Lab', dir: 'arcade/atari-lab' },
+    ];
+
+    standaloneGames.forEach(game => {
+      it(`${game.name} should adhere to the Standalone Default architecture`, () => {
+        const gameDir = resolve(__dirname, '..', game.dir);
+        const indexPath = resolve(gameDir, 'index.html');
+        
+        expect(existsSync(indexPath), `${game.name} missing index.html`).toBe(true);
+        
+        const html = readFileSync(indexPath, 'utf-8');
+        expect(html, `${game.name} index.html must load a module script`).toMatch(/<script type="module" src="\.\/.*(?:ts|js)x?"><\/script>/);
+        
+        // Also ensure the actual module file exists
+        const moduleMatch = html.match(/src="\.\/(.*(?:ts|js)x?)"/);
+        expect(moduleMatch).not.toBeNull();
+        if (moduleMatch) {
+          const modulePath = resolve(gameDir, moduleMatch[1]);
+          expect(existsSync(modulePath), `${game.name} missing entry module ${moduleMatch[1]}`).toBe(true);
+        }
+      });
+    });
+  });
+
   describe('Asset and Dependency Checks', () => {
     it('arcade/js directory should exist with shared scripts', () => {
       const jsDir = resolve(__dirname, '../arcade/js');
