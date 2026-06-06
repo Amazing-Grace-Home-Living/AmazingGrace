@@ -71,8 +71,8 @@ const buildPersonality = (instinct: string, corruption: number): AIPersonality =
   };
 };
 
-const pushMemory = (memory: AgentMemoryEntry[] | undefined, event: string, sentiment: number): AgentMemoryEntry[] => {
-  const next = [...(memory || []), { event, timestamp: Date.now(), sentiment: clamp(sentiment, -1, 1) }];
+const pushMemory = (memory: AgentMemoryEntry[] = [], event: string, sentiment: number): AgentMemoryEntry[] => {
+  const next = [...memory, { event, timestamp: Date.now(), sentiment: clamp(sentiment, -1, 1) }];
   return next.slice(-MEMORY_LIMIT);
 };
 
@@ -491,9 +491,23 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
       const strategicLogs: Array<{ text: string; operator: string; type: string }> = [];
 
       setEngineState((prev: any) => {
-        const nextSovereigns = (prev.sovereigns || []).map((s: any) => normalizeSovereign(s));
+        let nextSovereigns: Sovereign[] = (prev.sovereigns || [])
+          .map((s: any) => normalizeSovereign(s))
+          .map((s: Sovereign) => ({
+            ...s,
+            relationships: { ...s.relationships },
+            memory: [...s.memory]
+          }));
 
-        nextSovereigns.forEach((sovereign: Sovereign, index: number) => {
+        const replaceSovereign = (name: string, updater: (agent: Sovereign) => Sovereign) => {
+          nextSovereigns = nextSovereigns.map((agent) => (
+            agent.name === name ? updater(agent) : agent
+          ));
+        };
+
+        for (let index = 0; index < nextSovereigns.length; index += 1) {
+          const initialSovereign = nextSovereigns[index];
+          let sovereign = initialSovereign;
           const sovereignPos = getSovereignGridPosition(index, sovereign);
           const nearby: Array<{ candidate: Sovereign; candidateIndex: number; distance: number }> = nextSovereigns
             .map((candidate: Sovereign, candidateIndex: number) => ({
@@ -507,14 +521,27 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
 
           nearby.forEach(({ candidate }) => {
             const trustDelta = sovereign.instinct === candidate.instinct ? 4 : -2;
-            sovereign.relationships[candidate.name] = clamp((sovereign.relationships[candidate.name] || 0) + trustDelta, -100, 100);
+            sovereign = {
+              ...sovereign,
+              relationships: {
+                ...sovereign.relationships,
+                [candidate.name]: clamp((sovereign.relationships[candidate.name] || 0) + trustDelta, -100, 100)
+              }
+            };
           });
 
           if (sovereign.corruption > 70 && nearby.length > 0) {
             const target = nearby[Math.floor(Math.random() * nearby.length)].candidate;
-            target.corruption = clamp(target.corruption + (4 * sovereign.personality.learningRate), 0, 100);
-            sovereign.memory = pushMemory(sovereign.memory, `Attempted corruption transfer on ${target.name}`, -0.5);
-            target.memory = pushMemory(target.memory, `Resisted corruption pressure from ${sovereign.name}`, -0.6);
+            const corruptionImpact = 4 * sovereign.personality.learningRate;
+            replaceSovereign(target.name, (agent) => ({
+              ...agent,
+              corruption: clamp(agent.corruption + corruptionImpact, 0, 100),
+              memory: pushMemory(agent.memory, `Corruption pressure increased from ${sovereign.name}`, -0.7)
+            }));
+            sovereign = {
+              ...sovereign,
+              memory: pushMemory(sovereign.memory, `Attempted corruption transfer on ${target.name}`, -0.5)
+            };
             strategicLogs.push({
               operator: sovereign.name,
               text: `Attempted scarletGrowth conversion on ${target.name}.`,
@@ -523,8 +550,11 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
           }
 
           if (sovereign.instinct === 'genesis' && sovereign.corruption < 30) {
-            sovereign.loyalty = clamp(sovereign.loyalty + 2, 0, 100);
-            sovereign.memory = pushMemory(sovereign.memory, 'Requested purification support in local grid', 0.6);
+            sovereign = {
+              ...sovereign,
+              loyalty: clamp(sovereign.loyalty + 2, 0, 100),
+              memory: pushMemory(sovereign.memory, 'Requested purification support in local grid', 0.6)
+            };
             strategicLogs.push({
               operator: sovereign.name,
               text: 'Requesting purification tower reinforcement near allied signatures.',
@@ -534,12 +564,15 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
 
           if (sovereign.instinct === 'hunt') {
             const nearbyThreats = nearby.filter(({ candidate }) => candidate.corruption > 65).length;
-            sovereign.adaptation = clamp(sovereign.adaptation + 1, 0, 100);
-            sovereign.memory = pushMemory(
-              sovereign.memory,
-              nearbyThreats > 0 ? `Patrol found ${nearbyThreats} hostile signature(s)` : 'Patrol route clear',
-              nearbyThreats > 0 ? 0.2 : 0.4
-            );
+            sovereign = {
+              ...sovereign,
+              adaptation: clamp(sovereign.adaptation + 1, 0, 100),
+              memory: pushMemory(
+                sovereign.memory,
+                nearbyThreats > 0 ? `Patrol found ${nearbyThreats} hostile signature(s)` : 'Patrol route clear',
+                nearbyThreats > 0 ? 0.2 : 0.4
+              )
+            };
             if (nearbyThreats > 0) {
               strategicLogs.push({
                 operator: sovereign.name,
@@ -548,7 +581,9 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
               });
             }
           }
-        });
+
+          replaceSovereign(sovereign.name, () => sovereign);
+        }
 
         return { ...prev, sovereigns: nextSovereigns };
       });

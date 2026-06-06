@@ -14,7 +14,7 @@ describe('Matrix of Conscience AI and Atari enhancements', () => {
     expect(context).toContain('relationships: Record<string, number>');
     expect(context).toContain('memory: AgentMemoryEntry[]');
     expect(context).toContain('buildContextAwareDialogue');
-    expect(context).toContain('}, 5000);');
+    expect(context).toContain('Autonomous strategic AI behavior loop');
     expect(context).toContain('Attempted scarletGrowth conversion');
   });
 
@@ -28,8 +28,7 @@ describe('Matrix of Conscience AI and Atari enhancements', () => {
     expect(scene).toContain('SYSTEM BREACH DETECTED: Atari Wing protocols activated.');
     expect(scene).toContain('[ATARI_WING] - FORBIDDEN ACCESS');
 
-    expect(unlockModule).toContain('export function useKonamiCode');
-    expect(unlockModule).toContain('export function AtariWingOverlay');
+    expect(unlockModule).toContain('export { useKonamiCode, AtariWingOverlay }');
     expect(unlockCss).toContain('.atari-crack-overlay');
     expect(unlockCss).toContain('.atari-whisper');
     expect(unlockCss).toContain('.atari-wing-btn');
