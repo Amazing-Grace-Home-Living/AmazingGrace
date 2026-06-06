@@ -95,7 +95,7 @@ const normalizeSovereign = (sovereign: any): Sovereign => ({
   ...sovereign,
   personality: sovereign.personality || buildPersonality(sovereign.instinct, sovereign.corruption ?? 0),
   relationships: sovereign.relationships || {},
-  memory: Array.isArray(sovereign.memory) ? sovereign.memory : []
+  memory: Array.isArray(sovereign.memory) ? sovereign.memory.slice(-MEMORY_LIMIT) : []
 });
 
 export interface Sovereign {
@@ -254,7 +254,7 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [engineState]);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
