@@ -55,7 +55,7 @@ describe('workflow cleanup', () => {
     expect(gemini).toContain('concurrency:');
     expect(gemini).toContain('group: gemini-review-${{ github.event.pull_request.number }}');
     expect(gemini).toContain('timeout-minutes: 5');
-    expect(gemini).toContain('google-github-actions/run-gemini-cli@v1');
+    expect(gemini).toContain('google-github-actions/run-gemini-cli@v0');
     expect(gemini).toContain('GEMINI_CLI_TRUST_WORKSPACE: true');
   });
 
