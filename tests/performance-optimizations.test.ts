@@ -66,6 +66,7 @@ describe('performance optimization fixes', () => {
     expect(conscienceProvider).toContain('const prevMetricsRef = useRef(initialMetrics);');
     expect(conscienceProvider).toContain('const updateMetrics = useCallback(');
     expect(conscienceProvider).toContain('const value = useMemo(() => ({');
+    expect(conscienceProvider).toContain('increaseCollapseRisk');
   });
 
   it('shares family stats via context provider in arcade app', () => {
