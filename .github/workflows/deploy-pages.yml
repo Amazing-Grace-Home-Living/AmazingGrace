@@ -1,0 +1,74 @@
+name: Build and Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Move dist to a safe place
+          mv dist ../site-build
+          
+          # Preserve CNAME if it exists in the current root
+          if [ -f CNAME ]; then
+            cp CNAME ../site-build/CNAME
+          fi
+          
+          # Switch to gh-pages branch
+          if git fetch origin gh-pages; then
+            git checkout gh-pages
+          else
+            git checkout --orphan gh-pages
+          fi
+          
+          # Delete everything in the branch to start fresh
+          git rm -rf . || true
+          
+          # Copy build artifacts back
+          cp -r ../site-build/* .
+          
+          # Add .nojekyll to bypass Jekyll processing
+          touch .nojekyll
+          
+          # Commit and push
+          git add .
+          if ! git diff --staged --quiet; then
+            git commit -m "Deploy: ${GITHUB_SHA}"
+            git push origin gh-pages --force
+          else
+            echo "No changes to deploy"
+          fi

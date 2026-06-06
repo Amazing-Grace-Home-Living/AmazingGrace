@@ -98,6 +98,30 @@ body {
     box-shadow: 0 0 10px var(--accent);
 }
 
+.instruction-box {
+    margin-top: 1.5rem;
+    text-align: left;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: rgba(2, 6, 23, 0.55);
+    padding: 0.9rem 1rem;
+}
+
+.instruction-box h3 {
+    margin: 0 0 0.5rem;
+    color: var(--accent);
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+}
+
+.instruction-box ol {
+    margin: 0;
+    padding-left: 1.2rem;
+    color: #cbd5e1;
+    font-size: 0.86rem;
+    line-height: 1.45;
+}
+
 /* Store */
 .store-grid {
     display: flex;

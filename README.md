@@ -49,6 +49,12 @@ are protected by an `ADMIN_API_KEY` secret. Send either:
 For Firebase Web SDK setup, copy `.env.example` to `.env` and provide `VITE_FIREBASE_*`
 values before using `src/firebase/app.ts`.
 
+### CI dependency install note
+
+- CI currently uses `npm ci --legacy-peer-deps` to work around a peer dependency conflict in the Vite toolchain.
+- `System Validation` includes a non-blocking plain `npm ci` probe to detect when dependency ranges are compatible again.
+- Once the probe succeeds consistently, remove `--legacy-peer-deps` from workflow install steps.
+
 - URL: `https://amazinggracehl.org/admin/`
 - Login: `https://amazinggracehl.org/admin/login.html`
 - **Demo accounts** (active on `localhost` / `*.github.io` only):
