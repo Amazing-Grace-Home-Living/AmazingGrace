@@ -53,7 +53,7 @@ jobs:
           path: |
             ~/.blackduck
             **/blackduck
-          key: blackduck-${{ runner.os }}-${{ hashFiles('**/package-lock.json', '**/requirements.txt', '**/go.sum') }}
+          key: blackduck-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             blackduck-${{ runner.os }}-
 
@@ -87,7 +87,7 @@ jobs:
           echo "## 🔒 Black Duck Security Scan Results" > "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "- **Branch**: ${{ github.ref_name }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Scan Type**: ${{ github.event_name == 'schedule' && 'Scheduled Full Scan' || github.event_name == 'workflow_dispatch' && 'Manual Full Scan' || 'On-Change Scan' }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Scan Type**: ${{ github.event_name == 'schedule' && 'Scheduled Full Scan' || (github.event_name == 'workflow_dispatch' && 'Manual Full Scan' || 'On-Change Scan') }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- **Status**: ${{ steps.black-duck-security-scan.outcome }}" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "Review detailed results in Black Duck or the uploaded workflow artifacts." >> "$GITHUB_STEP_SUMMARY"

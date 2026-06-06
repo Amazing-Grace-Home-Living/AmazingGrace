@@ -26,7 +26,9 @@ describe('workflow cleanup', () => {
     expect(workflow).toContain('- name: Instruction layer validation');
     expect(workflow).toContain('- name: Enforce rollback gate on failure');
     expect(workflow).toContain('if: failure()');
-    expect(workflow).toContain("secrets.FIREBASE_SERVICE_ACCOUNT_AMAZING_GRACE_HL_BBEAA != ''");
+    expect(workflow).toContain(
+      "if: github.ref == 'refs/heads/main' && github.event_name == 'push' && secrets.FIREBASE_SERVICE_ACCOUNT_AMAZING_GRACE_HL_BBEAA != ''"
+    );
   });
 
   it('tracks the Black Duck security scan workflow configuration', () => {
