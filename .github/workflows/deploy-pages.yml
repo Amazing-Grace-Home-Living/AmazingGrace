@@ -43,6 +43,11 @@ jobs:
           # Move dist to a safe place
           mv dist ../site-build
           
+          # Preserve CNAME if it exists in the current root
+          if [ -f CNAME ]; then
+            cp CNAME ../site-build/CNAME
+          fi
+          
           # Switch to gh-pages branch
           if git fetch origin gh-pages; then
             git checkout gh-pages
