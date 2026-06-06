@@ -40,17 +40,21 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Check if gh-pages exists, if not create it
+          # Move dist to a safe place
+          mv dist ../site-build
+          
+          # Switch to gh-pages branch
           if git fetch origin gh-pages; then
             git checkout gh-pages
           else
             git checkout --orphan gh-pages
-            git rm -rf .
           fi
           
-          # Copy dist files to root
-          cp -r dist/* .
-          rm -rf dist
+          # Delete everything in the branch to start fresh
+          git rm -rf . || true
+          
+          # Copy build artifacts back
+          cp -r ../site-build/* .
           
           # Add .nojekyll to bypass Jekyll processing
           touch .nojekyll
@@ -59,7 +63,7 @@ jobs:
           git add .
           if ! git diff --staged --quiet; then
             git commit -m "Deploy: ${GITHUB_SHA}"
-            git push origin gh-pages
+            git push origin gh-pages --force
           else
             echo "No changes to deploy"
           fi
