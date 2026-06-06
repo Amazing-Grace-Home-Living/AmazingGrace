@@ -199,7 +199,11 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
     ].slice(-30));
   };
 
-  worldAlignmentRef.current = engineState.worldAlignment;
+  // Keep the ref in sync so the alignment interval always reads the latest value
+  // without needing to be recreated on every engineState change.
+  useEffect(() => {
+    worldAlignmentRef.current = engineState.worldAlignment;
+  }, [engineState.worldAlignment]);
 
   useEffect(() => {
     // Instantiate the omniversal runtime locally
@@ -260,6 +264,8 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   useEffect(() => {
+    // worldAlignmentRef is kept up-to-date above, so this interval can run once
+    // on mount without being torn down and recreated on every engineState tick.
     const interval = setInterval(() => {
       setAlignmentPoints((prev) => {
         if (worldAlignmentRef.current > 0) return prev + 50;
