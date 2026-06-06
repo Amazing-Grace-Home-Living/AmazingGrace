@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import AtariLab from './AtariLab';
-import { ConscienceProvider } from '../../components/ConscienceProvider';
+import AtariLab from '../../src/arcade/atari-lab/AtariLab';
+import { ConscienceProvider } from '../../src/components/ConscienceProvider';
 
 const container = document.getElementById('root');
 

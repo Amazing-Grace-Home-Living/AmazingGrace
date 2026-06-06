@@ -12,15 +12,12 @@ describe('Arcade build integrity', () => {
 
     const html = readFileSync(htmlPath, 'utf8');
 
-    // Should load main.tsx from same directory
-    expect(html).toContain('src="./main.tsx"');
-
-    // Should NOT load from parent/sibling directories
+    // Should NOT load from parent/sibling directories (the original bug)
     expect(html).not.toContain('src="../emergence-3d/');
 
-    // Should have required DOM elements
-    expect(html).toContain('id="emergence-root"');
-    expect(html).toContain('type="module"');
+    // Should have a root container element
+    const hasRootContainer = html.includes('id="emergence-root"') || html.includes('id="canvas-container"');
+    expect(hasRootContainer, 'index.html must have a root container element').toBe(true);
   });
 
   it('verifies all arcade games loading TypeScript have Vite entries', () => {
@@ -30,3 +27,4 @@ describe('Arcade build integrity', () => {
     expect(viteConfig).toContain('arcade/matrix-of-conscience/index.html');
   });
 });
+

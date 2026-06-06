@@ -43,7 +43,7 @@ jobs:
 
     steps:
       - name: Checkout source
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -57,8 +57,21 @@ jobs:
           restore-keys: |
             blackduck-${{ runner.os }}-
 
+      - name: Resolve Black Duck configuration
+        id: blackduck_config
+        run: |
+          if [ -n "${BLACKDUCKSCA_URL}" ] && [ -n "${BLACKDUCKSCA_TOKEN}" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          BLACKDUCKSCA_URL: ${{ vars.BLACKDUCKSCA_URL }}
+          BLACKDUCKSCA_TOKEN: ${{ secrets.BLACKDUCKSCA_TOKEN }}
+
       - name: Black Duck security scan
-        id: black-duck-security-scan
+        id: black_duck_security_scan
+        if: steps.blackduck_config.outputs.configured == 'true'
         uses: blackduck-inc/black-duck-security-scan@v2
         with:
           blackducksca_url: ${{ vars.BLACKDUCKSCA_URL }}
@@ -70,6 +83,11 @@ jobs:
           DETECT_PROJECT_VERSION_NAME: ${{ github.ref_name }}
           DETECT_CODE_LOCATION_NAME: ${{ github.repository }}-${{ github.ref_name }}
         continue-on-error: ${{ github.event_name == 'schedule' }}
+
+      - name: Skip scan when Black Duck is not configured
+        if: steps.blackduck_config.outputs.configured != 'true'
+        run: |
+          echo "Black Duck scan skipped because BLACKDUCKSCA_URL variable or BLACKDUCKSCA_TOKEN secret is not configured."
 
       - name: Upload scan results
         if: always()
@@ -94,6 +112,6 @@ jobs:
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "- **Branch**: ${{ github.ref_name }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- **Scan Type**: ${scan_type}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Status**: ${{ steps.black-duck-security-scan.outcome }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Status**: ${{ steps.black_duck_security_scan.outcome || 'skipped' }}" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "Review detailed results in Black Duck or the uploaded workflow artifacts." >> "$GITHUB_STEP_SUMMARY"

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import MatrixOfConscience from '../src/components/MatrixOfConscience';
 import { ConscienceProvider } from '../src/components/ConscienceProvider';
 
+// Standalone root entry point for matrix.amazinggracehl.org
 const root = document.getElementById('matrix-root');
 
 if (root) {

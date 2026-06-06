@@ -8,7 +8,7 @@ describe('performance optimization fixes', () => {
   const starMatrix = fs.readFileSync('arcade/star-matrix/index.html', 'utf8');
   const viteConfig = fs.readFileSync('vite.config.ts', 'utf8');
   const lensBoard = fs.readFileSync('arcade/matrix-of-conscience/LensBoard.jsx', 'utf8');
-  const matrixConscience = fs.readFileSync('src/components/MatrixOfConscience.tsx', 'utf8');
+  const conscienceProvider = fs.readFileSync('src/components/ConscienceProvider.tsx', 'utf8');
   const arcadeMain = fs.readFileSync('src/arcade-main.tsx', 'utf8');
   const familyStatsContext = fs.readFileSync('src/context/FamilyStatsContext.tsx', 'utf8');
 
@@ -63,9 +63,10 @@ describe('performance optimization fixes', () => {
   });
 
   it('stabilizes ConscienceProvider metrics updates', () => {
-    expect(matrixConscience).toContain('const prevMetricsRef = useRef(initialMetrics);');
-    expect(matrixConscience).toContain('const updateMetrics = useCallback(');
-    expect(matrixConscience).toContain('const value = useMemo(() => ({ metrics, updateMetrics }), [metrics, updateMetrics]);');
+    expect(conscienceProvider).toContain('const prevMetricsRef = useRef(initialMetrics);');
+    expect(conscienceProvider).toContain('const updateMetrics = useCallback(');
+    expect(conscienceProvider).toContain('const value = useMemo(() => ({');
+    expect(conscienceProvider).toContain('increaseCollapseRisk');
   });
 
   it('shares family stats via context provider in arcade app', () => {

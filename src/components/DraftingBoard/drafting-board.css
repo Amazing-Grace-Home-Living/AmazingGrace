@@ -1,0 +1,241 @@
+.drafting-board-container {
+  display: flex;
+  flex-direction: column;
+  background: rgba(10, 5, 20, 0.8);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  border-radius: 8px;
+  color: #e0e0e0;
+  padding: 15px;
+  font-family: 'Courier New', Courier, monospace;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+}
+
+.drafting-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.3);
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.drafting-header h3 {
+  margin: 0;
+  color: #00f0ff;
+  text-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
+}
+
+.cooldown-badge {
+  background: rgba(255, 0, 85, 0.2);
+  color: #ff0055;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #ff0055;
+  font-size: 0.8rem;
+}
+
+.drafting-panels {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.sandbox-panel, .active-package-panel {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  border-radius: 6px;
+}
+
+h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #39ff14;
+  font-size: 0.9rem;
+  border-bottom: 1px dotted rgba(57, 255, 20, 0.3);
+  padding-bottom: 5px;
+}
+
+.rule-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rule-card.available:hover {
+  border-color: #00f0ff;
+  background: rgba(0, 240, 255, 0.1);
+}
+
+.rule-card.in-package {
+  border-color: #ff0055;
+  background: rgba(255, 0, 85, 0.1);
+}
+
+.rule-type {
+  font-weight: bold;
+  font-size: 0.8rem;
+  color: #bd00ff;
+}
+
+.rule-target {
+  font-size: 0.9rem;
+  margin: 4px 0;
+}
+
+.rule-author {
+  font-size: 0.7rem;
+  color: #888;
+}
+
+.consensus-meter {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid #555;
+  height: 20px;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.meter-fill {
+  background: linear-gradient(90deg, #00f0ff, #39ff14);
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.consensus-meter span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  line-height: 20px;
+  font-size: 0.8rem;
+  color: #fff;
+  text-shadow: 1px 1px 2px #000;
+}
+
+.package-rules {
+  min-height: 60px;
+}
+
+.voting-actions {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.btn-approve, .btn-reject {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: bold;
+}
+
+.btn-approve {
+  background: rgba(57, 255, 20, 0.2);
+  color: #39ff14;
+  border: 1px solid #39ff14;
+}
+
+.btn-approve:hover { background: rgba(57, 255, 20, 0.4); }
+
+.btn-reject {
+  background: rgba(255, 0, 85, 0.2);
+  color: #ff0055;
+  border: 1px solid #ff0055;
+}
+
+.btn-reject:hover { background: rgba(255, 0, 85, 0.4); }
+
+.vote-status {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.vote-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.vote-badge.pending { background: rgba(255, 255, 255, 0.1); color: #ccc; }
+.vote-badge.approve { background: rgba(57, 255, 20, 0.15); color: #39ff14; }
+.vote-badge.reject { background: rgba(255, 0, 85, 0.15); color: #ff0055; }
+
+.ledger-panel {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ledger-messages {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 150px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ledger-message {
+  padding: 6px 10px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 0.85rem;
+}
+
+.ledger-message.system { border-left: 2px solid #00f0ff; }
+.ledger-message.ai_evaluation { border-left: 2px solid #bd00ff; }
+.ledger-message.human_input { border-left: 2px solid #39ff14; }
+
+.msg-sender {
+  font-weight: bold;
+  font-size: 0.75rem;
+  margin-bottom: 2px;
+  color: #aaa;
+}
+
+.ledger-input-form {
+  display: flex;
+  gap: 10px;
+}
+
+.ledger-input-form input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 8px;
+  border-radius: 4px;
+  font-family: inherit;
+}
+
+.ledger-input-form button {
+  background: #00f0ff;
+  color: #000;
+  border: none;
+  padding: 0 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
