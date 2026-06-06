@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useReactorHum } from "../../components/useReactorHum";
+import { useConscience } from "../../components/ConscienceProvider";
 
 // Web Audio API Retro Sound Effects
 function playSound(type) {
@@ -67,6 +69,7 @@ function playSound(type) {
 }
 
 export default function AtariCabinet({ gameType, onClose }) {
+  const { increaseCollapseRisk } = useConscience();
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
   const [score, setScore] = useState(0);
@@ -74,6 +77,25 @@ export default function AtariCabinet({ gameType, onClose }) {
   const [gameState, setGameState] = useState("START"); // START, PLAYING, GAMEOVER, WIN
   const [logs, setLogs] = useState([]);
   const keysPressed = useRef({});
+
+  const booted = gameState === "PLAYING";
+  useReactorHum(booted);
+
+  // When booted, start contributing to global risk
+  useEffect(() => {
+    if (!booted) return;
+    
+    // Initial boot spikes risk
+    increaseCollapseRisk(0.02);
+
+    // While running, slowly leak risk
+    const interval = setInterval(() => {
+      increaseCollapseRisk(0.001); // 0.1% per 2s
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [booted, increaseCollapseRisk]);
+
 
   // Local storage high score management
   useEffect(() => {

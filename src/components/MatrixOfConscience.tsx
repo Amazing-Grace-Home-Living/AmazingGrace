@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, createContext, useContext, useRef, useCallback } from "react";
+import { ConscienceProvider, useConscience, M_CONSCIENCE_DEFAULT } from "./ConscienceProvider";
 import "./matrix-of-conscience.css";
 // @ts-ignore
 import { useTowerDefenseHUD } from "../modules/tower-defense/useTowerDefenseHUD";
@@ -161,51 +162,6 @@ type Props = {
   chainLevel?: number;
   activeUser?: string;
 };
-
-const M_CONSCIENCE_DEFAULT = { integrity: 0.85, community: 0.72, karma: 0.78, wisdom: 0.90 };
-const ConscienceContext = createContext<{
-  metrics: typeof M_CONSCIENCE_DEFAULT;
-  updateMetrics: (deltas: Partial<typeof M_CONSCIENCE_DEFAULT>) => void;
-} | null>(null);
-
-type ConscienceProviderProps = {
-  children: React.ReactNode;
-  initialMetrics?: typeof M_CONSCIENCE_DEFAULT;
-};
-
-export function ConscienceProvider({ children, initialMetrics = M_CONSCIENCE_DEFAULT }: ConscienceProviderProps) {
-  const [metrics, setMetrics] = useState(initialMetrics);
-  const prevMetricsRef = useRef(initialMetrics);
-
-  useEffect(() => {
-    const changed = (Object.keys(initialMetrics) as Array<keyof typeof M_CONSCIENCE_DEFAULT>).some(
-      (key) => initialMetrics[key] !== prevMetricsRef.current[key]
-    );
-    if (changed) {
-      setMetrics(initialMetrics);
-      prevMetricsRef.current = initialMetrics;
-    }
-  }, [initialMetrics]);
-
-  const updateMetrics = useCallback((deltas: Partial<typeof M_CONSCIENCE_DEFAULT>) => {
-    setMetrics((prev) => {
-      const updated = { ...prev };
-      Object.keys(deltas).forEach((key) => {
-        const k = key as keyof typeof M_CONSCIENCE_DEFAULT;
-        updated[k] = Math.max(0, Math.min(1, prev[k] + (deltas[k] || 0)));
-      });
-      return updated;
-    });
-  }, []);
-  const value = useMemo(() => ({ metrics, updateMetrics }), [metrics, updateMetrics]);
-  return <ConscienceContext.Provider value={value}>{children}</ConscienceContext.Provider>;
-}
-
-function useConscience() {
-  const ctx = useContext(ConscienceContext);
-  if (!ctx) throw new Error("useConscience must be used inside ConscienceProvider");
-  return ctx;
-}
 
 const CHURCHES = [
   { name: 'Ephesus', message: 'The church in Ephesus was known for its hard work and perseverance. However, Jesus warned them that they had abandoned their first love.', question: 'What had the church in Ephesus abandoned?', options: ['Their generosity', 'Their first love', 'Their church building', 'Their daily prayers'], answer: 'Their first love' },
