@@ -271,10 +271,38 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
     }
   }, []);
 
-  const [isUnsealing, setIsUnsealing] = useState(false);
-  const [unsealProgress, setUnsealProgress] = useState(0);
   const [badgeClickCount, setBadgeClickCount] = useState(0);
-  const [isAtariUnlocked, setIsAtariUnlocked] = useState(true);
+  const [isAtariUnlocked, setIsAtariUnlocked] = useState(false);
+  const [showCrack, setShowCrack] = useState(false);
+  const [whisper, setWhisper] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const unlocked = sessionStorage.getItem("atari_attuned");
+      if (unlocked) setIsAtariUnlocked(true);
+    }
+  }, []);
+
+  const triggerUnlock = () => {
+    if (typeof window !== 'undefined') {
+      const nonce = crypto.randomUUID();
+      sessionStorage.setItem("atari_attuned", nonce);
+    }
+    try {
+      fetch('/api/attune', { method: 'POST', body: JSON.stringify({ nonce: "atari" }) }).catch(() => {});
+    } catch {}
+
+    setWhisper("Accessing Forbidden Subsystem...");
+    setTimeout(() => setShowCrack(true), 800);
+    setTimeout(() => setWhisper("Warning: You are not cleared for Pre-Genesis cognition models."), 2400);
+    setTimeout(() => setWhisper("Janus Continuum has been notified."), 4200);
+    setTimeout(() => {
+      setIsAtariUnlocked(true);
+      setWhisper(null);
+      setShowCrack(false);
+      setTerminalLog("[NEXUS OS] 🔓 SUB-CHAMBER SEALS MELTED. Proto-Simulation Lab fully unsealed at /arcade/atari-lab/.");
+    }, 5800);
+  };
 
   const sequence = useMemo(() => [
     "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown",
@@ -286,30 +314,13 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
 
   useEffect(() => {
     function handler(e: KeyboardEvent) {
+      if (!extSubsystem?.includes("emergence-3d")) return;
+
       if (e.key === sequence[seqIndexRef.current]) {
         seqIndexRef.current++;
         if (seqIndexRef.current === sequence.length) {
+          triggerUnlock();
           seqIndexRef.current = 0;
-          try {
-            localStorage.setItem("atariUnlocked", "true");
-          } catch {}
-          setIsUnsealing(true);
-          setUnsealProgress(0);
-          playSynthSound("victory");
-          
-          let progress = 0;
-          const interval = setInterval(() => {
-            progress += 5;
-            setUnsealProgress(progress);
-            if (progress >= 100) {
-              clearInterval(interval);
-              setTimeout(() => {
-                setIsUnsealing(false);
-                setIsAtariUnlocked(true);
-                setTerminalLog("[NEXUS OS] 🔓 SUB-CHAMBER SEALS MELTED. Proto-Simulation Lab fully unsealed at /arcade/atari-lab/.");
-              }, 1200);
-            }
-          }, 100);
         }
       } else {
         seqIndexRef.current = e.key === sequence[0] ? 1 : 0;
@@ -317,32 +328,13 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
     }
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [sequence]);
+  }, [extSubsystem, sequence]);
 
   const handleBadgeClick = () => {
     const nextCount = badgeClickCount + 1;
     if (nextCount >= 8) {
       setBadgeClickCount(0);
-      try {
-        localStorage.setItem("atariUnlocked", "true");
-      } catch {}
-      setIsUnsealing(true);
-      setUnsealProgress(0);
-      playSynthSound("victory");
-      
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += 5;
-        setUnsealProgress(progress);
-        if (progress >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            setIsUnsealing(false);
-            setIsAtariUnlocked(true);
-            setTerminalLog("[NEXUS OS] 🔓 SUB-CHAMBER SEALS MELTED. Proto-Simulation Lab fully unsealed at /arcade/atari-lab/.");
-          }, 1200);
-        }
-      }, 100);
+      triggerUnlock();
     } else {
       setBadgeClickCount(nextCount);
       setTerminalLog(`[Attunement Diagnostics] Tap sequence received: ${nextCount}/8.`);
@@ -997,7 +989,37 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
   // MAIN CORE RENDERING
   // ---------------------------------------------------------------------------
   return (
-    <div className="mc-matrix-root">
+    <div className="mc-matrix-root" style={{ position: 'relative' }}>
+      {showCrack && (
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 9999, pointerEvents: 'none',
+          backgroundColor: 'rgba(245, 158, 11, 0.05)',
+          backdropFilter: 'contrast(1.5) brightness(1.2) hue-rotate(-10deg)',
+          border: '8px solid rgba(245, 158, 11, 0.3)',
+          boxShadow: 'inset 0 0 150px rgba(245, 158, 11, 0.2)'
+        }}>
+          {/* Procedural Glass Crack Lines */}
+          <div style={{ position: 'absolute', top: '10%', left: '30%', width: '1px', height: '200px', background: 'rgba(255,255,255,0.8)', transform: 'rotate(25deg)', boxShadow: '0 0 8px #fff' }} />
+          <div style={{ position: 'absolute', top: '25%', left: '45%', width: '1px', height: '300px', background: 'rgba(255,255,255,0.7)', transform: 'rotate(-40deg)', boxShadow: '0 0 8px #fff' }} />
+          <div style={{ position: 'absolute', top: '20%', left: '35%', width: '1px', height: '180px', background: 'rgba(255,255,255,0.6)', transform: 'rotate(70deg)', boxShadow: '0 0 8px #fff' }} />
+          <div style={{ position: 'absolute', top: '45%', left: '40%', width: '1px', height: '250px', background: 'rgba(255,255,255,0.6)', transform: 'rotate(-15deg)', boxShadow: '0 0 8px #fff' }} />
+        </div>
+      )}
+      
+      {whisper && (
+        <div style={{
+          position: 'absolute', bottom: '6rem', left: '50%', transform: 'translateX(-50%)', zIndex: 10000,
+          pointerEvents: 'none', textAlign: 'center', background: 'rgba(0,0,0,0.7)', padding: '0.5rem 1rem', borderRadius: '4px',
+          border: '1px solid rgba(245, 158, 11, 0.5)'
+        }}>
+          <p style={{
+            fontFamily: 'var(--mono)', color: '#fcd34d', fontSize: '0.9rem', letterSpacing: '0.1em',
+            textShadow: '0 0 10px #f59e0b', margin: 0
+          }}>
+            {whisper}
+          </p>
+        </div>
+      )}
       <div className="mc-container">
         <header className="mc-header">
           <p className="mc-badge" onClick={handleBadgeClick} style={{ cursor: 'pointer', userSelect: 'none' }}>NEXUS ARCADE // CORE UNIFICATION</p>
@@ -1763,7 +1785,13 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
                       color: "#06b6d4",
                       tag: "COMMAND CENTER"
                     },
-
+                    ...(isAtariUnlocked ? [{
+                      name: "Atari Wing",
+                      desc: "Proto-simulation lab. Cognition models unstable. Chrono-lock engaged.",
+                      path: "/arcade/atari-lab/index.html",
+                      color: "#ef4444",
+                      tag: "RESTRICTED"
+                    }] : [])
                   ].map(game => (
                     <div key={game.name} style={{
                       background: 'rgba(2, 6, 23, 0.45)',

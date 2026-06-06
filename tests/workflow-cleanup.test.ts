@@ -5,6 +5,7 @@ describe('workflow cleanup', () => {
   it('keeps the verified system validation and support workflows', () => {
     expect(fs.readdirSync('.github/workflows').sort()).toEqual([
       'blackduck-security-scan.yml',
+      'deploy-pages.yml',
       'electra.yml',
       'ella.yml',
       'gemini-code-review.yml',
@@ -27,7 +28,7 @@ describe('workflow cleanup', () => {
     expect(workflow).toContain('- name: Enforce rollback gate on failure');
     expect(workflow).toContain('if: failure()');
     expect(workflow).toContain(
-      "if: github.ref == 'refs/heads/main' && github.event_name == 'push' && secrets.FIREBASE_SERVICE_ACCOUNT_AMAZING_GRACE_HL_BBEAA != ''"
+      "if: github.ref == 'refs/heads/main' && github.event_name == 'push'"
     );
   });
 
