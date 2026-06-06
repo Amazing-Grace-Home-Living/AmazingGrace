@@ -1,9 +1,5 @@
-<<<<<<< HEAD
 import React, { useRef, useMemo, useState, useEffect, useCallback } from 'react';
-=======
-import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { useConscience } from '../ConscienceProvider';
->>>>>>> origin/main
 import { Canvas, useFrame, ThreeEvent } from '@react-three/fiber';
 import { OrbitControls, Stars, Html, Trail, Float, Sphere, MeshDistortMaterial } from '@react-three/drei';
 import { EffectComposer, Bloom, Noise, Vignette, ChromaticAberration } from '@react-three/postprocessing';
