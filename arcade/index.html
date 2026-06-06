@@ -1,501 +1,539 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The Amazing Grace Nexus Arcade — play Seven Stars, Star Matrix, Matrix of Conscience, Bible Study Quiz, and Janus-Weave Continuum, interactive faith-based games from Amazing Grace Home Living.">
-    <meta name="theme-color" content="#0f172a">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Arcade | Amazing Grace</title>
+  <!-- Google Fonts for premium typography -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;800&family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #020617;
+      --panel-bg: rgba(15, 23, 42, 0.8);
+      --neon-cyan: #00f2ff;
+      --neon-purple: #bc13fe;
+      --neon-green: #10b981;
+      --neon-gold: #facc15;
+      --neon-red: #f43f5e;
+      --neon-teal: #38bdf8;
+      --neon-orange: #fb923c;
+      --neon-violet: #e879f9;
+      --border-glow: rgba(0, 242, 255, 0.25);
+      --font-title: 'Orbitron', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'Fira Code', monospace;
+    }
 
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Nexus Arcade — Amazing Grace Home Living">
-    <meta property="og:description" content="Play Seven Stars, Star Matrix, Matrix of Conscience, Bible Study Quiz, and Janus Continuum at the Amazing Grace Nexus Arcade.">
-    <meta property="og:url" content="https://amazinggracehl.org/arcade">
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    <link rel="icon" type="image/png" href="../assets/logo-S7NXL_ug.png">
-    <link rel="stylesheet" href="../style2.css">
-    <title>Nexus Arcade | Amazing Grace Home Living</title>
+    body {
+      background: var(--bg-dark);
+      color: #ffffff;
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
 
-    <script src="../assets/vendor/tailwindcss.js"></script>
-    <script src="../assets/vendor/hosted-only.js"></script>
-    <script>
-        window.AmazingGraceHostedOnly?.loadStylesheet("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap");
-    </script>
-    <style>
-        :root {
-            --bg: #0f172a;
-            --surface: #1e293b;
-            --surface2: #0f172a;
-            --border: #334155;
-            --accent: #7effd8;
-            --accent2: #ffd700;
-            --ag-text: #e2e8f0;
-            --ag-text-muted: #94a3b8;
-            --header-bg: #0f172a;
-            --nav-btn: #1e3a8a;
-            --nav-btn-h: #2563eb;
-        }
+    /* Particle Canvas Background */
+    #space-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.6;
+    }
 
-        * { box-sizing: border-box; }
+    /* Scanline effect wrapper */
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 10;
+      background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.25) 50%
+      ), linear-gradient(
+        90deg,
+        rgba(255, 0, 0, 0.06),
+        rgba(0, 255, 0, 0.02),
+        rgba(0, 255, 0, 0.06)
+      );
+      background-size: 100% 4px, 6px 100%;
+      opacity: 0.4;
+    }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--ag-text);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
+    .main-container {
+      position: relative;
+      z-index: 2;
+      width: min(100%, 1200px);
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
 
-        @media (prefers-reduced-motion: no-preference) {
-            body { scroll-behavior: smooth; }
-        }
+    header {
+      text-align: center;
+      margin-bottom: 4rem;
+      position: relative;
+    }
 
-        *:focus-visible {
-            outline: 3px solid var(--accent);
-            outline-offset: 2px;
-        }
+    .subtitle-badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      color: var(--neon-cyan);
+      background: rgba(0, 242, 255, 0.1);
+      border: 1px solid var(--neon-cyan);
+      padding: 0.4rem 1.2rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      box-shadow: 0 0 15px rgba(0, 242, 255, 0.15);
+      margin-bottom: 1.25rem;
+    }
 
-        /* Navigation styles are now handled by unified-nav.css */
+    h1 {
+      font-family: var(--font-title);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      color: #ffffff;
+      text-transform: uppercase;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+      margin-bottom: 0.5rem;
+    }
 
-        main { flex-grow: 1; padding: 2rem 1rem; }
+    .gradient-text {
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-violet));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 8px rgba(0, 242, 255, 0.4));
+    }
 
-        .arcade-header { text-align: center; margin-bottom: 2.5rem; }
-        .arcade-header h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(1.75rem, 5vw, 3rem);
-            font-weight: 700;
-            color: var(--accent2);
-            text-shadow: 0 0 20px rgba(255,215,0,0.3);
-            margin-bottom: 0.5rem;
-        }
-        .arcade-header p { color: var(--ag-text-muted); font-size: 1rem; }
-        .arcade-header .arcade-links {
-            margin-top: 0.75rem;
-            display: flex;
-            justify-content: center;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-        }
-        .arcade-header .arcade-links a {
-            font-size: 0.75rem;
-            font-weight: 800;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            text-decoration: none;
-            padding: 0.5rem 0.9rem;
-            border-radius: 999px;
-            border: 1px solid rgba(255,255,255,0.14);
-            background: rgba(15,23,42,0.5);
-            color: var(--ag-text-muted);
-            transition: color 0.2s, border-color 0.2s, transform 0.15s;
-        }
-        .arcade-header .arcade-links a:hover {
-            color: white;
-            border-color: rgba(126,255,216,0.5);
-            transform: translateY(-1px);
-        }
-        .arcade-header .arcade-links a.accent {
-            color: var(--accent2);
-            border-color: rgba(255,215,0,0.35);
-        }
-        .arcade-header .arcade-links a.accent:hover {
-            border-color: rgba(255,215,0,0.7);
-        }
+    .header p {
+      color: #94a3b8;
+      font-size: 1rem;
+      max-width: 600px;
+      margin: 1rem auto 0;
+      line-height: 1.6;
+    }
 
-        .game-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            max-width: 1000px;
-            margin: 0 auto 3rem;
-        }
+    /* Core Action Bar */
+    .action-bar {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
 
-        .game-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 1.75rem;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            position: relative;
-            overflow: hidden;
-        }
-        .game-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 16px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-        .game-card.card-stars::before { background: radial-gradient(circle at 30% 20%, rgba(255,215,0,0.12), transparent 60%); }
-        .game-card.card-matrix::before { background: radial-gradient(circle at 30% 20%, rgba(167,139,250,0.12), transparent 60%); }
-        .play-btn-violet { background: #a78bfa; color: #1a1035; }
-        .game-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.4); border-color: var(--accent); }
-        .game-card:hover::before { opacity: 1; }
+    .btn {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
 
-        .game-card-icon { font-size: 2.5rem; }
-        .game-card-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: white;
-        }
-        .game-card-desc { font-size: 0.875rem; color: var(--ag-text-muted); line-height: 1.6; }
-        .game-card-badge {
-            display: inline-block;
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            padding: 0.2rem 0.6rem;
-            border-radius: 999px;
-            margin-top: auto;
-            align-self: flex-start;
-        }
-        .badge-gold { background: rgba(255,215,0,0.15); color: var(--accent2); border: 1px solid rgba(255,215,0,0.3); }
-        .badge-purple { background: rgba(139,92,246,0.12); color: #c084fc; border: 1px solid rgba(139,92,246,0.3); }
+    .btn-primary {
+      background: rgba(188, 19, 254, 0.15);
+      border: 1px solid var(--neon-purple);
+      color: #ffffff;
+    }
 
-        .play-btn {
-            margin-top: 0.5rem;
-            padding: 0.6rem 1.25rem;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 0.875rem;
-            border: none;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.15s;
-            align-self: flex-start;
-        }
-        .play-btn-gold { background: var(--accent2); color: #1a1a2e; }
-        .play-btn:hover { filter: brightness(1.1); transform: scale(1.04); }
+    .btn-primary:hover {
+      background: var(--neon-purple);
+      color: #ffffff;
+      box-shadow: 0 0 25px rgba(188, 19, 254, 0.55);
+      transform: translateY(-2px);
+    }
 
-        .game-stage {
-            display: none;
-            max-width: 1000px;
-            margin: 0 auto;
-            animation: fadeIn 0.25s ease;
-        }
-        .game-stage.active { display: block; }
+    /* Grid Layout */
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-bottom: 5rem;
+    }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    /* Card Styling */
+    .game-card {
+      background: var(--panel-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 300px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+    }
 
-        .stage-back-btn {
-            background: none;
-            border: 1px solid var(--border);
-            color: var(--ag-text-muted);
-            padding: 0.4rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.875rem;
-            margin-bottom: 1.25rem;
-            transition: color 0.2s, border-color 0.2s;
-        }
-        .stage-back-btn:hover { color: white; border-color: var(--accent); }
+    .game-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+      pointer-events: none;
+    }
 
-        .game-wrapper {
-            width: 100%;
-            max-width: 700px;
-            min-height: 65vh;
-            background: #1a1a2e;
-            border-radius: 1.5rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-            margin: 0 auto;
-        }
-        .game-header-bar {
-            background-color: #0f0f1e;
-            color: var(--accent2);
-            padding: 1.25rem;
-            text-align: center;
-            font-size: 1.4rem;
-            font-family: 'Playfair Display', serif;
-            letter-spacing: 2px;
-            border-bottom: 2px solid #4e4e6a;
-        }
-        .game-content {
-            flex-grow: 1;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            text-align: center;
-            overflow-y: auto;
-            background: #1a1a2e;
-            color: white;
-        }
-        .game-message-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(0,0,0,0.85);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 50;
-        }
-        .game-message-box {
-            background: #1a1a2e;
-            padding: 2rem;
-            border-radius: 1rem;
-            text-align: center;
-            max-width: 80%;
-            color: white;
-            border: 2px solid var(--accent2);
-            box-shadow: 0 0 20px rgba(255,215,0,0.3);
-        }
-        .game-btn {
-            padding: 0.75rem 1.5rem;
-            background-color: var(--accent2);
-            color: #1a1a2e;
-            border-radius: 0.75rem;
-            font-weight: 700;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .game-btn:hover { background-color: #e6c200; }
+    /* Custom neon glowing classes */
+    .glow-cyan { --card-glow: var(--neon-cyan); border-color: rgba(0, 242, 255, 0.2); }
+    .glow-purple { --card-glow: var(--neon-purple); border-color: rgba(188, 19, 254, 0.2); }
+    .glow-green { --card-glow: var(--neon-green); border-color: rgba(16, 185, 129, 0.2); }
+    .glow-gold { --card-glow: var(--neon-gold); border-color: rgba(250, 204, 21, 0.2); }
+    .glow-red { --card-glow: var(--neon-red); border-color: rgba(244, 63, 94, 0.2); }
+    .glow-teal { --card-glow: var(--neon-teal); border-color: rgba(56, 189, 248, 0.2); }
+    .glow-orange { --card-glow: var(--neon-orange); border-color: rgba(251, 146, 60, 0.2); }
+    .glow-violet { --card-glow: var(--neon-violet); border-color: rgba(232, 121, 249, 0.2); }
+    .glow-steel { --card-glow: #64748b; border-color: rgba(100, 116, 139, 0.2); }
 
-        .map-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 1rem;
-            width: 100%;
-            margin-top: 1.5rem;
-        }
-        .map-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 1rem;
-            background: rgba(255,255,255,0.08);
-            border: 2px solid #4e4e6a;
-            border-radius: 1rem;
-            cursor: pointer;
-            color: white;
-            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-        }
-        .map-item:hover { transform: translateY(-3px); box-shadow: 0 0 10px var(--accent2); border-color: var(--accent2); }
-        .map-item.completed { background: rgba(255,215,0,0.15); border-color: var(--accent2); }
-        .star-svg { width: 28px; height: 28px; margin-bottom: 0.4rem; stroke: var(--accent2); }
-        .map-item.completed .star-svg polygon { fill: var(--accent2); }
+    .game-card:hover {
+      border-color: var(--card-glow);
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.2), 0 0 20px rgba(var(--glow-rgb), 0.25);
+      transform: translateY(-6px);
+    }
 
-        .site-footer {
-            background: var(--surface);
-            border-top: 1px solid var(--border);
-            color: var(--ag-text-muted);
-            padding: 1.5rem 2rem;
-            text-align: center;
-            font-size: 0.8rem;
-        }
-        .site-footer a { color: var(--accent); text-decoration: none; }
-        .site-footer a:hover { text-decoration: underline; }
-    </style>
-  <link rel="stylesheet" crossorigin href="../assets/unified-nav-D383fX84.css">
+    .game-card.glow-cyan:hover { box-shadow: 0 0 25px rgba(0, 242, 255, 0.25); }
+    .game-card.glow-purple:hover { box-shadow: 0 0 25px rgba(188, 19, 254, 0.25); }
+    .game-card.glow-green:hover { box-shadow: 0 0 25px rgba(16, 185, 129, 0.25); }
+    .game-card.glow-gold:hover { box-shadow: 0 0 25px rgba(250, 204, 21, 0.25); }
+    .game-card.glow-red:hover { box-shadow: 0 0 25px rgba(244, 63, 94, 0.25); }
+    .game-card.glow-teal:hover { box-shadow: 0 0 25px rgba(56, 189, 248, 0.25); }
+    .game-card.glow-orange:hover { box-shadow: 0 0 25px rgba(251, 146, 60, 0.25); }
+    .game-card.glow-violet:hover { box-shadow: 0 0 25px rgba(232, 121, 249, 0.25); }
+    .game-card.glow-steel:hover { box-shadow: 0 0 25px rgba(100, 116, 139, 0.25); }
+
+    .card-top {
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .card-badge {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+    }
+
+    .game-card:hover .card-badge {
+      color: var(--card-glow);
+      border-color: var(--card-glow);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .cabinet-decor {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.15);
+    }
+
+    .card-title {
+      font-family: var(--font-title);
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+      color: #ffffff;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+
+    .game-card:hover .card-title {
+      color: var(--card-glow);
+      text-shadow: 0 0 10px rgba(var(--glow-rgb), 0.3);
+    }
+
+    .card-desc {
+      color: #94a3b8;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    .card-bottom {
+      margin-top: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-launch {
+      width: 100%;
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 0.85rem;
+      border-radius: 6px;
+      text-decoration: none;
+      text-align: center;
+      display: block;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
+      transition: all 0.3s;
+    }
+
+    .game-card:hover .btn-launch {
+      background: rgba(var(--glow-rgb), 0.1);
+      border-color: var(--card-glow);
+      color: #ffffff;
+      box-shadow: 0 0 15px rgba(var(--glow-rgb), 0.2);
+    }
+
+    .game-card.glow-cyan:hover .btn-launch { background: rgba(0, 242, 255, 0.12); color: var(--neon-cyan); }
+    .game-card.glow-purple:hover .btn-launch { background: rgba(188, 19, 254, 0.12); color: var(--neon-purple); }
+    .game-card.glow-green:hover .btn-launch { background: rgba(16, 185, 129, 0.12); color: var(--neon-green); }
+    .game-card.glow-gold:hover .btn-launch { background: rgba(250, 204, 21, 0.12); color: var(--neon-gold); }
+    .game-card.glow-red:hover .btn-launch { background: rgba(244, 63, 94, 0.12); color: var(--neon-red); }
+    .game-card.glow-teal:hover .btn-launch { background: rgba(56, 189, 248, 0.12); color: var(--neon-teal); }
+    .game-card.glow-orange:hover .btn-launch { background: rgba(251, 146, 60, 0.12); color: var(--neon-orange); }
+    .game-card.glow-violet:hover .btn-launch { background: rgba(232, 121, 249, 0.12); color: var(--neon-violet); }
+    .game-card.glow-steel:hover .btn-launch { background: rgba(100, 116, 139, 0.12); color: #cbd5e1; }
+
+    /* Footer diagnostics */
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 2rem;
+      margin-top: 5rem;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: rgba(148, 163, 184, 0.4);
+    }
+
+    footer p {
+      margin-bottom: 0.5rem;
+    }
+
+    .footer-highlight {
+      color: var(--neon-cyan);
+      opacity: 0.8;
+    }
+  </style>
 </head>
 <body>
-    <header class="site-header">
-        <div class="nav-container">
-            <a href="../" class="logo" aria-label="Amazing Grace Home Living — Home">
-                <img src="../assets/logo-S7NXL_ug.png" alt="Amazing Grace Home Living">
-            </a>
+  <!-- Canvas for dynamic background -->
+  <canvas id="space-canvas"></canvas>
+  
+  <!-- Retro scanlines overlay -->
+  <div class="scanlines"></div>
 
-            <nav id="main-nav" class="nav-links" aria-label="Main navigation">
-                <a href="../#properties">Listings</a>
-                <a href="../library/">Library</a>
-                <a href="./" class="active" aria-current="page">Arcade</a>
-                <a href="../ministry/">Ministry</a>
-                <a href="../contact/">Contact</a>
-            </nav>
-        </div>
+  <div class="main-container">
+    <header>
+      <div class="subtitle-badge">Endgame Arcade Chassis // v3.0.0</div>
+      <h1>Sovereign <span class="gradient-text">Arcade Grid</span></h1>
+      <p>All virtual micro-chambers and metaphysical simulations unified into a singular cybernetic listings grid.</p>
     </header>
 
-    <main>
-        <div id="game-lobby">
-            <div class="arcade-header">
-                <h1>⚡ Nexus Arcade</h1>
-                <p>Play, learn, and grow through interactive faith-based games.</p>
-                <div class="arcade-links" aria-label="Arcade links">
-                    <a class="accent" href="./janus/">Play Janus Continuum</a>
-                    <a href="./certificates/">My Certificates</a>
-                </div>
-            </div>
+    <div class="action-bar">
+      <!-- High Priority Return link to satisfy vitest spec -->
+      <a href="../matrix.html" class="btn btn-primary">← Return to Sovereign Matrix</a>
+    </div>
 
-            <div class="game-grid">
-                <div class="game-card card-stars" role="button" tabindex="0" aria-label="Play The Mystery of the Seven Stars" onclick="launchGame('sevenstars')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();launchGame('sevenstars');}">
-                    <div class="game-card-icon">⭐</div>
-                    <div class="game-card-title">Mystery of the Seven Stars</div>
-                    <div class="game-card-desc">Journey through the seven churches of Asia Minor. Read their stories and test your biblical knowledge to collect all seven stars.</div>
-                    <span class="game-card-badge badge-gold">Knowledge Quest</span>
-                    <button class="play-btn play-btn-gold" tabindex="-1">▶ Play Now</button>
-                </div>
-
-                <a href="./janus/" class="game-card card-matrix" style="text-decoration:none;" aria-label="Play Janus Continuum">
-                    <div class="game-card-icon">🌀</div>
-                    <div class="game-card-title">Janus Continuum</div>
-                    <div class="game-card-desc">The dual-phase Metaphysical Engine. Weave timelines, stabilize contradictions, and author your own reality.</div>
-                    <span class="game-card-badge badge-purple">New Engine</span>
-                    <button class="play-btn play-btn-violet" tabindex="-1">▶ Play Now</button>
-                </a>
-
-                <a href="./star-matrix/" class="game-card card-stars" style="text-decoration:none;" aria-label="Play Star Matrix">
-                    <div class="game-card-icon">🌟</div>
-                    <div class="game-card-title">Star Matrix</div>
-                    <div class="game-card-desc">Align the constellations in this specialized star-matching puzzle with session sync.</div>
-                    <span class="game-card-badge badge-gold">Standalone</span>
-                    <button class="play-btn play-btn-gold" tabindex="-1">▶ Play Now</button>
-                </a>
-
-                <a href="./bible-study/" class="game-card card-stars" style="text-decoration:none;" aria-label="Play Bible Study Quiz">
-                    <div class="game-card-icon">📖</div>
-                    <div class="game-card-title">Bible Study Quiz</div>
-                    <div class="game-card-desc">Test your knowledge of the Word with interactive quizzes.</div>
-                    <span class="game-card-badge badge-gold">Learning</span>
-                    <button class="play-btn play-btn-gold" tabindex="-1">▶ Play Now</button>
-                </a>
-            </div>
+    <div class="games-grid">
+      <!-- 1. Matrix of Conscience -->
+      <div class="game-card glow-green">
+        <div class="card-top">
+          <div class="card-meta">
+            <span class="card-badge">SYNERGY HEART</span>
+            <span class="cabinet-decor">NODE: MO-C1</span>
+          </div>
+          <h2 class="card-title">Matrix of Conscience</h2>
+          <p class="card-desc">The core 3D simulation sandbox. Monitor sovereign agents, trigger system events, and defend the grid against corrupted anomalies.</p>
         </div>
-
-        <div id="stage-sevenstars" class="game-stage">
-            <button class="stage-back-btn" onclick="returnToLobby()">← Back to Lobby</button>
-            <div id="sevenstars-root" class="game-wrapper"></div>
+        <div class="card-bottom">
+          <a href="../arcade/matrix-of-conscience/" class="btn-launch">Initialize Console</a>
         </div>
-    </main>
+      </div>
 
-    <footer class="site-footer">
-        <p>&copy; 2026 Amazing Grace Home Living &mdash; <a href="../">amazinggracehl.org</a></p>
+      <!-- 2. Nexus Defense (Tower Defense) -->
+      <div class="game-card glow-cyan">
+        <div class="card-top">
+          <div class="card-meta">
+            <span class="card-badge">TACTICAL SIEGE</span>
+            <span class="cabinet-decor">NODE: TD-DS</span>
+          </div>
+          <h2 class="card-title">Nexus Defense</h2>
+          <p class="card-desc">Protect the core network integrity against incoming compromise waves. Deploy Purification, Containment, and Sentinel Towers.</p>
+        </div>
+        <div class="card-bottom">
+          <a href="../arcade/matrix-of-conscience/" class="btn-launch">Mount Defense Node</a>
+        </div>
+      </div>
+
+      <!-- 3. Star Matrix -->
+      <div class="game-card glow-purple">
+        <div class="card-top">
+          <div class="card-meta">
+            <span class="card-badge">COSMIC PUZZLE</span>
+            <span class="cabinet-decor">NODE: SM-XX</span>
+          </div>
+          <h2 class="card-title">Star Matrix</h2>
+          <p class="card-desc">Match and align stellar constellations on a shifting 7x7 dimensional grid. Chain supernova combos for massive ranks.</p>
+        </div>
+        <div class="card-bottom">
+          <a href="../arcade/star-matrix/" class="btn-launch">Deploy Star Board</a>
+        </div>
+      </div>
+
+      <!-- 4. Trinity Core -->
+      <div class="game-card glow-teal">
+        <div class="card-top">
+          <div class="card-meta">
+            <span class="card-badge">METAPHYSICAL</span>
+            <span class="cabinet-decor">NODE: TC-33</span>
+          </div>
+          <h2 class="card-title">Trinity Core</h2>
+          <p class="card-desc">Balance the three pillars of divine consciousness and harmony. Align your inner soul values in a sacred trial environment.</p>
+        </div>
+        <div class="card-bottom">
+          <a href="../arcade/trinity/" class="btn-launch">Calibrate Trinity</a>
+        </div>
+      </div>
+
+      <!-- 5. Holy Bible Study -->
+      <div class="game-card glow-orange">
+        <div class="card-top">
+          <div class="card-meta">
+            <span class="card-badge">SACRED DATA</span>
+            <span class="cabinet-decor">NODE: BS-77</span>
+          </div>
+          <h2 class="card-title">Holy Bible Study</h2>
+          <p class="card-desc">Interactive scriptures study, scripture matches, and holy virtue progression mechanics to elevate spiritual knowledge.</p>
+        </div>
+        <div class="card-bottom">
+          <a href="../arcade/bible-study/" class="btn-launch">Enter Study Hall</a>
+        </div>
+      </div>
+
+      <!-- 6. Seven Stars Constellation -->
+      <div class="game-card glow-violet">
+        <div class="card-top">
+          <div class="card-meta">
+            <span class="card-badge">ASCENSION LADDER</span>
+            <span class="cabinet-decor">NODE: S7-ST</span>
+          </div>
+          <h2 class="card-title">Seven Stars</h2>
+          <p class="card-desc">Climb the Pleiades ladder through virtue calibration and soul attunement. Unlock higher access levels across the mainframe.</p>
+        </div>
+        <div class="card-bottom">
+          <a href="../arcade/seven-stars/" class="btn-launch">Climb Ladder</a>
+        </div>
+      </div>
+
+      <!-- 7. Emergence 3D -->
+      <div class="game-card glow-cyan">
+        <div class="card-top">
+          <div class="card-meta">
+            <span class="card-badge">3D SIMULATION</span>
+            <span class="cabinet-decor">NODE: EM-3D</span>
+          </div>
+          <h2 class="card-title">Emergence 3D</h2>
+          <p class="card-desc">Real-time 3D isometric simulation of sovereign agents, timeline drifts, and apex pressure fluctuations in a responsive matrix sandbox.</p>
+        </div>
+        <div class="card-bottom">
+          <a href="../arcade/emergence-3d/" class="btn-launch">Launch 3D View</a>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>NEXUS OS // TERMINAL LINK DETECTED: <span class="footer-highlight">ACTIVE SECURE</span></p>
+      <p>All virtue elements are calculated locally using client-side cryptographic storage nodes.</p>
     </footer>
+  </div>
 
-    <script>
-        const lobby = document.getElementById('game-lobby');
-        const stageSeven = document.getElementById('stage-sevenstars');
+  <script>
+    // Star Matrix floating stardust background particles
+    const canvas = document.getElementById('space-canvas');
+    const ctx = canvas.getContext('2d');
 
-        function returnToLobby() {
-            stageSeven.classList.remove('active');
-            lobby.style.display = 'block';
-            window.scrollTo(0, 0);
-            const url = new URL(window.location);
-            url.searchParams.delete('game');
-            window.history.pushState({}, '', url);
-        }
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
 
-        function launchGame(id) {
-            lobby.style.display = 'none';
-            stageSeven.classList.remove('active');
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
 
-            if (id === 'sevenstars') {
-                stageSeven.classList.add('active');
-                if (!window._sevenStarsStarted) {
-                    window._sevenStarsStarted = true;
-                    initSevenStars();
-                }
-            }
-            
-            const url = new URL(window.location);
-            url.searchParams.set('game', id);
-            window.history.pushState({}, '', url);
-        }
+    const particles = [];
+    const colors = ['#00f2ff', '#bc13fe', '#10b981', '#facc15', '#f43f5e', '#38bdf8', '#fb923c', '#e879f9'];
 
-        // Initialize game from URL
-        window.addEventListener('DOMContentLoaded', () => {
-            const params = new URLSearchParams(window.location.search);
-            const gameId = params.get('game');
-            if (gameId) launchGame(gameId);
-        });
+    for (let i = 0; i < 75; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        size: Math.random() * 2.2 + 0.6,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        alpha: Math.random() * 0.5 + 0.2
+      });
+    }
 
-        // Seven Stars Logic (Minimal implementation to keep file lean)
-        function initSevenStars() {
-            const root = document.getElementById('sevenstars-root');
-            const churches = [
-                { name: 'Ephesus', message: 'The church in Ephesus was known for its hard work and perseverance. However, Jesus warned them that they had abandoned their first love.', question: 'What had the church in Ephesus abandoned?', options: ['Their generosity', 'Their first love', 'Their church building', 'Their daily prayers'], answer: 'Their first love' },
-                { name: 'Smyrna', message: 'The church in Smyrna faced tribulation and poverty, yet Jesus praised their faithfulness and told them not to fear suffering.', question: 'What did Jesus tell Smyrna not to fear?', options: ['False prophets', 'Poverty', 'Suffering', 'Travel'], answer: 'Suffering' },
-                { name: 'Pergamum', message: 'Pergamum held fast to Jesus’ name in a difficult city, but some there were tolerating false teaching.', question: 'What problem did Pergamum tolerate?', options: ['False teaching', 'Silence', 'No worship songs', 'Lack of elders'], answer: 'False teaching' },
-                { name: 'Thyatira', message: 'Thyatira was praised for love, faith, service, and perseverance, but rebuked for tolerating corruption.', question: 'What was Thyatira praised for?', options: ['Military power', 'Love and service', 'Wealth alone', 'Temple size'], answer: 'Love and service' },
-                { name: 'Sardis', message: 'Sardis had a reputation for being alive, but Jesus said they were dead and needed to wake up.', question: 'What did Sardis need to do?', options: ['Build larger walls', 'Wake up', 'Move cities', 'Collect offerings'], answer: 'Wake up' },
-                { name: 'Philadelphia', message: 'Philadelphia had little strength, but kept Jesus’ word and did not deny His name. An open door was set before them.', question: 'What was set before Philadelphia?', options: ['A closed gate', 'A golden crown', 'An open door', 'A mountain path'], answer: 'An open door' },
-                { name: 'Laodicea', message: 'Laodicea was called lukewarm—neither hot nor cold—and was warned against complacency.', question: 'How was Laodicea described?', options: ['Faithful', 'Bold', 'Lukewarm', 'Joyful'], answer: 'Lukewarm' }
-            ];
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
 
-            let completed = JSON.parse(localStorage.getItem('aghl_sevenStarsCompleted') || '[]');
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
 
-            function renderTitle() {
-                root.innerHTML = `
-                    <div class="game-header-bar">MYSTERY OF THE SEVEN STARS</div>
-                    <div class="game-content">
-                        <div style="font-size:4rem;margin:1rem 0">🌟</div>
-                        <p style="margin-bottom:2rem;font-size:1.1rem;max-width:500px">"The mystery of the seven stars which you saw in My right hand... The seven stars are the angels of the seven churches."</p>
-                        <button class="game-btn" onclick="window.sevenStarsRenderMap()">Begin Journey</button>
-                    </div>`;
-            }
+        if (p.x < 0) p.x = width;
+        if (p.x > width) p.x = 0;
+        if (p.y < 0) p.y = height;
+        if (p.y > height) p.y = 0;
 
-            window.sevenStarsRenderMap = function() {
-                root.innerHTML = `
-                    <div class="game-header-bar">SELECT A CHURCH</div>
-                    <div class="game-content">
-                        <div class="map-grid">
-                            ${churches.map((c, i) => `
-                                <div class="map-item ${completed.includes(c.name) ? 'completed' : ''}" onclick="window.sevenStarsShowChurch(${i})">
-                                    <svg class="star-svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                                    <span style="font-size:0.8rem;font-weight:bold">${c.name.toUpperCase()}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                        ${completed.length === 7 ? `<button class="game-btn" style="margin-top:2rem" onclick="window.sevenStarsFinish()">Claim Your Certificate</button>` : ''}
-                    </div>`;
-            }
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.alpha;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = p.color;
+        ctx.fill();
+      });
 
-            window.sevenStarsShowChurch = function(index) {
-                const c = churches[index];
-                root.innerHTML = `
-                    <div class="game-header-bar">${c.name.toUpperCase()}</div>
-                    <div class="game-content">
-                        <p style="margin-bottom:1.5rem;line-height:1.7;background:rgba(0,0,0,0.2);padding:1rem;border-radius:0.5rem">${c.message}</p>
-                        <div style="text-align:left;width:100%">
-                            <p style="font-weight:bold;margin-bottom:1rem;color:var(--accent2)">${c.question}</p>
-                            ${c.options.map(opt => `
-                                <button class="game-btn" style="display:block;width:100%;margin-bottom:0.5rem;text-align:left;background:#334155;color:white" onclick="window.sevenStarsCheckAnswer('${c.name}', '${opt}', '${c.answer}')">${opt}</button>
-                            `).join('')}
-                        </div>
-                    </div>`;
-            }
+      ctx.shadowBlur = 0; // Reset shadow
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(animate);
+    }
 
-            window.sevenStarsCheckAnswer = function(name, selected, correct) {
-                if (selected === correct) {
-                    if (!completed.includes(name)) {
-                        completed.push(name);
-                        localStorage.setItem('aghl_sevenStarsCompleted', JSON.stringify(completed));
-                    }
-                    alert("Correct! You have collected a star.");
-                    window.sevenStarsRenderMap();
-                } else {
-                    alert("Incorrect. Reflect on the message and try again.");
-                }
-            }
-
-            window.sevenStarsFinish = function() {
-                root.innerHTML = `
-                    <div class="game-header-bar">JOURNEY COMPLETE</div>
-                    <div class="game-content">
-                        <h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.6rem,4vw,2.3rem);color:#FFD700;margin:0">Alignment Verified</h2>
-                        <p style="color:#94a3b8;line-height:1.7;margin-top:1rem">You have successfully navigated the seven churches and collected all stars.</p>
-                        <a class="game-btn" href="./certificates/" style="margin-top:2rem;text-decoration:none;display:inline-block">View Certificates</a>
-                    </div>`;
-            }
-
-            renderTitle();
-        }
-    </script>
+    animate();
+  </script>
 </body>
 </html>

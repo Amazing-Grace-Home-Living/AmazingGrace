@@ -28,234 +28,949 @@
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Matrix of Conscience — reflective portal for the Matrix of Conscience experience.">
-  <meta name="theme-color" content="#0a0a0a">
+  <meta name="description" content="Sovereign Matrix — High-fidelity cybernetic portal for the Nexus simulation environment.">
+  <meta name="theme-color" content="#03070c">
   <link rel="icon" type="image/png" href="./assets/logo-S7NXL_ug.png">
-  <title>Matrix of Conscience | Amazing Grace Home Living</title>
-  <link rel="stylesheet" href="./admin/css/matrix.css">
+  <title>Sovereign Matrix | Amazing Grace Home Living</title>
+  
+  <!-- Modern Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  
   <style>
-    /* ── Page layout ──────────────────────────────────────────── */
+    /* ── Cyberpunk Design System CSS ───────────────────────────────────────── */
+    :root {
+      --matrix-green:   #10b981; /* Premium Emerald */
+      --matrix-cyan:    #00f2ff; /* Tech Cyber Cyan */
+      --matrix-dark:    #03070c; /* Deep Space Black */
+      --matrix-panel:   rgba(10, 20, 32, 0.45); /* Blur Glass */
+      --matrix-border:  rgba(0, 242, 255, 0.2);
+      --matrix-dim:     #0d2a2a;
+      --matrix-red:     #ef4444; /* Alert Warning Red */
+      --matrix-purple:  #bc13fe; /* Rare Unlock */
+      --matrix-text:    #d1f4ff; /* Pale Ice Cyan */
+      --matrix-heading: #00f2ff;
+      --font-mono: 'Fira Code', 'Courier New', Courier, monospace;
+      --font-sans: 'Outfit', sans-serif;
+      --glass-shadow: 0 8px 32px 0 rgba(0, 242, 255, 0.05);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background-color: var(--matrix-dark);
+      color: var(--matrix-text);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    /* ── Scrollbar ──────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--matrix-dark); }
+    ::-webkit-scrollbar-thumb { background: rgba(0, 242, 255, 0.15); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(0, 242, 255, 0.3); }
+
+    /* ── Background Telemetry / Matrix Rain ───────────────── */
+    #matrix-rain-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none;
+      opacity: 0.08;
+      z-index: -1;
+    }
+
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.25) 50%
+      ), linear-gradient(
+        90deg,
+        rgba(255, 0, 0, 0.03),
+        rgba(0, 255, 0, 0.01),
+        rgba(0, 0, 255, 0.03)
+      );
+      background-size: 100% 4px, 6px 100%;
+      z-index: 999;
+    }
+
+    /* ── Navigation ─────────────────────────────────────────── */
+    .matrix-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(3, 7, 12, 0.7);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--matrix-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      transition: border-color 0.3s;
+    }
+    .matrix-nav:hover {
+      border-color: rgba(0, 242, 255, 0.35);
+    }
+    .nav-brand {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--matrix-heading);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      text-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+      font-family: var(--font-sans);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--matrix-text);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      transition: all 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--matrix-cyan);
+      text-shadow: 0 0 8px rgba(0, 242, 255, 0.4);
+    }
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .nav-user {
+      font-size: 0.78rem;
+      color: var(--matrix-green);
+      font-family: var(--font-mono);
+      background: rgba(16, 185, 129, 0.1);
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    .sound-toggle-btn {
+      background: transparent;
+      border: none;
+      color: var(--matrix-cyan);
+      cursor: pointer;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 242, 255, 0.2);
+      transition: all 0.2s;
+    }
+    .sound-toggle-btn:hover {
+      background: rgba(0, 242, 255, 0.1);
+      border-color: var(--matrix-cyan);
+    }
+
+    /* ── Main Layout ───────────────────────────────────────── */
     .page-wrap {
-      max-width: 960px;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 2rem 1.25rem 4rem;
+      padding: 3rem 1.5rem 6rem;
+      position: relative;
     }
 
     .hero {
       text-align: center;
-      padding: 2.5rem 1rem 1.5rem;
+      margin-bottom: 3.5rem;
     }
     .hero h1 {
-      font-size: clamp(1.6rem, 5vw, 2.8rem);
-      font-family: var(--font-mono);
-      color: var(--matrix-green);
-      text-shadow: 0 0 18px rgba(0,255,65,0.55);
-      letter-spacing: 0.08em;
-      margin-bottom: 0.5rem;
+      font-size: clamp(2rem, 6vw, 3.8rem);
+      font-weight: 800;
+      color: #fff;
+      background: linear-gradient(to right, #fff, var(--matrix-cyan), var(--matrix-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 0.75rem;
     }
     .hero p {
       color: var(--matrix-text);
-      font-size: 0.88rem;
-      opacity: 0.7;
+      font-size: 1rem;
+      opacity: 0.75;
+      max-width: 600px;
+      margin: 0 auto;
     }
 
-    /* ── Tool grid ────────────────────────────────────────────── */
+    /* ── Glassmorphic Cards ────────────────────────────────── */
+    .matrix-card {
+      background: var(--matrix-panel);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--matrix-border);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: var(--glass-shadow);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .matrix-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--matrix-cyan), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .matrix-card:hover {
+      border-color: rgba(0, 242, 255, 0.4);
+      box-shadow: 0 12px 40px 0 rgba(0, 242, 255, 0.08);
+      transform: translateY(-2px);
+    }
+    .matrix-card:hover::before {
+      opacity: 1;
+    }
+
+    .matrix-heading {
+      font-family: var(--font-sans);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      letter-spacing: 0.04em;
+    }
+    .matrix-heading span {
+      color: var(--matrix-cyan);
+    }
+
+    /* ── Tool grid ────────────────────────────────────────── */
     .tools-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.25rem;
-      margin-top: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3.5rem;
     }
 
     .tool-card {
-      background: var(--matrix-panel);
-      border: 1px solid var(--matrix-border);
-      border-radius: 6px;
-      padding: 1.5rem;
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
-      transition: box-shadow 0.2s, border-color 0.2s;
+      height: 100%;
     }
-    .tool-card:hover { box-shadow: 0 0 16px rgba(0,255,65,0.18); }
     .tool-card.locked {
-      border-color: var(--matrix-dim);
-      opacity: 0.55;
+      opacity: 0.5;
+      border-color: rgba(239, 68, 68, 0.15);
+      cursor: not-allowed;
     }
-
+    .tool-card.locked:hover {
+      box-shadow: 0 8px 32px 0 rgba(239, 68, 68, 0.04);
+      transform: none;
+      border-color: rgba(239, 68, 68, 0.25);
+    }
+    .tool-card.locked::before {
+      background: linear-gradient(90deg, transparent, var(--matrix-red), transparent);
+    }
+    
     .tool-card h2 {
-      font-size: 1rem;
-      color: var(--matrix-heading);
-      letter-spacing: 0.06em;
-      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .tool-card p {
-      font-size: 0.8rem;
+      font-size: 0.88rem;
       color: var(--matrix-text);
-      margin: 0;
-      flex: 1;
+      opacity: 0.7;
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+      flex-grow: 1;
     }
 
+    .tool-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
     .tool-badge {
-      display: inline-block;
-      font-size: 0.7rem;
-      padding: 0.2rem 0.55rem;
-      border-radius: 3px;
       font-family: var(--font-mono);
-      letter-spacing: 0.05em;
-    }
-    .tool-badge.unlocked { background: var(--matrix-dim); color: var(--matrix-green); border: 1px solid var(--matrix-green); }
-    .tool-badge.locked   { background: #1a0a0a; color: var(--matrix-red); border: 1px solid var(--matrix-red); }
-
-    .tool-hint {
       font-size: 0.72rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+    .tool-badge.unlocked {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--matrix-green);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    .tool-badge.locked-badge {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--matrix-red);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    .tool-hint {
+      font-size: 0.75rem;
       color: var(--matrix-red);
       font-style: italic;
     }
 
-    .btn { cursor: pointer; font-family: var(--font-mono); font-size: 0.8rem; padding: 0.45rem 1rem; border-radius: 4px; border: 1px solid var(--matrix-green); background: transparent; color: var(--matrix-green); transition: background 0.15s, color 0.15s; text-decoration: none; display: inline-block; }
-    .btn:hover, .btn:focus { background: var(--matrix-green); color: var(--matrix-dark); }
-    .btn:disabled, .btn[aria-disabled="true"] { opacity: 0.35; pointer-events: none; }
-
-    /* ── Login modal ──────────────────────────────────────────── */
-    .modal-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.8);
-      z-index: 200;
+    /* ── Universal Inputs & Buttons ────────────────────────── */
+    .btn {
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-    }
-    .modal-backdrop.open { display: flex; }
-    .modal {
-      background: var(--matrix-panel);
-      border: 1px solid var(--matrix-border);
+      gap: 0.5rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.6rem 1.25rem;
       border-radius: 6px;
-      padding: 2rem;
-      width: min(380px, 92vw);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      letter-spacing: 0.03em;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--matrix-cyan), #00aaff);
+      color: var(--matrix-dark);
+      border: none;
+      box-shadow: 0 4px 14px rgba(0, 242, 255, 0.3);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 6px 20px rgba(0, 242, 255, 0.5);
+      transform: translateY(-1px);
+    }
+    .btn-primary:disabled, .btn-primary[aria-disabled="true"] {
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.3);
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--matrix-cyan);
+      color: var(--matrix-cyan);
+    }
+    .btn-secondary:hover {
+      background: rgba(0, 242, 255, 0.1);
+      box-shadow: 0 0 12px rgba(0, 242, 255, 0.2);
+    }
+    .btn-danger {
+      background: transparent;
+      border: 1px solid var(--matrix-red);
+      color: var(--matrix-red);
+    }
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.15);
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.2);
+    }
+
+    .matrix-input {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      padding: 0.6rem 0.88rem;
+      border-radius: 6px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .matrix-input:focus {
+      border-color: var(--matrix-cyan);
+      box-shadow: 0 0 8px rgba(0, 242, 255, 0.15);
+      background: rgba(0, 0, 0, 0.55);
+    }
+
+    /* ── Diagnostics Console Panel ──────────────────────────── */
+    .panel-container {
+      margin-top: 3rem;
+      display: none;
+    }
+    .diag-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    @media (max-width: 820px) {
+      .diag-layout { grid-template-columns: 1fr; }
+    }
+    
+    /* CPU Grid visualizer */
+    .cpu-visualizer {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .cpu-core {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(0, 242, 255, 0.15);
+      border-radius: 6px;
+      padding: 0.75rem;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      transition: all 0.3s;
+    }
+    .cpu-core.active {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: var(--matrix-green);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+    }
+    .cpu-core-label { color: var(--matrix-text); opacity: 0.6; margin-bottom: 0.25rem; }
+    .cpu-core-val { color: var(--matrix-green); font-weight: 700; }
+
+    .diag-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      margin-top: 1rem;
+    }
+    .diag-table td {
+      padding: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+    .diag-table tr:hover td {
+      background: rgba(0, 242, 255, 0.02);
+    }
+    .diag-key { color: var(--matrix-text); opacity: 0.65; }
+    .diag-value { color: var(--matrix-cyan); font-weight: 600; text-align: right; word-break: break-all; }
+
+    /* DNS Reachability Visualizer */
+    .dns-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .dns-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+    .dns-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 0 8px currentColor;
+    }
+    .dns-dot.up   { color: var(--matrix-green); background: var(--matrix-green); }
+    .dns-dot.down { color: var(--matrix-red); background: var(--matrix-red); }
+    .dns-dot.pend { color: #888; background: #888; animation: blink 1.2s infinite; }
+    .dns-latency {
+      margin-left: auto;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .dns-latency.ok { color: var(--matrix-green); }
+    .dns-latency.bad { color: var(--matrix-red); }
+
+    /* ── Sovereign Nations Deck ───────────────────────────────── */
+    .nations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .nation-card {
+      background: rgba(0, 10, 20, 0.4);
+      border: 1px solid rgba(0, 242, 255, 0.15);
+      border-radius: 8px;
+      padding: 1.25rem;
+      transition: all 0.25s;
+    }
+    .nation-card:hover {
+      border-color: var(--matrix-cyan);
+      box-shadow: 0 4px 16px rgba(0, 242, 255, 0.1);
+    }
+    .nation-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 0.5rem;
+    }
+    .nation-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--matrix-cyan);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .nation-meta {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--matrix-text);
+      opacity: 0.6;
+    }
+    .nation-status-tag {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+      font-weight: 700;
+    }
+    .nation-status-tag.growing { background: rgba(16, 185, 129, 0.15); color: var(--matrix-green); }
+    .nation-status-tag.stable  { background: rgba(0, 242, 255, 0.15); color: var(--matrix-cyan); }
+    .nation-status-tag.declining { background: rgba(239, 68, 68, 0.15); color: var(--matrix-red); }
+
+    .nation-stats-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 1.25rem;
+    }
+    .stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.8rem;
+    }
+    .stat-label {
+      color: var(--matrix-text);
+      opacity: 0.7;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      width: 110px;
+    }
+    .stat-val {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: #fff;
+      width: 40px;
+      text-align: right;
+    }
+    .stat-progress-container {
+      flex-grow: 1;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+      margin: 0 0.75rem;
+      overflow: hidden;
+    }
+    .stat-progress-bar {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.4s ease-out;
+    }
+
+    .nation-policies {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .policy-label-tag {
+      font-size: 0.7rem;
+      color: var(--matrix-green);
+      font-family: var(--font-mono);
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.15);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      display: inline-block;
+    }
+    .policy-action-deck {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+    .policy-enact-btn {
+      font-size: 0.7rem !important;
+      padding: 0.35rem !important;
+      width: 100%;
+      text-align: center;
+    }
+
+    .nation-log {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 4px;
+      padding: 0.5rem 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--matrix-text);
+      opacity: 0.65;
+      min-height: 2.2rem;
+      max-height: 4rem;
+      overflow-y: auto;
+    }
+
+    /* ── Vision Forge Panel ────────────────────────────────── */
+    .vf-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    @media (max-width: 820px) {
+      .vf-layout { grid-template-columns: 1fr; }
+    }
+    .vf-prompt-box {
       display: flex;
       flex-direction: column;
       gap: 1rem;
     }
-    .modal h2 { color: var(--matrix-heading); font-size: 1.1rem; margin: 0; }
-    .modal label { font-size: 0.8rem; color: var(--matrix-text); }
-    .modal input[type="email"],
-    .modal input[type="password"] {
-      width: 100%;
-      background: var(--matrix-dark);
-      border: 1px solid var(--matrix-border);
-      color: var(--matrix-green);
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      padding: 0.5rem 0.75rem;
-      border-radius: 4px;
-      margin-top: 0.25rem;
-    }
-    .modal-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
-    #login-error { color: var(--matrix-red); font-size: 0.78rem; min-height: 1em; }
-
-    /* ── Diagnostics panel ────────────────────────────────────── */
-    .diag-section { margin-top: 1.5rem; }
-    .diag-section h3 { color: var(--matrix-heading); font-size: 0.9rem; margin-bottom: 0.75rem; }
-    .diag-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 0.4rem;
-    }
-    .diag-row {
+    .vf-prompt-deck {
       display: flex;
-      justify-content: space-between;
-      font-size: 0.75rem;
-      padding: 0.3rem 0.5rem;
-      background: rgba(0,255,65,0.04);
-      border: 1px solid var(--matrix-dim);
-      border-radius: 3px;
       gap: 0.5rem;
     }
-    .diag-key   { color: var(--matrix-text); opacity: 0.7; }
-    .diag-value { color: var(--matrix-green); font-weight: bold; word-break: break-all; }
-    .dns-row    { display: flex; gap: 0.75rem; align-items: center; padding: 0.35rem 0.5rem; border: 1px solid var(--matrix-dim); border-radius: 3px; font-size: 0.75rem; }
-    .dns-dot    { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .dns-dot.up   { background: var(--matrix-green); box-shadow: 0 0 6px var(--matrix-green); }
-    .dns-dot.down { background: var(--matrix-red); box-shadow: 0 0 6px var(--matrix-red); }
-    .dns-dot.pend { background: #888; animation: blink 1s linear infinite; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-    /* ── Nations panel ────────────────────────────────────────── */
-    .nations-panel { display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem; }
-    .nation-card   { background: rgba(0,255,65,0.05); border: 1px solid var(--matrix-dim); border-radius: 5px; padding: 1rem; }
-    .nation-name   { color: var(--matrix-green); font-size: 0.9rem; margin-bottom: 0.5rem; }
-    .nation-stats  { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; font-size: 0.75rem; color: var(--matrix-text); }
-    .nation-stat span { color: var(--matrix-cyan); }
-    .nation-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
-    .nation-actions .btn { font-size: 0.72rem; padding: 0.3rem 0.7rem; border-color: var(--matrix-cyan); color: var(--matrix-cyan); }
-    .nation-actions .btn:hover { background: var(--matrix-cyan); color: var(--matrix-dark); }
-    .nation-log { font-size: 0.72rem; color: var(--matrix-text); opacity: 0.55; margin-top: 0.35rem; font-style: italic; }
-
-    /* ── Vision Forge panel ───────────────────────────────────── */
-    .vf-panel  { display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem; }
-    .vf-prompt { display: flex; gap: 0.5rem; }
-    .vf-prompt input[type="text"] {
-      flex: 1;
-      background: var(--matrix-dark);
-      border: 1px solid var(--matrix-border);
-      color: var(--matrix-green);
-      font-family: var(--font-mono);
-      font-size: 0.82rem;
-      padding: 0.45rem 0.75rem;
-      border-radius: 4px;
+    .vf-prompt-deck input {
+      flex-grow: 1;
     }
-    .vf-output { min-height: 60px; }
-    .vf-result-img { max-width: 100%; border-radius: 5px; border: 1px solid var(--matrix-dim); margin-top: 0.5rem; }
-    .vf-result-desc { font-size: 0.8rem; color: var(--matrix-text); margin-top: 0.5rem; white-space: pre-wrap; }
-    .vf-history { margin-top: 1rem; }
-    .vf-history h4 { font-size: 0.8rem; color: var(--matrix-text); opacity: 0.6; margin-bottom: 0.5rem; }
-    .vf-history-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .vf-history-item { font-size: 0.72rem; color: var(--matrix-cyan); cursor: pointer; border-bottom: 1px dotted currentColor; }
+    
+    .vf-history-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.6;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .vf-history-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .vf-history-chip {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--matrix-cyan);
+      padding: 0.25rem 0.55rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .vf-history-chip:hover {
+      background: rgba(0, 242, 255, 0.08);
+      border-color: var(--matrix-cyan);
+    }
 
-    /* ── Status bar ───────────────────────────────────────────── */
-    #status-bar { font-size: 0.75rem; color: var(--matrix-text); opacity: 0.55; margin-top: 1.5rem; text-align: center; }
+    /* Animated Synthesis Loader */
+    .vf-canvas-container {
+      aspect-ratio: 1;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--matrix-border);
+      border-radius: 8px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .vf-blueprint-crosshairs {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: none;
+    }
+    .vf-blueprint-crosshairs::before, .vf-blueprint-crosshairs::after {
+      content: '';
+      position: absolute;
+      background: rgba(0, 242, 255, 0.35);
+    }
+    .vf-blueprint-crosshairs::before {
+      top: 0; bottom: 0; left: 50%; width: 1px;
+    }
+    .vf-blueprint-crosshairs::after {
+      left: 0; right: 0; top: 50%; height: 1px;
+    }
+    
+    .vf-canvas-container:hover .vf-blueprint-crosshairs {
+      display: block;
+    }
 
-    /* ── Responsive tweaks ────────────────────────────────────── */
-    @media (max-width: 480px) {
-      .page-wrap { padding: 1rem 0.75rem 3rem; }
+    .vf-coordinate-readout {
+      position: absolute;
+      bottom: 0.5rem;
+      right: 0.5rem;
+      background: rgba(3, 7, 12, 0.85);
+      border: 1px solid rgba(0, 242, 255, 0.3);
+      border-radius: 4px;
+      padding: 0.2rem 0.4rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--matrix-cyan);
+      pointer-events: none;
+      z-index: 10;
+      display: none;
+    }
+    .vf-canvas-container:hover .vf-coordinate-readout {
+      display: block;
+    }
+
+    .vf-image-result {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      transition: filter 0.3s;
+    }
+    .vf-image-result:hover {
+      filter: contrast(1.1) brightness(1.05);
+    }
+
+    .vf-loader-container {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      z-index: 5;
+    }
+    .vf-loader-orb {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      border: 2px dashed var(--matrix-cyan);
+      animation: spin 6s linear infinite;
+      position: relative;
+    }
+    .vf-loader-orb::after {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      border: 2px dotted var(--matrix-purple);
+      animation: spin-back 3s linear infinite;
+    }
+    .vf-loader-text {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--matrix-cyan);
+      animation: blink 1.5s infinite;
+    }
+
+    /* ── Administrative Portal ─────────────────────────────── */
+    .admin-panel {
+      margin-top: 3.5rem;
+      border-color: rgba(188, 19, 254, 0.3);
+      display: none;
+    }
+    .admin-panel::before {
+      background: linear-gradient(90deg, transparent, var(--matrix-purple), transparent);
+    }
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      margin-top: 1rem;
+    }
+    .admin-table th {
+      text-align: left;
+      padding: 0.6rem 0.5rem;
+      border-bottom: 2px solid rgba(188, 19, 254, 0.4);
+      color: var(--matrix-purple);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .admin-table td {
+      padding: 0.75rem 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      vertical-align: middle;
+    }
+    .admin-table tr:hover td {
+      background: rgba(188, 19, 254, 0.03);
+    }
+
+    .admin-permission-grid {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .admin-perm-pill {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      border: 1px solid;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s;
+    }
+    .admin-perm-pill.granted {
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--matrix-green);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+    .admin-perm-pill.revoked {
+      background: rgba(255, 255, 255, 0.03);
+      color: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .admin-num-input {
+      width: 60px;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #fff;
+      padding: 0.2rem 0.4rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      border-radius: 3px;
+      text-align: center;
+    }
+
+    /* ── Login Modal ────────────────────────────────────────── */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 7, 12, 0.9);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+    .modal-backdrop.open { display: flex; }
+    
+    .modal {
+      background: var(--matrix-panel);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(0, 242, 255, 0.25);
+      border-radius: 12px;
+      padding: 2.5rem;
+      width: min(420px, 92vw);
+      box-shadow: 0 0 40px rgba(0, 242, 255, 0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      position: relative;
+    }
+    .modal h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .modal label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--matrix-text);
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .modal-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .modal-field input {
+      width: 100%;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 0.5rem;
+    }
+    #login-error {
+      color: var(--matrix-red);
+      font-size: 0.8rem;
+      min-height: 1.2em;
+      font-family: var(--font-mono);
+    }
+
+    /* Status Telemetry Bar */
+    #status-bar {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--matrix-text);
+      opacity: 0.55;
+      text-align: center;
+      margin-top: 3rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.03);
+      padding-top: 1.5rem;
+    }
+
+    /* ── Animations ────────────────────────────────────────── */
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    @keyframes spin-back { 100% { transform: rotate(-360deg); } }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+    
+    /* Responsive tweaks */
+    @media (max-width: 600px) {
+      .page-wrap { padding: 2rem 1rem 4rem; }
+      .matrix-nav { padding: 0.75rem 1rem; }
+      .nav-links { display: none; } /* Kept clean on tiny viewports */
+      .tools-grid { grid-template-columns: 1fr; }
+      .policy-action-deck { grid-template-columns: 1fr; }
+      .admin-table { font-size: 0.7rem; }
+      .admin-permission-grid { flex-direction: column; gap: 0.25rem; }
     }
   </style>
-  <script type="module" crossorigin src="./assets/matrix-CrBL9k43.js"></script>
+  <script type="module" crossorigin src="./assets/matrix-IXDPnTfm.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-Dezn_h7o.js">
 </head>
 <body>
 
+<div class="scanlines"></div>
+<canvas id="matrix-rain-canvas"></canvas>
+
 <!-- ═══════════════════════ NAV ═══════════════════════════════ -->
 <nav class="matrix-nav">
-  <a href="./" class="nav-brand">⬡ AMAZING GRACE</a>
+  <a href="./" class="nav-brand">⬡ SOVEREIGN MATRIX</a>
   <ul class="nav-links">
     <li><a href="./">Home</a></li>
     <li><a href="./arcade/">Arcade</a></li>
     <li><a href="./ministry/">Ministry</a></li>
     <li><a href="./admin/">Admin</a></li>
   </ul>
-  <span class="nav-user" id="nav-user"></span>
-  <button class="btn" id="login-btn" style="font-size:0.72rem;padding:0.3rem 0.75rem;">Login</button>
+  <div class="nav-controls">
+    <span class="nav-user" id="nav-user"></span>
+    <button class="sound-toggle-btn" id="sound-toggle" title="Toggle Synthesizer Feedback">🔊</button>
+    <button class="btn btn-secondary" id="login-btn" style="font-size:0.75rem;padding:0.4rem 0.9rem;">Login</button>
+  </div>
 </nav>
 
 <!-- ═══════════════════ LOGIN MODAL ═══════════════════════════ -->
 <div class="modal-backdrop" id="login-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal">
-    <h2 id="modal-title">⬡ Sovereign Matrix Login</h2>
-    <div>
-      <label for="login-email">Email</label>
-      <input type="email" id="login-email" autocomplete="username" placeholder="user@matrix.dev">
+    <h2 id="modal-title">⬡ Core Terminal Auth</h2>
+    <div class="modal-field">
+      <label for="login-email">Email Coordinate</label>
+      <input type="email" id="login-email" class="matrix-input" autocomplete="username" placeholder="user@matrix.dev">
     </div>
-    <div>
-      <label for="login-password">Password</label>
-      <input type="password" id="login-password" autocomplete="current-password" placeholder="••••••••">
+    <div class="modal-field">
+      <label for="login-password">Access Cipher</label>
+      <input type="password" id="login-password" class="matrix-input" autocomplete="current-password" placeholder="••••••••">
     </div>
     <div id="login-error" role="alert" aria-live="polite"></div>
     <div class="modal-actions">
-      <button class="btn" id="modal-cancel" style="border-color:var(--matrix-text);color:var(--matrix-text)">Cancel</button>
-      <button class="btn" id="modal-submit">Sign In</button>
+      <button class="btn btn-secondary" id="modal-cancel" style="border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.7)">Cancel</button>
+      <button class="btn btn-primary" id="modal-submit">Sync Uplink</button>
     </div>
   </div>
 </div>
@@ -264,101 +979,157 @@
 <div class="page-wrap">
 
   <div class="hero">
-    <h1 class="glitch">MATRIX OF CONSCIENCE</h1>
-    <p>Enter the Matrix of Conscience and continue your journey through the Nexus Arcade.</p>
+    <h1>Sovereign Matrix</h1>
+    <p>Unified telemetry deck interfacing cybernetic network diagnostics, Sovereign Nation metrics, and core conceptual synthesis.</p>
   </div>
 
-  <!-- ── Tool cards ───────────────────────────────────────────── -->
+  <!-- ── Tool cards grid ── -->
   <div class="tools-grid">
 
     <!-- Vision Forge -->
-    <div class="tool-card" id="card-visionforge">
-      <h2>🎨 Vision Forge</h2>
-      <p>Generate images with Gemini AI. Describe a scene and watch it materialize.</p>
-      <div>
+    <div class="matrix-card tool-card" id="card-visionforge">
+      <h2>
+        <span>🎨 Vision Forge</span>
         <span class="tool-badge" id="badge-visionforge">Checking…</span>
+      </h2>
+      <p>Interface with the Gemini AI visual synthesizers. Feed prompt coordinates to materialize creative conceptual matrices.</p>
+      <div class="tool-meta">
         <span class="tool-hint" id="hint-visionforge"></span>
+        <a href="#visionforge-panel" class="btn btn-primary" id="btn-visionforge">Access Forge</a>
       </div>
-      <a href="#visionforge-panel" class="btn" id="btn-visionforge">Open Vision Forge</a>
     </div>
 
     <!-- Sovereign Nations -->
-    <div class="tool-card" id="card-nations">
-      <h2>🌍 Sovereign Nations</h2>
-      <p>Build and govern your nation. Manage resources, enact policies, and trade.</p>
-      <div>
+    <div class="matrix-card tool-card" id="card-nations">
+      <h2>
+        <span>🌍 Sovereign Nations</span>
         <span class="tool-badge" id="badge-nations">Checking…</span>
+      </h2>
+      <p>Command-level governor mapping resources, demographics, and active covenant policies in real-time turn matrices.</p>
+      <div class="tool-meta">
         <span class="tool-hint" id="hint-nations"></span>
+        <a href="#nations-panel" class="btn btn-primary" id="btn-nations">Access Governor</a>
       </div>
-      <a href="#nations-panel" class="btn" id="btn-nations">Open Nations</a>
     </div>
 
     <!-- Diagnostics Console -->
-    <div class="tool-card" id="card-diagnostics">
-      <h2>🛠 Diagnostics Console</h2>
-      <p>Inspect browser capabilities and check DNS / network reachability.</p>
-      <div>
+    <div class="matrix-card tool-card" id="card-diagnostics">
+      <h2>
+        <span>🛠 Diagnostics Console</span>
         <span class="tool-badge" id="badge-diagnostics">Checking…</span>
+      </h2>
+      <p>Audit device concurrency capabilities, verify browser APIs, and probe DNS reachability vectors instantly.</p>
+      <div class="tool-meta">
         <span class="tool-hint" id="hint-diagnostics"></span>
+        <a href="#diagnostics-panel" class="btn btn-primary" id="btn-diagnostics">Access Console</a>
       </div>
-      <a href="#diagnostics-panel" class="btn" id="btn-diagnostics">Open Diagnostics</a>
     </div>
 
   </div><!-- /.tools-grid -->
 
   <!-- ══════════════ VISION FORGE PANEL ════════════════════════ -->
-  <section class="matrix-card matrix-border" id="visionforge-panel" aria-label="Vision Forge tool" style="margin-top:2.5rem;display:none">
-    <h2 class="matrix-heading">🎨 Vision Forge</h2>
-    <div class="vf-panel">
-      <div class="vf-prompt">
-        <input type="text" id="vf-prompt-input" placeholder="Describe the image…" maxlength="300">
-        <button class="btn" id="vf-generate-btn">Generate</button>
+  <section class="matrix-card panel-container" id="visionforge-panel" aria-label="Vision Forge tool">
+    <h2 class="matrix-heading"><span>🎨</span> Vision Forge Laboratory</h2>
+    <div class="vf-layout">
+      <div class="vf-prompt-box">
+        <p style="font-size:0.9rem;opacity:0.75;line-height:1.5">Enter descriptive prompts to render visual concepts. If a Gemini API Key is configured in your session environment, live neural network rendering will be engaged; otherwise, the terminal will synthesize abstract blueprints in local fallback mode.</p>
+        <div class="vf-prompt-deck">
+          <input type="text" id="vf-prompt-input" class="matrix-input" placeholder="Enter synthesis prompt..." maxlength="300">
+          <button class="btn btn-primary" id="vf-generate-btn">Synthesize</button>
+        </div>
+        <div class="vf-history" id="vf-history" style="display:none">
+          <h4 class="vf-history-title">Previous Prompts</h4>
+          <div class="vf-history-list" id="vf-history-list"></div>
+        </div>
       </div>
-      <div class="vf-output" id="vf-output" aria-live="polite"></div>
-      <div class="vf-history" id="vf-history" style="display:none">
-        <h4>Recent Prompts</h4>
-        <div class="vf-history-list" id="vf-history-list"></div>
+      
+      <!-- Interactive blueprint frame with hover crosshairs -->
+      <div class="vf-canvas-container" id="vf-canvas-container">
+        <div class="vf-blueprint-crosshairs"></div>
+        <div class="vf-coordinate-readout" id="vf-coordinate-readout">X: 0px / Y: 0px</div>
+        
+        <div class="vf-loader-container" id="vf-loader">
+          <div class="vf-loader-orb"></div>
+          <span class="vf-loader-text">GENERATING CONCEPT MATRIX...</span>
+        </div>
+        
+        <div class="vf-output" id="vf-output" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center" aria-live="polite">
+          <p style="font-size:0.85rem;opacity:0.4;font-family:var(--font-mono)">[Awaiting Prompts]</p>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- ══════════════ NATIONS PANEL ════════════════════════════ -->
-  <section class="matrix-card matrix-border" id="nations-panel" aria-label="Sovereign Nations tool" style="margin-top:2.5rem;display:none">
-    <h2 class="matrix-heading">🌍 Sovereign Nations</h2>
-    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:1rem">
-      <button class="btn" id="nations-new-btn">Found New Nation</button>
-      <button class="btn" id="nations-turn-btn" style="border-color:var(--matrix-cyan);color:var(--matrix-cyan)">Process Turn (All)</button>
+  <section class="matrix-card panel-container" id="nations-panel" aria-label="Sovereign Nations tool">
+    <h2 class="matrix-heading"><span>🌍</span> Sovereign Nations Deck</h2>
+    <p style="font-size:0.9rem;opacity:0.75;line-height:1.5;margin-bottom:1.5rem">Govern your civilizations. Establish new territories, process structural resource yields (Food, Gold, Faith, Knowledge), and enact social or spiritual policies to expand demographic growth thresholds.</p>
+    <div style="display:flex;gap:1rem;flex-wrap:wrap">
+      <button class="btn btn-primary" id="nations-new-btn">Establish Territory</button>
+      <button class="btn btn-secondary" id="nations-turn-btn">Process All Yields</button>
     </div>
-    <div class="nations-panel" id="nations-list" aria-live="polite">
-      <p style="font-size:0.82rem;color:var(--matrix-text);opacity:0.5">No nations founded yet. Click "Found New Nation" to begin.</p>
+    <div class="nations-grid" id="nations-list" aria-live="polite">
+      <p style="font-size:0.85rem;color:var(--matrix-text);opacity:0.4;font-family:var(--font-mono)">[No established territories in memory. Initialize above.]</p>
     </div>
   </section>
 
   <!-- ══════════════ DIAGNOSTICS PANEL ════════════════════════ -->
-  <section class="matrix-card matrix-border" id="diagnostics-panel" aria-label="Diagnostics Console" style="margin-top:2.5rem;display:none">
-    <h2 class="matrix-heading">🛠 Diagnostics Console</h2>
-    <div style="display:flex;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap">
-      <button class="btn" id="diag-run-btn">Run Browser Diagnostics</button>
-      <button class="btn" id="diag-dns-btn" style="border-color:var(--matrix-cyan);color:var(--matrix-cyan)">Run DNS Tests</button>
+  <section class="matrix-card panel-container" id="diagnostics-panel" aria-label="Diagnostics Console">
+    <h2 class="matrix-heading"><span>🛠</span> Telemetry Diagnostics Console</h2>
+    <p style="font-size:0.9rem;opacity:0.75;line-height:1.5;margin-bottom:1.5rem">Probe environment parameters. Audit local hardware threads, cookies, time zone coordinate points, and test DNS domain endpoints to map latency pathways.</p>
+    <div style="display:flex;gap:1rem;margin-bottom:2rem;flex-wrap:wrap">
+      <button class="btn btn-primary" id="diag-run-btn">Probe Hardware</button>
+      <button class="btn btn-secondary" id="diag-dns-btn">Probe Network DNS</button>
     </div>
-    <div class="diag-section">
-      <h3>Browser Environment</h3>
-      <div class="diag-grid" id="diag-browser-grid" aria-live="polite">
-        <p style="font-size:0.8rem;color:var(--matrix-text);opacity:0.5">Click "Run Browser Diagnostics" to begin.</p>
+    <div class="diag-layout">
+      <div>
+        <h3 class="matrix-heading" style="font-size:1.1rem;margin-bottom:0.75rem">Browser Parameters</h3>
+        <div id="cpu-panel" style="display:none">
+          <p style="font-size:0.75rem;opacity:0.6;font-family:var(--font-mono)">Logical CPU Threads:</p>
+          <div class="cpu-visualizer" id="cpu-grid"></div>
+        </div>
+        <table class="diag-table">
+          <tbody id="diag-browser-grid" aria-live="polite">
+            <tr><td colspan="2" style="opacity:0.4;font-family:var(--font-mono)">[Hardware logs uninitialized]</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3 class="matrix-heading" style="font-size:1.1rem;margin-bottom:0.75rem">DNS Pathway Latency</h3>
+        <div class="dns-grid" id="diag-dns-list" aria-live="polite">
+          <p style="opacity:0.4;font-family:var(--font-mono);font-size:0.8rem">[Ping probe diagnostics idle]</p>
+        </div>
       </div>
     </div>
-    <div class="diag-section" style="margin-top:1.5rem">
-      <h3>DNS / Network Reachability</h3>
-      <div id="diag-dns-list" aria-live="polite" style="display:flex;flex-direction:column;gap:0.4rem">
-        <p style="font-size:0.8rem;color:var(--matrix-text);opacity:0.5">Click "Run DNS Tests" to probe network targets.</p>
-      </div>
+  </section>
+
+  <!-- ══════════════ SYSTEM ADMINISTRATION PANEL ════════════════ -->
+  <section class="matrix-card admin-panel" id="admin-panel">
+    <h2 class="matrix-heading" style="color:var(--matrix-purple)"><span>⚙</span> Matrix Override Control Console</h2>
+    <p style="font-size:0.9rem;opacity:0.75;line-height:1.5">Administrative override portal. Directly review account tokens, edit score metrics, or explicitly grant/revoke access permissions to bypass gating thresholds on this local sandbox.</p>
+    <div style="overflow-x:auto">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Identity Account</th>
+            <th>Role</th>
+            <th>Exp level</th>
+            <th>Accumulated score</th>
+            <th>Explicit tool permission grants</th>
+          </tr>
+        </thead>
+        <tbody id="admin-users-list">
+          <tr><td colspan="5" style="text-align:center;opacity:0.4">[Syncing Account Registry...]</td></tr>
+        </tbody>
+      </table>
     </div>
   </section>
 
   <p id="status-bar"></p>
 
 </div><!-- /.page-wrap -->
-
+
+<!-- ═══════════════════════ SCRIPTS ════════════════════════════ -->
 
 </body>
 </html>

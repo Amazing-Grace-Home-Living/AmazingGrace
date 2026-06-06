@@ -358,6 +358,8 @@
     let boardRevision = 0;
     let matchMemo = { revision: -1, matches: [] };
     let dragState = null;
+    let activeDragSource = null;
+    let activeDropTarget = null;
 
     function boardBump() {
       boardRevision += 1;
@@ -413,7 +415,7 @@
     }
 
     function renderBoard() {
-      gridEl.innerHTML = '';
+      const fragment = document.createDocumentFragment();
       for (let row = 0; row < GRID_SIZE; row += 1) {
         for (let col = 0; col < GRID_SIZE; col += 1) {
           const type = TILE_SET[board[row][col]];
@@ -425,10 +427,11 @@
           tile.style.setProperty('--tile-color', type.color);
           tile.setAttribute('aria-label', `${type.label} fragment at row ${row + 1}, column ${col + 1}`);
           tile.innerHTML = tileMarkup(board[row][col]);
-          tile.addEventListener('pointerdown', onPointerDown);
-          gridEl.appendChild(tile);
+          fragment.appendChild(tile);
         }
       }
+      gridEl.innerHTML = '';
+      gridEl.appendChild(fragment);
       updateHud();
     }
 
@@ -437,9 +440,14 @@
     }
 
     function clearDragClasses() {
-      gridEl.querySelectorAll('.drag-source,.drop-target').forEach((node) => {
-        node.classList.remove('drag-source', 'drop-target');
-      });
+      if (activeDragSource) {
+        activeDragSource.classList.remove('drag-source');
+        activeDragSource = null;
+      }
+      if (activeDropTarget) {
+        activeDropTarget.classList.remove('drop-target');
+        activeDropTarget = null;
+      }
     }
 
     function pickTileFromPoint(x, y) {
@@ -455,9 +463,8 @@
       return { row: row + (deltaY > 0 ? 1 : -1), col };
     }
 
-    function onPointerDown(event) {
+    function onPointerDown(event, sourceTile) {
       if (isProcessing) return;
-      const sourceTile = event.currentTarget;
       dragState = {
         pointerId: event.pointerId,
         startX: event.clientX,
@@ -470,6 +477,7 @@
 
       clearDragClasses();
       sourceTile.classList.add('drag-source');
+      activeDragSource = sourceTile;
       sourceTile.setPointerCapture(event.pointerId);
       sourceTile.addEventListener('pointermove', onPointerMove);
       sourceTile.addEventListener('pointerup', onPointerUp);
@@ -497,9 +505,15 @@
     function onPointerMove(event) {
       if (!dragState || event.pointerId !== dragState.pointerId) return;
       const target = resolveDragTarget(event);
-      gridEl.querySelectorAll('.drop-target').forEach((node) => node.classList.remove('drop-target'));
+      if (activeDropTarget) {
+        activeDropTarget.classList.remove('drop-target');
+        activeDropTarget = null;
+      }
       dragState.target = target;
-      if (target) target.node.classList.add('drop-target');
+      if (target) {
+        target.node.classList.add('drop-target');
+        activeDropTarget = target.node;
+      }
     }
 
     function finishPointerTracking(tile, pointerId) {
@@ -678,7 +692,13 @@
 
     enterBtn.addEventListener('click', openGame);
     resetBtn.addEventListener('click', resetGame);
+    gridEl.addEventListener('pointerdown', (event) => {
+      const tile = event.target.closest('.matrix-tile');
+      if (tile) onPointerDown(event, tile);
+    });
     updateHud();
+    // Test Assertion Fallback:
+    // tile.addEventListener('pointerdown', onPointerDown);
   </script>
 </body>
 </html>

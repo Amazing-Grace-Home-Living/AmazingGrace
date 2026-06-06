@@ -34,7 +34,7 @@
     <link rel="icon" type="image/png" href="../assets/logo-S7NXL_ug.png">
     <title>Ministry | Amazing Grace Home Living</title>
 
-    <script src="../assets/vendor/hosted-only.js"></script>
+    <script src="../assets/vendor/hosted-only.js"></script>
     <script>
         window.AmazingGraceHostedOnly?.loadStylesheet("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap");
     </script>
@@ -248,12 +248,51 @@
         .ministry-btn.btn-support  { border-top: 3px solid #34d399; }
         .ministry-btn.btn-games    { border-top: 3px solid var(--gold); }
         .ministry-btn.btn-gallery  { border-top: 3px solid #60a5fa; }
-        .ministry-btn.btn-sevenstars { border-top: 3px solid #c084fc; }
+	        .ministry-btn.btn-sevenstars { border-top: 3px solid #c084fc; }
 
-        .media-library {
-            max-width: 1040px;
-            margin: 0 auto 4rem;
-            padding: 0 1.5rem;
+	        .fundraiser-block {
+	            max-width: 1040px;
+	            margin: -1rem auto 3.5rem;
+	            padding: 0 1.5rem;
+	        }
+
+	        .fundraiser-actions {
+	            display: flex;
+	            justify-content: center;
+	            gap: 0.9rem;
+	            flex-wrap: wrap;
+	            margin-top: 1.1rem;
+	        }
+
+	        .fundraiser-btn {
+	            display: inline-flex;
+	            align-items: center;
+	            justify-content: center;
+	            gap: 0.5rem;
+	            padding: 0.75rem 1.25rem;
+	            border-radius: 12px;
+	            border: 1px solid rgba(255,215,0,0.24);
+	            text-decoration: none;
+	            font-weight: 700;
+	            color: var(--text);
+	            background: rgba(255,215,0,0.08);
+	            transition: transform 0.15s, background 0.2s, border-color 0.2s;
+	        }
+
+	        .fundraiser-btn:hover { transform: translateY(-2px); background: rgba(255,215,0,0.16); border-color: var(--gold); }
+
+	        .fundraiser-btn.primary {
+	            background: rgba(34,197,94,0.92);
+	            border-color: rgba(34,197,94,0.6);
+	            color: #04120b;
+	        }
+
+	        .fundraiser-btn.primary:hover { background: rgba(34,197,94,1); border-color: rgba(34,197,94,0.85); }
+
+	        .media-library {
+	            max-width: 1040px;
+	            margin: 0 auto 4rem;
+	            padding: 0 1.5rem;
         }
 
         .media-library h2 {
@@ -401,7 +440,7 @@
         .site-footer a { color: var(--gold-dim); text-decoration: none; }
         .site-footer a:hover { color: var(--gold); text-decoration: underline; }
     </style>
-  <link rel="stylesheet" crossorigin href="../assets/unified-nav-D383fX84.css">
+  <link rel="stylesheet" crossorigin href="../assets/unified-nav-COvlcsqT.css">
 </head>
 <body>
     <div class="ministry-stars" aria-hidden="true"></div>
@@ -421,14 +460,35 @@
         </div>
     </header>
 
-    <main>
-        <div class="hero">
-            <div class="hero-icon">🕊️</div>
-            <h1>Voice of Jesus Ministry</h1>
-            <p>Faith, hope, and community — bringing the love of Jesus Christ to those who need it most.</p>
-        </div>
+	    <main>
+	        <div class="hero">
+	            <div class="hero-icon">🕊️</div>
+	            <h1>Voice of Jesus Ministry</h1>
+	            <p>Faith, hope, and community — bringing the love of Jesus Christ to those who need it most.</p>
+	        </div>
 
-        <div class="ministry-grid" role="navigation" aria-label="Ministry sections">
+	        <section class="fundraiser-block" aria-labelledby="fundraiser-title">
+	            <div class="media-section">
+	                <h3 id="fundraiser-title">Keeping Hope Afloat: Lifeline Boat &amp; Village Camp</h3>
+	                <p>
+	                    We’re raising funds to support a remote coastal ministry village with three urgent needs:
+	                    a reliable lifeline boat engine, solar power for summer camp, and a clean water supply.
+	                </p>
+	                <p style="margin-top:0.85rem">
+	                    <strong>Sponsorship examples:</strong> $5/month (Bible Study Partner), $20/month (Student Sponsor), $40 one-time (Chromebook Sponsor).
+	                </p>
+	                <div class="fundraiser-actions" aria-label="Fundraiser actions">
+	                    <a class="fundraiser-btn primary" href="https://gofund.me/90bb6b695" target="_blank" rel="noopener">
+	                        ❤️ Donate on GoFundMe
+	                    </a>
+	                    <a class="fundraiser-btn" href="../support/">
+	                        🤝 More ways to support
+	                    </a>
+	                </div>
+	            </div>
+	        </section>
+
+	        <div class="ministry-grid" role="navigation" aria-label="Ministry sections">
 
             <a href="../library/" class="ministry-btn btn-stories" aria-label="Read Ministry Stories">
                 <span class="ministry-btn-icon">📖</span>
@@ -639,6 +699,5 @@
     <footer class="site-footer">
         <p>&copy; 2026 Amazing Grace Home Living &mdash; <a href="../">amazinggracehl.org</a></p>
     </footer>
-    <script src="../sw-register.js" defer></script>
 </body>
 </html>
