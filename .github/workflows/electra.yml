@@ -7,10 +7,16 @@ on:
 permissions:
   pull-requests: write
   contents: read
+  checks: read
+
+concurrency:
+  group: electra-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
   automerge:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     if: github.event_name == 'pull_request' && !github.event.pull_request.draft
     steps:
       - name: Setup Node.js
@@ -28,17 +34,44 @@ jobs:
             const { data: fresh } = await github.rest.pulls.get({ owner, repo, pull_number });
 
             if (fresh.draft) {
-              core.info('Skipping auto-merge for PR (draft).');
+              core.info('⏭️ Skipping: PR is draft');
               return;
             }
 
             if (fresh.state !== "open" || fresh.merged) {
-              core.info('Skipping auto-merge for PR (not open or already merged).');
+              core.info('⏭️ Skipping: PR not open or already merged');
               return;
             }
 
             if (fresh.mergeable !== true) {
-              core.info('Skipping auto-merge for PR (mergeable is not true).');
+              core.info('⏭️ Skipping: PR has merge conflicts');
+              return;
+            }
+
+            const { data: checks } = await github.rest.checks.listForRef({
+              owner,
+              repo,
+              ref: fresh.head.sha,
+              per_page: 100
+            });
+
+            const pendingChecks = checks.check_runs.filter(
+              check => check.status === 'queued' || check.status === 'in_progress'
+            );
+
+            if (pendingChecks.length > 0) {
+              core.info(`⏭️ Skipping: ${pendingChecks.length} checks still running`);
+              pendingChecks.forEach(check => core.info(`  ⏳ ${check.name}`));
+              return;
+            }
+
+            const failedChecks = checks.check_runs.filter(
+              check => check.status === 'completed' && check.conclusion !== 'success'
+            );
+
+            if (failedChecks.length > 0) {
+              core.info(`⏭️ Skipping: ${failedChecks.length} checks failed`);
+              failedChecks.forEach(check => core.info(`  ❌ ${check.name}`));
               return;
             }
 
@@ -48,14 +81,28 @@ jobs:
                 repo,
                 pull_number,
                 merge_method: 'squash',
+                commit_title: `${fresh.title} (#${pull_number})`,
+                commit_message: `Merged by Electra Auto-Merge Guard\n\n${fresh.body || ''}`
               });
-              core.info('Auto-merge requested.');
+
+              core.info('✅ Auto-merge successful');
+
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: pull_number,
+                body: '⚡ **Electra**: Auto-merged successfully! All checks passed. 🎉'
+              });
+
             } catch (error) {
               const status = error?.status ?? 0;
               const message = String(error?.message || '');
-              if ([403, 405, 409, 422].includes(status) || /draft|mergeable|conflict|not open|closed/i.test(message)) {
-                core.info(`Skipping auto-merge for PR: ${status} ${message}`);
+
+              if ([403, 405, 409, 422].includes(status) ||
+                  /draft|mergeable|conflict|not open|closed/i.test(message)) {
+                core.info(`⏭️ Skipping: ${status} ${message}`);
                 return;
               }
+
               throw error;
             }

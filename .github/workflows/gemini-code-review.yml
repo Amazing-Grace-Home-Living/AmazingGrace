@@ -3,12 +3,24 @@ name: Gemini Code Review
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+    paths:
+      - '**.ts'
+      - '**.tsx'
+      - '**.js'
+      - '**.jsx'
+      - '**.json'
+      - 'firestore.rules'
+
+concurrency:
+  group: gemini-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
   review:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
-      contents: read      
+      contents: read
       pull-requests: write
     steps:
       - uses: actions/checkout@v6
