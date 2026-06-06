@@ -10,6 +10,13 @@ export function useKonamiCode(onUnlock: () => void) {
     let index = 0;
 
     const handler = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      const isTypingTarget =
+        !!target &&
+        (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
+
+      if (isTypingTarget) return;
+
       const pressedKey = event.key.length === 1 ? event.key.toLowerCase() : event.key;
       if (pressedKey === sequence[index]) {
         index += 1;
