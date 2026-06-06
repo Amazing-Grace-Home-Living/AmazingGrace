@@ -7,7 +7,10 @@ describe('story library blog entry', () => {
     const entries = Array.isArray(libraryJson.entries) ? libraryJson.entries : [];
 
     const entry = entries.find((e: { slug?: string }) => e.slug === 'blog-architectural-js-synthesis');
-    expect(entry).toBeTruthy();
+    expect(entry).toBeDefined();
+    if (!entry) {
+      return;
+    }
     expect(entry.type).toBe('blog');
     expect(entry.path).toBe('./blog/architectural-js-synthesis.html');
   });
