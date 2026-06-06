@@ -84,10 +84,16 @@ jobs:
       - name: Security scan summary
         if: always()
         run: |
+          scan_type="On-Change Scan"
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            scan_type="Scheduled Full Scan"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            scan_type="Manual Full Scan"
+          fi
           echo "## 🔒 Black Duck Security Scan Results" > "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "- **Branch**: ${{ github.ref_name }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Scan Type**: ${{ github.event_name == 'schedule' && 'Scheduled Full Scan' || (github.event_name == 'workflow_dispatch' && 'Manual Full Scan' || 'On-Change Scan') }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Scan Type**: ${scan_type}" >> "$GITHUB_STEP_SUMMARY"
           echo "- **Status**: ${{ steps.black-duck-security-scan.outcome }}" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "Review detailed results in Black Duck or the uploaded workflow artifacts." >> "$GITHUB_STEP_SUMMARY"
