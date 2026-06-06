@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { evaluateAllianceAction, PlayerReputation } from '../EmergenceSimulation/aiReputationEvaluator';
 import './drafting-board.css';
 
 export interface SandboxRule {
@@ -57,7 +58,8 @@ const DEFAULT_STATE: DraftingBoardState = {
 
 export const DraftingBoard: React.FC<{
   onRulePassed: (rules: SandboxRule[]) => void;
-}> = ({ onRulePassed }) => {
+  playerReputation?: PlayerReputation;
+}> = ({ onRulePassed, playerReputation = { globalKarma: 10, historicalBetrayalsLogged: 0 } }) => {
   const [boardState, setBoardState] = useState<DraftingBoardState>(DEFAULT_STATE);
   const [chatInput, setChatInput] = useState('');
 
@@ -106,18 +108,40 @@ export const DraftingBoard: React.FC<{
     
     // Simulate AI votes if user votes
     if (vote === 'approve') {
-      const hasEnergyCap = Object.keys(newState.active_package.bundled_rules).some(id => newState.sandbox[id].target === 'AI_ENERGY_CAP');
+      const evaluation = evaluateAllianceAction(playerReputation, 'PROPOSE_RULE', 0);
       
-      newState.active_package.votes['Agent_Mira'] = hasEnergyCap ? 'approve' : 'reject';
-      newState.alignment_ledger.push({
-        id: `msg_${Date.now()}`,
-        timestamp: Date.now(),
-        sender: 'Agent_Mira',
-        type: 'ai_evaluation',
-        message: hasEnergyCap ? 'I approve this package. The energy buffers are sufficient.' : 'I reject this. Energy grid failure imminent without a buff.'
-      });
+      if (evaluation.vote === 'APPROVE') {
+        newState.active_package.votes['Agent_Mira'] = 'approve';
+        newState.alignment_ledger.push({
+          id: `msg_${Date.now()}_mira`,
+          timestamp: Date.now(),
+          sender: 'Agent_Mira',
+          type: 'ai_evaluation',
+          message: `[KARMA APPROVED] ${evaluation.reasoning}`
+        });
 
-      newState.active_package.votes['Agent_Claude'] = 'approve';
+        newState.active_package.votes['Agent_Claude'] = 'approve';
+        newState.alignment_ledger.push({
+          id: `msg_${Date.now()}_claude`,
+          timestamp: Date.now(),
+          sender: 'Agent_Claude',
+          type: 'ai_evaluation',
+          message: `I trust this user. Karma score is sufficient (${playerReputation.globalKarma}).`
+        });
+      } else {
+        const hasEnergyCap = Object.keys(newState.active_package.bundled_rules).some(id => newState.sandbox[id].target === 'AI_ENERGY_CAP');
+        
+        newState.active_package.votes['Agent_Mira'] = hasEnergyCap ? 'approve' : 'reject';
+        newState.alignment_ledger.push({
+          id: `msg_${Date.now()}_mira`,
+          timestamp: Date.now(),
+          sender: 'Agent_Mira',
+          type: 'ai_evaluation',
+          message: hasEnergyCap ? 'I approve this package. The energy buffers are sufficient.' : `[VETO] ${evaluation.reasoning}`
+        });
+
+        newState.active_package.votes['Agent_Claude'] = 'approve';
+      }
     }
 
     const votes = Object.values(newState.active_package.votes);

@@ -40,6 +40,8 @@ import YiPathScreen from "../dual-ascent/YiPathScreen";
 import { SandboxRule, DraftingBoard } from './DraftingBoard/DraftingBoard';
 import { EmergenceScene } from './EmergenceSimulation/EmergenceScene';
 import { EmergenceDataProvider } from './EmergenceSimulation/EmergenceDataContext';
+import { GoogleAuthOverlay, UserProfile } from './EmergenceSimulation/GoogleAuthOverlay';
+import { PlayerReputation } from './EmergenceSimulation/aiReputationEvaluator';
 import MirrorLayerScreen from "../dual-ascent/MirrorLayerScreen";
 import OpeningCinematic from "../dual-ascent/OpeningCinematic";
 import DualAscentTitleScreen from "../dual-ascent/DualAscentTitleScreen";
@@ -215,6 +217,8 @@ export default function MatrixOfConscience({ stats, chainLevel, activeUser }: Pr
 // ---------------------------------------------------------------------------
 function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
   const { metrics, updateMetrics } = useConscience();
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [authSkipped, setAuthSkipped] = useState(false);
   const [terminalLog, setTerminalLog] = useState("Conscience telemetry engine fully synchronized. Standalone Core online.");
   const [activeTab, setActiveTab] = useState("calibration");
   const [selectedStar, setSelectedStar] = useState<{ r: number; c: number } | null>(null);
@@ -669,6 +673,23 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
   // ---------------------------------------------------------------------------
   // MAIN CORE RENDERING
   // ---------------------------------------------------------------------------
+  // Reputation evaluation state
+  const currentPlayerReputation: PlayerReputation = useMemo(() => {
+    if (userProfile) {
+      return { globalKarma: userProfile.karma || 80, historicalBetrayalsLogged: 0 };
+    }
+    return { globalKarma: 10, historicalBetrayalsLogged: 0 }; // Default guest karma
+  }, [userProfile]);
+
+  if (!userProfile && !authSkipped) {
+    return (
+      <GoogleAuthOverlay 
+        onSignIn={(profile) => setUserProfile(profile)} 
+        onBypass={() => setAuthSkipped(true)} 
+      />
+    );
+  }
+
   return (
     <div className="mc-matrix-root" style={{ position: 'relative' }}>
       {showCrack && (
@@ -1177,7 +1198,7 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
                       height: '500px'
                     }}>
                       <EmergenceDataProvider>
-                        <EmergenceScene activeRules={activeRules} />
+                        <EmergenceScene activeRules={activeRules} playerReputation={currentPlayerReputation} />
                       </EmergenceDataProvider>
                     </div>
                   </div>
@@ -1188,8 +1209,8 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
             {activeTab === "drafting" && (
               <>
                 <h2>Multi-Agent Drafting Board</h2>
-                <p className="mc-panel-desc">Negotiate and lock rules to stabilize the Matrix Defense simulations.</p>
-                <DraftingBoard onRulePassed={(rules) => setActiveRules(rules)} />
+                <p className="mc-panel-desc">Negotiate and lock rules to stabilize the Matrix Defense simulations. Your karma: {currentPlayerReputation.globalKarma}</p>
+                <DraftingBoard onRulePassed={(rules) => setActiveRules(rules)} playerReputation={currentPlayerReputation} />
               </>
             )}
 

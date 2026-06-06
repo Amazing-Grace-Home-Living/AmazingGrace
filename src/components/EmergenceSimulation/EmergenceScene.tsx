@@ -9,6 +9,7 @@ import { BlendFunction } from 'postprocessing';
 import * as THREE from 'three';
 import { useEmergenceData, Sovereign } from './EmergenceDataContext';
 import { AtariWingOverlay, useKonamiCode } from './AtariWingUnlock';
+import { PlayerReputation } from './aiReputationEvaluator';
 import './emergence.css';
 
 // ── 0. Moving Nebula Backdrop ──
@@ -595,7 +596,7 @@ const SovereignAgent: React.FC<{
 };
 
 // ── 7. Main Emergence Scene View Component ──
-export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[] }> = ({ activeRules = [] }) => {
+export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReputation?: PlayerReputation }> = ({ activeRules = [], playerReputation = { globalKarma: 10, historicalBetrayalsLogged: 0 } }) => {
   const {
     metrics,
     veilState,
@@ -643,7 +644,7 @@ export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[] }> = ({ acti
 
   const { globalCollapseRisk } = useConscience();
 
-  const tdEngine = useTowerDefenseEngine(activeRules);
+  const tdEngine = useTowerDefenseEngine(activeRules, playerReputation);
   const { gameState, gameEntities, startGame, startWave, placeTower: placeTDTower, getTowerCost, PATH } = tdEngine;
 
   // Sync TD towers to hover logic
@@ -878,6 +879,11 @@ export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[] }> = ({ acti
                   </button>
                 ))}
               </div>
+              {gameState.lastMessage && (
+                <div style={{ marginTop: '8px', fontSize: '0.75rem', color: '#facc15', padding: '6px', background: 'rgba(250, 204, 21, 0.1)', border: '1px solid rgba(250, 204, 21, 0.3)', borderRadius: '4px' }}>
+                  {gameState.lastMessage}
+                </div>
+              )}
             </>
           )}
           {atariUnlocked && (

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { SandboxRule } from '../DraftingBoard/DraftingBoard';
+import { evaluateAllianceAction, PlayerReputation } from './aiReputationEvaluator';
 
 export interface Enemy {
   id: string;
@@ -49,7 +50,7 @@ export const TOWER_DEFS = {
   genesis: { cost: 250, range: 3.0, damage: 20, cooldown: 60, color: '#00ffb7', effect: 'splash' as const },
 };
 
-export const useTowerDefenseEngine = (activeRules: SandboxRule[]) => {
+export const useTowerDefenseEngine = (activeRules: SandboxRule[], playerReputation: PlayerReputation) => {
   const [gameState, setGameState] = useState({
     active: false,
     waveActive: false,
@@ -57,7 +58,8 @@ export const useTowerDefenseEngine = (activeRules: SandboxRule[]) => {
     health: 20,
     wave: 1,
     score: 0,
-    energyCap: 100
+    energyCap: 100,
+    lastMessage: ''
   });
 
   const stateRef = useRef({
@@ -112,8 +114,18 @@ export const useTowerDefenseEngine = (activeRules: SandboxRule[]) => {
 
   const placeTower = useCallback((x: number, z: number, type: keyof typeof TOWER_DEFS) => {
     const cost = getTowerCost(type);
+    
+    // Evaluate if user has karma to build defenses
+    // We pass 0 as current threat level unless the wave is active
     setGameState(prev => {
-      if (prev.money < cost) return prev;
+      const evaluation = evaluateAllianceAction(playerReputation, 'BUILD_DEFENSE', prev.waveActive ? 60 : 0);
+      if (evaluation.vote === 'VETO') {
+        return { ...prev, lastMessage: evaluation.reasoning };
+      }
+
+      if (prev.money < cost) {
+        return { ...prev, lastMessage: "Insufficient funds." };
+      }
 
       // Check collision with path
       if (PATH.some(p => Math.abs(p.x - x) < 0.5 && Math.abs(p.z - z) < 0.5)) return prev;
@@ -129,9 +141,9 @@ export const useTowerDefenseEngine = (activeRules: SandboxRule[]) => {
         level: 1
       });
 
-      return { ...prev, money: prev.money - cost };
+      return { ...prev, money: prev.money - cost, lastMessage: evaluation.reasoning };
     });
-  }, [getTowerCost]);
+  }, [getTowerCost, playerReputation]);
 
   // Main game loop
   useEffect(() => {
