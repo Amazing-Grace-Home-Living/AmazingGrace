@@ -12,6 +12,7 @@ describe('workflow cleanup', () => {
       'gemini-code-review.yml',
       'sync-secrets-from-matrix.yml',
       'system-validation.yml',
+      'validate-vite-entries.yml',
     ]);
   });
 
