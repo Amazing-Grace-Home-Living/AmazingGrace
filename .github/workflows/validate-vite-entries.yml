@@ -14,6 +14,8 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -30,8 +32,8 @@ jobs:
 
           # Find all HTML files that reference .tsx or .ts module scripts
           while IFS= read -r htmlfile; do
-            # Check if this HTML loads a .tsx or .ts file via type="module"
-            if grep -qE 'type="module"[^>]*src="[^"]*\.(tsx?)"' "$htmlfile"; then
+            # Check if this HTML has both type="module" and a .ts/.tsx src (order-independent)
+            if grep -q 'type="module"' "$htmlfile" && grep -qE 'src="[^"]*\.tsx?"' "$htmlfile"; then
               # Verify the HTML file is in vite.config.ts
               if ! grep -qF "$htmlfile" vite.config.ts; then
                 MISSING_ENTRIES="$MISSING_ENTRIES\n  - $htmlfile (loads TypeScript but missing from Vite config)"
