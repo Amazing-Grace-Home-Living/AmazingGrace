@@ -64,28 +64,28 @@ jobs:
           path: dist
           retention-days: 1
 
-deploy:
-  name: Deploy to Firebase Hosting
-  needs: validate
-  runs-on: ubuntu-latest
-  if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-  permissions:
-    contents: read
+  deploy:
+    name: Deploy to Firebase Hosting
+    needs: validate
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: read
 
-  steps:
-    - name: Checkout
-      uses: actions/checkout@v6
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
 
-    - name: Download dist artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: site-dist
-        path: dist
+      - name: Download dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: site-dist
+          path: dist
 
-    - name: Deploy to Firebase Hosting
-      uses: FirebaseExtended/action-hosting-deploy@v0
-      with:
-        repoToken: ${{ secrets.GITHUB_TOKEN }}
-        firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_AMAZING_GRACE_HL_BBEAA }}
-        projectId: amazing-grace-hl-bbeaa
-        channelId: live
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_AMAZING_GRACE_HL_BBEAA }}
+          projectId: amazing-grace-hl-bbeaa
+          channelId: live
