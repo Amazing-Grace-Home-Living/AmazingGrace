@@ -14,6 +14,9 @@ describe('Node version consistency', () => {
 
   it('pins CI/deploy workflows to Node 20', () => {
     const workflowFiles = [
+      '.github/workflows/electra.yml',
+      '.github/workflows/ella.yml',
+      '.github/workflows/sync-secrets-from-matrix.yml',
       '.github/workflows/system-validation.yml',
     ];
 

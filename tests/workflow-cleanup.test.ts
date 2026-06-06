@@ -2,8 +2,12 @@ import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 
 describe('workflow cleanup', () => {
-  it('keeps only the unified system validation workflow', () => {
+  it('keeps the verified system validation and support workflows', () => {
     expect(fs.readdirSync('.github/workflows').sort()).toEqual([
+      'electra.yml',
+      'ella.yml',
+      'gemini-code-review.yml',
+      'sync-secrets-from-matrix.yml',
       'system-validation.yml',
     ]);
   });
