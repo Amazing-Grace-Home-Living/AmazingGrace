@@ -24,44 +24,7 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v6
+      - uses: google-github-actions/run-gemini-cli@v0
         with:
-          fetch-depth: 0
-
-      - name: Get changed files
-        id: changed
-        run: |
-          FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }}..HEAD | tr '\n' ',' | sed 's/,$//')
-          echo "files=$FILES" >> $GITHUB_OUTPUT
-
-      - uses: google-github-actions/run-gemini-cli@v1
-        with:
-          gemini-key: ${{ secrets.GEMINI_API_KEY }}
-          prompt: |
-            Review this PR focusing on:
-
-            🔒 **Security**:
-            - Firestore security rules compliance (no open reads/writes)
-            - XSS vulnerabilities in user-generated content
-            - API key exposure or secret leakage
-
-            ⚡ **Performance**:
-            - React unnecessary re-renders (missing useMemo/useCallback)
-            - Game loop optimizations for 60fps mobile gameplay
-            - Bundle size impact (check for large dependencies)
-
-            🎮 **Game-Specific**:
-            - Match-3 drag-and-drop: touch event handling
-            - State management efficiency in game loops
-            - Mobile-first responsive design (no horizontal scroll)
-
-            🚫 **Quality Gates**:
-            - No 404 errors, broken links, or placeholder content
-            - All games listed must be fully functional
-            - No console errors in production builds
-
-            📱 **Mobile UX**:
-            - Touch target sizes (minimum 44x44px)
-            - Fullscreen game optimization
-            - Loading states for async operations
-
-            Changed files: ${{ steps.changed.outputs.files }}
+          gemini_api_key: ${{ secrets.GEMINI }}
+          prompt: "Review this PR for security, performance, and Node/React best practices. Focus specifically on Firestore rule compliance and React performance optimization in the Game loop."

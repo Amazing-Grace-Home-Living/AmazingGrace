@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useState, useEffect } from 'react';
+import React, { useRef, useMemo, useState, useEffect, useCallback } from 'react';
 import { useConscience } from '../ConscienceProvider';
 import { Canvas, useFrame, ThreeEvent } from '@react-three/fiber';
 import { OrbitControls, Stars, Html, Trail, Float, Sphere, MeshDistortMaterial } from '@react-three/drei';
@@ -6,6 +6,7 @@ import { EffectComposer, Bloom, Noise, Vignette, ChromaticAberration } from '@re
 import { BlendFunction } from 'postprocessing';
 import * as THREE from 'three';
 import { useEmergenceData, Sovereign } from './EmergenceDataContext';
+import { AtariWingOverlay, useKonamiCode } from './AtariWingUnlock';
 import './emergence.css';
 
 // ── 0. Moving Nebula Backdrop ──
@@ -604,6 +605,7 @@ export const EmergenceScene: React.FC = () => {
     selectedSovereignName,
     selectSovereign,
     multiplayerLogs,
+    addMultiplayerLog,
     transmitAgentMessage,
     applyAgentOverride,
     towers,
@@ -621,6 +623,21 @@ export const EmergenceScene: React.FC = () => {
   // Local state for communicator message input
   const [chatMessage, setChatMessage] = useState('');
   const [hoverCell, setHoverCell] = useState<{ x: number; z: number } | null>(null);
+  const [atariUnlocked, setAtariUnlocked] = useState(false);
+  const [atariOverlayTrigger, setAtariOverlayTrigger] = useState(0);
+
+  useEffect(() => {
+    setAtariUnlocked(sessionStorage.getItem('atari_attuned') === 'true');
+  }, []);
+
+  const handleAtariUnlock = useCallback(() => {
+    sessionStorage.setItem('atari_attuned', 'true');
+    setAtariUnlocked(true);
+    setAtariOverlayTrigger((prev) => prev + 1);
+    addMultiplayerLog('SYSTEM BREACH DETECTED: Atari Wing protocols activated.', 'System', 'event');
+  }, [addMultiplayerLog]);
+
+  useKonamiCode(handleAtariUnlock);
 
   const { globalCollapseRisk } = useConscience();
 
@@ -828,6 +845,11 @@ export const EmergenceScene: React.FC = () => {
               Click grid to place {towerConfig[selectedTower].label} tower
             </div>
           )}
+          {atariUnlocked && (
+            <a className="atari-wing-btn" href="../atari-lab/">
+              [ATARI_WING] - FORBIDDEN ACCESS
+            </a>
+          )}
         </div>
       </div>
 
@@ -953,6 +975,7 @@ export const EmergenceScene: React.FC = () => {
           </EffectComposer>
         </Canvas>
       </div>
+      <AtariWingOverlay key={atariOverlayTrigger} unlocked={atariOverlayTrigger > 0} />
     </div>
   );
 };

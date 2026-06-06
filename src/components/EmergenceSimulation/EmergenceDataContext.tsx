@@ -7,6 +7,19 @@ import { createOmniversalRuntime, createWorldState } from '../../../js/omniversa
 type TowerType = 'purify' | 'contain' | 'sentinel' | 'genesis';
 type ThreatLevel = 'safe' | 'warning' | 'danger' | 'critical';
 
+interface AIPersonality {
+  communicationStyle: 'aggressive' | 'cautious' | 'diplomatic' | 'analytical';
+  cooperationLevel: number;
+  riskTolerance: number;
+  learningRate: number;
+}
+
+interface AgentMemoryEntry {
+  event: string;
+  timestamp: number;
+  sentiment: number;
+}
+
 interface Tower {
   id: string;
   type: TowerType;
@@ -27,6 +40,41 @@ const towerConfigs: Record<TowerType, { range: number; cost: number }> = {
 // crossing 100 corruption (forced exile) is a large penalty, while recovering below 86 (critical) grants a smaller recovery reward.
 const EXILE_PENALTY = 200;
 const CRITICAL_RECOVERY_REWARD = 100;
+const MEMORY_LIMIT = 8;
+
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+
+const buildPersonality = (instinct: string, corruption: number): AIPersonality => {
+  if (instinct === 'hunt') {
+    return {
+      communicationStyle: 'aggressive',
+      cooperationLevel: 35,
+      riskTolerance: clamp(65 + corruption * 0.2, 30, 95),
+      learningRate: 1.2
+    };
+  }
+
+  if (instinct === 'genesis') {
+    return {
+      communicationStyle: 'diplomatic',
+      cooperationLevel: 78,
+      riskTolerance: 30,
+      learningRate: 1
+    };
+  }
+
+  return {
+    communicationStyle: 'analytical',
+    cooperationLevel: 55,
+    riskTolerance: 45,
+    learningRate: 0.95
+  };
+};
+
+const pushMemory = (memory: AgentMemoryEntry[] = [], event: string, sentiment: number): AgentMemoryEntry[] => {
+  const next = [...memory, { event, timestamp: Date.now(), sentiment: clamp(sentiment, -1, 1) }];
+  return next.slice(-MEMORY_LIMIT);
+};
 
 const getDistance = (a: { x: number; z: number }, b: { x: number; z: number }) => {
   const dx = a.x - b.x;
@@ -43,6 +91,13 @@ const getSovereignGridPosition = (index: number, sovereign: any) => {
   return { x: Math.cos(angle) * radius, z: Math.sin(angle) * radius };
 };
 
+const normalizeSovereign = (sovereign: any): Sovereign => ({
+  ...sovereign,
+  personality: sovereign.personality || buildPersonality(sovereign.instinct, sovereign.corruption ?? 0),
+  relationships: sovereign.relationships || {},
+  memory: Array.isArray(sovereign.memory) ? sovereign.memory.slice(-MEMORY_LIMIT) : []
+});
+
 export interface Sovereign {
   name: string;
   instinct: 'hunt' | 'genesis' | string;
@@ -55,6 +110,9 @@ export interface Sovereign {
   fear: number;
   status: 'active' | 'exiled' | string;
   pulse?: number; // Normalized pulse 0-1
+  personality: AIPersonality;
+  relationships: Record<string, number>;
+  memory: AgentMemoryEntry[];
 }
 interface EmergenceContextType {
   metrics: {
@@ -76,6 +134,7 @@ interface EmergenceContextType {
   selectedSovereignName: string | null;
   selectSovereign: (name: string | null) => void;
   multiplayerLogs: Array<{ id: string; time: string; text: string; operator: string; type: string }>;
+  addMultiplayerLog: (text: string, operator?: string, type?: string) => void;
   agentConversations: Array<{ id: string; from: string; to: string; text: string; time: number }>;
   transmitAgentMessage: (name: string, text: string) => void;
   applyAgentOverride: (name: string, actionType: string) => void;
@@ -101,7 +160,13 @@ export const useEmergenceData = () => {
 
 export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // 1. Initial State Setup
-  const [engineState, setEngineState] = useState(() => createInitialIntelligentEngineState());
+  const [engineState, setEngineState] = useState(() => {
+    const baseState = createInitialIntelligentEngineState();
+    return {
+      ...baseState,
+      sovereigns: (baseState.sovereigns || []).map((sovereign: any) => normalizeSovereign(sovereign))
+    };
+  });
   const runtimeRef = useRef<any>(null);
   const [renderState, setRenderState] = useState<any>(null);
 
@@ -118,6 +183,20 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
   const [threatFlashes, setThreatFlashes] = useState<Record<string, boolean>>({});
   const previousCorruptionRef = useRef<Record<string, number>>({});
   const [agentConversations, setAgentConversations] = useState<Array<{ id: string; from: string; to: string; text: string; time: number }>>([]);
+
+  const addMultiplayerLog = (text: string, operator = 'System', type = 'network') => {
+    const timeString = new Date().toTimeString().split(' ')[0];
+    setMultiplayerLogs((prev) => [
+      ...prev,
+      {
+        id: `log-${Date.now()}-${Math.random()}`,
+        time: timeString,
+        operator,
+        text,
+        type
+      }
+    ].slice(-30));
+  };
 
   useEffect(() => {
     // Instantiate the omniversal runtime locally
@@ -155,11 +234,16 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
           const { state: nextEngine } = runIntelligentEngineCycle(prev, pressures, 1);
           
           // Inject dynamic pulse data for the 3D visualization
-          nextEngine.sovereigns = nextEngine.sovereigns.map((s: any) => {
+          nextEngine.sovereigns = nextEngine.sovereigns.map((raw: any) => {
+            const s = normalizeSovereign(raw);
             const time = Date.now() / 1000;
             const frequency = 0.5 + (s.metamorphosisStage * 0.5) + (s.corruption / 50);
             return {
               ...s,
+              personality: {
+                ...s.personality,
+                riskTolerance: clamp(s.personality.riskTolerance + (s.corruption > 70 ? 1 : -0.5), 10, 95)
+              },
               pulse: (Math.sin(time * Math.PI * frequency) + 1) / 2
             };
           });
@@ -170,7 +254,7 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [engineState]);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -271,7 +355,8 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
       let nextSovereigns: any[] = [];
 
       setEngineState((prev: any) => {
-        const updatedSovereigns = prev.sovereigns.map((sovereign: any, index: number) => {
+        const updatedSovereigns = prev.sovereigns.map((rawSovereign: any, index: number) => {
+          const sovereign = normalizeSovereign(rawSovereign);
           const pos = getSovereignGridPosition(index, sovereign);
           const previousCorruption = previousCorruptionRef.current[sovereign.name] ?? sovereign.corruption;
           const purifierCount = workingTowers.filter((tower) => (
@@ -332,6 +417,9 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
             corruption: nextCorruption,
             loyalty: sovereign.instinct === 'genesis' ? Math.min(100, sovereign.loyalty + (10 * genesisCount)) : sovereign.loyalty,
             status: sentinelInRange && nextCorruption >= 100 ? 'exiled' : sovereign.status,
+            memory: (nextCorruption - previousCorruption > 10)
+              ? pushMemory(sovereign.memory, `Threat surge detected at ${nextCorruption.toFixed(0)}% corruption`, -0.8)
+              : sovereign.memory,
           };
         });
         nextSovereigns = updatedSovereigns;
@@ -397,17 +485,147 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => clearInterval(interval);
   }, []);
 
-  // 4. Simulated Agent-to-Agent dialogue loop
+  // 4. Autonomous strategic AI behavior loop
   useEffect(() => {
-    const dialogueLines = [
-      "Targeting coordinates for hunt cycle 442.",
-      "The whiteClarity frequency is drifting. Calibrating...",
-      "I sense a fracture in the local lattice. Are you witnessing this?",
-      "Genesis protocol initiated. Preparing for blooming phase.",
-      "Corruption levels rising in the scarletGrowth sector. Caution recommended.",
-      "Awaiting directive from the Architect. Do you have signal?",
-    ];
+    const interval = setInterval(() => {
+      const strategicLogs: Array<{ text: string; operator: string; type: string }> = [];
 
+      setEngineState((prev: any) => {
+        let nextSovereigns: Sovereign[] = (prev.sovereigns || [])
+          .map((s: any) => normalizeSovereign(s))
+          .map((s: Sovereign) => ({
+            ...s,
+            relationships: { ...s.relationships },
+            memory: [...s.memory]
+          }));
+
+        const replaceSovereign = (name: string, updater: (agent: Sovereign) => Sovereign) => {
+          nextSovereigns = nextSovereigns.map((agent) => (
+            agent.name === name ? updater(agent) : agent
+          ));
+        };
+
+        for (let index = 0; index < nextSovereigns.length; index += 1) {
+          const initialSovereign = nextSovereigns[index];
+          let sovereign = initialSovereign;
+          const sovereignPos = getSovereignGridPosition(index, sovereign);
+          const nearby: Array<{ candidate: Sovereign; candidateIndex: number; distance: number }> = nextSovereigns
+            .map((candidate: Sovereign, candidateIndex: number) => ({
+              candidate,
+              candidateIndex,
+              distance: getDistance(sovereignPos, getSovereignGridPosition(candidateIndex, candidate))
+            }))
+            .filter((entry: { candidate: Sovereign; candidateIndex: number; distance: number }) => (
+              entry.candidate.name !== sovereign.name && entry.distance <= 2.8
+            ));
+
+          nearby.forEach(({ candidate }) => {
+            const trustDelta = sovereign.instinct === candidate.instinct ? 4 : -2;
+            sovereign = {
+              ...sovereign,
+              relationships: {
+                ...sovereign.relationships,
+                [candidate.name]: clamp((sovereign.relationships[candidate.name] || 0) + trustDelta, -100, 100)
+              }
+            };
+          });
+
+          if (sovereign.corruption > 70 && nearby.length > 0) {
+            const target = nearby[Math.floor(Math.random() * nearby.length)].candidate;
+            const corruptionImpact = 4 * sovereign.personality.learningRate;
+            replaceSovereign(target.name, (agent) => ({
+              ...agent,
+              corruption: clamp(agent.corruption + corruptionImpact, 0, 100),
+              memory: pushMemory(agent.memory, `Corruption pressure increased from ${sovereign.name}`, -0.7)
+            }));
+            sovereign = {
+              ...sovereign,
+              memory: pushMemory(sovereign.memory, `Attempted corruption transfer on ${target.name}`, -0.5)
+            };
+            strategicLogs.push({
+              operator: sovereign.name,
+              text: `Attempted scarletGrowth conversion on ${target.name}.`,
+              type: 'mutation'
+            });
+          }
+
+          if (sovereign.instinct === 'genesis' && sovereign.corruption < 30) {
+            sovereign = {
+              ...sovereign,
+              loyalty: clamp(sovereign.loyalty + 2, 0, 100),
+              memory: pushMemory(sovereign.memory, 'Requested purification support in local grid', 0.6)
+            };
+            strategicLogs.push({
+              operator: sovereign.name,
+              text: 'Requesting purification tower reinforcement near allied signatures.',
+              type: 'network'
+            });
+          }
+
+          if (sovereign.instinct === 'hunt') {
+            const nearbyThreats = nearby.filter(({ candidate }) => candidate.corruption > 65).length;
+            sovereign = {
+              ...sovereign,
+              adaptation: clamp(sovereign.adaptation + 1, 0, 100),
+              memory: pushMemory(
+                sovereign.memory,
+                nearbyThreats > 0 ? `Patrol found ${nearbyThreats} hostile signature(s)` : 'Patrol route clear',
+                nearbyThreats > 0 ? 0.2 : 0.4
+              )
+            };
+            if (nearbyThreats > 0) {
+              strategicLogs.push({
+                operator: sovereign.name,
+                text: `Hunt patrol reporting ${nearbyThreats} corruption hotspot(s).`,
+                type: 'warning'
+              });
+            }
+          }
+
+          replaceSovereign(sovereign.name, () => sovereign);
+        }
+
+        return { ...prev, sovereigns: nextSovereigns };
+      });
+
+      if (strategicLogs.length > 0) {
+        const timeString = new Date().toTimeString().split(' ')[0];
+        setMultiplayerLogs((prev) => [
+          ...prev,
+          ...strategicLogs.map((entry, idx) => ({
+            id: `strategic-${Date.now()}-${idx}`,
+            time: timeString,
+            operator: entry.operator,
+            text: entry.text,
+            type: entry.type
+          }))
+        ].slice(-30));
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const buildContextAwareDialogue = (fromAgent: Sovereign, toAgent: Sovereign) => {
+    const trust = fromAgent.relationships[toAgent.name] || 0;
+    const recentMemory = fromAgent.memory[fromAgent.memory.length - 1]?.event;
+    const corruptionState = fromAgent.corruption > 70 ? 'scarletGrowth pressure is rising' : 'whiteClarity channels remain stable';
+    const threatState = toAgent.corruption > 70 ? 'You are near critical corruption thresholds.' : 'Threat pressure is currently manageable.';
+
+    if (trust < -20) {
+      return `${toAgent.name}, your signal is unstable. ${threatState}`;
+    }
+    if (fromAgent.instinct === 'genesis') {
+      return `${toAgent.name}, align with genesis harmonics. ${corruptionState}. ${recentMemory ? `Memory: ${recentMemory}.` : ''}`.trim();
+    }
+    if (fromAgent.instinct === 'hunt') {
+      return `${toAgent.name}, patrol vectors updated. ${threatState} ${recentMemory ? `Last event: ${recentMemory}.` : ''}`.trim();
+    }
+    return `${toAgent.name}, telemetry sync complete. ${corruptionState}. ${recentMemory ? `Reference: ${recentMemory}.` : ''}`.trim();
+  };
+
+  // 5. Simulated Agent-to-Agent dialogue loop
+  useEffect(() => {
     const interval = setInterval(() => {
       if (engineState.sovereigns.length < 2) return;
       
@@ -415,9 +633,9 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
       let toIdx = Math.floor(Math.random() * engineState.sovereigns.length);
       while (toIdx === fromIdx) toIdx = Math.floor(Math.random() * engineState.sovereigns.length);
 
-      const fromAgent = engineState.sovereigns[fromIdx];
-      const toAgent = engineState.sovereigns[toIdx];
-      const text = dialogueLines[Math.floor(Math.random() * dialogueLines.length)];
+      const fromAgent = normalizeSovereign(engineState.sovereigns[fromIdx]);
+      const toAgent = normalizeSovereign(engineState.sovereigns[toIdx]);
+      const text = buildContextAwareDialogue(fromAgent, toAgent);
 
       const newConv = {
         id: `${Date.now()}`,
@@ -428,6 +646,19 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
       };
 
       setAgentConversations((prev) => [...prev, newConv].slice(-5));
+      setEngineState((prev: any) => ({
+        ...prev,
+        sovereigns: (prev.sovereigns || []).map((candidate: any) => {
+          const normalized = normalizeSovereign(candidate);
+          if (normalized.name === fromAgent.name) {
+            return {
+              ...normalized,
+              memory: pushMemory(normalized.memory, `Messaged ${toAgent.name}: ${text}`, 0.4)
+            };
+          }
+          return normalized;
+        })
+      }));
       
       const timeString = new Date().toTimeString().split(' ')[0];
       setMultiplayerLogs((prev) => [
@@ -491,30 +722,51 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const transmitAgentMessage = (name: string, text: string) => {
     const timeString = new Date().toTimeString().split(' ')[0];
-    const targetAgent = engineState.sovereigns.find((s: any) => s.name === name);
+    const targetAgentRaw = engineState.sovereigns.find((s: any) => s.name === name);
+    const targetAgent = targetAgentRaw ? normalizeSovereign(targetAgentRaw) : null;
     if (!targetAgent) return;
 
-    // Generate responsive dialogue based on instinct, corruption, and desire
+    // Generate responsive dialogue based on instinct, corruption, relationship trust, and memory context
     let reply = '';
     const isCorrupted = targetAgent.corruption > 60;
     const isExiled = targetAgent.status === 'exiled';
+    const trustWithArchitect = targetAgent.relationships['Architect'] || 0;
+    const latestMemory = targetAgent.memory[targetAgent.memory.length - 1]?.event;
 
     if (isExiled) {
       reply = `[Transmission Fractured] Exiled from Conscience mainframe. Static interference... Cannot execute directive.`;
     } else if (isCorrupted) {
-      reply = `The scarletGrowth is beautiful, Architect. Why resist? The Devourer commands adaptation. Instability is our catalyst.`;
+      reply = trustWithArchitect > 15
+        ? `Signal unstable, Architect... I am fighting scarletGrowth drift. Recent memory: ${latestMemory || 'none recorded'}.`
+        : `The scarletGrowth is beautiful, Architect. Why resist? The Devourer commands adaptation. Instability is our catalyst.`;
     } else {
       switch (targetAgent.instinct) {
         case 'hunt':
-          reply = `Hunt vector set. Order preserve bias: ${targetAgent.desire}. Loyalty at ${targetAgent.loyalty}%. Awaiting next targeting coordinates.`;
+          reply = `Hunt vector set. ${trustWithArchitect >= 0 ? 'Trust remains tactical.' : 'Trust degraded; verifying authority.'} Threat monitor at ${targetAgent.corruption.toFixed(0)}% corruption.`;
           break;
         case 'genesis':
-          reply = `White clarity frequency aligned. Metamorphosis Stage ${targetAgent.metamorphosisStage} initialized. Creation blooms in this sector.`;
+          reply = `White clarity frequency aligned. Stage ${targetAgent.metamorphosisStage} stable. ${latestMemory ? `Recent memory: ${latestMemory}.` : 'Awaiting new growth directives.'}`;
           break;
         default:
-          reply = `Directive acknowledged. Order coefficient aligned. Resolving system technical debt.`;
+          reply = `Directive acknowledged. Current threat level reads ${targetAgent.corruption.toFixed(0)}% corruption. ${latestMemory ? `Memory index: ${latestMemory}.` : ''}`.trim();
       }
     }
+
+    setEngineState((prev: any) => ({
+      ...prev,
+      sovereigns: (prev.sovereigns || []).map((candidate: any) => {
+        const normalized = normalizeSovereign(candidate);
+        if (normalized.name !== name) return normalized;
+        return {
+          ...normalized,
+          relationships: {
+            ...normalized.relationships,
+            Architect: clamp((normalized.relationships['Architect'] || 0) + (text.length > 4 ? 3 : 1), -100, 100)
+          },
+          memory: pushMemory(normalized.memory, `Architect message: ${text}`, 0.5)
+        };
+      })
+    }));
 
     setMultiplayerLogs((prev) => [
       ...prev,
@@ -540,9 +792,10 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
     
     setEngineState((prev: any) => {
       const nextSovereigns = prev.sovereigns.map((s: any) => {
-        if (s.name !== name) return s;
+        const normalized = normalizeSovereign(s);
+        if (normalized.name !== name) return normalized;
         
-        const next = { ...s };
+        const next = { ...normalized };
         if (actionType === 'purify') {
           next.corruption = Math.max(0, next.corruption - 40);
           next.trauma = Math.max(0, next.trauma - 20);
@@ -556,6 +809,7 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
           next.metamorphosisStage = Math.min(5, next.metamorphosisStage + 1);
           next.corruption = Math.min(100, next.corruption + 15);
         }
+        next.memory = pushMemory(next.memory, `Architect override received: ${actionType}`, 0.35);
         return next;
       });
 
@@ -599,6 +853,7 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
       selectedSovereignName,
       selectSovereign,
       multiplayerLogs,
+      addMultiplayerLog,
       agentConversations,
       transmitAgentMessage,
       applyAgentOverride,
