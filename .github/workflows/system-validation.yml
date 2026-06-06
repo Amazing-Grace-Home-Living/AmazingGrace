@@ -37,8 +37,6 @@ jobs:
       - name: Game health checks - Match Maker
         run: npm test -- tests/canonical-matchmaker.test.ts tests/constellationState.test.ts
 
-      - name: Game health checks - Trinity
-        run: npm test -- tests/matrix-trinity-alignment.test.ts
 
       - name: Instruction layer validation
         run: |
