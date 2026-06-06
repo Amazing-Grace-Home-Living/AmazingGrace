@@ -1869,63 +1869,7 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
           )}
         </div>
       </div>
-      {isUnsealing && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(2, 6, 23, 0.98)',
-          zIndex: 99999,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: 'Courier New, monospace',
-          color: '#10b981',
-          textShadow: '0 0 10px rgba(16, 185, 129, 0.6)',
-          pointerEvents: 'all'
-        }}>
-          <style>{`
-            @keyframes scan {
-              0% { top: 0%; }
-              100% { top: 100%; }
-            }
-          `}</style>
-          <div style={{
-            position: 'absolute',
-            width: '100%',
-            height: '4px',
-            background: 'rgba(16, 185, 129, 0.3)',
-            boxShadow: '0 0 20px #10b981',
-            animation: 'scan 2s linear infinite',
-            top: 0
-          }} />
-          <h1 style={{ fontSize: '2rem', margin: '0 0 1.5rem 0', letterSpacing: '0.15em', textAlign: 'center', fontWeight: 'bold' }}>
-            ⚠️ ACCESSING FORBIDDEN SUBSYSTEM...
-          </h1>
-          <p style={{ fontSize: '1rem', opacity: 0.8, marginBottom: '2rem', textAlign: 'center', maxWidth: '600px', lineHeight: '1.6' }}>
-            "You have accessed a chamber not meant for the uninitiated. Retrieving proto-silicon simulations of early consciousness stress tests..."
-          </p>
-          <div style={{
-            width: '400px',
-            height: '8px',
-            background: '#064e3b',
-            borderRadius: '4px',
-            overflow: 'hidden',
-            border: '1px solid #10b981'
-          }}>
-            <div style={{
-              width: `${unsealProgress}%`,
-              height: '100%',
-              background: '#10b981',
-              boxShadow: '0 0 10px #10b981',
-              transition: 'width 0.1s linear'
-            }} />
-          </div>
-          <div style={{ marginTop: '1.5rem', fontSize: '0.9rem', fontStyle: 'italic', color: '#a7f3d0' }}>
-            {unsealProgress < 100 ? `SYNCHRONIZING FIRST ARCHITECT MATRIX: ${unsealProgress}%` : "CALIBRATION ENGINES DEPLOYED. RETRO CHAMBER UNSEALED."}
-          </div>
-        </div>
-      )}
+
     </div>
   );
 }
