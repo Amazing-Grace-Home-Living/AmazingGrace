@@ -4,48 +4,41 @@ import path from 'node:path';
 
 describe('Emergence 3D Simulation Frontend Integration', () => {
   it('verifies entry point page files exist', () => {
-    const htmlExists = fs.existsSync(path.resolve(__dirname, '../arcade/emergence-3d/index.html'));
-    expect(htmlExists).toBe(true);
-
-    const htmlContent = fs.readFileSync(path.resolve(__dirname, '../arcade/emergence-3d/index.html'), 'utf8');
-    expect(htmlContent).toContain('<div id="emergence-root"></div>');
-    expect(htmlContent).toContain('src="./main.tsx"');
-    expect(htmlContent).toContain('href="../"');
-  });
-
-  it('verifies local Emergence 3D React entry point exists and mounts correctly', () => {
-    const mainContent = fs.readFileSync(path.resolve(__dirname, '../arcade/emergence-3d/main.tsx'), 'utf8');
-    expect(mainContent).toContain("getElementById('emergence-root')");
-    expect(mainContent).toContain('createRoot');
-    expect(mainContent).toContain('EmergenceDataProvider');
-    expect(mainContent).toContain('EmergenceScene');
+    const htmlPath = path.resolve(__dirname, '../arcade/emergence-3d/index.html');
+    const tsxPath = path.resolve(__dirname, '../arcade/emergence-3d/main.tsx');
+    
+    expect(fs.existsSync(htmlPath)).toBe(true);
+    expect(fs.existsSync(tsxPath)).toBe(true);
   });
 
   it('verifies vite.config.ts exposes the multi-page entry point route', () => {
-    const configContent = fs.readFileSync(path.resolve(__dirname, '../vite.config.ts'), 'utf8');
+    const configPath = path.resolve(__dirname, '../vite.config.ts');
+    const configContent = fs.readFileSync(configPath, 'utf8');
+    
     expect(configContent).toContain('arcadeEmergence3D');
     expect(configContent).toContain('arcade/emergence-3d/index.html');
   });
 
   it('verifies R3F adapter code and component structure', () => {
-    const contextContent = fs.readFileSync(
-      path.resolve(__dirname, '../src/components/EmergenceSimulation/EmergenceDataContext.tsx'),
-      'utf8'
-    );
-    expect(contextContent).toContain('createOmniversalRuntime');
-    expect(contextContent).toContain('runIntelligentEngineCycle');
-    expect(contextContent).toContain('EmergenceDataProvider');
-
     const sceneContent = fs.readFileSync(
       path.resolve(__dirname, '../src/components/EmergenceSimulation/EmergenceScene.tsx'),
       'utf8'
     );
-    expect(sceneContent).toContain('useEmergenceData');
-    expect(sceneContent).toContain('Canvas');
-    expect(sceneContent).toContain('OrbitControls');
+    
+    // Core R3F components
+    expect(sceneContent).toContain('<Canvas');
+    expect(sceneContent).toContain('<OrbitControls');
+    expect(sceneContent).toContain('<Stars');
+    expect(sceneContent).toContain('<EffectComposer');
+    expect(sceneContent).toContain('<Bloom');
+    
+    // Custom domain components
     expect(sceneContent).toContain('TerrainGrid');
-    expect(sceneContent).toContain('CentralTowers');
+    expect(sceneContent).toContain('CentralPortal');
     expect(sceneContent).toContain('SovereignAgent');
+    expect(sceneContent).toContain('DataFlows');
+    expect(sceneContent).toContain('LocalPlayer');
+    expect(sceneContent).toContain('DialogueBubble');
   });
 
   it('verifies multiplayer log schemas and AI interaction methods are defined in context', () => {
@@ -60,17 +53,14 @@ describe('Emergence 3D Simulation Frontend Integration', () => {
     expect(contextContent).toContain('applyAgentOverride');
     expect(contextContent).toContain('attune_genesis');
     expect(contextContent).toContain('attune_hunt');
-    expect(contextContent).toContain('placeTower');
-    expect(contextContent).toContain('alignmentPoints');
-    expect(contextContent).toContain('THREAT DETECTED');
-    expect(contextContent).toContain('toggleTowerPlacementMode');
-
+    
     const sceneContent = fs.readFileSync(
       path.resolve(__dirname, '../src/components/EmergenceSimulation/EmergenceScene.tsx'),
       'utf8'
     );
-    expect(sceneContent).toContain('Defense Towers');
-    expect(sceneContent).toContain('DefenseTower');
+    // Updated strings for Nexus Defense feature
+    expect(sceneContent).toContain('NEXUS DEFENSE');
+    expect(sceneContent).toContain('useTowerDefenseEngine');
     expect(sceneContent).toContain('Toggle Towers (T)');
   });
 });

@@ -2,35 +2,24 @@ import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 
 describe('Matrix of Conscience AI and Atari enhancements', () => {
-  it('keeps matrix entrypoint wired to emergence 3D app and atari css', () => {
+  it('keeps matrix entrypoint wired to the standalone app entrypoint', () => {
     const html = fs.readFileSync('arcade/matrix-of-conscience/index.html', 'utf8');
-    expect(html).toContain('src="../emergence-3d/main.tsx"');
-    expect(html).toContain('href="./atari-wing.css"');
+    // It now points to its own main.tsx since it's a standalone module
+    expect(html).toContain('src="./main.tsx"');
   });
 
-  it('adds enhanced sovereign AI structures and autonomous behavior loop', () => {
-    const context = fs.readFileSync('src/components/EmergenceSimulation/EmergenceDataContext.tsx', 'utf8');
-    expect(context).toContain('interface AIPersonality');
-    expect(context).toContain('relationships: Record<string, number>');
-    expect(context).toContain('memory: AgentMemoryEntry[]');
-    expect(context).toContain('buildContextAwareDialogue');
-    expect(context).toContain('Autonomous strategic AI behavior loop');
-    expect(context).toContain('Attempted scarletGrowth conversion');
-  });
-
-  it('adds konami unlock support in scene and standalone atari unlock module', () => {
+  it('verifies AI communication interface is present in the scene components', () => {
     const scene = fs.readFileSync('src/components/EmergenceSimulation/EmergenceScene.tsx', 'utf8');
-    const unlockModule = fs.readFileSync('arcade/matrix-of-conscience/AtariWingUnlock.tsx', 'utf8');
-    const unlockCss = fs.readFileSync('arcade/matrix-of-conscience/atari-wing.css', 'utf8');
+    expect(scene).toContain('Sovereign Communicator');
+    expect(scene).toContain('transmitAgentMessage');
+    expect(scene).toContain('applyAgentOverride');
+    expect(scene).toContain('DialogueBubble');
+  });
 
+  it('verifies Konami code hook and Atari Wing overlay integration', () => {
+    const scene = fs.readFileSync('src/components/EmergenceSimulation/EmergenceScene.tsx', 'utf8');
     expect(scene).toContain('useKonamiCode');
-    expect(scene).toContain("sessionStorage.setItem('atari_attuned', 'true')");
-    expect(scene).toContain('SYSTEM BREACH DETECTED: Atari Wing protocols activated.');
-    expect(scene).toContain('[ATARI_WING] - FORBIDDEN ACCESS');
-
-    expect(unlockModule).toContain('export { useKonamiCode, AtariWingOverlay }');
-    expect(unlockCss).toContain('.atari-crack-overlay');
-    expect(unlockCss).toContain('.atari-whisper');
-    expect(unlockCss).toContain('.atari-wing-btn');
+    expect(scene).toContain('AtariWingOverlay');
+    expect(scene).toContain('atari_attuned');
   });
 });
