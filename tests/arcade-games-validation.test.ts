@@ -116,6 +116,7 @@ describe('Arcade Games Validation', () => {
     const gamesWithBackLinks = [
       { name: 'Matrix of Conscience', path: 'arcade/matrix-of-conscience/index.html' },
       { name: 'Syndicate Siege', path: 'arcade/syndicate-siege/index.html' },
+      { name: 'Tower Defense', path: 'arcade/tower-defense/index.html' },
     ];
 
     gamesWithBackLinks.forEach(game => {
