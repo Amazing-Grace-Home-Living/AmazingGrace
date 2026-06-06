@@ -4,7 +4,7 @@ import { useTowerDefenseEngine } from './useTowerDefenseEngine';
 import { SandboxRule } from '../DraftingBoard/DraftingBoard';
 import { Canvas, useFrame, ThreeEvent } from '@react-three/fiber';
 import { OrbitControls, Stars, Html, Trail, Float, Sphere, MeshDistortMaterial } from '@react-three/drei';
-import { EffectComposer, Bloom, Noise, Vignette, ChromaticAberration } from '@react-three/postprocessing';
+import { EffectComposer, Bloom, Noise, Vignette, ChromaticAberration, Glitch, Scanline } from '@react-three/postprocessing';
 import { BlendFunction } from 'postprocessing';
 import * as THREE from 'three';
 import { useEmergenceData, Sovereign } from './EmergenceDataContext';
@@ -32,6 +32,93 @@ const MovingNebula = () => {
         opacity={0.4}
       />
     </mesh>
+  );
+};
+
+// ── 0.1. Atmospheric Data Dust ──
+const AtmosphericParticles = () => {
+  const count = 150;
+  const positions = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      pos[i * 3] = (Math.random() - 0.5) * 25;
+      pos[i * 3 + 1] = Math.random() * 15;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 25;
+    }
+    return pos;
+  }, []);
+
+  const ref = useRef<THREE.Points>(null);
+  useFrame((state) => {
+    if (ref.current) {
+      ref.current.rotation.y = state.clock.getElapsedTime() * 0.02;
+      ref.current.position.y = Math.sin(state.clock.getElapsedTime() * 0.5) * 0.5;
+    }
+  });
+
+  return (
+    <points ref={ref}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          count={count}
+          array={positions}
+          itemSize={3}
+        />
+      </bufferGeometry>
+      <pointsMaterial
+        size={0.08}
+        color="#00f0ff"
+        transparent
+        opacity={0.3}
+        blending={THREE.AdditiveBlending}
+        depthWrite={false}
+      />
+    </points>
+  );
+};
+
+// ── 0.2. Environmental Instability Spikes ──
+const EnvironmentalSpikes: React.FC<{ instability: number }> = ({ instability }) => {
+  const groupRef = useRef<THREE.Group>(null);
+  
+  useFrame((state) => {
+    if (groupRef.current) {
+      const time = state.clock.getElapsedTime();
+      groupRef.current.children.forEach((child, i) => {
+        const mesh = child as THREE.Mesh;
+        const scale = 1 + (Math.sin(time * 2 + i) * 0.5 + 0.5) * (instability / 100);
+        mesh.scale.y = scale * 4;
+        mesh.position.y = (scale * 2) - 2;
+      });
+    }
+  });
+
+  const spikePositions = useMemo(() => {
+    return Array.from({ length: 12 }).map(() => ({
+      x: (Math.random() - 0.5) * 18,
+      z: (Math.random() - 0.5) * 18,
+      rot: Math.random() * Math.PI
+    }));
+  }, []);
+
+  if (instability < 40) return null;
+
+  return (
+    <group ref={groupRef}>
+      {spikePositions.map((pos, i) => (
+        <mesh key={i} position={[pos.x, 0, pos.z]} rotation={[0, pos.rot, 0]}>
+          <coneGeometry args={[0.1, 1, 4]} />
+          <meshStandardMaterial
+            color="#ff0055"
+            emissive="#ff0055"
+            emissiveIntensity={2}
+            transparent
+            opacity={0.6 * (instability / 100)}
+          />
+        </mesh>
+      ))}
+    </group>
   );
 };
 

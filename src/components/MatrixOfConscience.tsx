@@ -41,7 +41,9 @@ import { SandboxRule, DraftingBoard } from './DraftingBoard/DraftingBoard';
 import { EmergenceScene } from './EmergenceSimulation/EmergenceScene';
 import { EmergenceDataProvider } from './EmergenceSimulation/EmergenceDataContext';
 import { GoogleAuthOverlay, UserProfile } from './EmergenceSimulation/GoogleAuthOverlay';
-import { PlayerReputation } from './EmergenceSimulation/aiReputationEvaluator';
+import { evaluateAllianceAction, PlayerReputation } from './EmergenceSimulation/aiReputationEvaluator';
+import { useMatrixReputation } from './EmergenceSimulation/useMatrixReputation';
+import { KarmaLeaderboard } from './EmergenceSimulation/KarmaLeaderboard';
 import MirrorLayerScreen from "../dual-ascent/MirrorLayerScreen";
 import OpeningCinematic from "../dual-ascent/OpeningCinematic";
 import DualAscentTitleScreen from "../dual-ascent/DualAscentTitleScreen";
@@ -217,8 +219,9 @@ export default function MatrixOfConscience({ stats, chainLevel, activeUser }: Pr
 // ---------------------------------------------------------------------------
 function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
   const { metrics, updateMetrics } = useConscience();
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [authSkipped, setAuthSkipped] = useState(false);
+  const { currentUser, globalLeaderboard, handleGoogleSignIn, adjustKarma } = useMatrixReputation(activeUser);
+  
   const [terminalLog, setTerminalLog] = useState("Conscience telemetry engine fully synchronized. Standalone Core online.");
   const [activeTab, setActiveTab] = useState("calibration");
   const [selectedStar, setSelectedStar] = useState<{ r: number; c: number } | null>(null);
@@ -674,17 +677,20 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
   // MAIN CORE RENDERING
   // ---------------------------------------------------------------------------
   // Reputation evaluation state
-  const currentPlayerReputation: PlayerReputation = useMemo(() => {
-    if (userProfile) {
-      return { globalKarma: userProfile.karma || 80, historicalBetrayalsLogged: 0 };
-    }
-    return { globalKarma: 10, historicalBetrayalsLogged: 0 }; // Default guest karma
-  }, [userProfile]);
+  const currentPlayerReputation: PlayerReputation = { 
+    globalKarma: currentUser.globalKarma, 
+    historicalBetrayalsLogged: currentUser.betrayals 
+  };
 
-  if (!userProfile && !authSkipped) {
+  const hasAuthenticated = currentUser.globalKarma !== 50 || authSkipped; // assuming 50 is default guest
+
+  if (!hasAuthenticated) {
     return (
       <GoogleAuthOverlay 
-        onSignIn={(profile) => setUserProfile(profile)} 
+        onSignIn={(profile) => {
+          handleGoogleSignIn(profile);
+          setAuthSkipped(true);
+        }} 
         onBypass={() => setAuthSkipped(true)} 
       />
     );
@@ -692,6 +698,9 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
 
   return (
     <div className="mc-matrix-root" style={{ position: 'relative' }}>
+      {/* 2. Live Global Karma Scoreboards */}
+      <KarmaLeaderboard profiles={globalLeaderboard} currentUid={currentUser.uid} />
+
       {showCrack && (
         <div style={{
           position: 'absolute', inset: 0, zIndex: 9999, pointerEvents: 'none',
