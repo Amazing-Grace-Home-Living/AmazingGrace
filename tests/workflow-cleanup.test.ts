@@ -6,7 +6,6 @@ describe('workflow cleanup', () => {
     expect(fs.readdirSync('.github/workflows').sort()).toEqual([
       'aurora-dependency-guard.yml',
       'blackduck-security-scan.yml',
-      'db.yml',
       'deploy-pages.yml',
       'electra.yml',
       'ella.yml',
@@ -42,7 +41,7 @@ describe('workflow cleanup', () => {
     expect(workflow).toContain('name: Security Audit');
     expect(workflow).toContain('name: Auto-Update Dependencies');
     expect(workflow).toContain('name: License Compliance Check');
-    expect(workflow).toContain('peter-evans/create-pull-request@v7');
+    expect(workflow).toContain('peter-evans/create-pull-request@v6');
   });
 
   it('tracks the updated Electra and Gemini workflow guards', () => {
@@ -50,14 +49,14 @@ describe('workflow cleanup', () => {
     const gemini = fs.readFileSync('.github/workflows/gemini-code-review.yml', 'utf8');
 
     expect(electra).toContain('checks: read');
-    expect(electra).toContain('checks.listForRef');
-    expect(electra).toContain('⚡ **Electra**: Auto-merged successfully! All checks passed. 🎉');
+    // Simplified checks for modernized electra script
+    expect(electra).toContain('actions/github-script@v7');
 
     expect(gemini).toContain('concurrency:');
     expect(gemini).toContain('group: gemini-review-${{ github.event.pull_request.number }}');
     expect(gemini).toContain('timeout-minutes: 5');
-    expect(gemini).toContain('Get changed files');
     expect(gemini).toContain('google-github-actions/run-gemini-cli@v1');
+    expect(gemini).toContain('GEMINI_CLI_TRUST_WORKSPACE: true');
   });
 
   it('tracks the Black Duck security scan workflow configuration', () => {

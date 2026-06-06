@@ -37,6 +37,9 @@ import SheilaPathScreen from "../dual-ascent/SheilaPathScreen";
 import SheilaPathChapter1 from "../dual-ascent/SheilaPathChapter1";
 import { useDualAscent } from "../dual-ascent/DualAscentContext";
 import YiPathScreen from "../dual-ascent/YiPathScreen";
+import { SandboxRule, DraftingBoard } from './DraftingBoard/DraftingBoard';
+import { EmergenceScene } from './EmergenceSimulation/EmergenceScene';
+import { EmergenceDataProvider } from './EmergenceSimulation/EmergenceDataContext';
 import MirrorLayerScreen from "../dual-ascent/MirrorLayerScreen";
 import OpeningCinematic from "../dual-ascent/OpeningCinematic";
 import DualAscentTitleScreen from "../dual-ascent/DualAscentTitleScreen";
@@ -50,7 +53,7 @@ import OriginPointScreen from "../book/OriginPointScreen";
 // ---------------------------------------------------------------------------
 // SYNTHESIZER SOUND GENERATION (Web Audio API)
 // ---------------------------------------------------------------------------
-function playSynthSound(type: "place" | "laser" | "hit" | "hurt" | "gameover" | "victory") {
+function playSynthSound(type: "place" | "laser" | "hit" | "hurt" | "gameover" | "victory" | "start") {
   try {
     const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
     if (!AudioCtx) return;
@@ -139,6 +142,18 @@ function playSynthSound(type: "place" | "laser" | "hit" | "hurt" | "gameover" | 
         osc.start(now + idx * 0.08);
         osc.stop(now + idx * 0.08 + 0.3);
       });
+    } else if (type === "start") {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "square";
+      osc.frequency.setValueAtTime(440, now);
+      osc.frequency.setValueAtTime(880, now + 0.2);
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.3);
     }
   } catch (e) {
     console.warn("Web Audio API was blocked or unsupported:", e);
@@ -188,7 +203,9 @@ export default function MatrixOfConscience({ stats, chainLevel, activeUser }: Pr
 
   return (
     <ConscienceProvider initialMetrics={initial}>
-      <MatrixCoreMaster activeUser={activeUser || "nicholai_madias"} />
+      <EmergenceDataProvider>
+        <MatrixCoreMaster activeUser={activeUser || "nicholai_madias"} />
+      </EmergenceDataProvider>
     </ConscienceProvider>
   );
 }
@@ -490,311 +507,19 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
   };
 
   // ---------------------------------------------------------------------------
+  // NEW WORKSPACE: MULTI-AGENT DRAFTING BOARD & ACTIVE RULES
+  // ---------------------------------------------------------------------------
+  const [activeRules, setActiveRules] = useState<SandboxRule[]>([]);
+
+  // ---------------------------------------------------------------------------
   // NEW WORKSPACE: MATRIX TOWER DEFENSE (DEFEND CORE FROM RED QUEEN GLITCHES)
   // ---------------------------------------------------------------------------
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [tdScore, setTdScore] = useState(0);
-  const [tdCredits, setTdCredits] = useState(150);
-  const [tdLives, setTdLives] = useState(5);
-  const [tdWave, setTdWave] = useState(1);
-  const [tdSelectedTower, setTdSelectedTower] = useState<"faith" | "truth" | "grace">("faith");
-  const [tdGameOver, setTdGameOver] = useState(false);
   const [tdPlaying, setTdPlaying] = useState(false);
-
-  // References for game loop state
-  const gameStateRef = useRef({
-    towers: [] as Array<{ x: number; y: number; type: "faith" | "truth" | "grace"; cooldown: number }>,
-    enemies: [] as Array<{ x: number; y: number; hp: number; maxHp: number; speed: number; slowTimer: number }>,
-    lasers: [] as Array<{ sx: number; sy: number; tx: number; ty: number; duration: number }>,
-    credits: 150,
-    lives: 5,
-    score: 0,
-    wave: 1,
-    waveSpawnTimer: 100,
-    waveSpawnCount: 0
-  });
 
   const launchTdGame = () => {
     setTdPlaying(true);
-    setTdGameOver(false);
-    setTdScore(0);
-    setTdCredits(150);
-    setTdLives(5);
-    setTdWave(1);
-
-    gameStateRef.current = {
-      towers: [],
-      enemies: [],
-      lasers: [],
-      credits: 150,
-      lives: 5,
-      score: 0,
-      wave: 1,
-      waveSpawnTimer: 100,
-      waveSpawnCount: 0
-    };
-
     setTerminalLog("[DEFENSE CORES] 🛡️ Deploying Conscience Core Defenses. Build firewalls on the grid!");
-    playSynthSound("victory");
-  };
-
-  // Draw and update loops
-  useEffect(() => {
-    if (!tdPlaying || tdGameOver) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let animFrameId: number;
-
-    const gameLoop = () => {
-      const state = gameStateRef.current;
-
-      // Update state credits/lives in React state smoothly
-      if (state.credits !== tdCredits) setTdCredits(state.credits);
-      if (state.lives !== tdLives) {
-        setTdLives(state.lives);
-        if (state.lives <= 0) {
-          setTdGameOver(true);
-          playSynthSound("gameover");
-          setTerminalLog(`[CORE COLLAPSE] Defenses breached by the Red Queen. Final Score: ${state.score} PTS.`);
-          // Save high score
-          const curHigh = parseInt(localStorage.getItem('aghl_matrix_defenses_high_score') || '0', 10);
-          if (state.score > curHigh) {
-            localStorage.setItem('aghl_matrix_defenses_high_score', state.score.toString());
-          }
-          return;
-        }
-      }
-      if (state.score !== tdScore) setTdScore(state.score);
-      if (state.wave !== tdWave) setTdWave(state.wave);
-
-      // 1. CLEAR & DRAW GRID
-      ctx.fillStyle = "#020617";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Neon grid lines
-      ctx.strokeStyle = "rgba(188, 19, 254, 0.08)";
-      ctx.lineWidth = 1;
-      const gridSize = 40;
-      for (let x = 0; x < canvas.width; x += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, canvas.height);
-        ctx.stroke();
-      }
-      for (let y = 0; y < canvas.height; y += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(canvas.width, y);
-        ctx.stroke();
-      }
-
-      // 2. DRAW CONSCIENCE CORE (Shield target at bottom)
-      ctx.fillStyle = "rgba(0, 242, 255, 0.15)";
-      ctx.strokeStyle = "var(--neon-blue)";
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(canvas.width / 2, canvas.height + 10, 80, Math.PI, 0);
-      ctx.fill();
-      ctx.stroke();
-
-      // Glowing core core text
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 9px Orbitron, sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("CONSCIENCE CORE", canvas.width / 2, canvas.height - 15);
-
-      // 3. SPAWN ENEMIES (Red Queen Glitches)
-      state.waveSpawnTimer--;
-      if (state.waveSpawnTimer <= 0 && state.waveSpawnCount < state.wave * 5) {
-        // Spawn a glitch
-        state.enemies.push({
-          x: Math.random() * (canvas.width - 40) + 20,
-          y: -20,
-          hp: 3 + state.wave * 2,
-          maxHp: 3 + state.wave * 2,
-          speed: 0.8 + state.wave * 0.1,
-          slowTimer: 0
-        });
-        state.waveSpawnCount++;
-        state.waveSpawnTimer = 60 - Math.min(30, state.wave * 3);
-      }
-
-      // Next wave transition
-      if (state.waveSpawnCount >= state.wave * 5 && state.enemies.length === 0) {
-        state.wave++;
-        state.waveSpawnCount = 0;
-        state.waveSpawnTimer = 120;
-        state.credits += 80;
-        setTerminalLog(`[DEFENSE SYS] Wave ${state.wave} commencing. Core attunement boosted! +80 credits.`);
-        playSynthSound("victory");
-      }
-
-      // 4. UPDATE & DRAW TOWERS
-      state.towers.forEach(t => {
-        // Render tower
-        ctx.fillStyle = t.type === "faith" ? "rgba(0,242,255,0.2)" : (t.type === "truth" ? "rgba(16,185,129,0.2)" : "rgba(139,92,246,0.2)");
-        ctx.strokeStyle = t.type === "faith" ? "var(--neon-blue)" : (t.type === "truth" ? "#10b981" : "#8b5cf6");
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(t.x, t.y, 14, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.stroke();
-
-        // Tower center nozzle
-        ctx.fillStyle = "#ffffff";
-        ctx.beginPath();
-        ctx.arc(t.x, t.y, 4, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Target closest enemy within range
-        const range = t.type === "faith" ? 100 : (t.type === "truth" ? 130 : 80);
-        let closestEnemy: typeof state.enemies[0] | null = null;
-        let minDist = range;
-
-        state.enemies.forEach(e => {
-          const dist = Math.hypot(e.x - t.x, e.y - t.y);
-          if (dist < minDist) {
-            minDist = dist;
-            closestEnemy = e;
-          }
-        });
-
-        // Fire laser if cooled down
-        if (t.cooldown > 0) {
-          t.cooldown--;
-        }
-
-        if (closestEnemy && t.cooldown <= 0) {
-          const e = closestEnemy as typeof state.enemies[0];
-          const damage = t.type === "faith" ? 1.5 : (t.type === "truth" ? 4.5 : 1);
-          
-          if (t.type === "grace") {
-            e.slowTimer = 90; // Slow enemy for 90 frames
-          }
-
-          e.hp -= damage;
-          state.lasers.push({
-            sx: t.x,
-            sy: t.y,
-            tx: e.x,
-            ty: e.y,
-            duration: 8
-          });
-
-          playSynthSound("laser");
-
-          // Reset cooldown
-          t.cooldown = t.type === "faith" ? 22 : (t.type === "truth" ? 45 : 30);
-        }
-      });
-
-      // 5. UPDATE & DRAW ENEMIES (Glitches)
-      state.enemies = state.enemies.filter(e => {
-        // Slow speed adjustment
-        let currentSpeed = e.speed;
-        if (e.slowTimer > 0) {
-          e.slowTimer--;
-          currentSpeed *= 0.4;
-        }
-
-        // Move downward toward core
-        e.y += currentSpeed;
-
-        // Breached core target
-        if (e.y >= canvas.height - 15) {
-          state.lives -= 1;
-          playSynthSound("hurt");
-          return false;
-        }
-
-        // Wiped out
-        if (e.hp <= 0) {
-          state.score += 25;
-          state.credits += 15;
-          playSynthSound("hit");
-          return false;
-        }
-
-        // Draw Glitch (glowing red square/diamond)
-        ctx.fillStyle = e.slowTimer > 0 ? "rgba(167, 139, 250, 0.4)" : "rgba(244, 63, 94, 0.25)";
-        ctx.strokeStyle = e.slowTimer > 0 ? "#a78bfa" : "#f43f5e";
-        ctx.lineWidth = 1.5;
-        
-        ctx.save();
-        ctx.translate(e.x, e.y);
-        ctx.rotate(Date.now() * 0.005);
-        ctx.beginPath();
-        ctx.rect(-8, -8, 16, 16);
-        ctx.fill();
-        ctx.stroke();
-        ctx.restore();
-
-        // Draw HP bar
-        ctx.fillStyle = "rgba(0,0,0,0.5)";
-        ctx.fillRect(e.x - 12, e.y - 15, 24, 3);
-        ctx.fillStyle = "#ef4444";
-        ctx.fillRect(e.x - 12, e.y - 15, 24 * (e.hp / e.maxHp), 3);
-
-        return true;
-      });
-
-      // 6. DRAW LASERS
-      state.lasers = state.lasers.filter(l => {
-        ctx.strokeStyle = "rgba(0, 242, 255, 0.7)";
-        ctx.lineWidth = l.duration;
-        ctx.beginPath();
-        ctx.moveTo(l.sx, l.sy);
-        ctx.lineTo(l.tx, l.ty);
-        ctx.stroke();
-        l.duration--;
-        return l.duration > 0;
-      });
-
-      animFrameId = requestAnimationFrame(gameLoop);
-    };
-
-    animFrameId = requestAnimationFrame(gameLoop);
-    return () => cancelAnimationFrame(animFrameId);
-  }, [tdPlaying, tdGameOver]);
-
-  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!tdPlaying || tdGameOver) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const clickY = e.clientY - rect.top;
-
-    const cost = tdSelectedTower === "faith" ? 50 : (tdSelectedTower === "truth" ? 90 : 130);
-    const state = gameStateRef.current;
-
-    if (state.credits < cost) {
-      setTerminalLog(`[Attunement ERROR] Insufficient Credits to deploy firewall. Requires ${cost} credits.`);
-      playSynthSound("hurt");
-      return;
-    }
-
-    // Check if clicking too close to an existing tower
-    const tooClose = state.towers.some(t => Math.hypot(t.x - clickX, t.y - clickY) < 30);
-    if (tooClose) {
-      setTerminalLog("[ATTUNEMENT ERROR] Cannot build firewalls overlapping other defense channels.");
-      playSynthSound("hurt");
-      return;
-    }
-
-    // Place tower
-    state.towers.push({
-      x: clickX,
-      y: clickY,
-      type: tdSelectedTower,
-      cooldown: 0
-    });
-    state.credits -= cost;
-    setTerminalLog(`[DEFENSES DEPLOYED] Firewall node integrated. Channeling: ${tdSelectedTower === "faith" ? "Faith Blaster" : (tdSelectedTower === "truth" ? "Truth Firewall" : "Grace Aegis")}.`);
-    playSynthSound("place");
+    playSynthSound("start");
   };
 
   // ---------------------------------------------------------------------------
@@ -995,6 +720,9 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
             </button>
             <button className={`mc-nav-btn ${activeTab === "sevenstars" && !extSubsystem ? "active" : ""}`} onClick={() => { setActiveTab("sevenstars"); setExtSubsystem(null); }}>
               Seven Stars Status
+            </button>
+            <button className={`mc-nav-btn ${activeTab === "drafting" && !extSubsystem ? "active" : ""}`} onClick={() => { setActiveTab("drafting"); setExtSubsystem(null); }}>
+              ⚖️ Drafting Board
             </button>
             <button className={`mc-nav-btn ${activeTab === "arcade" && !extSubsystem ? "active" : ""}`} onClick={() => { setActiveTab("arcade"); setExtSubsystem(null); }}>
               🎮 Sovereign Arcade
@@ -1432,119 +1160,36 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
                       display: 'flex',
                       justifyContent: 'space-between',
                       fontFamily: 'Orbitron, sans-serif',
-                      fontSize: '0.7rem'
+                      fontSize: '0.7rem',
+                      color: 'var(--neon-gold)'
                     }}>
-                      <div>SCORE: <span style={{ color: 'var(--neon-gold)' }}>{tdScore}</span></div>
-                      <div>WAVE: <span style={{ color: 'var(--neon-purple)' }}>{tdWave}</span></div>
-                      <div>CREDITS: <span style={{ color: 'var(--neon-blue)' }}>{tdCredits}</span></div>
-                      <div>CORES: <span style={{ color: '#ef4444' }}>{tdLives}</span></div>
+                      <div>NEXUS DEFENSE: <span>ONLINE</span></div>
                     </div>
 
-                    {/* Canvas Area */}
+                    {/* Game area replaced by Emergence 3D */}
                     <div style={{
                       position: 'relative',
                       border: '2px solid rgba(188, 19, 254, 0.3)',
                       borderRadius: '12px',
                       boxShadow: '0 0 20px rgba(188, 19, 254, 0.15)',
                       overflow: 'hidden',
-                      cursor: 'crosshair',
-                      width: '360px',
-                      height: '380px'
+                      width: '100%',
+                      height: '500px'
                     }}>
-                      <canvas
-                        ref={canvasRef}
-                        width={360}
-                        height={380}
-                        onClick={handleCanvasClick}
-                      />
-                      {tdGameOver && (
-                        <div style={{
-                          position: 'absolute',
-                          inset: 0,
-                          background: 'rgba(2, 6, 23, 0.9)',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          textAlign: 'center',
-                          gap: '1rem',
-                          color: '#ef4444'
-                        }}>
-                          <span style={{ fontSize: '2rem' }}>⚠️</span>
-                          <h4 style={{ fontFamily: 'Orbitron', fontSize: '1.2rem', fontWeight: 'bold' }}>CORE COLLAPSED</h4>
-                          <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Breached by the Red Queen's entropy.</p>
-                          <button
-                            onClick={launchTdGame}
-                            style={{
-                              padding: '0.5rem 1.25rem',
-                              background: '#ef4444',
-                              border: 'none',
-                              color: '#fff',
-                              borderRadius: '6px',
-                              fontWeight: 'bold',
-                              cursor: 'pointer',
-                              fontSize: '0.7rem'
-                            }}
-                          >
-                            RE-ALIGN CORE
-                          </button>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Build Selector Row */}
-                    <div style={{ display: 'flex', width: '100%', gap: '6px' }}>
-                      <button
-                        onClick={() => { setTdSelectedTower("faith"); playSynthSound("place"); }}
-                        style={{
-                          flex: 1,
-                          padding: '0.5rem 0.25rem',
-                          fontSize: '0.65rem',
-                          fontWeight: 'bold',
-                          background: tdSelectedTower === "faith" ? 'rgba(0, 242, 255, 0.15)' : 'rgba(255,255,255,0.03)',
-                          border: `1px solid ${tdSelectedTower === "faith" ? 'var(--neon-blue)' : 'rgba(255,255,255,0.05)'}`,
-                          color: tdSelectedTower === "faith" ? 'var(--neon-blue)' : '#cbd5e1',
-                          borderRadius: '6px',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        ⚡ Faith Blaster (50c)
-                      </button>
-                      <button
-                        onClick={() => { setTdSelectedTower("truth"); playSynthSound("place"); }}
-                        style={{
-                          flex: 1,
-                          padding: '0.5rem 0.25rem',
-                          fontSize: '0.65rem',
-                          fontWeight: 'bold',
-                          background: tdSelectedTower === "truth" ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255,255,255,0.03)',
-                          border: `1px solid ${tdSelectedTower === "truth" ? '#10b981' : 'rgba(255,255,255,0.05)'}`,
-                          color: tdSelectedTower === "truth" ? '#34d399' : '#cbd5e1',
-                          borderRadius: '6px',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        🛡️ Truth Wall (90c)
-                      </button>
-                      <button
-                        onClick={() => { setTdSelectedTower("grace"); playSynthSound("place"); }}
-                        style={{
-                          flex: 1,
-                          padding: '0.5rem 0.25rem',
-                          fontSize: '0.65rem',
-                          fontWeight: 'bold',
-                          background: tdSelectedTower === "grace" ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255,255,255,0.03)',
-                          border: `1px solid ${tdSelectedTower === "grace" ? '#8b5cf6' : 'rgba(255,255,255,0.05)'}`,
-                          color: tdSelectedTower === "grace" ? '#a78bfa' : '#cbd5e1',
-                          borderRadius: '6px',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        🟣 Grace Aegis (130c)
-                      </button>
+                      <EmergenceDataProvider>
+                        <EmergenceScene activeRules={activeRules} />
+                      </EmergenceDataProvider>
                     </div>
                   </div>
                 )}
+              </>
+            )}
+
+            {activeTab === "drafting" && (
+              <>
+                <h2>Multi-Agent Drafting Board</h2>
+                <p className="mc-panel-desc">Negotiate and lock rules to stabilize the Matrix Defense simulations.</p>
+                <DraftingBoard onRulePassed={(rules) => setActiveRules(rules)} />
               </>
             )}
 

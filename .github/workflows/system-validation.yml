@@ -14,10 +14,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
@@ -74,7 +74,7 @@ jobs:
 
       - name: Upload dist artifact
         if: github.ref == 'refs/heads/main'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: site-dist
           path: dist
@@ -84,13 +84,13 @@ jobs:
     name: Deploy to Firebase Hosting
     needs: validate
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && (secrets.FIREBASE_SERVICE_ACCOUNT_AMAZING_GRACE_HL_BBEAA != '' || secrets.FIREBASE != '')
+    if: github.ref == "refs/heads/main" && github.event_name == "push"
     permissions:
       contents: read
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Download dist artifact
         uses: actions/download-artifact@v4
