@@ -5,12 +5,14 @@ describe('workflow cleanup', () => {
   it('keeps the verified system validation and support workflows', () => {
     expect(fs.readdirSync('.github/workflows').sort()).toEqual([
       'blackduck-security-scan.yml',
+      'db.yml',
       'deploy-pages.yml',
       'electra.yml',
       'ella.yml',
       'gemini-code-review.yml',
       'sync-secrets-from-matrix.yml',
       'system-validation.yml',
+      'validate-vite-entries.yml',
     ]);
   });
 
