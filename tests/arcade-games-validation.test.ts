@@ -16,11 +16,30 @@ describe('Arcade Games Validation', () => {
       expect(arcadeHTML).toContain('href="../matrix.html"');
     });
 
-    it('should not reference removed games', () => {
+    it('should route active game cards through preview-safe relative paths', () => {
+      [
+        './matrix-of-conscience/',
+        './matrix-of-conscience-terminal/',
+        './bible-study/',
+        './syndicate-siege/',
+        './tower-defense/',
+        './seven-stars/',
+        './lore-archive/lore-archive.html',
+        './certificates/',
+        './emergence-3d/',
+      ].forEach((path) => {
+        expect(arcadeHTML).toContain(`href="${path}"`);
+      });
+
+      expect(arcadeHTML).not.toContain('href="../arcade/');
+    });
+
+    it('should not spotlight legacy or removed games in the hub', () => {
       expect(arcadeHTML).not.toContain('href="./star-matrix/"');
       expect(arcadeHTML).not.toContain('href="./trinity/"');
       expect(arcadeHTML).not.toContain('href="./nexus-arcade/"');
       expect(arcadeHTML).not.toContain('Janus Continuum');
+      expect(arcadeHTML).not.toContain('Nexus Defense');
     });
   });
 
