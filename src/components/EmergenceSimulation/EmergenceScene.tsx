@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useState, useEffect } from 'react';
+import React, { useRef, useMemo, useState, useEffect, useCallback } from 'react';
 import { Canvas, useFrame, ThreeEvent } from '@react-three/fiber';
 import { OrbitControls, Stars, Html, Trail, Float, Sphere, MeshDistortMaterial } from '@react-three/drei';
 import { EffectComposer, Bloom, Noise, Vignette, ChromaticAberration } from '@react-three/postprocessing';
@@ -6,6 +6,39 @@ import { BlendFunction } from 'postprocessing';
 import * as THREE from 'three';
 import { useEmergenceData, Sovereign } from './EmergenceDataContext';
 import './emergence.css';
+
+const useKonamiCode = (onUnlock: () => void) => {
+  useEffect(() => {
+    const sequence = [
+      'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
+      'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
+      'b', 'a'
+    ];
+    let index = 0;
+
+    const handler = (event: KeyboardEvent) => {
+      if (event.key === sequence[index]) {
+        index += 1;
+        if (index === sequence.length) {
+          onUnlock();
+          index = 0;
+        }
+        return;
+      }
+      index = event.key === sequence[0] ? 1 : 0;
+    };
+
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [onUnlock]);
+};
+
+const AtariWingOverlay: React.FC<{ showCrack: boolean; whisper: string | null }> = ({ showCrack, whisper }) => (
+  <>
+    {showCrack && <div className="atari-crack-overlay" />}
+    {whisper && <div className="atari-whisper">{whisper}</div>}
+  </>
+);
 
 // ── 0. Moving Nebula Backdrop ──
 const MovingNebula = () => {
@@ -603,6 +636,7 @@ export const EmergenceScene: React.FC = () => {
     selectedSovereignName,
     selectSovereign,
     multiplayerLogs,
+    addMultiplayerLog,
     transmitAgentMessage,
     applyAgentOverride,
     towers,
@@ -620,6 +654,30 @@ export const EmergenceScene: React.FC = () => {
   // Local state for communicator message input
   const [chatMessage, setChatMessage] = useState('');
   const [hoverCell, setHoverCell] = useState<{ x: number; z: number } | null>(null);
+  const [atariUnlocked, setAtariUnlocked] = useState(false);
+  const [showCrack, setShowCrack] = useState(false);
+  const [whisper, setWhisper] = useState<string | null>(null);
+
+  useEffect(() => {
+    setAtariUnlocked(sessionStorage.getItem('atari_attuned') === 'true');
+  }, []);
+
+  const handleAtariUnlock = useCallback(() => {
+    sessionStorage.setItem('atari_attuned', 'true');
+    setAtariUnlocked(true);
+    setWhisper('Accessing Forbidden Subsystem...');
+    addMultiplayerLog('SYSTEM BREACH DETECTED: Atari Wing protocols activated.', 'System', 'event');
+
+    window.setTimeout(() => setShowCrack(true), 800);
+    window.setTimeout(() => setWhisper('Warning: You are not cleared for Pre-Genesis cognition models.'), 2400);
+    window.setTimeout(() => setWhisper('Janus Continuum has been notified.'), 4200);
+    window.setTimeout(() => {
+      setWhisper(null);
+      setShowCrack(false);
+    }, 5800);
+  }, [addMultiplayerLog]);
+
+  useKonamiCode(handleAtariUnlock);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -808,6 +866,11 @@ export const EmergenceScene: React.FC = () => {
               Click grid to place {towerConfig[selectedTower].label} tower
             </div>
           )}
+          {atariUnlocked && (
+            <a className="atari-wing-btn" href="../atari-lab/">
+              [ATARI_WING] - FORBIDDEN ACCESS
+            </a>
+          )}
         </div>
       </div>
 
@@ -933,6 +996,7 @@ export const EmergenceScene: React.FC = () => {
           </EffectComposer>
         </Canvas>
       </div>
+      <AtariWingOverlay showCrack={showCrack} whisper={whisper} />
     </div>
   );
 };
