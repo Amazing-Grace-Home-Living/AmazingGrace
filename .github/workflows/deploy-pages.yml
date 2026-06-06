@@ -55,8 +55,8 @@ jobs:
             git checkout --orphan gh-pages
           fi
           
-          # Delete everything in the branch to start fresh
-          git rm -rf . || true
+          # Delete everything physically except .git
+          find . -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +
           
           # Copy build artifacts back
           cp -r ../site-build/* .

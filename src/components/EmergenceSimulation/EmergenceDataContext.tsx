@@ -182,6 +182,7 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
   const [slowedSovereigns, setSlowedSovereigns] = useState<Record<string, boolean>>({});
   const [threatFlashes, setThreatFlashes] = useState<Record<string, boolean>>({});
   const previousCorruptionRef = useRef<Record<string, number>>({});
+  const worldAlignmentRef = useRef(0);
   const [agentConversations, setAgentConversations] = useState<Array<{ id: string; from: string; to: string; text: string; time: number }>>([]);
 
   const addMultiplayerLog = (text: string, operator = 'System', type = 'network') => {
@@ -197,6 +198,8 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     ].slice(-30));
   };
+
+  worldAlignmentRef.current = engineState.worldAlignment;
 
   useEffect(() => {
     // Instantiate the omniversal runtime locally
@@ -259,13 +262,13 @@ export const EmergenceDataProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const interval = setInterval(() => {
       setAlignmentPoints((prev) => {
-        if (engineState.worldAlignment > 0) return prev + 50;
-        if (engineState.worldAlignment < 0) return Math.max(0, prev - 30);
+        if (worldAlignmentRef.current > 0) return prev + 50;
+        if (worldAlignmentRef.current < 0) return Math.max(0, prev - 30);
         return prev;
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, [engineState.worldAlignment]);
+  }, []);
 
   const getThreatLevel = (corruption: number): ThreatLevel => {
     if (corruption <= 30) return 'safe';
