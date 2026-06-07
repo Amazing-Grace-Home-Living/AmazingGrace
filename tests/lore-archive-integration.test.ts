@@ -3,7 +3,7 @@ import fs from 'node:fs';
 
 describe('Lore Archive integration', () => {
   it('ships a dedicated Lore Archive page with required scripts', () => {
-    const html = fs.readFileSync('arcade/lore-archive/lore-archive.html', 'utf8');
+    const html = fs.readFileSync('arcade/lore-archive/index.html', 'utf8');
 
     expect(html).toContain('id="la-root"');
     expect(html).toContain('id="la-files"');
@@ -54,6 +54,6 @@ describe('Lore Archive integration', () => {
     const config = fs.readFileSync('vite.config.ts', 'utf8');
 
     expect(config).toContain('arcadeLoreArchive');
-    expect(config).toContain('arcade/lore-archive/lore-archive.html');
+    expect(config).toContain('arcade/lore-archive/index.html');
   });
 });

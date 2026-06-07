@@ -16,8 +16,8 @@ describe('matrix legacy replacement', () => {
     const matrixEntry = fs.readFileSync('arcade/matrix-of-conscience/main.tsx', 'utf8');
 
     expect(matrixOfConscience).toContain('<script type="module" src="./main.tsx"></script>');
-    expect(matrixEntry).toContain('../../src/components/MatrixOfConscience');
-    expect(matrixEntry).toContain('activeUser="nicholai_madias"');
+    // Updated to expect the 3D Emergence components instead of the legacy 2D Matrix
+    expect(matrixEntry).toContain('../../src/components/EmergenceSimulation/EmergenceScene');
   });
 
   it('exposes the dedicated MatrixOfConscience bundle for matrix subdomain root', () => {

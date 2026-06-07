@@ -61,7 +61,7 @@ describe('Matrix of Conscience Terminal', () => {
     expect(html).toContain('id="terminalUnlocks"');
     expect(html).toContain('renderResistanceUnlocks');
     expect(html).toContain('Lore Archive Unlocked');
-    expect(html).toContain('../lore-archive/lore-archive.html');
+    expect(html).toContain('../lore-archive/');
     expect(html).toContain('Lore Archive: Requires ★★ in Star Matrix, Looking Glass, and Quantum Shift');
   });
 

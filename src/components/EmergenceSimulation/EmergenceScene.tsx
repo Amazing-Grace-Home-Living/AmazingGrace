@@ -37,13 +37,13 @@ const MovingNebula = () => {
 
 // ── 0.1. Atmospheric Data Dust ──
 const AtmosphericParticles = () => {
-  const count = 150;
+  const count = 200;
   const positions = useMemo(() => {
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 25;
+      pos[i * 3] = (Math.random() - 0.5) * 30;
       pos[i * 3 + 1] = Math.random() * 15;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 25;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 30;
     }
     return pos;
   }, []);
@@ -51,8 +51,8 @@ const AtmosphericParticles = () => {
   const ref = useRef<THREE.Points>(null);
   useFrame((state) => {
     if (ref.current) {
-      ref.current.rotation.y = state.clock.getElapsedTime() * 0.02;
-      ref.current.position.y = Math.sin(state.clock.getElapsedTime() * 0.5) * 0.5;
+      ref.current.rotation.y = state.clock.getElapsedTime() * 0.015;
+      ref.current.position.y = Math.sin(state.clock.getElapsedTime() * 0.4) * 0.3;
     }
   });
 
@@ -61,16 +61,17 @@ const AtmosphericParticles = () => {
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
+          args={[positions, 3]}
           count={count}
           array={positions}
           itemSize={3}
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.08}
+        size={0.06}
         color="#00f0ff"
         transparent
-        opacity={0.3}
+        opacity={0.4}
         blending={THREE.AdditiveBlending}
         depthWrite={false}
       />
@@ -87,34 +88,34 @@ const EnvironmentalSpikes: React.FC<{ instability: number }> = ({ instability })
       const time = state.clock.getElapsedTime();
       groupRef.current.children.forEach((child, i) => {
         const mesh = child as THREE.Mesh;
-        const scale = 1 + (Math.sin(time * 2 + i) * 0.5 + 0.5) * (instability / 100);
-        mesh.scale.y = scale * 4;
-        mesh.position.y = (scale * 2) - 2;
+        const scale = 1 + (Math.sin(time * 3 + i) * 0.5 + 0.5) * (instability / 100);
+        mesh.scale.y = Math.max(0.1, scale * 5);
+        mesh.position.y = (mesh.scale.y / 2) - 0.5;
       });
     }
   });
 
   const spikePositions = useMemo(() => {
-    return Array.from({ length: 12 }).map(() => ({
-      x: (Math.random() - 0.5) * 18,
-      z: (Math.random() - 0.5) * 18,
+    return Array.from({ length: 16 }).map(() => ({
+      x: (Math.random() - 0.5) * 20,
+      z: (Math.random() - 0.5) * 20,
       rot: Math.random() * Math.PI
     }));
   }, []);
 
-  if (instability < 40) return null;
+  if (instability < 35) return null;
 
   return (
     <group ref={groupRef}>
       {spikePositions.map((pos, i) => (
         <mesh key={i} position={[pos.x, 0, pos.z]} rotation={[0, pos.rot, 0]}>
-          <coneGeometry args={[0.1, 1, 4]} />
+          <coneGeometry args={[0.08, 1, 4]} />
           <meshStandardMaterial
             color="#ff0055"
             emissive="#ff0055"
-            emissiveIntensity={2}
+            emissiveIntensity={2.5}
             transparent
-            opacity={0.6 * (instability / 100)}
+            opacity={0.5 * (instability / 100)}
           />
         </mesh>
       ))}
@@ -966,6 +967,16 @@ export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReput
                   </button>
                 ))}
               </div>
+
+              {/* Emergent Word: AI Setup Recommendations */}
+              <div className="emergent-word-panel" style={{ marginTop: '15px', padding: '10px', background: 'rgba(57, 255, 20, 0.05)', border: '1px solid rgba(57, 255, 20, 0.2)', borderRadius: '4px' }}>
+                <div style={{ fontSize: '0.7rem', color: '#39ff14', fontWeight: 'bold', marginBottom: '5px', letterSpacing: '1px' }}>EMERGENT WORD // PROTOCOL</div>
+                <div style={{ fontSize: '0.65rem', color: '#ccc', lineHeight: '1.4' }}>
+                  <strong>Recommended Config:</strong> 3 Genesis + 2 Hunter.<br/>
+                  Genesis agents generate credits. Hunters keep order but risk <strong>Apex Mutation</strong> at 100% Corruption.
+                </div>
+              </div>
+
               {gameState.lastMessage && (
                 <div style={{ marginTop: '8px', fontSize: '0.75rem', color: '#facc15', padding: '6px', background: 'rgba(250, 204, 21, 0.1)', border: '1px solid rgba(250, 204, 21, 0.3)', borderRadius: '4px' }}>
                   {gameState.lastMessage}
@@ -1005,22 +1016,25 @@ export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReput
           }}
         >
           {/* Lighting */}
-          <ambientLight intensity={0.4} />
-          <pointLight position={[8, 12, 8]} intensity={2.5} castShadow />
+          <ambientLight intensity={0.5} />
+          <pointLight position={[8, 12, 8]} intensity={4.0} castShadow />
+          <pointLight position={[-8, -5, -8]} intensity={2.0} color="#bd00ff" />
           <directionalLight
             position={[-8, 10, -8]}
-            intensity={1.0}
+            intensity={1.8}
             castShadow
             shadow-mapSize={[1024, 1024]}
           />
 
           {/* Stellar nebula star backdrop */}
-          <Stars radius={120} depth={40} count={4500} factor={6} saturation={0.8} fade speed={1.5} />
+          <Stars radius={150} depth={50} count={7000} factor={8} saturation={1.0} fade speed={2.5} />
           <MovingNebula />
+          <AtmosphericParticles />
           <LocalPlayer />
 
           {/* 3D Grid components */}
           <TerrainGrid instability={metrics.timelineInstability} />
+          <EnvironmentalSpikes instability={metrics.timelineInstability} />
           
           {/* Render the TD Path */}
           {gameState.active && PATH.map((p, i) => (
@@ -1124,17 +1138,25 @@ export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReput
           {/* Post-Processing Effects for Cinematic Neon Visuals */}
           <EffectComposer>
             <Bloom 
-              intensity={1.5} 
-              luminanceThreshold={0.2} 
+              intensity={2.2} 
+              luminanceThreshold={0.12} 
               luminanceSmoothing={0.9} 
               mipmapBlur 
             />
-            <Noise opacity={0.05} />
-            <Vignette eskil={false} offset={0.1} darkness={1.1} />
+            <Noise opacity={0.08} />
+            <Vignette eskil={false} offset={0.1} darkness={1.3} />
             <ChromaticAberration
               blendFunction={BlendFunction.NORMAL}
-              offset={new THREE.Vector2(0.0005, 0.0005)}
+              offset={new THREE.Vector2(0.001, 0.001)}
             />
+            <Scanline opacity={0.15} />
+            {metrics.timelineInstability > 70 ? (
+              <Glitch
+                delay={new THREE.Vector2(1, 4)}
+                duration={new THREE.Vector2(0.1, 0.25)}
+                strength={new THREE.Vector2(0.2, 0.5)}
+              />
+            ) : <></>}
           </EffectComposer>
         </Canvas>
       </div>

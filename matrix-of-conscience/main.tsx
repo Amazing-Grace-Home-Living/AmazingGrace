@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import MatrixOfConscience from '../src/components/MatrixOfConscience';
+import { EmergenceDataProvider } from '../src/components/EmergenceSimulation/EmergenceDataContext';
+import { EmergenceScene } from '../src/components/EmergenceSimulation/EmergenceScene';
 import { ConscienceProvider } from '../src/components/ConscienceProvider';
 
 // Standalone root entry point for matrix.amazinggracehl.org
@@ -10,7 +11,9 @@ if (root) {
   createRoot(root).render(
     <StrictMode>
       <ConscienceProvider>
-        <MatrixOfConscience />
+        <EmergenceDataProvider>
+          <EmergenceScene />
+        </EmergenceDataProvider>
       </ConscienceProvider>
     </StrictMode>
   );

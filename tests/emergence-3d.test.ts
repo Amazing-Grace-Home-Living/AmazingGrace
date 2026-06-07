@@ -4,8 +4,8 @@ import path from 'node:path';
 
 describe('Emergence 3D Simulation Frontend Integration', () => {
   it('verifies entry point page files exist', () => {
-    const htmlPath = path.resolve(__dirname, '../arcade/emergence-3d/index.html');
-    const tsxPath = path.resolve(__dirname, '../arcade/emergence-3d/main.tsx');
+    const htmlPath = path.resolve(__dirname, '../arcade/matrix-of-conscience/index.html');
+    const tsxPath = path.resolve(__dirname, '../arcade/matrix-of-conscience/main.tsx');
     
     expect(fs.existsSync(htmlPath)).toBe(true);
     expect(fs.existsSync(tsxPath)).toBe(true);
@@ -15,8 +15,8 @@ describe('Emergence 3D Simulation Frontend Integration', () => {
     const configPath = path.resolve(__dirname, '../vite.config.ts');
     const configContent = fs.readFileSync(configPath, 'utf8');
     
-    expect(configContent).toContain('arcadeEmergence3D');
-    expect(configContent).toContain('arcade/emergence-3d/index.html');
+    expect(configContent).toContain('arcadeMatrix');
+    expect(configContent).toContain('arcade/matrix-of-conscience/index.html');
   });
 
   it('verifies R3F adapter code and component structure', () => {

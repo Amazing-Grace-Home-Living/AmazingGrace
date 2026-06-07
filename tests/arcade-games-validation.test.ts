@@ -33,7 +33,6 @@ describe('Arcade Games Validation', () => {
       { name: 'Certificates', path: 'arcade/certificates/index.html' },
       { name: 'Seven Stars', path: 'arcade/seven-stars/index.html' },
       { name: 'Tower Defense', path: 'arcade/tower-defense/index.html' },
-      { name: 'Emergence 3D', path: 'arcade/emergence-3d/index.html' },
     ];
 
     games.forEach(game => {
@@ -64,7 +63,6 @@ describe('Arcade Games Validation', () => {
       { name: 'arcadeCertificates', entry: 'arcade/certificates/index.html' },
       { name: 'arcadeSevenStars', entry: 'arcade/seven-stars/index.html' },
       { name: 'arcadeTowerDefense', entry: 'arcade/tower-defense/index.html' },
-      { name: 'arcadeEmergence3D', entry: 'arcade/emergence-3d/index.html' },
       { name: 'arcadeRedirect', entry: 'arcade.html' },
     ];
 
@@ -123,7 +121,6 @@ describe('Arcade Games Validation', () => {
     const standaloneGames = [
       { name: 'Matrix of Conscience', dir: 'arcade/matrix-of-conscience' },
       { name: 'Tower Defense', dir: 'arcade/tower-defense' },
-      { name: 'Emergence 3D', dir: 'arcade/emergence-3d' },
       { name: 'Atari Lab', dir: 'arcade/atari-lab' },
     ];
 
