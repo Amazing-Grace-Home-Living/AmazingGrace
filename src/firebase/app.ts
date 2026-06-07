@@ -22,7 +22,9 @@ const DEFAULT_CONFIG = {
  */
 const normalize = (val: any): string | undefined => {
   if (typeof val !== 'string') return undefined;
-  const t = val.trim();
+  let t = val.trim();
+  // Strip leading and trailing quotes if the user accidentally included them in the GitHub secret
+  t = t.replace(/^["'](.*)["']$/, '$1').trim();
   if (!t || t === 'undefined' || t === 'null') return undefined;
   return t;
 };
