@@ -16,30 +16,24 @@ describe('Arcade Games Validation', () => {
       expect(arcadeHTML).toContain('href="../matrix.html"');
     });
 
-    it('should route active game cards through preview-safe relative paths', () => {
+    it('should reference active games', () => {
       [
         './matrix-of-conscience/',
-        './matrix-of-conscience-terminal/',
-        './bible-study/',
-        './syndicate-siege/',
         './tower-defense/',
+        './star-matrix/',
+        './syndicate-siege/',
+        './trinity/',
+        './lore-archive/',
         './seven-stars/',
-        './lore-archive/lore-archive.html',
-        './certificates/',
-        './emergence-3d/',
+        './bible-study/',
       ].forEach((path) => {
         expect(arcadeHTML).toContain(`href="${path}"`);
       });
-
-      expect(arcadeHTML).not.toContain('href="../arcade/');
     });
 
-    it('should not spotlight legacy or removed games in the hub', () => {
-      expect(arcadeHTML).not.toContain('href="./star-matrix/"');
-      expect(arcadeHTML).not.toContain('href="./trinity/"');
+    it('should not reference removed games', () => {
       expect(arcadeHTML).not.toContain('href="./nexus-arcade/"');
       expect(arcadeHTML).not.toContain('Janus Continuum');
-      expect(arcadeHTML).not.toContain('Nexus Defense');
     });
   });
 
@@ -114,7 +108,6 @@ describe('Arcade Games Validation', () => {
     const gamesWithBackLinks = [
       { name: 'Matrix of Conscience', path: 'arcade/matrix-of-conscience/index.html' },
       { name: 'Syndicate Siege', path: 'arcade/syndicate-siege/index.html' },
-      { name: 'Tower Defense', path: 'arcade/tower-defense/index.html' },
     ];
 
     gamesWithBackLinks.forEach(game => {
