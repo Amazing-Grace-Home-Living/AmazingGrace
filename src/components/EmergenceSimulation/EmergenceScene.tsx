@@ -62,9 +62,12 @@ const AtmosphericParticles = () => {
         <bufferAttribute
           attach="attributes-position"
           args={[positions, 3]}
+<<<<<<< HEAD
           count={count}
           array={positions}
           itemSize={3}
+=======
+>>>>>>> a486084a3fd302df89aac53e3dfba1a31bb1fef7
         />
       </bufferGeometry>
       <pointsMaterial
