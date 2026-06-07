@@ -11,6 +11,8 @@ export interface Enemy {
   speed: number;
   pathIndex: number;
   slowTimer: number;
+  type: 'normal' | 'armored' | 'shielded' | 'swarm' | 'boss';
+  color: string;
 }
 
 export interface Projectile {
@@ -23,6 +25,7 @@ export interface Projectile {
   color: string;
   effect?: 'slow' | 'splash' | 'chain';
   hasChained?: boolean;
+  sourceTower?: string;
 }
 
 export interface Tower {
@@ -204,15 +207,43 @@ export const useTowerDefenseEngine = (
         if (gameState.waveActive && st.enemiesToSpawn > 0) {
           st.spawnTimer++;
           if (st.spawnTimer >= 60 - Math.min(gameState.wave * 2, 40)) {
-            const hp = 20 + Math.pow(gameState.wave, 1.5) * 5;
+            let hp = 20 + Math.pow(gameState.wave, 1.5) * 5;
+            let speed = 0.03 + gameState.wave * 0.002;
+            let eType: Enemy['type'] = 'normal';
+            let color = '#ff0040';
+
+            const rand = Math.random();
+            if (gameState.wave % 10 === 0 && st.enemiesToSpawn === 1) {
+              eType = 'boss';
+              hp *= 10;
+              speed *= 0.5;
+              color = '#ff0000';
+            } else if (gameState.wave > 3 && rand < 0.2) {
+              eType = 'swarm';
+              hp *= 0.4;
+              speed *= 1.8;
+              color = '#facc15';
+            } else if (gameState.wave > 5 && rand < 0.4) {
+              eType = 'armored';
+              hp *= 2.5;
+              speed *= 0.8;
+              color = '#94a3b8';
+            } else if (gameState.wave > 7 && rand < 0.6) {
+              eType = 'shielded';
+              hp *= 0.8;
+              color = '#38bdf8';
+            }
+
             st.enemies.push({
               id: `e_${Date.now()}_${Math.random()}`,
               x: PATH[0].x,
               z: PATH[0].z,
               hp, maxHp: hp,
-              speed: 0.03 + gameState.wave * 0.002,
+              speed,
               pathIndex: 0,
-              slowTimer: 0
+              slowTimer: 0,
+              type: eType,
+              color
             });
             st.enemiesToSpawn--;
             st.spawnTimer = 0;
@@ -275,7 +306,9 @@ export const useTowerDefenseEngine = (
                 damage: def.damage,
                 speed: tower.type === 'sentinel' ? 0.8 : 0.2,
                 color: def.color,
-                effect: def.effect
+                effect: def.effect,
+                hasChained: false,
+                sourceTower: tower.type
               });
               tower.cooldownTimer = def.cooldown;
             }
@@ -283,6 +316,22 @@ export const useTowerDefenseEngine = (
         });
 
         // Projectiles movement
+        const checkDeath = (en: Enemy) => {
+          if (en.hp <= 0 && st.enemies.includes(en)) {
+            st.enemies.splice(st.enemies.indexOf(en), 1);
+            moneyGained += (en.type === 'boss' ? 50 : 5);
+            scoreGained += (en.type === 'boss' ? 100 : 10);
+            const particleCount = en.type === 'boss' ? 30 : 10;
+            for (let k = 0; k < particleCount; k++) {
+              st.particles.push({
+                x: en.x, y: 0.2, z: en.z,
+                color: en.color,
+                life: 1.0
+              });
+            }
+          }
+        };
+
         for (let i = st.projectiles.length - 1; i >= 0; i--) {
           const p = st.projectiles[i];
           const target = st.enemies.find(e => e.id === p.targetId);
@@ -297,30 +346,56 @@ export const useTowerDefenseEngine = (
           const dist = Math.hypot(dx, dz);
 
           if (dist <= p.speed) {
-            target.hp -= p.damage;
+            let actualDamage = p.damage;
+            if (target.type === 'armored') {
+              if (p.sourceTower === 'genesis' || p.sourceTower === 'contain') actualDamage *= 0.5;
+              if (p.sourceTower === 'sentinel') actualDamage *= 1.5;
+            }
+            if (target.type === 'shielded') {
+              actualDamage = p.sourceTower === 'contain' ? p.damage * 5 : 1;
+            }
+
+            target.hp -= actualDamage;
             
             if (p.effect === 'slow') target.slowTimer = 120;
+            
             if (p.effect === 'splash') {
               st.enemies.forEach(e => {
-                if (e !== target && Math.hypot(e.x - target.x, e.z - target.z) < 1.5) {
-                  e.hp -= p.damage * 0.5;
+                if (e.id !== target.id && Math.hypot(e.x - target.x, e.z - target.z) < 2.0) {
+                  let sDmg = p.damage * 0.5;
+                  if (e.type === 'shielded') sDmg = 1;
+                  e.hp -= sDmg;
+                  checkDeath(e);
                 }
               });
             }
 
+            if (p.effect === 'chain' && !p.hasChained) {
+              let nextTarget = null;
+              let minDist = 3.0;
+              for (const e of st.enemies) {
+                if (e.id !== target.id) {
+                  const d = Math.hypot(e.x - target.x, e.z - target.z);
+                  if (d < minDist) { minDist = d; nextTarget = e; }
+                }
+              }
+              if (nextTarget) {
+                st.projectiles.push({
+                  ...p,
+                  id: `p_${Date.now()}_${Math.random()}`,
+                  x: target.x, z: target.z,
+                  targetId: nextTarget.id,
+                  damage: p.damage * 0.7,
+                  hasChained: true
+                });
+              }
+            }
+
+            checkDeath(target);
             st.projectiles.splice(i, 1);
           } else {
             p.x += (dx / dist) * p.speed;
             p.z += (dz / dist) * p.speed;
-          }
-        }
-
-        // Deaths
-        for (let i = st.enemies.length - 1; i >= 0; i--) {
-          if (st.enemies[i].hp <= 0) {
-            st.enemies.splice(i, 1);
-            moneyGained += 5;
-            scoreGained += 10;
           }
         }
 

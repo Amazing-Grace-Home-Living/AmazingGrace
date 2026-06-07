@@ -23,7 +23,7 @@ const MovingNebula = () => {
   });
 
   return (
-    <mesh ref={meshRef} scale={[100, 100, 100]} pointerEvents="none">
+    <mesh ref={meshRef} scale={[100, 100, 100]} raycast={() => null}>
       <sphereGeometry args={[1, 64, 64]} />
       <meshBasicMaterial
         color="#0a0514"
@@ -56,7 +56,7 @@ const AtmosphericParticles = () => {
   });
 
   return (
-    <points ref={ref} pointerEvents="none">
+    <points ref={ref} raycast={() => null}>
       <bufferGeometry>
         <bufferAttribute
           attach="position"
@@ -104,7 +104,7 @@ const EnvironmentalSpikes: React.FC<{ instability: number }> = ({ instability })
   if (instability < 35) return null;
 
   return (
-    <group ref={groupRef} pointerEvents="none">
+    <group ref={groupRef} raycast={() => null}>
       {spikePositions.map((pos, i) => (
         <mesh key={i} position={[pos.x, 0, pos.z]} rotation={[0, pos.rot, 0]}>
           <coneGeometry args={[0.08, 1, 4]} />
@@ -198,7 +198,7 @@ const GridTile: React.FC<{
   });
 
   return (
-    <mesh ref={meshRef} position={[x, 0, z]} receiveShadow pointerEvents="none">
+    <mesh ref={meshRef} position={[x, 0, z]} receiveShadow raycast={() => null}>
       <boxGeometry args={[0.9, 0.15, 0.9]} />
       <meshStandardMaterial
         color={color}
@@ -256,7 +256,7 @@ const CentralPortal: React.FC<{ instability: number }> = ({ instability }) => {
   });
 
   return (
-    <group position={[0, 0.1, 0]} pointerEvents="none">
+    <group position={[0, 0.1, 0]} raycast={() => null}>
       <mesh ref={ringRef1} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[1.5, 0.06, 8, 48]} />
         <meshStandardMaterial
@@ -339,7 +339,7 @@ const DataFlows: React.FC = () => {
   });
 
   return (
-    <group pointerEvents="none">
+    <group raycast={() => null}>
       {packets.map((p, idx) => (
         <group key={p.id} ref={(el) => { if (el) refs.current[idx] = el; }}>
           <Trail width={0.8} length={4} color={new THREE.Color(p.color)} attenuation={(t) => t * t}>
@@ -372,7 +372,7 @@ const CentralTowers: React.FC<{ alignment: number; instability: number; }> = ({ 
   });
 
   return (
-    <group pointerEvents="none">
+    <group raycast={() => null}>
       <mesh ref={beastRef} position={[-2, beastHeight / 2, 0]} castShadow>
         <cylinderGeometry args={[0.2, 0.35, beastHeight, 4]} />
         <meshStandardMaterial color="#00ffb7" roughness={0.25} metalness={0.9} emissive="#00bfa5" emissiveIntensity={1.3 + Math.sin(instability) * 0.2} />
@@ -562,7 +562,7 @@ export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReput
             <TerrainGrid instability={metrics.timelineInstability} />
             <EnvironmentalSpikes instability={metrics.timelineInstability} />
             {gameState.active && PATH.map((p, i) => (
-              <mesh key={`path_${i}`} position={[p.x, 0.05, p.z]} rotation={[-Math.PI/2, 0, 0]} pointerEvents="none">
+              <mesh key={`path_${i}`} position={[p.x, 0.05, p.z]} rotation={[-Math.PI/2, 0, 0]} raycast={() => null}>
                 <planeGeometry args={[1, 1]} /><meshBasicMaterial color="#00f0ff" transparent opacity={0.15} />
               </mesh>
             ))}
@@ -570,13 +570,51 @@ export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReput
             <DataFlows />
             <CentralTowers alignment={metrics.worldAlignment} instability={metrics.timelineInstability} />
             {gameEntities.towers.map(tower => (
-              <group key={tower.id} position={[tower.x, 0, tower.z]} pointerEvents="none">
-                <mesh position={[0, 0.5, 0]}><boxGeometry args={[0.6, 1, 0.6]} /><meshStandardMaterial color={tower.type === 'purify' ? '#00f0ff' : tower.type === 'contain' ? '#a855f7' : tower.type === 'sentinel' ? '#ff0055' : '#00ffb7'} /></mesh>
+              <group key={tower.id} position={[tower.x, 0, tower.z]} raycast={() => null}>
+                <mesh position={[0, 0.5, 0]}>
+                  <boxGeometry args={[0.6, 1, 0.6]} />
+                  <meshStandardMaterial color={tower.type === 'purify' ? '#00f0ff' : tower.type === 'contain' ? '#a855f7' : tower.type === 'sentinel' ? '#ff0055' : '#00ffb7'} />
+                </mesh>
               </group>
             ))}
+
+            {gameEntities.projectiles.map((p, idx) => (
+              <mesh key={`proj_${p.id}_${idx}`} position={[p.x, 0.5, p.z]} raycast={() => null}>
+                <sphereGeometry args={[0.1, 8, 8]} />
+                <meshBasicMaterial color={p.color} />
+              </mesh>
+            ))}
+
+            {gameEntities.particles.map((p, idx) => (
+              <mesh key={`part_${idx}`} position={[p.x, p.y, p.z]} raycast={() => null}>
+                <boxGeometry args={[0.05, 0.05, 0.05]} />
+                <meshBasicMaterial color={p.color} transparent opacity={p.life} />
+              </mesh>
+            ))}
+
             {gameEntities.enemies.map(e => (
-              <group key={e.id} position={[e.x, 0.3, e.z]} pointerEvents="none">
-                <mesh><sphereGeometry args={[0.3, 16, 16]} /><meshStandardMaterial color="#ff0055" wireframe /></mesh>
+              <group key={e.id} position={[e.x, e.type === 'boss' ? 0.8 : 0.3, e.z]} raycast={() => null}>
+                <mesh>
+                  {e.type === 'boss' && <sphereGeometry args={[0.8, 32, 32]} />}
+                  {e.type === 'armored' && <boxGeometry args={[0.5, 0.5, 0.5]} />}
+                  {e.type === 'shielded' && <sphereGeometry args={[0.4, 16, 16]} />}
+                  {e.type === 'swarm' && <coneGeometry args={[0.2, 0.4, 4]} />}
+                  {(!e.type || e.type === 'normal') && <sphereGeometry args={[0.3, 16, 16]} />}
+                  <meshStandardMaterial 
+                    color={e.color || "#ff0055"} 
+                    wireframe={e.type === 'shielded'} 
+                    metalness={e.type === 'armored' ? 0.9 : 0.1}
+                    roughness={e.type === 'armored' ? 0.2 : 0.8}
+                  />
+                </mesh>
+                <mesh position={[0, e.type === 'boss' ? 1.0 : 0.5, 0]}>
+                  <planeGeometry args={[0.5, 0.05]} />
+                  <meshBasicMaterial color="#333" />
+                </mesh>
+                <mesh position={[0, e.type === 'boss' ? 1.0 : 0.5, 0.01]}>
+                  <planeGeometry args={[0.5 * (e.hp / e.maxHp), 0.05]} />
+                  <meshBasicMaterial color="#00ff00" />
+                </mesh>
               </group>
             ))}
             {sovereigns.map((sovereign: any, i: number) => (

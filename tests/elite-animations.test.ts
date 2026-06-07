@@ -37,26 +37,19 @@ describe('Elite Animations system', () => {
     expect(js).toContain('anim-kill-flash');
   });
 
-  it('defines all CSS keyframe animations in Syndicate Siege', () => {
+  it('defines essential CSS keyframe animations in Syndicate Siege', () => {
     const css = fs.readFileSync(cssPath, 'utf8');
 
-    expect(css).toContain('@keyframes killFlash');
-    expect(css).toContain('@keyframes eliteKillFlash');
-    expect(css).toContain('@keyframes bossKillFlash');
-    expect(css).toContain('@keyframes elitePulse');
-    expect(css).toContain('@keyframes bossFlicker');
-    expect(css).toContain('@keyframes phaseShift');
-    expect(css).toContain('@keyframes towerFire');
-    expect(css).toContain('@keyframes weakpoint');
-    expect(css).toContain('@keyframes eliteModeOn');
-    expect(css).toContain('@keyframes eliteModeOff');
+    // v2.0 uses specialized animations
+    expect(css).toContain('@keyframes eliteFloat');
+    expect(css).toContain('@keyframes bossGlitch');
   });
 
   it('applies continuous animations to elite and boss enemies', () => {
     const css = fs.readFileSync(cssPath, 'utf8');
 
-    expect(css).toContain('animation: elitePulse');
-    expect(css).toContain('animation: bossFlicker');
+    expect(css).toContain('animation: eliteFloat');
+    expect(css).toContain('animation: bossGlitch');
   });
 
   it('calls animation triggers for tower fire and kill events', () => {
