@@ -5,7 +5,7 @@ import { SandboxRule } from '../DraftingBoard/DraftingBoard';
 import { Canvas, useFrame, ThreeEvent } from '@react-three/fiber';
 import { OrbitControls, Stars, Html, Trail, Float, Sphere, MeshDistortMaterial } from '@react-three/drei';
 import { EffectComposer, Bloom, Noise, Vignette, ChromaticAberration, Glitch, Scanline } from '@react-three/postprocessing';
-import { BlendFunction } from 'postprocessing';
+import { BlendFunction, GlitchMode } from 'postprocessing';
 import * as THREE from 'three';
 import { useEmergenceData, Sovereign } from './EmergenceDataContext';
 import { AtariWingOverlay, useKonamiCode } from './AtariWingUnlock';
@@ -60,8 +60,11 @@ const AtmosphericParticles = () => {
     <points ref={ref}>
       <bufferGeometry>
         <bufferAttribute
-          attach="attributes-position"
+          attach="position"
           args={[positions, 3]}
+          count={count}
+          array={positions}
+          itemSize={3}
         />
       </bufferGeometry>
       <pointsMaterial
@@ -650,7 +653,9 @@ export const EmergenceScene: React.FC<{
     sessionStorage.setItem('atari_attuned', 'true');
     setAtariUnlocked(true);
     setAtariOverlayTrigger((prev) => prev + 1);
-    addMultiplayerLog('SYSTEM BREACH DETECTED: Atari Wing protocols activated.', 'System', 'event');
+    if (typeof addMultiplayerLog === 'function') {
+      addMultiplayerLog('SYSTEM BREACH DETECTED: Atari Wing protocols activated.', 'System', 'event');
+    }
   }, [addMultiplayerLog]);
 
   useKonamiCode(handleAtariUnlock);
@@ -659,15 +664,6 @@ export const EmergenceScene: React.FC<{
 
   const tdEngine = useTowerDefenseEngine(activeRules, playerReputation, adjustKarma, uid);
   const { gameState, gameEntities, startGame, startWave, placeTower: placeTDTower, getTowerCost, PATH, poolResources } = tdEngine;
-
-  const [poolAmount, setPoolAmount] = useState(0);
-
-  const handlePoolResources = useCallback(() => {
-    if (!poolResources || poolAmount <= 0) return;
-    const { success, message } = poolResources(poolAmount);
-    addMultiplayerLog(message, 'System', success ? 'event' : 'error');
-    setPoolAmount(0);
-  }, [poolResources, poolAmount, addMultiplayerLog]);
 
   const handleTDGridPointerMove = (e: ThreeEvent<PointerEvent>) => {
     if (!tdSelectedTower) return;
@@ -795,11 +791,18 @@ export const EmergenceScene: React.FC<{
         </div>
 
         <div className="panel-section">
-          <div className="section-title">NEXUS DEFENSE (War Feature)</div>
+          <div className="section-title">NEXUS DEFENSE</div>
           {!gameState.active ? (
             <button className="cyber-btn" onClick={startGame}>🛡️ Initialize War Feature</button>
           ) : (
             <>
+              <button 
+                className={`cyber-btn ${tdSelectedTower ? 'active-mode' : ''}`} 
+                onClick={() => toggleTowerPlacementMode && toggleTowerPlacementMode()}
+                style={{ marginBottom: '10px', width: '100%' }}
+              >
+                🛡️ Toggle Towers (T)
+              </button>
               <div style={{ display: 'flex', gap: '10px', fontSize: '0.8rem', marginBottom: '10px' }}>
                 <div>Credits: <strong style={{color:'#00f0ff'}}>{Math.floor(gameState.money)}</strong></div>
                 <div>Health: <strong style={{color:'#ff0055'}}>{gameState.health}</strong></div>
@@ -901,7 +904,18 @@ export const EmergenceScene: React.FC<{
               <Bloom intensity={1.8} luminanceThreshold={0.15} mipmapBlur />
               <Noise opacity={0.05} />
               <Vignette darkness={1.1} />
+              <ChromaticAberration 
+                offset={new THREE.Vector2(0.002, 0.002)} 
+                blendFunction={BlendFunction.NORMAL} 
+              />
               <Scanline opacity={0.1} />
+              <Glitch
+                delay={new THREE.Vector2(1.5, 3.5)}
+                duration={new THREE.Vector2(0.6, 1.0)}
+                strength={new THREE.Vector2(0.3, 1.0)}
+                mode={GlitchMode.SPORADIC}
+                active={metrics.timelineInstability > 75}
+              />
             </EffectComposer>
           </Suspense>
         </Canvas>

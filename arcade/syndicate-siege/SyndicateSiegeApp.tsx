@@ -79,8 +79,6 @@ export default function SyndicateSiegeApp() {
     }));
   }, []);
 
-  const getThreatTier = useCallback(() => Math.floor(stateRef.current.threat / 10), []);
-
   const spawnWave = useCallback((isElite: boolean) => {
     setState(s => {
       if (s.loopId) return s;
@@ -113,6 +111,12 @@ export default function SyndicateSiegeApp() {
 
       const loopId = window.setInterval(gameLoop, 200);
       addLog(isElite ? `⚔ Elite Wave ${nextWave} started (Tier ${tier})` : `🌊 Wave ${nextWave} started (${count} enemies)`, isElite ? "elite" : "good");
+
+      // @ts-ignore
+      if (typeof window.triggerEliteModeTransition === 'function') {
+        // @ts-ignore
+        window.triggerEliteModeTransition(isElite);
+      }
 
       return { ...s, wave: nextWave, enemies: newEnemies, loopId, overloadTriggered: willTriggerOverload };
     });
@@ -176,10 +180,39 @@ export default function SyndicateSiegeApp() {
         if (target) {
           target.hp -= t.damage;
           t.cooldown = t.maxCooldown;
+
+          const cellEl = document.querySelector(`.cell[data-row="${t.row}"][data-col="${t.col}"]`);
+          // @ts-ignore
+          if (cellEl && typeof window.triggerTowerFire === 'function') {
+            // @ts-ignore
+            window.triggerTowerFire(cellEl);
+          }
+
+          if (target.hp <= (target.maxHp * 0.3) && !target.weakpointFlashed) {
+             target.weakpointFlashed = true;
+             // @ts-ignore
+             if (typeof window.triggerWeakpointFlash === 'function') {
+               // @ts-ignore
+               window.triggerWeakpointFlash(cellEl);
+             }
+          }
+
           if (target.hp <= 0) {
             target.alive = false;
             crInc += target.type === "boss" ? 60 : (target.type === "elite" ? 30 : 20);
             xpInc += target.type === "boss" ? 50 : (target.type === "elite" ? 30 : 15);
+            
+            // @ts-ignore
+            if (typeof window.triggerKillAnimation === 'function') {
+              // @ts-ignore
+              window.triggerKillAnimation(cellEl, target.type);
+            }
+            // @ts-ignore
+            if (target.type === 'boss' && typeof window.triggerPhaseTransition === 'function') {
+              // @ts-ignore
+              window.triggerPhaseTransition(cellEl);
+            }
+
             if (s.eliteMode && target.type === "boss") {
               addLog("🏆 Boss defeated! Ultra x3, tower_ultra cosmetic, lore unlocked!", "elite");
               xpInc += 1000;
@@ -254,7 +287,7 @@ export default function SyndicateSiegeApp() {
 
   return (
     <div className="syndicate-app-container">
-      <header>
+      <header className="syndicate-header">
         <a href="../../" className="logo" aria-label="Amazing Grace Home Living — Home">
           <img src="../../assets/logo.png" alt="Amazing Grace" width="36" height="36" />
           Amazing Grace
@@ -291,7 +324,7 @@ export default function SyndicateSiegeApp() {
               if (placingTower && !isPath && !tower) cellClass += ' placement-hover';
 
               return (
-                <div key={`${r}-${c}`} className={cellClass} onClick={() => onCellClick(r, c)}>
+                <div key={`${r}-${c}`} className={cellClass} data-row={r} data-col={c} onClick={() => onCellClick(r, c)}>
                   {enemyOnCell && <div className={`enemy ${enemyOnCell.type}`}></div>}
                 </div>
               );

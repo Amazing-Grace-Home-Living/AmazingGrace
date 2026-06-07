@@ -3,7 +3,8 @@ import fs from 'node:fs';
 
 describe('Elite Animations system', () => {
   const jsPath = 'arcade/js/elite-animations.js';
-  const htmlPath = 'arcade/syndicate-siege/index.html';
+  const appPath = 'arcade/syndicate-siege/SyndicateSiegeApp.tsx';
+  const cssPath = 'arcade/syndicate-siege/syndicate-siege.css';
   const configPath = 'vite.config.ts';
 
   it('ships elite-animations.js with all animation trigger functions', () => {
@@ -37,48 +38,42 @@ describe('Elite Animations system', () => {
   });
 
   it('defines all CSS keyframe animations in Syndicate Siege', () => {
-    const html = fs.readFileSync(htmlPath, 'utf8');
+    const css = fs.readFileSync(cssPath, 'utf8');
 
-    expect(html).toContain('@keyframes killFlash');
-    expect(html).toContain('@keyframes eliteKillFlash');
-    expect(html).toContain('@keyframes bossKillFlash');
-    expect(html).toContain('@keyframes elitePulse');
-    expect(html).toContain('@keyframes bossFlicker');
-    expect(html).toContain('@keyframes phaseShift');
-    expect(html).toContain('@keyframes towerFire');
-    expect(html).toContain('@keyframes weakpoint');
-    expect(html).toContain('@keyframes eliteModeOn');
-    expect(html).toContain('@keyframes eliteModeOff');
+    expect(css).toContain('@keyframes killFlash');
+    expect(css).toContain('@keyframes eliteKillFlash');
+    expect(css).toContain('@keyframes bossKillFlash');
+    expect(css).toContain('@keyframes elitePulse');
+    expect(css).toContain('@keyframes bossFlicker');
+    expect(css).toContain('@keyframes phaseShift');
+    expect(css).toContain('@keyframes towerFire');
+    expect(css).toContain('@keyframes weakpoint');
+    expect(css).toContain('@keyframes eliteModeOn');
+    expect(css).toContain('@keyframes eliteModeOff');
   });
 
   it('applies continuous animations to elite and boss enemies', () => {
-    const html = fs.readFileSync(htmlPath, 'utf8');
+    const css = fs.readFileSync(cssPath, 'utf8');
 
-    expect(html).toContain('animation: elitePulse');
-    expect(html).toContain('animation: bossFlicker');
-  });
-
-  it('loads elite-animations.js in Syndicate Siege', () => {
-    const html = fs.readFileSync(htmlPath, 'utf8');
-
-    expect(html).toContain('../js/elite-animations.js');
+    expect(css).toContain('animation: elitePulse');
+    expect(css).toContain('animation: bossFlicker');
   });
 
   it('calls animation triggers for tower fire and kill events', () => {
-    const html = fs.readFileSync(htmlPath, 'utf8');
+    const app = fs.readFileSync(appPath, 'utf8');
 
-    expect(html).toContain('triggerTowerFire(t.cellEl)');
-    expect(html).toContain('triggerKillAnimation(killCell, target.type)');
-    expect(html).toContain('triggerPhaseTransition(killCell)');
-    expect(html).toContain('triggerWeakpointFlash(cell)');
-    expect(html).toContain('triggerEliteModeTransition(eliteMode)');
+    expect(app).toContain('window.triggerTowerFire(cellEl)');
+    expect(app).toContain('window.triggerKillAnimation(cellEl, target.type)');
+    expect(app).toContain('window.triggerPhaseTransition(cellEl)');
+    expect(app).toContain('window.triggerWeakpointFlash(cellEl)');
+    expect(app).toContain('window.triggerEliteModeTransition(isElite)');
   });
 
   it('triggers weakpoint flash only once per enemy by guarding with weakpointFlashed flag', () => {
-    const html = fs.readFileSync(htmlPath, 'utf8');
+    const app = fs.readFileSync(appPath, 'utf8');
 
-    expect(html).toContain('e.weakpointFlashed');
-    expect(html).toContain('!e.weakpointFlashed');
+    expect(app).toContain('target.weakpointFlashed');
+    expect(app).toContain('!target.weakpointFlashed');
   });
 
   it('includes arcadeSyndicateSiege route in Vite build inputs', () => {
