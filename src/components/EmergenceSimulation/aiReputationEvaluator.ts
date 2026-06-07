@@ -29,10 +29,10 @@ export const evaluateAllianceAction = (
   }
 
   // 3. Conditional evaluation for unverified or neutral players
-  if (actionType === 'BUILD_DEFENSE' && currentThreatLevel > 50) {
+  if (actionType === 'BUILD_DEFENSE') {
     return {
       vote: 'APPROVE',
-      reasoning: "Local sector structural security is compromised. Risk accepted despite unverified ally Karma."
+      reasoning: "Local sector structural security is compromised. Building defenses is unrestricted."
     };
   }
   

@@ -18,8 +18,8 @@ const DEFAULT_CONFIG = {
 };
 
 /**
- * Normalizes and validates environment variable strings.
- * Discards values that are empty, "undefined", "null", or don't look like Firebase keys.
+ * Robustly validates environment variable strings.
+ * Discards values that are empty, "undefined", "null", or lack the AIza prefix for keys.
  */
 const getValidValue = (val: any, fallback: string): string => {
   if (typeof val !== 'string') return fallback;
@@ -30,12 +30,11 @@ const getValidValue = (val: any, fallback: string): string => {
     t = t.slice(1, -1).trim();
   }
 
-  // Sanity check: must be non-empty and not the literal string "undefined" or "null"
+  // Handle literal "undefined" or "null" strings
   if (!t || t === 'undefined' || t === 'null') return fallback;
 
-  // Specific check for API Key format if it's meant to be an AIza... key
+  // Format check for API Key
   if (fallback.startsWith('AIza') && !t.startsWith('AIza')) {
-    console.warn(`[Firebase] Discarding invalid API Key from environment: "${t.substring(0, 5)}..."`);
     return fallback;
   }
 
@@ -58,15 +57,13 @@ export function getFirebaseApp() {
     measurementId: getValidValue(import.meta.env.VITE_FIREBASE_MEASUREMENT_ID, DEFAULT_CONFIG.measurementId),
   };
 
-  const isUsingEnv = (import.meta.env.VITE_FIREBASE_API_KEY && import.meta.env.VITE_FIREBASE_API_KEY.startsWith('AIza'));
-  console.log(`[Firebase] Node initialized. Project: ${config.projectId} (${isUsingEnv ? 'Remote Config' : 'Local Fallback'})`);
+  console.log(`[Firebase] Active Project: ${config.projectId}`);
 
   try {
     firebaseApp = initializeApp(config);
     return firebaseApp;
   } catch (err) {
-    console.error('[Firebase] Fatal initialization error:', err);
-    // As a last resort, try initializing with the hardcoded default directly
+    console.error('[Firebase] Secondary recovery triggered. Initializing with local defaults.');
     firebaseApp = initializeApp(DEFAULT_CONFIG);
     return firebaseApp;
   }
@@ -78,10 +75,7 @@ export function getFirebaseAnalytics(): Promise<Analytics | null> {
   if (!analyticsPromise) {
     analyticsPromise = isAnalyticsSupported()
       .then((supported) => (supported ? getAnalytics(getFirebaseApp()) : null))
-      .catch((err) => {
-        console.warn('[Firebase] Analytics failed to load:', err);
-        return null;
-      });
+      .catch(() => null);
   }
   return analyticsPromise;
 }
@@ -92,10 +86,7 @@ export function getFirebaseMessaging(): Promise<Messaging | null> {
   if (!messagingPromise) {
     messagingPromise = isMessagingSupported()
       .then((supported) => (supported ? getMessaging(getFirebaseApp()) : null))
-      .catch((err) => {
-        console.warn('[Firebase] Messaging failed to load:', err);
-        return null;
-      });
+      .catch(() => null);
   }
   return messagingPromise;
 }
@@ -112,7 +103,7 @@ export async function requestMessagingToken(): Promise<string | null> {
       return await getToken(messaging, { vapidKey: VAPID_KEY });
     }
   } catch (err) {
-    console.error('[Firebase] Error retrieving messaging token:', err);
+    console.error('[Firebase] Token error:', err);
   }
   return null;
 }

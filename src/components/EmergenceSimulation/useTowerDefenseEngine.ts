@@ -121,12 +121,11 @@ export const useTowerDefenseEngine = (
     const cost = getTowerCost(type);
     
     // Evaluate if user has karma to build defenses
-    // We pass 0 as current threat level unless the wave is active
     setGameState(prev => {
       const evaluation = evaluateAllianceAction(playerReputation, 'BUILD_DEFENSE', prev.waveActive ? 60 : 0);
       if (evaluation.vote === 'VETO') {
         if (adjustKarma && uid) {
-          adjustKarma(uid, -2, true); // Deduct 2 karma, flag as betrayal
+          adjustKarma(uid, -2, true);
         }
         return { ...prev, lastMessage: `${evaluation.reasoning} [PENALTY: -2 KARMA]` };
       }
@@ -173,7 +172,7 @@ export const useTowerDefenseEngine = (
       resultMessage = `[TRANSFER APPROVED] Successfully pooled ${amount} credits. +1 Karma gained.`;
       
       if (adjustKarma && uid) {
-        adjustKarma(uid, 1, false); // Add 1 karma
+        adjustKarma(uid, 1, false);
       }
 
       return { ...prev, money: prev.money - amount, lastMessage: resultMessage };
@@ -193,7 +192,6 @@ export const useTowerDefenseEngine = (
       const delta = (time - lastTime) / 1000;
       lastTime = time;
       
-      // We process logic roughly at 60Hz steps
       const ticks = Math.floor(delta / 0.016) || 1;
       
       const st = stateRef.current;
@@ -201,7 +199,7 @@ export const useTowerDefenseEngine = (
       let moneyGained = 0;
       let scoreGained = 0;
       
-      for (let t = 0; t < ticks; t++) {
+      for (let t_tick = 0; t_tick < ticks; t_tick++) {
         // Spawning
         if (gameState.waveActive && st.enemiesToSpawn > 0) {
           st.spawnTimer++;
@@ -275,7 +273,7 @@ export const useTowerDefenseEngine = (
                 z: tower.z,
                 targetId: (closest as Enemy).id,
                 damage: def.damage,
-                speed: tower.type === 'sentinel' ? 0.8 : 0.2, // fast lasers for sniper
+                speed: tower.type === 'sentinel' ? 0.8 : 0.2,
                 color: def.color,
                 effect: def.effect
               });
@@ -352,7 +350,6 @@ export const useTowerDefenseEngine = (
         });
       }
 
-      // Simple decay for particles and floating text (rendered elsewhere)
       st.particles.forEach(p => p.life -= 0.02);
       st.particles = st.particles.filter(p => p.life > 0);
       
