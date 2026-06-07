@@ -5,13 +5,14 @@ import { getMessaging, getToken, onMessage, isSupported as isMessagingSupported,
 type ViteEnvLike = Record<string, string | undefined>;
 
 const getViteEnv = (): ViteEnvLike => {
-  const meta = import.meta as ImportMeta & { env?: unknown };
-  if (!meta.env || typeof meta.env !== 'object') {
-    throw new Error(
-      'Vite environment variables are unavailable. Ensure this module is loaded through the Vite build pipeline.'
-    );
+  try {
+    if (typeof import.meta !== 'undefined' && import.meta.env) {
+      return import.meta.env as unknown as ViteEnvLike;
+    }
+  } catch (e) {
+    // Ignore
   }
-  return meta.env as ViteEnvLike;
+  return {};
 };
 
 const env = getViteEnv();
@@ -35,17 +36,30 @@ const optionalEnv = (name: keyof ViteEnvLike): string | undefined => {
 
 let firebaseApp: ReturnType<typeof initializeApp> | null = null;
 
+const DEFAULT_CONFIG = {
+  apiKey: "AIzaSyDbc-imBd_m9CQ-39kbmLbNeY5Itw4nZXI",
+  authDomain: "amazing-grace-hl.firebaseapp.com",
+  projectId: "amazing-grace-hl",
+  storageBucket: "amazing-grace-hl.firebasestorage.app",
+  messagingSenderId: "1081883726845",
+  appId: "1:1081883726845:web:88b49fc41d949e5511ff94",
+  measurementId: "G-WLYVDX4GWR"
+};
+
 export function getFirebaseApp() {
   if (firebaseApp) return firebaseApp;
-  firebaseApp = initializeApp({
-    apiKey: requireEnv('VITE_FIREBASE_API_KEY'),
-    authDomain: requireEnv('VITE_FIREBASE_AUTH_DOMAIN'),
-    projectId: requireEnv('VITE_FIREBASE_PROJECT_ID'),
-    storageBucket: requireEnv('VITE_FIREBASE_STORAGE_BUCKET'),
-    messagingSenderId: requireEnv('VITE_FIREBASE_MESSAGING_SENDER_ID'),
-    appId: requireEnv('VITE_FIREBASE_APP_ID'),
-    measurementId: optionalEnv('VITE_FIREBASE_MEASUREMENT_ID'),
-  });
+  
+  const config = {
+    apiKey: optionalEnv('VITE_FIREBASE_API_KEY') || DEFAULT_CONFIG.apiKey,
+    authDomain: optionalEnv('VITE_FIREBASE_AUTH_DOMAIN') || DEFAULT_CONFIG.authDomain,
+    projectId: optionalEnv('VITE_FIREBASE_PROJECT_ID') || DEFAULT_CONFIG.projectId,
+    storageBucket: optionalEnv('VITE_FIREBASE_STORAGE_BUCKET') || DEFAULT_CONFIG.storageBucket,
+    messagingSenderId: optionalEnv('VITE_FIREBASE_MESSAGING_SENDER_ID') || DEFAULT_CONFIG.messagingSenderId,
+    appId: optionalEnv('VITE_FIREBASE_APP_ID') || DEFAULT_CONFIG.appId,
+    measurementId: optionalEnv('VITE_FIREBASE_MEASUREMENT_ID') || DEFAULT_CONFIG.measurementId,
+  };
+
+  firebaseApp = initializeApp(config);
   return firebaseApp;
 }
 

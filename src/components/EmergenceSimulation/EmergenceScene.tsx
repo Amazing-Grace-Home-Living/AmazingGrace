@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useState, useEffect, useCallback } from 'react';
+import React, { useRef, useMemo, useState, useEffect, useCallback, Suspense } from 'react';
 import { useConscience } from '../ConscienceProvider';
 import { useTowerDefenseEngine } from './useTowerDefenseEngine';
 import { SandboxRule } from '../DraftingBoard/DraftingBoard';
@@ -38,12 +38,12 @@ const MovingNebula = () => {
 
 // ── 0.1. Atmospheric Data Dust ──
 const AtmosphericParticles = () => {
-  const count = 200;
+  const count = 100;
   const positions = useMemo(() => {
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
       pos[i * 3] = (Math.random() - 0.5) * 30;
-      pos[i * 3 + 1] = Math.random() * 15;
+      pos[i * 3 + 1] = Math.random() * 10;
       pos[i * 3 + 2] = (Math.random() - 0.5) * 30;
     }
     return pos;
@@ -52,8 +52,7 @@ const AtmosphericParticles = () => {
   const ref = useRef<THREE.Points>(null);
   useFrame((state) => {
     if (ref.current) {
-      ref.current.rotation.y = state.clock.getElapsedTime() * 0.015;
-      ref.current.position.y = Math.sin(state.clock.getElapsedTime() * 0.4) * 0.3;
+      ref.current.rotation.y = state.clock.getElapsedTime() * 0.01;
     }
   });
 
@@ -66,12 +65,11 @@ const AtmosphericParticles = () => {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.06}
+        size={0.1}
         color="#00f0ff"
         transparent
-        opacity={0.4}
+        opacity={0.3}
         blending={THREE.AdditiveBlending}
-        depthWrite={false}
       />
     </points>
   );
@@ -445,82 +443,6 @@ const towerConfig = {
 } as const;
 const towerTypes = Object.keys(towerConfig) as Array<keyof typeof towerConfig>;
 
-const PurificationTower: React.FC<{ tower: any }> = ({ tower }) => {
-  const towerRef = useRef<THREE.Mesh>(null);
-  const beamRef = useRef<THREE.Mesh>(null);
-  useFrame((state) => {
-    if (!towerRef.current) return;
-    const time = state.clock.getElapsedTime();
-    towerRef.current.rotation.y = time * 0.5;
-    if (beamRef.current) beamRef.current.scale.y = 1 + Math.sin(time * 2) * 0.2;
-  });
-  return (
-    <group position={[tower.position.x, 0.5, tower.position.z]}>
-      <mesh ref={towerRef} castShadow>
-        <cylinderGeometry args={[0.3, 0.4, 0.8, 6]} />
-        <meshStandardMaterial color={tower.underAttack ? '#ff0055' : '#00f0ff'} emissive={tower.underAttack ? '#ff0055' : '#00bfa5'} emissiveIntensity={1.4} metalness={0.8} />
-      </mesh>
-      <mesh ref={beamRef} position={[0, -0.45, 0]}>
-        <cylinderGeometry args={[tower.range, tower.range * 0.8, 0.05, 32]} />
-        <meshBasicMaterial color="#00f0ff" transparent opacity={0.15} />
-      </mesh>
-    </group>
-  );
-};
-
-const ContainmentField: React.FC<{ tower: any }> = ({ tower }) => (
-  <group position={[tower.position.x, 0.15, tower.position.z]}>
-    <mesh>
-      <sphereGeometry args={[tower.range, 24, 18]} />
-      <meshStandardMaterial color={tower.underAttack ? '#ff0055' : '#a855f7'} emissive={tower.underAttack ? '#ff0055' : '#6b21a8'} emissiveIntensity={1} transparent opacity={0.2} wireframe />
-    </mesh>
-  </group>
-);
-
-const SentinelTurret: React.FC<{ tower: any }> = ({ tower }) => {
-  const ref = useRef<THREE.Mesh>(null);
-  useFrame((state) => {
-    if (ref.current) ref.current.rotation.y = state.clock.getElapsedTime() * 0.8;
-  });
-  return (
-    <group position={[tower.position.x, 0.5, tower.position.z]}>
-      <mesh ref={ref} castShadow>
-        <octahedronGeometry args={[0.35, 0]} />
-        <meshStandardMaterial color={tower.underAttack ? '#ff2b2b' : '#ff4d4d'} emissive={tower.underAttack ? '#ff0000' : '#8b0000'} emissiveIntensity={1.4} metalness={0.9} />
-      </mesh>
-    </group>
-  );
-};
-
-const GenesisBeacon: React.FC<{ tower: any }> = ({ tower }) => {
-  const ref = useRef<THREE.Mesh>(null);
-  useFrame((state) => {
-    if (!ref.current) return;
-    const time = state.clock.getElapsedTime();
-    ref.current.scale.setScalar(1 + Math.sin(time * 2) * 0.1);
-    ref.current.rotation.y = time * 0.4;
-  });
-  return (
-    <group position={[tower.position.x, 0.6, tower.position.z]}>
-      <mesh ref={ref} castShadow>
-        <dodecahedronGeometry args={[0.35, 0]} />
-        <meshStandardMaterial color={tower.underAttack ? '#ff0055' : '#00ffb7'} emissive={tower.underAttack ? '#ff0055' : '#00bfa5'} emissiveIntensity={1.2} />
-      </mesh>
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, -0.5, 0]}>
-        <torusGeometry args={[tower.range * 0.6, 0.03, 8, 36]} />
-        <meshBasicMaterial color="#00ffb7" transparent opacity={0.35} />
-      </mesh>
-    </group>
-  );
-};
-
-const DefenseTower: React.FC<{ tower: any }> = ({ tower }) => {
-  if (tower.type === 'purify') return <PurificationTower tower={tower} />;
-  if (tower.type === 'contain') return <ContainmentField tower={tower} />;
-  if (tower.type === 'sentinel') return <SentinelTurret tower={tower} />;
-  return <GenesisBeacon tower={tower} />;
-};
-
 // ── 6. Advanced Floating Sovereign agent avatar ──
 const SovereignAgent: React.FC<{
   sovereign: Sovereign;
@@ -697,8 +619,6 @@ export const EmergenceScene: React.FC<{
     metrics,
     veilState,
     sovereigns,
-    lastNarrative,
-    lastEvent,
     triggerSystemEvent,
     applySystemOverride,
     selectedSovereignName,
@@ -707,19 +627,16 @@ export const EmergenceScene: React.FC<{
     addMultiplayerLog,
     transmitAgentMessage,
     applyAgentOverride,
-    towers,
     alignmentPoints,
     selectedTower,
     slowedSovereigns,
     threatFlashes,
-    setSelectedTower,
     toggleTowerPlacementMode,
     placeTower,
     validateTowerPlacement,
     getThreatLevel
   } = useEmergenceData();
 
-  // Local state for communicator message input
   const [chatMessage, setChatMessage] = useState('');
   const [hoverCell, setHoverCell] = useState<{ x: number; z: number } | null>(null);
   const [atariUnlocked, setAtariUnlocked] = useState(false);
@@ -752,7 +669,6 @@ export const EmergenceScene: React.FC<{
     setPoolAmount(0);
   }, [poolResources, poolAmount, addMultiplayerLog]);
 
-  // Sync TD towers to hover logic
   const handleTDGridPointerMove = (e: ThreeEvent<PointerEvent>) => {
     if (!tdSelectedTower) return;
     const pt = e.point;
@@ -774,32 +690,6 @@ export const EmergenceScene: React.FC<{
     }
   };
 
-  useEffect(() => {
-    if (globalCollapseRisk > 0.5) {
-      document.body.style.setProperty('--glitch-intensity', `${globalCollapseRisk}`);
-    }
-    if (globalCollapseRisk > 0.8) {
-      console.log("[JANUS]: Collapse Engine resonance critical.");
-    }
-  }, [globalCollapseRisk]);
-
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement | null;
-      const isTypingTarget =
-        !!target &&
-        (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
-
-      if (!isTypingTarget && event.key.toLowerCase() === 't') {
-        event.preventDefault();
-        toggleTowerPlacementMode();
-      }
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [toggleTowerPlacementMode]);
-
-  // Handle selected sovereign object lookup
   const activeSovereign = useMemo(() => {
     return sovereigns.find((s: any) => s.name === selectedSovereignName) || null;
   }, [sovereigns, selectedSovereignName]);
@@ -809,26 +699,6 @@ export const EmergenceScene: React.FC<{
     if (!chatMessage.trim() || !selectedSovereignName) return;
     transmitAgentMessage(selectedSovereignName, chatMessage.trim());
     setChatMessage('');
-  };
-
-  const hoverPlacement = hoverCell ? validateTowerPlacement(hoverCell.x, hoverCell.z) : null;
-  const selectedTowerRange = selectedTower ? towerConfig[selectedTower].range : 0;
-
-  const snapToGridCenter = (value: number) => Math.floor(value) + 0.5;
-
-  const handleGridPointerMove = (event: ThreeEvent<PointerEvent>) => {
-    if (!selectedTower) return;
-    const gridX = snapToGridCenter(event.point.x);
-    const gridZ = snapToGridCenter(event.point.z);
-    setHoverCell({ x: gridX, z: gridZ });
-  };
-
-  const handleGridClick = (event: ThreeEvent<MouseEvent>) => {
-    if (!selectedTower) return;
-    const gridX = snapToGridCenter(event.point.x);
-    const gridZ = snapToGridCenter(event.point.z);
-    placeTower(gridX, gridZ);
-    setHoverCell(null);
   };
 
   return (
@@ -841,14 +711,12 @@ export const EmergenceScene: React.FC<{
           : 'none'
       }}
     >
-      {/* 1. Left Telemetry Dashboard */}
       <div className="telemetry-sidebar" onClick={(e) => e.stopPropagation()}>
         <div className="sidebar-header">
           <h1>Emergence 3D</h1>
           <p>Local Simulation Telemetry Engine</p>
         </div>
 
-        {/* System parameters */}
         <div className="panel-section">
           <div className="section-title">System Metrics</div>
           <div className="metrics-grid">
@@ -873,7 +741,6 @@ export const EmergenceScene: React.FC<{
           </div>
         </div>
 
-        {/* Collapsible/Interactive AI Communicator Console */}
         {activeSovereign ? (
           <div className="panel-section sovereign-communicator-card">
             <div className="section-title communicator-title">Sovereign Communicator</div>
@@ -882,23 +749,18 @@ export const EmergenceScene: React.FC<{
                 <span className="comm-agent-name">{activeSovereign.name}</span>
                 <span className={`agent-badge ${activeSovereign.instinct}`}>{activeSovereign.instinct}</span>
               </div>
-              
               <div className="comm-grid-stats">
                 <div>Loyalty: <strong>{activeSovereign.loyalty}%</strong></div>
                 <div>Trauma: <strong>{activeSovereign.trauma}%</strong></div>
                 <div>Corruption: <strong>{activeSovereign.corruption}%</strong></div>
                 <div>Stage: <strong>{activeSovereign.metamorphosisStage}</strong></div>
               </div>
-
-              {/* Direct override commands */}
               <div className="comm-actions-row">
                 <button className="comm-small-btn" onClick={() => applyAgentOverride(activeSovereign.name, 'purify')}>🛡️ Purify</button>
                 <button className="comm-small-btn" onClick={() => applyAgentOverride(activeSovereign.name, 'attune_genesis')}>🌱 Genesis</button>
                 <button className="comm-small-btn" onClick={() => applyAgentOverride(activeSovereign.name, 'attune_hunt')}>⚔️ Hunt</button>
                 <button className="comm-small-btn" onClick={() => applyAgentOverride(activeSovereign.name, 'overclock')}>⚡ Overclock</button>
               </div>
-
-              {/* Dialogue submission input */}
               <form onSubmit={handleSendTransmit} style={{ marginTop: '12px', display: 'flex', gap: '6px' }}>
                 <input
                   type="text"
@@ -909,52 +771,17 @@ export const EmergenceScene: React.FC<{
                 />
                 <button type="submit" className="comm-send-btn">Send</button>
               </form>
-
-              {/* Resource Pooling UI */}
-              {gameState.active && (
-                <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px', background: 'rgba(0,255,255,0.05)', padding: '8px', borderRadius: '4px', border: '1px solid rgba(0,255,255,0.1)' }}>
-                  <div style={{ fontSize: '0.75rem', color: '#00f0ff', display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Pool Resources (GDP)</span>
-                    <span>{poolAmount} / {Math.floor(gameState.money)}</span>
-                  </div>
-                  <input 
-                    type="range" 
-                    min="0" 
-                    max={Math.floor(gameState.money)} 
-                    value={poolAmount} 
-                    onChange={e => setPoolAmount(Number(e.target.value))} 
-                    style={{ width: '100%', accentColor: '#00f0ff' }}
-                  />
-                  <button 
-                    className="comm-send-btn" 
-                    style={{ width: '100%', opacity: poolAmount > 0 ? 1 : 0.5, cursor: poolAmount > 0 ? 'pointer' : 'not-allowed' }}
-                    onClick={handlePoolResources}
-                    disabled={poolAmount <= 0}
-                  >
-                    Transfer Credits
-                  </button>
-                </div>
-              )}
             </div>
-            
-            <button
-              className="cyber-btn"
-              style={{ marginTop: '10px', width: '100%', borderColor: '#ff0055', color: '#ff0055', fontSize: '0.65rem', padding: '6px' }}
-              onClick={() => selectSovereign(null)}
-            >
-              Terminate Link
-            </button>
           </div>
         ) : (
           <div className="panel-section select-agent-hint">
             <div className="section-title">AI Communicator</div>
             <div className="hint-card-text">
-              🖱️ Select any Sovereign agent mesh inside the 3D grid viewport to open a secure direct-link transmitter interface.
+              🖱️ Select any Sovereign agent mesh to transmit signals.
             </div>
           </div>
         )}
 
-        {/* Simulated Multiplayer Logs Stream */}
         <div className="panel-section" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           <div className="section-title">Multiplayer Operator Lobby</div>
           <div className="log-display flex-grow-log">
@@ -967,21 +794,6 @@ export const EmergenceScene: React.FC<{
           </div>
         </div>
 
-        {/* Global actions */}
-        <div className="panel-section" style={{ margin: 0 }}>
-          <div className="button-grid" style={{ gap: '6px' }}>
-            <button className="cyber-btn" onClick={() => triggerSystemEvent('creation')}>🌱 Genesis</button>
-            <button className="cyber-btn danger" onClick={() => triggerSystemEvent('predator')}>⚔️ Hunt</button>
-            <button
-              className={`cyber-btn ${selectedTower ? 'active-mode' : ''}`}
-              onClick={toggleTowerPlacementMode}
-              aria-label="Toggle tower placement mode, keyboard shortcut T"
-            >
-              🧱 Toggle Towers (T)
-            </button>
-          </div>
-        </div>
-
         <div className="panel-section">
           <div className="section-title">NEXUS DEFENSE (War Feature)</div>
           {!gameState.active ? (
@@ -989,10 +801,9 @@ export const EmergenceScene: React.FC<{
           ) : (
             <>
               <div style={{ display: 'flex', gap: '10px', fontSize: '0.8rem', marginBottom: '10px' }}>
-                <div>Credits: <strong style={{color:'#00f0ff'}}>{Math.floor(gameState.money)} / {gameState.energyCap}</strong></div>
+                <div>Credits: <strong style={{color:'#00f0ff'}}>{Math.floor(gameState.money)}</strong></div>
                 <div>Health: <strong style={{color:'#ff0055'}}>{gameState.health}</strong></div>
                 <div>Wave: <strong>{gameState.wave}</strong></div>
-                <div>Score: <strong>{gameState.score}</strong></div>
               </div>
               <button className="cyber-btn" onClick={startWave} disabled={gameState.waveActive}>
                 {gameState.waveActive ? 'Wave in Progress...' : 'Start Next Wave'}
@@ -1006,50 +817,14 @@ export const EmergenceScene: React.FC<{
                     disabled={gameState.money < getTowerCost(type)}
                   >
                     <span className="tower-name">{type}</span>
-                    <span className="tower-cost">{getTowerCost(type)}c</span>
                   </button>
                 ))}
               </div>
-
-              {/* Emergent Word: AI Setup Recommendations */}
-              <div className="emergent-word-panel" style={{ marginTop: '15px', padding: '10px', background: 'rgba(57, 255, 20, 0.05)', border: '1px solid rgba(57, 255, 20, 0.2)', borderRadius: '4px' }}>
-                <div style={{ fontSize: '0.7rem', color: '#39ff14', fontWeight: 'bold', marginBottom: '5px', letterSpacing: '1px' }}>EMERGENT WORD // PROTOCOL</div>
-                <div style={{ fontSize: '0.65rem', color: '#ccc', lineHeight: '1.4' }}>
-                  <strong>Recommended Config:</strong> 3 Genesis + 2 Hunter.<br/>
-                  Genesis agents generate credits. Hunters keep order but risk <strong>Apex Mutation</strong> at 100% Corruption.
-                </div>
-              </div>
-
-              {gameState.lastMessage && (
-                <div style={{ marginTop: '8px', fontSize: '0.75rem', color: '#facc15', padding: '6px', background: 'rgba(250, 204, 21, 0.1)', border: '1px solid rgba(250, 204, 21, 0.3)', borderRadius: '4px' }}>
-                  {gameState.lastMessage}
-                </div>
-              )}
             </>
-          )}
-          {atariUnlocked && (
-            <a className="atari-wing-btn" href="../atari-lab/" style={{ marginTop: '10px' }}>
-              [ATARI_WING] - FORBIDDEN ACCESS
-            </a>
           )}
         </div>
       </div>
 
-      {/* 2. Top-right Return link */}
-      <div className="header-nav-overlay" onClick={(e) => e.stopPropagation()}>
-        <a href="../" className="nav-back-btn">
-          ← Return to Arcade Hub
-        </a>
-      </div>
-
-      {/* 3. Instructions Overlay */}
-      <div className="instructions-overlay">
-        <div><span>Orbit Controls:</span> Drag Left Click</div>
-        <div><span>Selection:</span> Click Sovereign Mesh</div>
-        <div><span>Zoom:</span> Scroll Wheel</div>
-      </div>
-
-      {/* 4. Canvas-based R3F isometric simulation area */}
       <div className="canvas-container">
         <Canvas
           shadows
@@ -1058,152 +833,80 @@ export const EmergenceScene: React.FC<{
             gl.setClearColor(new THREE.Color('#030307'));
           }}
         >
-          {/* Lighting */}
-          <ambientLight intensity={0.5} />
-          <pointLight position={[8, 12, 8]} intensity={4.0} castShadow />
-          <pointLight position={[-8, -5, -8]} intensity={2.0} color="#bd00ff" />
-          <directionalLight
-            position={[-8, 10, -8]}
-            intensity={1.8}
-            castShadow
-            shadow-mapSize={[1024, 1024]}
-          />
-
-          {/* Stellar nebula star backdrop */}
-          <Stars radius={150} depth={50} count={7000} factor={8} saturation={1.0} fade speed={2.5} />
-          <MovingNebula />
-          <AtmosphericParticles />
-          <LocalPlayer />
-
-          {/* 3D Grid components */}
-          <TerrainGrid instability={metrics.timelineInstability} />
-          <EnvironmentalSpikes instability={metrics.timelineInstability} />
-          
-          {/* Render the TD Path */}
-          {gameState.active && PATH.map((p, i) => (
-            <mesh key={`path_${i}`} position={[p.x, 0.05, p.z]} rotation={[-Math.PI/2, 0, 0]}>
-              <planeGeometry args={[1, 1]} />
-              <meshBasicMaterial color="#00f0ff" transparent opacity={0.15} />
-            </mesh>
-          ))}
-
-          <CentralPortal instability={metrics.timelineInstability} />
-          <DataFlows />
-          <CentralTowers alignment={metrics.worldAlignment} instability={metrics.timelineInstability} />
-          
-          {/* Render TD Towers */}
-          {gameEntities.towers.map(tower => (
-            <group key={tower.id} position={[tower.x, 0, tower.z]}>
-              <mesh position={[0, 0.5, 0]}>
-                <boxGeometry args={[0.6, 1, 0.6]} />
-                <meshStandardMaterial color={tower.type === 'purify' ? '#00f0ff' : tower.type === 'contain' ? '#a855f7' : tower.type === 'sentinel' ? '#ff0055' : '#00ffb7'} emissiveIntensity={0.5} />
+          <Suspense fallback={null}>
+            <ambientLight intensity={0.5} />
+            <pointLight position={[8, 12, 8]} intensity={4.0} castShadow />
+            <Stars radius={150} depth={50} count={7000} factor={8} saturation={1.0} fade speed={2.5} />
+            <MovingNebula />
+            <AtmosphericParticles />
+            <LocalPlayer />
+            <TerrainGrid instability={metrics.timelineInstability} />
+            <EnvironmentalSpikes instability={metrics.timelineInstability} />
+            
+            {gameState.active && PATH.map((p, i) => (
+              <mesh key={`path_${i}`} position={[p.x, 0.05, p.z]} rotation={[-Math.PI/2, 0, 0]}>
+                <planeGeometry args={[1, 1]} />
+                <meshBasicMaterial color="#00f0ff" transparent opacity={0.15} />
               </mesh>
-            </group>
-          ))}
+            ))}
 
-          {/* Render TD Enemies */}
-          {gameEntities.enemies.map(e => (
-            <group key={e.id} position={[e.x, 0.3, e.z]}>
-              <mesh>
-                <sphereGeometry args={[0.3, 16, 16]} />
-                <meshStandardMaterial color="#ff0055" emissive="#ff0000" emissiveIntensity={e.slowTimer > 0 ? 0 : 2} wireframe />
-              </mesh>
-              <Html position={[0, 0.5, 0]} center>
-                <div style={{ background:'rgba(0,0,0,0.5)', width:'30px', height:'4px', border:'1px solid #333' }}>
-                  <div style={{ background:'#ff0055', width:`${(e.hp/e.maxHp)*100}%`, height:'100%' }} />
-                </div>
-              </Html>
-            </group>
-          ))}
+            <CentralPortal instability={metrics.timelineInstability} />
+            <DataFlows />
+            <CentralTowers alignment={metrics.worldAlignment} instability={metrics.timelineInstability} />
+            
+            {gameEntities.towers.map(tower => (
+              <group key={tower.id} position={[tower.x, 0, tower.z]}>
+                <mesh position={[0, 0.5, 0]}>
+                  <boxGeometry args={[0.6, 1, 0.6]} />
+                  <meshStandardMaterial color={tower.type === 'purify' ? '#00f0ff' : tower.type === 'contain' ? '#a855f7' : tower.type === 'sentinel' ? '#ff0055' : '#00ffb7'} />
+                </mesh>
+              </group>
+            ))}
 
-          {/* Render TD Projectiles */}
-          {gameEntities.projectiles.map(p => (
-            <mesh key={p.id} position={[p.x, 0.5, p.z]}>
-              <sphereGeometry args={[0.1, 8, 8]} />
-              <meshBasicMaterial color={p.color} />
-            </mesh>
-          ))}
+            {gameEntities.enemies.map(e => (
+              <group key={e.id} position={[e.x, 0.3, e.z]}>
+                <mesh>
+                  <sphereGeometry args={[0.3, 16, 16]} />
+                  <meshStandardMaterial color="#ff0055" wireframe />
+                </mesh>
+              </group>
+            ))}
 
-          {/* Dynamic Sovereigns list */}
-          {sovereigns.map((sovereign: any, i: number) => (
-            <SovereignAgent
-              key={sovereign.name || i}
-              sovereign={sovereign}
-              index={i}
-              isSelected={selectedSovereignName === sovereign.name}
-              slowed={Boolean(slowedSovereigns[sovereign.name])}
-              threatFlash={Boolean(threatFlashes[sovereign.name])}
-              threatLevel={getThreatLevel(sovereign.corruption)}
-              onSelect={() => selectSovereign(sovereign.name)}
-            />
-          ))}
-
-          <mesh
-            rotation={[-Math.PI / 2, 0, 0]}
-            position={[0, 0.01, 0]}
-            onPointerMove={(e) => { handleGridPointerMove(e); handleTDGridPointerMove(e); }}
-            onPointerOut={() => setHoverCell(null)}
-            onClick={(e) => { handleGridClick(e); handleTDGridClick(e); }}
-          >
-            <planeGeometry args={[10, 10]} />
-            <meshBasicMaterial transparent opacity={0} />
-          </mesh>
-
-          {tdSelectedTower && hoverCell && (
-            <group position={[hoverCell.x, 0.08, hoverCell.z]}>
-              <mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-                <planeGeometry args={[0.9, 0.9]} />
-                <meshBasicMaterial color={hoverPlacementValid ? '#39ff14' : '#ef4444'} transparent opacity={0.25} />
-              </mesh>
-              <Html position={[0, 0.2, 0]} center>
-                <div
-                  className="html-label"
-                  style={{
-                    borderColor: hoverPlacementValid ? '#39ff14' : '#ef4444',
-                    borderStyle: hoverPlacementValid ? 'solid' : 'dashed'
-                  }}
-                >
-                  {hoverPlacementValid ? '✓ VALID' : '✗ BLOCKED'}
-                </div>
-              </Html>
-            </group>
-          )}
-
-          {/* Camera Controls */}
-          <OrbitControls
-            enableDamping
-            dampingFactor={0.06}
-            minDistance={4}
-            maxDistance={22}
-            maxPolarAngle={Math.PI / 2 - 0.05}
-          />
-
-          {/* Post-Processing Effects for Cinematic Neon Visuals */}
-          <EffectComposer>
-            <Bloom 
-              intensity={2.2} 
-              luminanceThreshold={0.12} 
-              luminanceSmoothing={0.9} 
-              mipmapBlur 
-            />
-            <Noise opacity={0.08} />
-            <Vignette eskil={false} offset={0.1} darkness={1.3} />
-            <ChromaticAberration
-              blendFunction={BlendFunction.NORMAL}
-              offset={new THREE.Vector2(0.001, 0.001)}
-            />
-            <Scanline opacity={0.15} />
-            {metrics.timelineInstability > 70 ? (
-              <Glitch
-                delay={new THREE.Vector2(1, 4)}
-                duration={new THREE.Vector2(0.1, 0.25)}
-                strength={new THREE.Vector2(0.2, 0.5)}
+            {sovereigns.map((sovereign: any, i: number) => (
+              <SovereignAgent
+                key={sovereign.name || i}
+                sovereign={sovereign}
+                index={i}
+                isSelected={selectedSovereignName === sovereign.name}
+                slowed={Boolean(slowedSovereigns[sovereign.name])}
+                threatFlash={Boolean(threatFlashes[sovereign.name])}
+                threatLevel={getThreatLevel(sovereign.corruption)}
+                onSelect={() => selectSovereign(sovereign.name)}
               />
-            ) : <></>}
-          </EffectComposer>
+            ))}
+
+            <mesh
+              rotation={[-Math.PI / 2, 0, 0]}
+              position={[0, 0.01, 0]}
+              onPointerMove={handleTDGridPointerMove}
+              onClick={handleTDGridClick}
+            >
+              <planeGeometry args={[10, 10]} />
+              <meshBasicMaterial transparent opacity={0} />
+            </mesh>
+
+            <OrbitControls enableDamping minDistance={4} maxDistance={22} />
+
+            <EffectComposer>
+              <Bloom intensity={1.8} luminanceThreshold={0.15} mipmapBlur />
+              <Noise opacity={0.05} />
+              <Vignette darkness={1.1} />
+              <Scanline opacity={0.1} />
+            </EffectComposer>
+          </Suspense>
         </Canvas>
       </div>
-      <AtariWingOverlay key={atariOverlayTrigger} unlocked={atariOverlayTrigger > 0} />
+      <AtariWingOverlay key={atariOverlayTrigger} unlocked={atariUnlocked} />
       <ChatOverlay />
     </div>
   );
