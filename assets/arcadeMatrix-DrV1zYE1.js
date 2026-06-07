@@ -1,0 +1,6 @@
+import{a as e}from"./rolldown-runtime-Cyuzqnbw.js";import"./modulepreload-polyfill-Dezn_h7o.js";import{Q as t}from"./firebase-auth-BIfC81OX.js";import{D as n}from"./react-BCC8demX.js";import{r}from"./framer-motion-c5I7Njn9.js";import{n as i,t as a}from"./EmergenceScene-DMO4k-6H.js";import{t as o}from"./ConscienceProvider-DZ3GAJdW.js";var s=e(t(),1),c=e(n(),1),l=r(),u=document.getElementById(`emergence-root`);if(u)try{(0,c.createRoot)(u).render((0,l.jsx)(s.StrictMode,{children:(0,l.jsx)(o,{children:(0,l.jsx)(i,{children:(0,l.jsx)(a,{})})})}))}catch(e){console.error(`Failed to render Matrix of Conscience:`,e),u.innerHTML=`<div style="padding: 20px; color: #ff0055; font-family: monospace;">
+      <h2>FATAL_ERROR: Matrix Mount Failed</h2>
+      <pre>${e instanceof Error?e.message:String(e)}</pre>
+    </div>`}else document.body.innerHTML=`<div style="padding: 20px; color: #ff0055; font-family: monospace;">
+    <h2>FATAL_ERROR: Root container #emergence-root not found.</h2>
+  </div>`;window.addEventListener(`error`,e=>{console.error(`Global JS Error:`,e.error)});
