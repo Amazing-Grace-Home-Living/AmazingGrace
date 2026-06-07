@@ -1,0 +1,164 @@
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #020205;
+  color: #fff;
+  font-family: sans-serif;
+}
+
+.game-title {
+  margin: 0.25rem 0 0;
+  font-size: clamp(1.3rem, 4vw, 1.8rem);
+  letter-spacing: 0.15em;
+  color: #ff3366;
+  text-shadow: 0 0 18px rgba(255,75,139,0.5);
+}
+
+/* ── HUD ── */
+#hud {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+#hud span {
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.2);
+  white-space: nowrap;
+}
+
+/* ── Grid ── */
+#grid {
+  display: grid;
+  grid-template-columns: repeat(8, 44px);
+  grid-template-rows: repeat(6, 44px);
+  gap: 3px;
+  background: #0b0d16;
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.cell {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.03);
+  position: relative;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.cell.path { background: rgba(53,224,255,0.08); }
+.cell.placement-hover:hover { outline: 2px dashed #00e5ff; }
+
+.cell.tower-1 {
+  background: rgba(189,0,255,0.4);
+  box-shadow: 0 0 8px rgba(189,0,255,0.7);
+}
+
+.cell.tower-2 {
+  background: rgba(255,216,107,0.45);
+  box-shadow: 0 0 12px rgba(255,216,107,0.8);
+}
+
+.enemy {
+  width: 70%;
+  height: 70%;
+  border-radius: 50%;
+  background: #ff3366;
+  position: absolute;
+  top: 15%;
+  left: 15%;
+  transition: background 0.2s;
+}
+
+.enemy.elite { background: #ff9900; box-shadow: 0 0 8px rgba(255,153,0,0.8); animation: elitePulse 1.4s ease-in-out infinite; }
+.enemy.boss  { background: #bd00ff; width: 90%; height: 90%; top: 5%; left: 5%; box-shadow: 0 0 14px rgba(189,0,255,0.9); animation: bossFlicker 0.7s ease-in-out infinite; }
+
+@keyframes elitePulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(255,153,0,0.8); }
+  50%       { box-shadow: 0 0 18px rgba(255,153,0,1); transform: scale(1.08); }
+}
+@keyframes bossFlicker {
+  0%, 100% { background: #bd00ff; box-shadow: 0 0 14px rgba(189,0,255,0.9); }
+  40%       { background: #ff4b8b; box-shadow: 0 0 20px rgba(255,75,139,1); }
+  70%       { background: #00e5ff; box-shadow: 0 0 16px rgba(0,229,255,0.9); }
+}
+
+/* ── Controls ── */
+#controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.ctrl-btn {
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.ctrl-btn:hover { background: rgba(255,255,255,0.08); border-color: #00e5ff; }
+.ctrl-btn.active { background: rgba(53,224,255,0.12); border-color: #00e5ff; color: #00e5ff; }
+.ctrl-btn.elite-on { background: rgba(255,75,139,0.15); border-color: #ff3366; color: #ff3366; }
+
+/* ── Info panel ── */
+#info-panel {
+  max-width: 400px;
+  width: 100%;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-size: 0.82rem;
+  color: #aaa;
+  min-height: 3rem;
+}
+
+#info-panel strong { color: #ffd86b; }
+
+/* ── Tower upgrade panel ── */
+#upgrade-panel {
+  max-width: 400px;
+  width: 100%;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-size: 0.82rem;
+}
+
+#upgrade-panel h3 { margin: 0 0 0.5rem; font-size: 0.9rem; color: #ffd86b; }
+
+/* ── Log ── */
+#log {
+  max-width: 400px;
+  width: 100%;
+  max-height: 80px;
+  overflow-y: auto;
+  font-size: 0.75rem;
+  color: #aaa;
+  padding: 0 0.25rem;
+}
+
+#log p { margin: 0.1rem 0; }
+#log p.warn { color: #ff3366; }
+#log p.good { color: #00e5ff; }
+#log p.elite { color: #ffd86b; }
