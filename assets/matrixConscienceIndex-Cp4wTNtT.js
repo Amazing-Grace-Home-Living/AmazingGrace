@@ -1,0 +1,7 @@
+import{a as e}from"./rolldown-runtime-Cyuzqnbw.js";import"./modulepreload-polyfill-Dezn_h7o.js";import{Q as t}from"./firebase-auth-DG4bAcvp.js";import{D as n}from"./react-DT6GgfU8.js";import{r}from"./framer-motion-pOztdXsK.js";import{n as i,t as a}from"./EmergenceScene-7YVS1FFd.js";import{t as o}from"./ConscienceProvider-B7E9XRw-.js";var s=e(t(),1),c=e(n(),1),l=r(),u=document.getElementById(`matrix-root`);if(u)try{(0,c.createRoot)(u).render((0,l.jsx)(s.StrictMode,{children:(0,l.jsx)(o,{children:(0,l.jsx)(i,{children:(0,l.jsx)(a,{})})})}))}catch(e){console.error(`Failed to render Standalone Matrix:`,e),u.innerHTML=`<div style="padding: 20px; color: #00f0ff; font-family: monospace; background: #05050c; height: 100vh;">
+      <h2>SYSTEM_ERROR: Matrix initialization failure.</h2>
+      <p>The neural link could not be established.</p>
+      <pre style="color: #ff0055; margin-top: 20px;">${e instanceof Error?e.message:String(e)}</pre>
+    </div>`}else document.body.innerHTML=`<div style="padding: 20px; color: #ff0055; font-family: monospace;">
+    <h2>FATAL_ERROR: Matrix root container not found.</h2>
+  </div>`;window.addEventListener(`error`,e=>{console.error(`Global Matrix Node Error:`,e.error)});
