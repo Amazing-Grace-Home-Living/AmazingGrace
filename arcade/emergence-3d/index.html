@@ -1,395 +1,50 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emergence 3D - Matrix of Conscience</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Emergence 3D — Matrix of Conscience</title>
+    <meta
+      name="description"
+      content="Emergence 3D simulation rendered through the standalone module architecture."
+    />
+    <meta name="theme-color" content="#05050c" />
+    <link rel="icon" type="image/png" href="../../assets/logo.png" />
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background-color: #050505;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #00ffcc;
-            user-select: none;
-        }
-        #canvas-container {
-            width: 100vw;
-            height: 100vh;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1;
-        }
-        #ui-layer {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 10;
-            background: rgba(5, 15, 10, 0.85);
-            border: 1px solid #00ffcc;
-            box-shadow: 0 0 15px rgba(0, 255, 204, 0.2);
-            border-radius: 8px;
-            padding: 20px;
-            max-width: 320px;
-            pointer-events: auto;
-        }
-        h1 {
-            font-size: 1.4rem;
-            margin: 0 0 5px 0;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 0 0 8px #00ffcc;
-        }
-        .subtitle {
-            font-size: 0.8rem;
-            color: #88c0d0;
-            margin-bottom: 15px;
-        }
-        .stat-line {
-            font-size: 0.9rem;
-            margin: 6px 0;
-            display: flex;
-            justify-content: space-between;
-        }
-        .stat-val {
-            font-family: monospace;
-            color: #ffffff;
-        }
-        .controls {
-            margin-top: 15px;
-            border-top: 1px solid rgba(0, 255, 204, 0.3);
-            padding-top: 15px;
-        }
-        button {
-            background: transparent;
-            border: 1px solid #00ffcc;
-            color: #00ffcc;
-            padding: 8px 14px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s ease;
-            width: 100%;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-        }
-        button:hover {
-            background: #00ffcc;
-            color: #050505;
-            box-shadow: 0 0 10px #00ffcc;
-        }
-        .instructions {
-            font-size: 0.75rem;
-            color: #a3be8c;
-            margin-top: 15px;
-            line-height: 1.4;
-        }
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        background: #05050c;
+        color: #f3f6ff;
+        overflow: hidden;
+      }
+
+      #emergence-root {
+        width: 100%;
+        height: 100%;
+      }
+
+      .arcade-nav {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 1000;
+        color: #fff;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 999px;
+        padding: 0.45rem 0.85rem;
+        background: rgba(5, 5, 12, 0.75);
+        font-family: Inter, sans-serif;
+        font-size: 0.85rem;
+      }
     </style>
-    <!-- Include Three.js and OrbitControls safely via CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-</head>
-<body>
-
-    <div id="canvas-container"></div>
-
-    <div id="ui-layer">
-        <h1>Emergence 3D</h1>
-        <div class="subtitle">Conscience Matrix Automata</div>
-        
-        <div class="stat-line">
-            <span>Grid Scope:</span>
-            <span class="stat-val">20 × 20 × 20</span>
-        </div>
-        <div class="stat-line">
-            <span>Active Nodes:</span>
-            <span class="stat-val" id="active-count">0</span>
-        </div>
-        <div class="stat-line">
-            <span>Generation:</span>
-            <span class="stat-val" id="gen-count">0</span>
-        </div>
-
-        <div class="controls">
-            <button id="btn-pause">Pause / Execute</button>
-            <button id="btn-clear">Clear Grid</button>
-            <button id="btn-seed">Random Seed</button>
-        </div>
-
-        <div class="instructions">
-            <strong>Navigation Matrix:</strong><br>
-            • Left Click + Drag to rotate viewpoint<br>
-            • Right Click + Drag to pan space<br>
-            • Scroll wheel to zoom depth
-        </div>
-    </div>
-
-    <script>
-        // --- CONSTANTS & CONFIG ---
-        const GRID_SIZE = 20; // 20x20x20 space = 8,000 cells
-        let currentGrid = new Uint8Array(GRID_SIZE * GRID_SIZE * GRID_SIZE);
-        let nextGrid = new Uint8Array(GRID_SIZE * GRID_SIZE * GRID_SIZE);
-        
-        // Ruleset for 3D Life (Environment: Birth on 5-6 neighbors, Survival on 4-5 neighbors)
-        const RULE_B_MIN = 5, RULE_B_MAX = 6;
-        const RULE_S_MIN = 4, RULE_S_MAX = 5;
-
-        // Three.js Runtime elements
-        let scene, camera, renderer, controls;
-        let instancedMesh;
-        let dummyObject = new THREE.Object3D();
-        let activeColors = [];
-        
-        let isRunning = true;
-        let generation = 0;
-        let lastUpdateTime = 0;
-        const UPDATE_INTERVAL = 300; // ms per engine processing step
-
-        // --- UTILITY: 1D Index Conversion ---
-        function getIndex(x, y, z) {
-            return x * GRID_SIZE * GRID_SIZE + y * GRID_SIZE + z;
-        }
-
-        // --- GRID GENERATION & SEEDING ---
-        function seedGridRandomly(density = 0.15) {
-            generation = 0;
-            for (let i = 0; i < currentGrid.length; i++) {
-                currentGrid[i] = Math.random() < density ? 1 : 0;
-            }
-            updateUI();
-        }
-
-        function clearGrid() {
-            generation = 0;
-            currentGrid.fill(0);
-            updateUI();
-        }
-
-        // --- CORE LOGIC: DOUBLE BUFFER CALCULATIONS ---
-        function countNeighbors(cx, cy, cz) {
-            let count = 0;
-            for (let dx = -1; dx <= 1; dx++) {
-                for (let dy = -1; dy <= 1; dy++) {
-                    for (let dz = -1; dz <= 1; dz++) {
-                        if (dx === 0 && dy === 0 && dz === 0) continue;
-                        
-                        let nx = cx + dx;
-                        let ny = cy + dy;
-                        let nz = cz + dz;
-
-                        // Boundary constraints check
-                        if (nx >= 0 && nx < GRID_SIZE && ny >= 0 && ny < GRID_SIZE && nz >= 0 && nz < GRID_SIZE) {
-                            if (currentGrid[getIndex(nx, ny, nz)] === 1) {
-                                count++;
-                            }
-                        }
-                    }
-                }
-            }
-            return count;
-        }
-
-        function computeNextGeneration() {
-            let aliveCount = 0;
-
-            for (let x = 0; x < GRID_SIZE; x++) {
-                for (let y = 0; y < GRID_SIZE; y++) {
-                    for (let z = 0; z < GRID_SIZE; z++) {
-                        let idx = getIndex(x, y, z);
-                        let neighbors = countNeighbors(x, y, z);
-                        let currentState = currentGrid[idx];
-
-                        if (currentState === 1) {
-                            // Survival Rules
-                            if (neighbors >= RULE_S_MIN && neighbors <= RULE_S_MAX) {
-                                nextGrid[idx] = 1;
-                                aliveCount++;
-                            } else {
-                                nextGrid[idx] = 0; // Death by isolation or overpopulation
-                            }
-                        } else {
-                            // Birth Rules
-                            if (neighbors >= RULE_B_MIN && neighbors <= RULE_B_MAX) {
-                                nextGrid[idx] = 1;
-                                aliveCount++;
-                            } else {
-                                nextGrid[idx] = 0;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Swap buffers safely
-            let temp = currentGrid;
-            currentGrid = nextGrid;
-            nextGrid = temp;
-
-            generation++;
-            updateUI(aliveCount);
-        }
-
-        // --- ENGINE GRAPHICS ENGINE INITIALIZATION ---
-        function initGraphics() {
-            const container = document.getElementById('canvas-container');
-
-            // Scene setup
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x040a08);
-            scene.fog = new THREE.FogExp2(0x040a08, 0.015);
-
-            // Camera Setup
-            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(GRID_SIZE * 1.5, GRID_SIZE * 1.5, GRID_SIZE * 2.5);
-
-            // Renderer
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            container.appendChild(renderer.domElement);
-
-            // Camera controls configuration
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-            controls.target.set(GRID_SIZE / 2, GRID_SIZE / 2, GRID_SIZE / 2);
-
-            // Lighting Matrix
-            const ambientLight = new THREE.AmbientLight(0x333333);
-            scene.add(ambientLight);
-
-            const dirLight1 = new THREE.DirectionalLight(0x00ffcc, 1);
-            dirLight1.position.set(1, 1, 1).normalize();
-            scene.add(dirLight1);
-
-            const dirLight2 = new THREE.DirectionalLight(0xff00ff, 0.5);
-            dirLight2.position.set(-1, -1, -1).normalize();
-            scene.add(dirLight2);
-
-            // Optimized Rendering Construction via InstancedMesh
-            // This renders all cubes in exactly one draw call instead of thousands.
-            const geometry = new THREE.BoxGeometry(0.8, 0.8, 0.8);
-            const material = new THREE.MeshPhongMaterial({
-                shininess: 80,
-                specular: 0xffffff
-            });
-
-            instancedMesh = new THREE.InstancedMesh(geometry, material, GRID_SIZE * GRID_SIZE * GRID_SIZE);
-            
-            // Build visual transforms for all allocations
-            let idx = 0;
-            for (let x = 0; x < GRID_SIZE; x++) {
-                for (let y = 0; y < GRID_SIZE; y++) {
-                    for (let z = 0; z < GRID_SIZE; z++) {
-                        dummyObject.position.set(x, y, z);
-                        dummyObject.updateMatrix();
-                        instancedMesh.setMatrixAt(idx++, dummyObject.matrix);
-                    }
-                }
-            }
-            
-            scene.add(instancedMesh);
-
-            // Resize listener
-            window.addEventListener('resize', onWindowResize, false);
-            setupUserInterface();
-        }
-
-        // --- RENDERING RENDITIONS ---
-        function renderScene() {
-            let idx = 0;
-            let aliveCount = 0;
-            const colorObj = new THREE.Color();
-
-            for (let x = 0; x < GRID_SIZE; x++) {
-                for (let y = 0; y < GRID_SIZE; y++) {
-                    for (let z = 0; z < GRID_SIZE; z++) {
-                        let isAlive = currentGrid[getIndex(x, y, z)] === 1;
-
-                        if (isAlive) {
-                            dummyObject.position.set(x, y, z);
-                            dummyObject.scale.set(1, 1, 1);
-                            aliveCount++;
-                            
-                            // Dynamic color allocation based on spatial vectors
-                            let r = x / GRID_SIZE;
-                            let g = y / GRID_SIZE;
-                            let b = z / GRID_SIZE;
-                            colorObj.setRGB(r * 0.3 + 0.1, g * 0.9 + 0.1, b * 0.7 + 0.3);
-                            instancedMesh.setColorAt(idx, colorObj);
-                        } else {
-                            // Shrink dead cubes out of sight instead of destroying the mesh allocation
-                            dummyObject.scale.set(0, 0, 0);
-                        }
-
-                        dummyObject.updateMatrix();
-                        instancedMesh.setMatrixAt(idx, dummyObject.matrix);
-                        idx++;
-                    }
-                }
-            }
-
-            instancedMesh.instanceMatrix.needsUpdate = true;
-            if (instancedMesh.instanceColor) instancedMesh.instanceColor.needsUpdate = true;
-        }
-
-        // --- SYSTEM LOOPS ---
-        function animate(timestamp) {
-            requestAnimationFrame(animate);
-
-            if (isRunning && timestamp - lastUpdateTime > UPDATE_INTERVAL) {
-                computeNextGeneration();
-                lastUpdateTime = timestamp;
-            }
-
-            renderScene();
-            controls.update();
-            renderer.render(scene, camera);
-        }
-
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        // --- RUNTIME MANIFEST INTERFACES ---
-        function setupUserInterface() {
-            document.getElementById('btn-pause').addEventListener('click', () => {
-                isRunning = !isRunning;
-                document.getElementById('btn-pause').style.borderColor = isRunning ? '#00ffcc' : '#ff0055';
-                document.getElementById('btn-pause').style.color = isRunning ? '#00ffcc' : '#ff0055';
-            });
-
-            document.getElementById('btn-clear').addEventListener('click', () => {
-                clearGrid();
-            });
-
-            document.getElementById('btn-seed').addEventListener('click', () => {
-                seedGridRandomly();
-            });
-        }
-
-        function updateUI(explicitCount = null) {
-            let count = explicitCount;
-            if (count === null) {
-                count = 0;
-                for (let i = 0; i < currentGrid.length; i++) {
-                    if (currentGrid[i] === 1) count++;
-                }
-            }
-            document.getElementById('active-count').innerText = count;
-            document.getElementById('gen-count').innerText = generation;
-        }
-
-        // --- KICKSTART PROCEDURES ---
-        initGraphics();
-        seedGridRandomly(0.12);
-        requestAnimationFrame(animate);
-
-    </script>
-</body>
+  </head>
+  <body>
+    <a class="arcade-nav" href="../" aria-label="Return to Arcade menu">← Back to Arcade</a>
+    <div id="emergence-root"></div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
 </html>

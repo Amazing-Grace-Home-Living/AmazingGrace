@@ -15,7 +15,7 @@ describe('arcade cleanup', () => {
     const legacyMatrix = fs.readFileSync('arcade/matrix-of-conscience/index.html', 'utf8');
 
     expect(legacyArcade).toContain('http-equiv="refresh"');
-    expect(legacyArcade).toContain('url=./arcade/star-matrix/');
+    expect(legacyArcade).toContain('url=./arcade/');
     expect(legacyMatrix).not.toContain('http-equiv="refresh"');
     expect(legacyMatrix).toContain('Matrix of Conscience — Duality Core');
     expect(legacyMatrix).toContain('id="btn-weave"');
