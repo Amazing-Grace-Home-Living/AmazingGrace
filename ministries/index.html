@@ -505,6 +505,11 @@
             border: 1px solid rgba(239, 68, 68, 0.3);
             color: #f87171;
         }
+        #puzzle-msg.beta-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+        }
 
         /* Continue / action buttons */
         .story-btn {
@@ -1095,8 +1100,8 @@
             puzzleSolved = true;
             
             const msg = document.getElementById('puzzle-msg');
-            msg.textContent = "⚙️ Firebase Sync Status: [ERROR_SAVE_SCORE_DENIED] — Verification feature offline, but campaign alignment matched successfully!";
-            msg.className = 'beta-error';
+            msg.textContent = "✅ Firebase Sync Status: [SUCCESS] — Campaign alignment synchronized successfully!";
+            msg.className = 'beta-success';
             
             document.getElementById('solve-btn').style.display = 'inline-flex';
         }
