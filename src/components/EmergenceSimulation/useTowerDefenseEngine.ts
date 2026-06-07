@@ -50,7 +50,12 @@ export const TOWER_DEFS = {
   genesis: { cost: 250, range: 3.0, damage: 20, cooldown: 60, color: '#00ffb7', effect: 'splash' as const },
 };
 
-export const useTowerDefenseEngine = (activeRules: SandboxRule[], playerReputation: PlayerReputation) => {
+export const useTowerDefenseEngine = (
+  activeRules: SandboxRule[], 
+  playerReputation: PlayerReputation,
+  adjustKarma?: (uid: string, delta: number, isBetrayal?: boolean) => void,
+  uid?: string
+) => {
   const [gameState, setGameState] = useState({
     active: false,
     waveActive: false,
@@ -120,7 +125,10 @@ export const useTowerDefenseEngine = (activeRules: SandboxRule[], playerReputati
     setGameState(prev => {
       const evaluation = evaluateAllianceAction(playerReputation, 'BUILD_DEFENSE', prev.waveActive ? 60 : 0);
       if (evaluation.vote === 'VETO') {
-        return { ...prev, lastMessage: evaluation.reasoning };
+        if (adjustKarma && uid) {
+          adjustKarma(uid, -2, true); // Deduct 2 karma, flag as betrayal
+        }
+        return { ...prev, lastMessage: `${evaluation.reasoning} [PENALTY: -2 KARMA]` };
       }
 
       if (prev.money < cost) {
@@ -143,7 +151,35 @@ export const useTowerDefenseEngine = (activeRules: SandboxRule[], playerReputati
 
       return { ...prev, money: prev.money - cost, lastMessage: evaluation.reasoning };
     });
-  }, [getTowerCost, playerReputation]);
+  }, [getTowerCost, playerReputation, adjustKarma, uid]);
+
+  const poolResources = useCallback((amount: number) => {
+    let resultMessage = '';
+    let success = false;
+    setGameState(prev => {
+      if (prev.money < amount) {
+        resultMessage = "Insufficient funds to pool.";
+        return { ...prev, lastMessage: resultMessage };
+      }
+
+      const evaluation = evaluateAllianceAction(playerReputation, 'CHANGE_GDP_POOL', prev.waveActive ? 60 : 0);
+      
+      if (evaluation.vote === 'VETO') {
+        resultMessage = `[TRANSFER VETOED] ${evaluation.reasoning}`;
+        return { ...prev, lastMessage: resultMessage };
+      }
+
+      success = true;
+      resultMessage = `[TRANSFER APPROVED] Successfully pooled ${amount} credits. +1 Karma gained.`;
+      
+      if (adjustKarma && uid) {
+        adjustKarma(uid, 1, false); // Add 1 karma
+      }
+
+      return { ...prev, money: prev.money - amount, lastMessage: resultMessage };
+    });
+    return { success, message: resultMessage };
+  }, [playerReputation, adjustKarma, uid]);
 
   // Main game loop
   useEffect(() => {
@@ -338,6 +374,7 @@ export const useTowerDefenseEngine = (activeRules: SandboxRule[], playerReputati
     startWave,
     placeTower,
     getTowerCost,
+    poolResources,
     gameEntities: stateRef.current,
     PATH
   };

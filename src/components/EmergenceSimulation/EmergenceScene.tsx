@@ -10,6 +10,7 @@ import * as THREE from 'three';
 import { useEmergenceData, Sovereign } from './EmergenceDataContext';
 import { AtariWingOverlay, useKonamiCode } from './AtariWingUnlock';
 import { PlayerReputation } from './aiReputationEvaluator';
+import { ChatOverlay } from '../ChatOverlay';
 import './emergence.css';
 
 // ── 0. Moving Nebula Backdrop ──
@@ -681,7 +682,17 @@ const SovereignAgent: React.FC<{
 };
 
 // ── 7. Main Emergence Scene View Component ──
-export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReputation?: PlayerReputation }> = ({ activeRules = [], playerReputation = { globalKarma: 10, historicalBetrayalsLogged: 0 } }) => {
+export const EmergenceScene: React.FC<{ 
+  activeRules?: SandboxRule[], 
+  playerReputation?: PlayerReputation,
+  adjustKarma?: (uid: string, delta: number, isBetrayal?: boolean) => void,
+  uid?: string
+}> = ({ 
+  activeRules = [], 
+  playerReputation = { globalKarma: 10, historicalBetrayalsLogged: 0 },
+  adjustKarma,
+  uid
+}) => {
   const {
     metrics,
     veilState,
@@ -729,8 +740,17 @@ export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReput
 
   const { globalCollapseRisk } = useConscience();
 
-  const tdEngine = useTowerDefenseEngine(activeRules, playerReputation);
-  const { gameState, gameEntities, startGame, startWave, placeTower: placeTDTower, getTowerCost, PATH } = tdEngine;
+  const tdEngine = useTowerDefenseEngine(activeRules, playerReputation, adjustKarma, uid);
+  const { gameState, gameEntities, startGame, startWave, placeTower: placeTDTower, getTowerCost, PATH, poolResources } = tdEngine;
+
+  const [poolAmount, setPoolAmount] = useState(0);
+
+  const handlePoolResources = useCallback(() => {
+    if (!poolResources || poolAmount <= 0) return;
+    const { success, message } = poolResources(poolAmount);
+    addMultiplayerLog(message, 'System', success ? 'event' : 'error');
+    setPoolAmount(0);
+  }, [poolResources, poolAmount, addMultiplayerLog]);
 
   // Sync TD towers to hover logic
   const handleTDGridPointerMove = (e: ThreeEvent<PointerEvent>) => {
@@ -889,6 +909,32 @@ export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReput
                 />
                 <button type="submit" className="comm-send-btn">Send</button>
               </form>
+
+              {/* Resource Pooling UI */}
+              {gameState.active && (
+                <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px', background: 'rgba(0,255,255,0.05)', padding: '8px', borderRadius: '4px', border: '1px solid rgba(0,255,255,0.1)' }}>
+                  <div style={{ fontSize: '0.75rem', color: '#00f0ff', display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Pool Resources (GDP)</span>
+                    <span>{poolAmount} / {Math.floor(gameState.money)}</span>
+                  </div>
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max={Math.floor(gameState.money)} 
+                    value={poolAmount} 
+                    onChange={e => setPoolAmount(Number(e.target.value))} 
+                    style={{ width: '100%', accentColor: '#00f0ff' }}
+                  />
+                  <button 
+                    className="comm-send-btn" 
+                    style={{ width: '100%', opacity: poolAmount > 0 ? 1 : 0.5, cursor: poolAmount > 0 ? 'pointer' : 'not-allowed' }}
+                    onClick={handlePoolResources}
+                    disabled={poolAmount <= 0}
+                  >
+                    Transfer Credits
+                  </button>
+                </div>
+              )}
             </div>
             
             <button
@@ -1158,6 +1204,7 @@ export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReput
         </Canvas>
       </div>
       <AtariWingOverlay key={atariOverlayTrigger} unlocked={atariOverlayTrigger > 0} />
+      <ChatOverlay />
     </div>
   );
 };

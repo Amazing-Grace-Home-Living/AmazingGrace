@@ -1,4 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
+import { signInWithGoogle } from '../../firebase/auth';
+import { Loader2 } from 'lucide-react';
 
 export interface UserProfile {
   name: string;
@@ -13,38 +15,24 @@ interface AuthProps {
 }
 
 export const GoogleAuthOverlay: React.FC<AuthProps> = ({ onSignIn, onBypass }) => {
-  useEffect(() => {
-    // Initialize Google Auth client global hook
-    if ((window as any).google) {
-      (window as any).google.accounts.id.initialize({
-        // In a real production app, use the actual Client ID
-        client_id: "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
-        callback: (response: any) => {
-          try {
-            // Decode the JWT token to extract the user's cross-session identity
-            const base64Url = response.credential.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const payload = JSON.parse(window.atob(base64));
-            
-            onSignIn({
-              name: payload.name || "Verified Architect",
-              email: payload.email,
-              token: response.credential,
-              karma: 80 // Default high karma for verified users
-            });
-          } catch (e) {
-            console.error("Failed to decode JWT:", e);
-            onBypass();
-          }
-        }
-      });
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
-      (window as any).google.accounts.id.renderButton(
-        document.getElementById("google-signin-btn"),
-        { theme: "filled_black", size: "large", text: "signin_with" }
-      );
+  const handleSignIn = async () => {
+    setIsSigningIn(true);
+    try {
+      const user = await signInWithGoogle();
+      onSignIn({
+        name: user.displayName || "Verified Architect",
+        email: user.email || "",
+        token: (user as any).accessToken,
+        karma: 80 // Default high karma for verified users
+      });
+    } catch (error) {
+      console.error("Google Sign-In Error:", error);
+    } finally {
+      setIsSigningIn(false);
     }
-  }, [onSignIn, onBypass]);
+  };
 
   return (
     <div style={{
@@ -66,11 +54,31 @@ export const GoogleAuthOverlay: React.FC<AuthProps> = ({ onSignIn, onBypass }) =
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', alignItems: 'center' }}>
-          <div id="google-signin-btn" style={{ minHeight: '40px' }}>
-            {!(window as any).google && (
-               <span style={{color: '#888', fontSize: '12px'}}>Google Identity Services loading...</span>
+          <button 
+            onClick={handleSignIn}
+            disabled={isSigningIn}
+            style={{ 
+              background: '#fff', 
+              color: '#000', 
+              border: 'none', 
+              padding: '12px 24px', 
+              borderRadius: '8px', 
+              fontWeight: 'bold', 
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              transition: 'opacity 0.2s'
+            }}
+          >
+            {isSigningIn ? (
+              <Loader2 size={18} className="animate-spin" />
+            ) : (
+              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="Google" />
             )}
-          </div>
+            Sign in with Google
+          </button>
+          
           <button onClick={onBypass} style={{ background: 'transparent', border: 'none', color: '#888', cursor: 'pointer', fontSize: '11px', textDecoration: 'underline' }}>
             Proceed as Unverified Guest (Low Initial Trust)
           </button>

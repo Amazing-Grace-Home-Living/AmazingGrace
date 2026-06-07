@@ -1207,7 +1207,12 @@ function MatrixCoreMaster({ activeUser }: { activeUser: string }) {
                       height: '500px'
                     }}>
                       <EmergenceDataProvider>
-                        <EmergenceScene activeRules={activeRules} playerReputation={currentPlayerReputation} />
+                        <EmergenceScene 
+                          activeRules={activeRules} 
+                          playerReputation={currentPlayerReputation} 
+                          adjustKarma={adjustKarma}
+                          uid={currentUser.uid}
+                        />
                       </EmergenceDataProvider>
                     </div>
                   </div>

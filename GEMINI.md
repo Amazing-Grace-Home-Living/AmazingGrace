@@ -31,7 +31,7 @@
 
 ## Firebase Configuration
 - Root: `.`
-- Project: `amazing-grace-hl-bbeaa`
+- Project: `amazing-grace-hl`
 - Backend: `limitlessnexus` (App Hosting)
 
 ## Key Master Integration

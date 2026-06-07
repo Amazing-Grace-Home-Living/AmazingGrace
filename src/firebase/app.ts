@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
-import { getAnalytics, isSupported, type Analytics } from 'firebase/analytics';
+import { getAnalytics, isSupported as isAnalyticsSupported, type Analytics } from 'firebase/analytics';
+import { getMessaging, getToken, onMessage, isSupported as isMessagingSupported, type Messaging } from 'firebase/messaging';
 
 type ViteEnvLike = Record<string, string | undefined>;
 
@@ -52,10 +53,45 @@ let analyticsPromise: Promise<Analytics | null> | null = null;
 
 export function getFirebaseAnalytics(): Promise<Analytics | null> {
   if (!analyticsPromise) {
-    analyticsPromise = isSupported()
+    analyticsPromise = isAnalyticsSupported()
       .then((supported) => (supported ? getAnalytics(getFirebaseApp()) : null))
       .catch(() => null);
   }
 
   return analyticsPromise;
+}
+
+let messagingPromise: Promise<Messaging | null> | null = null;
+
+export function getFirebaseMessaging(): Promise<Messaging | null> {
+  if (!messagingPromise) {
+    messagingPromise = isMessagingSupported()
+      .then((supported) => (supported ? getMessaging(getFirebaseApp()) : null))
+      .catch(() => null);
+  }
+  return messagingPromise;
+}
+
+export const VAPID_KEY = optionalEnv('VITE_FIREBASE_VAPID_KEY');
+
+export async function requestMessagingToken(): Promise<string | null> {
+  const messaging = await getFirebaseMessaging();
+  if (!messaging || !VAPID_KEY) return null;
+
+  try {
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') {
+      return await getToken(messaging, { vapidKey: VAPID_KEY });
+    }
+  } catch (err) {
+    console.error('An error occurred while retrieving token:', err);
+  }
+  return null;
+}
+
+export async function onForegroundMessage(callback: (payload: any) => void) {
+  const messaging = await getFirebaseMessaging();
+  if (messaging) {
+    return onMessage(messaging, callback);
+  }
 }

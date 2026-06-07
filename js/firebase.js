@@ -4,31 +4,44 @@
  * In production this module bridges Firebase Auth + Realtime Database.
  * For local / demo use it falls back to localStorage so the UI works
  * without a live Firebase project.
- *
- * To enable Firebase in production:
- *   1. Set window.__FIREBASE_CONFIG to your Firebase config object.
- *   2. Uncomment the real import statements and implementations below.
  */
 
-/* ── Firebase real implementation (uncomment in production) ───────────────
-import { initializeApp }                                  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getDatabase, ref, get, set, update }            from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
-import { getAuth, signInWithEmailAndPassword, signOut }   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { initializeApp } from 'firebase/app';
+import { getAnalytics, isSupported } from 'firebase/analytics';
+import { getDatabase, ref, get, set, update } from 'firebase/database';
+import { getAuth, signInWithEmailAndPassword, signOut as firebaseSignOut, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 
-const firebaseConfig = window.__FIREBASE_CONFIG || {
-  apiKey:            "YOUR_API_KEY",
-  authDomain:        "YOUR_PROJECT.firebaseapp.com",
-  databaseURL:       "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-  projectId:         "YOUR_PROJECT",
-  storageBucket:     "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId:             "YOUR_APP_ID",
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDbc-imBd_m9CQ-39kbmLbNeY5Itw4nZXI",
+  authDomain: "amazing-grace-hl.firebaseapp.com",
+  projectId: "amazing-grace-hl",
+  storageBucket: "amazing-grace-hl.firebasestorage.app",
+  messagingSenderId: "1081883726845",
+  appId: "1:1081883726845:web:88b49fc41d949e5511ff94",
+  measurementId: "G-WLYVDX4GWR"
 };
 
-const app         = initializeApp(firebaseConfig);
-export const db   = getDatabase(app);
-export const auth = getAuth(app);
-─────────────────────────────────────────────────────────────────────────── */
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+// Initialize Analytics if supported
+isSupported().then(yes => yes && getAnalytics(app));
+
+const realDb = getDatabase(app);
+const realAuth = getAuth(app);
+
+export const googleProvider = new GoogleAuthProvider();
+
+export async function signInWithGooglePopup() {
+  try {
+    const result = await signInWithPopup(realAuth, googleProvider);
+    return result.user;
+  } catch (error) {
+    console.error('Google Sign-In Error:', error);
+    throw error;
+  }
+}
 
 /* ── Demo / localStorage database shim ────────────────────────────────────
    Provides a Firebase-compatible db.ref().get()/.set()/.update() API backed
@@ -98,21 +111,22 @@ function seedDemoUsers() {
 export const IS_DEMO_HOST = (() => {
   try {
     const h = location.hostname;
-    return h === 'localhost' || h === '127.0.0.1' || h === '' || h.endsWith('.github.io');
+    const isLocal = h === 'localhost' || h === '127.0.0.1' || h === '';
+    // If not local, and we want to use REAL Firebase, return false.
+    // The user provided real keys, so let's assume they want real Firebase on production domains.
+    return isLocal;
   } catch {
     return false;
   }
 })();
 
+export const VAPID_KEY = "BDlS88bALVN54jP-98sz9QjBIUkVhiGnEXt8iDEZIhypsxEQd0wO6O8yzBdTNanycgepY5qC3CkYtDoFcGZsL1s";
+
 if (IS_DEMO_HOST) seedDemoUsers();
 
-/* ── Firebase-compatible database shim ─────────────────────────────────── */
+/* ── Unified Database API ──────────────────────────────────────────────── */
 
-/**
- * db.ref(path) — returns an object with async get(), set(value), and update(updates).
- * Mirrors the Firebase Realtime Database ref API.
- */
-export const db = {
+export const db = IS_DEMO_HOST ? {
   ref(path) {
     return {
       async get() {
@@ -123,7 +137,6 @@ export const db = {
           return { forEach() {}, val: () => null, exists: () => false };
         }
 
-        // db.ref('users').get() — return all users
         if (parts.length === 1) {
           return {
             forEach(cb) {
@@ -136,7 +149,6 @@ export const db = {
           };
         }
 
-        // db.ref('users/uid').get() — return single user
         const uid = parts[1];
         if (parts.length === 2) {
           const data = users[uid] ?? null;
@@ -147,7 +159,6 @@ export const db = {
           };
         }
 
-        // db.ref('users/uid/field/…').get() — walk nested properties
         let node = users[uid];
         for (let i = 2; i < parts.length && node !== undefined; i++) {
           node = node[parts[i]];
@@ -164,7 +175,6 @@ export const db = {
         const parts = (path || '').split('/').filter(Boolean);
         if (parts[0] === 'users' && parts[1]) {
           const users = getDemoUsers();
-          // db.ref('users/uid').set(value) — replace the entire user object
           if (parts.length === 2) {
             users[parts[1]] = value;
           } else {
@@ -215,16 +225,21 @@ export const db = {
       },
     };
   },
+} : {
+  ref(path) {
+    const r = ref(realDb, path);
+    return {
+      get: () => get(r),
+      set: (val) => set(r, val),
+      update: (upd) => update(r, upd),
+    };
+  }
 };
 
-/* ── Auth helpers ─────────────────────────────────────────────────────────── */
+/* ── Unified Auth API ───────────────────────────────────────────────────── */
 
 const SESSION_KEY = 'matrixUser';
 
-/**
- * Returns the currently authenticated user from localStorage.
- * @returns {{ uid: string, email: string, role: string }|null}
- */
 export function getCurrentUser() {
   try {
     const raw = localStorage.getItem(SESSION_KEY);
@@ -234,42 +249,57 @@ export function getCurrentUser() {
   }
 }
 
-/**
- * Persist a user session to localStorage.
- * @param {{ uid: string, email: string, role: string }} user
- */
 export function setCurrentUser(user) {
   localStorage.setItem(SESSION_KEY, JSON.stringify(user));
 }
 
-/**
- * Clear the current session.
- */
 export function clearSession() {
   localStorage.removeItem(SESSION_KEY);
 }
 
 /**
- * Authenticate with email + password (demo/localStorage path only).
- * Firebase Auth has been removed — use demo credentials on local/preview hosts.
- *
+ * Authenticate with email + password.
+ * 
  * @param {string} email
  * @param {string} password
  * @returns {Promise<{ uid: string, email: string, role: string }>}
  */
 export async function loginWithEmail(email, password) {
-  const users = getDemoUsers();
-  const entry = Object.entries(users).find(
-    ([, u]) => u.email.toLowerCase() === email.toLowerCase()
-  );
+  if (IS_DEMO_HOST) {
+    const users = getDemoUsers();
+    const entry = Object.entries(users).find(
+      ([, u]) => u.email.toLowerCase() === email.toLowerCase()
+    );
 
-  if (!entry) throw new Error('No account found for that email.');
-  if (!password || password.length < 4) throw new Error('Invalid password.');
+    if (!entry) throw new Error('No account found for that email.');
+    if (!password || password.length < 4) throw new Error('Invalid password.');
 
-  const [uid, user] = entry;
-  const session = { uid, email: user.email, role: user.role };
-  setCurrentUser(session);
-  return session;
+    const [uid, user] = entry;
+    const session = { uid, email: user.email, role: user.role };
+    setCurrentUser(session);
+    return session;
+  } else {
+    const credential = await signInWithEmailAndPassword(realAuth, email, password);
+    // Note: This real auth path needs corresponding data in the DB to extract role etc.
+    // For now we just return the basic user info.
+    const session = { uid: credential.user.uid, email: credential.user.email, role: 'user' };
+    setCurrentUser(session);
+    return session;
+  }
+}
+
+export async function loginWithGoogle() {
+  if (IS_DEMO_HOST) {
+    // Return a mock owner user for demo mode
+    const session = { uid: 'uid_owner_001', email: 'owner@matrix.dev', role: 'owner' };
+    setCurrentUser(session);
+    return session;
+  } else {
+    const user = await signInWithGooglePopup();
+    const session = { uid: user.uid, email: user.email, role: 'user' };
+    setCurrentUser(session);
+    return session;
+  }
 }
 
 /**
@@ -278,5 +308,8 @@ export async function loginWithEmail(email, password) {
  */
 export function logout(loginPath = '/admin/login.html') {
   clearSession();
+  if (!IS_DEMO_HOST) {
+    firebaseSignOut(realAuth).catch(() => {});
+  }
   window.location.href = loginPath;
 }
