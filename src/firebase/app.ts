@@ -4,8 +4,7 @@ import { getMessaging, getToken, onMessage, isSupported as isMessagingSupported,
 
 /**
  * Hardcoded fallback configuration to ensure the application remains functional
- * even if environment variables are missing from the build pipeline.
- * Credentials verified against user-provided Firebase console snippet.
+ * even if environment variables are missing or invalid in the build pipeline.
  */
 const DEFAULT_CONFIG = {
   apiKey: "AIzaSyDbc-imBd_m9CQ-39kbmLbNeY5Itw4nZXI",
@@ -19,13 +18,11 @@ const DEFAULT_CONFIG = {
 };
 
 /**
- * Robustly normalizes environment variable strings.
- * - Handles literal "undefined" or "null" strings injected by CI.
- * - Strips literal quotes (e.g. '"KEY"') that might be added during build.
- * - Trims whitespace.
+ * Normalizes and validates environment variable strings.
+ * Discards values that are empty, "undefined", "null", or don't look like Firebase keys.
  */
-const normalize = (val: any): string | undefined => {
-  if (typeof val !== 'string') return undefined;
+const getValidValue = (val: any, fallback: string): string => {
+  if (typeof val !== 'string') return fallback;
   let t = val.trim();
   
   // Strip potential literal quotes injected by build environment
@@ -33,7 +30,15 @@ const normalize = (val: any): string | undefined => {
     t = t.slice(1, -1).trim();
   }
 
-  if (!t || t === 'undefined' || t === 'null') return undefined;
+  // Sanity check: must be non-empty and not the literal string "undefined" or "null"
+  if (!t || t === 'undefined' || t === 'null') return fallback;
+
+  // Specific check for API Key format if it's meant to be an AIza... key
+  if (fallback.startsWith('AIza') && !t.startsWith('AIza')) {
+    console.warn(`[Firebase] Discarding invalid API Key from environment: "${t.substring(0, 5)}..."`);
+    return fallback;
+  }
+
   return t;
 };
 
@@ -42,32 +47,28 @@ let firebaseApp: ReturnType<typeof initializeApp> | null = null;
 export function getFirebaseApp() {
   if (firebaseApp) return firebaseApp;
 
-  // Use literal property access to allow Vite to statically replace variables at build time.
+  // Use literal property access for Vite's static replacement.
   const config = {
-    apiKey: normalize(import.meta.env.VITE_FIREBASE_API_KEY) || DEFAULT_CONFIG.apiKey,
-    authDomain: normalize(import.meta.env.VITE_FIREBASE_AUTH_DOMAIN) || DEFAULT_CONFIG.authDomain,
-    projectId: normalize(import.meta.env.VITE_FIREBASE_PROJECT_ID) || DEFAULT_CONFIG.projectId,
-    storageBucket: normalize(import.meta.env.VITE_FIREBASE_STORAGE_BUCKET) || DEFAULT_CONFIG.storageBucket,
-    messagingSenderId: normalize(import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID) || DEFAULT_CONFIG.messagingSenderId,
-    appId: normalize(import.meta.env.VITE_FIREBASE_APP_ID) || DEFAULT_CONFIG.appId,
-    measurementId: normalize(import.meta.env.VITE_FIREBASE_MEASUREMENT_ID) || DEFAULT_CONFIG.measurementId,
+    apiKey: getValidValue(import.meta.env.VITE_FIREBASE_API_KEY, DEFAULT_CONFIG.apiKey),
+    authDomain: getValidValue(import.meta.env.VITE_FIREBASE_AUTH_DOMAIN, DEFAULT_CONFIG.authDomain),
+    projectId: getValidValue(import.meta.env.VITE_FIREBASE_PROJECT_ID, DEFAULT_CONFIG.projectId),
+    storageBucket: getValidValue(import.meta.env.VITE_FIREBASE_STORAGE_BUCKET, DEFAULT_CONFIG.storageBucket),
+    messagingSenderId: getValidValue(import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID, DEFAULT_CONFIG.messagingSenderId),
+    appId: getValidValue(import.meta.env.VITE_FIREBASE_APP_ID, DEFAULT_CONFIG.appId),
+    measurementId: getValidValue(import.meta.env.VITE_FIREBASE_MEASUREMENT_ID, DEFAULT_CONFIG.measurementId),
   };
 
-  // Safe debugging logs to identify which configuration source is active
-  const isUsingEnv = !!normalize(import.meta.env.VITE_FIREBASE_API_KEY);
-  console.log(`[Firebase] Initializing project: ${config.projectId} (${isUsingEnv ? 'Env' : 'Default'})`);
-  console.log(`[Firebase] API Key Status: Length ${config.apiKey.length}, Prefix: ${config.apiKey.substring(0, 4)}`);
-
-  if (!config.apiKey.startsWith('AIza')) {
-    console.error('[Firebase] FATAL: API Key does not start with expected prefix "AIza". Authentication will fail.');
-  }
+  const isUsingEnv = (import.meta.env.VITE_FIREBASE_API_KEY && import.meta.env.VITE_FIREBASE_API_KEY.startsWith('AIza'));
+  console.log(`[Firebase] Node initialized. Project: ${config.projectId} (${isUsingEnv ? 'Remote Config' : 'Local Fallback'})`);
 
   try {
     firebaseApp = initializeApp(config);
     return firebaseApp;
   } catch (err) {
-    console.error('[Firebase] Failed to initializeApp:', err);
-    throw err;
+    console.error('[Firebase] Fatal initialization error:', err);
+    // As a last resort, try initializing with the hardcoded default directly
+    firebaseApp = initializeApp(DEFAULT_CONFIG);
+    return firebaseApp;
   }
 }
 
@@ -78,7 +79,7 @@ export function getFirebaseAnalytics(): Promise<Analytics | null> {
     analyticsPromise = isAnalyticsSupported()
       .then((supported) => (supported ? getAnalytics(getFirebaseApp()) : null))
       .catch((err) => {
-        console.warn('[Firebase] Analytics not supported or failed to load:', err);
+        console.warn('[Firebase] Analytics failed to load:', err);
         return null;
       });
   }
@@ -92,14 +93,14 @@ export function getFirebaseMessaging(): Promise<Messaging | null> {
     messagingPromise = isMessagingSupported()
       .then((supported) => (supported ? getMessaging(getFirebaseApp()) : null))
       .catch((err) => {
-        console.warn('[Firebase] Messaging not supported or failed to load:', err);
+        console.warn('[Firebase] Messaging failed to load:', err);
         return null;
       });
   }
   return messagingPromise;
 }
 
-export const VAPID_KEY = normalize(import.meta.env.VITE_FIREBASE_VAPID_KEY) || DEFAULT_CONFIG.vapidKey;
+export const VAPID_KEY = getValidValue(import.meta.env.VITE_FIREBASE_VAPID_KEY, DEFAULT_CONFIG.vapidKey);
 
 export async function requestMessagingToken(): Promise<string | null> {
   const messaging = await getFirebaseMessaging();
