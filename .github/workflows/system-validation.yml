@@ -64,7 +64,7 @@ jobs:
       - name: Type check
         run: npm run typecheck
 
-      - name: Build production bundle
+      - name: Build the React App
         run: npm run build
         env:
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}

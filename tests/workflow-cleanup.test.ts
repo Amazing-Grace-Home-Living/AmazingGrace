@@ -27,6 +27,8 @@ describe('workflow cleanup', () => {
     expect(workflow).toContain('- name: Game health checks - Match Maker');
     expect(workflow).toContain('- name: Game health checks - Trinity');
     expect(workflow).toContain('- name: Instruction layer validation');
+    expect(workflow).toContain('- name: Type check');
+    expect(workflow).toContain('- name: Build the React App');
     expect(workflow).toContain('- name: Enforce rollback gate on failure');
     expect(workflow).toContain('if: failure()');
     expect(workflow).toContain(
