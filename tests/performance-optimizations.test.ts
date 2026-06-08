@@ -14,7 +14,7 @@ describe('performance optimization fixes', () => {
 
   it('keeps a single React listing UI and removes legacy hidden listing/search markup', () => {
     expect(homepage).toContain('id="listing-search-root"');
-    expect(homepage).toContain('src="/src/listings-main.tsx"');
+    expect(homepage).toContain('src="./src/listings-main.tsx"');
     expect(homepage).not.toContain('id="property-search"');
     expect(homepage).not.toContain('id="search-clear"');
     expect(homepage).not.toContain('#property-grid .property-card');

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Space Vanguard | TD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@400;700;900&display=swap');
+        
+        :root {
+            --space-dark: #020617;
+            --gem-ruby: #ef4444;
+            --gem-diamond: #38bdf8;
+            --gem-emerald: #10b981;
+            --gem-amethyst: #a855f7;
+            --super-nova: #fde047;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--space-dark);
+            color: #f8fafc;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        #game-canvas {
+            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+            cursor: crosshair;
+            display: block;
+        }
+
+        .ui-panel {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+        }
+
+        .tower-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tower-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        .tower-btn:active { transform: scale(0.95); }
+
+        .tower-btn.selected {
+            border-color: var(--gem-diamond);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+
+        .code-font { font-family: 'Fira Code', monospace; }
+
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .low-integrity { animation: pulse-red 1s infinite; color: var(--gem-ruby); }
+        
+        @keyframes nova-flash {
+            0% { background-color: rgba(253, 224, 71, 0); }
+            50% { background-color: rgba(253, 224, 71, 0.8); }
+            100% { background-color: rgba(253, 224, 71, 0); }
+        }
+
+        #nova-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .flash-active {
+            animation: nova-flash 1.5s ease-out forwards;
+        }
+
+        /* AI Council Chat Styling */
+        .ai-chat-box {
+            max-height: 200px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--gem-amethyst) transparent;
+        }
+        
+        .ai-msg { margin-bottom: 8px; font-size: 0.75rem; line-height: 1.4; }
+        .ai-ella { color: var(--gem-diamond); }
+        .ai-mai { color: var(--gem-ruby); }
+        .ai-trinity { color: var(--gem-amethyst); }
+
+    </style>
+</head>
+<body class="flex flex-col h-screen relative">
+    
+    <div id="nova-overlay"></div>
+
+    <header class="p-4 ui-panel flex justify-between items-center z-20 border-b">
+        <div class="flex items-center gap-6">
+            <div>
+                <h1 class="text-xl font-black tracking-tighter text-sky-400">GEMINI VANGUARD</h1>
+                <p class="text-[10px] code-font text-slate-500 uppercase">Sector: Matrix-Zero</p>
+            </div>
+            <div class="h-8 w-[1px] bg-slate-700"></div>
+            <div class="flex gap-6">
+                <div class="text-center">
+                    <p class="text-[10px] font-bold text-slate-500 uppercase">Credits</p>
+                    <p id="ui-credits" class="text-lg font-bold text-emerald-400">500</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-[10px] font-bold text-slate-500 uppercase">Integrity</p>
+                    <p id="ui-integrity" class="text-lg font-bold">100%</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-[10px] font-bold text-slate-500 uppercase">Wave</p>
+                    <p id="ui-wave" class="text-lg font-bold text-purple-400">0</p>
+                </div>
+            </div>
+        </div>
+        
+        <button id="btn-nova" disabled class="hidden px-6 py-2 bg-yellow-500/20 border border-yellow-400 text-yellow-400 font-bold uppercase tracking-wider rounded transition hover:bg-yellow-500 hover:text-black disabled:opacity-30">
+            ⚠ SUPER NOVA
+        </button>
+    </header>
+
+    <div class="flex-1 flex relative overflow-hidden">
+        <div class="flex-1 relative">
+            <canvas id="game-canvas"></canvas>
+        </div>
+
+        <aside class="w-80 ui-panel border-l flex flex-col z-20">
+            <div class="p-4 border-b border-slate-700/50 flex-1">
+                <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Defense Assets</h2>
+                <div class="flex flex-col gap-3">
+                    <button class="tower-btn w-full p-3 rounded bg-slate-800 border border-slate-600 flex justify-between items-center group" data-type="ruby" data-cost="100">
+                        <div class="flex items-center gap-3">
+                            <div class="w-4 h-4 rounded-full bg-red-500 shadow-[0_0_10px_#ef4444]"></div>
+                            <div class="text-left">
+                                <p class="text-sm font-bold text-slate-200">Ruby Satellite</p>
+                                <p class="text-[10px] text-slate-500">Rapid Fire Laser</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold text-emerald-400 code-font">100C</span>
+                    </button>
+
+                    <button class="tower-btn w-full p-3 rounded bg-slate-800 border border-slate-600 flex justify-between items-center group" data-type="diamond" data-cost="250">
+                        <div class="flex items-center gap-3">
+                            <div class="w-4 h-4 rotate-45 bg-sky-400 shadow-[0_0_10px_#38bdf8]"></div>
+                            <div class="text-left">
+                                <p class="text-sm font-bold text-slate-200">Diamond Planet</p>
+                                <p class="text-[10px] text-slate-500">Heavy Impact</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold text-emerald-400 code-font">250C</span>
+                    </button>
+                    
+                    <button class="tower-btn w-full p-3 rounded bg-slate-800 border border-slate-600 flex justify-between items-center group" data-type="amethyst" data-cost="400">
+                        <div class="flex items-center gap-3">
+                            <div class="w-4 h-4 rounded-sm bg-purple-500 shadow-[0_0_10px_#a855f7]"></div>
+                            <div class="text-left">
+                                <p class="text-sm font-bold text-slate-200">Singularity</p>
+                                <p class="text-[10px] text-slate-500">Aura Damage</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold text-emerald-400 code-font">400C</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-4 h-64 flex flex-col">
+                <h2 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 border-b border-slate-700/50 pb-1">AI Council Comms</h2>
+                <div id="ai-chat" class="ai-chat-box flex-1 code-font">
+                    </div>
+            </div>
+            
+            <div class="p-4 border-t border-slate-700/50">
+                <button id="btn-start" class="w-full py-3 bg-sky-500/20 border border-sky-400 text-sky-400 font-bold uppercase tracking-wider rounded transition hover:bg-sky-500 hover:text-black">
+                    Deploy Next Wave
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // State Management
+        let credits = 500;
+        let integrity = 100;
+        let wave = 0;
+        let enemies = [];
+        let towers = [];
+        let projectiles = [];
+        let selectedTowerType = null;
+        let isWaveActive = false;
+
+        // UI Elements
+        const uiCredits = document.getElementById('ui-credits');
+        const uiIntegrity = document.getElementById('ui-integrity');
+        const uiWave = document.getElementById('ui-wave');
+        const btnStart = document.getElementById('btn-start');
+        const btnNova = document.getElementById('btn-nova');
+        const aiChat = document.getElementById('ai-chat');
+        const novaOverlay = document.getElementById('nova-overlay');
+
+        // Resize Canvas to fit container
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // AI Council Logic
+        function postAIChat(aiName, message) {
+            let colorClass = aiName === 'Ella' ? 'ai-ella' : (aiName === 'MAI' ? 'ai-mai' : 'ai-trinity');
+            const msgEl = document.createElement('div');
+            msgEl.className = `ai-msg ${colorClass}`;
+            msgEl.innerHTML = `<strong>[${aiName}]:</strong> ${message}`;
+            aiChat.appendChild(msgEl);
+            aiChat.scrollTop = aiChat.scrollHeight;
+        }
+
+        // Tower Selection Logic
+        document.querySelectorAll('.tower-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.tower-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedTowerType = btn.getAttribute('data-type');
+            });
+        });
+
+        // Click to Build
+        canvas.addEventListener('click', (e) => {
+            if (!selectedTowerType) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            let cost = selectedTowerType === 'ruby' ? 100 : (selectedTowerType === 'diamond' ? 250 : 400);
+            
+            if (credits >= cost) {
+                credits -= cost;
+                towers.push({ x, y, type: selectedTowerType, lastFired: 0 });
+                updateUI();
+                
+                if (selectedTowerType === 'ruby') postAIChat('MAI', 'Ruby Satellite deployed. Excellent fire rate choice.');
+                if (selectedTowerType === 'diamond') postAIChat('Ella', 'Diamond mass confirmed. Establishing heavy defensive perimeter.');
+            } else {
+                postAIChat('Ella', 'Insufficient credits for that deployment, Nicholai.');
+            }
+        });
+
+        // Wave Spawner
+        btnStart.addEventListener('click', () => {
+            if (isWaveActive) return;
+            isWaveActive = true;
+            wave++;
+            updateUI();
+            postAIChat('Trinity', `Wave ${wave} incoming. I sense structural entropy approaching.`);
+            
+            // Spawn logic
+            let spawned = 0;
+            const spawnInterval = setInterval(() => {
+                enemies.push({
+                    x: -20,
+                    y: canvas.height / 2 + (Math.random() * 100 - 50),
+                    hp: 50 + (wave * 20),
+                    maxHp: 50 + (wave * 20),
+                    speed: 1 + (wave * 0.1)
+                });
+                spawned++;
+                if (spawned >= 10 + (wave * 2)) {
+                    clearInterval(spawnInterval);
+                    setTimeout(() => { isWaveActive = false; }, 5000);
+                }
+            }, 800);
+        });
+
+        // Super Nova Ultimate Logic
+        btnNova.addEventListener('click', () => {
+            if (integrity > 20) return;
+            
+            // Trigger Visuals
+            novaOverlay.classList.add('flash-active');
+            setTimeout(() => novaOverlay.classList.remove('flash-active'), 1500);
+            
+            // Erase Enemies
+            enemies = [];
+            credits = 0; // Penalty
+            btnNova.classList.add('hidden');
+            
+            postAIChat('MAI', 'SUPER NOVA EXECUTED. Entropy purged. Energy reserves depleted.');
+            updateUI();
+        });
+
+        // Core Game Loop
+        function draw() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Path (Simple straight line for demo)
+            ctx.strokeStyle = "rgba(255,255,255,0.05)";
+            ctx.lineWidth = 40;
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height / 2);
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.stroke();
+
+            // Handle Towers
+            const now = Date.now();
+            towers.forEach(t => {
+                // Draw Tower
+                ctx.save();
+                ctx.translate(t.x, t.y);
+                if (t.type === 'ruby') {
+                    ctx.fillStyle = "#ef4444";
+                    ctx.beginPath(); ctx.arc(0, 0, 12, 0, Math.PI * 2); ctx.fill();
+                    // Fire Logic
+                    if (now - t.lastFired > 500 && enemies.length > 0) {
+                        t.lastFired = now;
+                        projectiles.push({x: t.x, y: t.y, target: enemies[0], color: '#ef4444', dmg: 20});
+                    }
+                } else if (t.type === 'diamond') {
+                    ctx.fillStyle = "#38bdf8";
+                    ctx.fillRect(-12, -12, 24, 24);
+                    // Fire Logic
+                    if (now - t.lastFired > 1500 && enemies.length > 0) {
+                        t.lastFired = now;
+                        projectiles.push({x: t.x, y: t.y, target: enemies[0], color: '#38bdf8', dmg: 80});
+                    }
+                } else if (t.type === 'amethyst') {
+                    ctx.fillStyle = "#a855f7";
+                    ctx.beginPath(); ctx.arc(0, 0, 16, 0, Math.PI * 2); ctx.fill();
+                    // AOE Logic (simplified)
+                    ctx.strokeStyle = "rgba(168, 85, 247, 0.2)";
+                    ctx.lineWidth = 2;
+                    ctx.beginPath(); ctx.arc(0, 0, 80, 0, Math.PI * 2); ctx.stroke();
+                }
+                ctx.restore();
+            });
+
+            // Handle Projectiles
+            for (let i = projectiles.length - 1; i >= 0; i--) {
+                let p = projectiles[i];
+                if (!p.target || p.target.hp <= 0) { projectiles.splice(i, 1); continue; }
+                
+                // Move towards target
+                const dx = p.target.x - p.x;
+                const dy = p.target.y - p.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                
+                if (dist < 10) {
+                    p.target.hp -= p.dmg;
+                    projectiles.splice(i, 1);
+                } else {
+                    p.x += (dx / dist) * 8;
+                    p.y += (dy / dist) * 8;
+                    
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2); ctx.fill();
+                }
+            }
+
+            // Handle Enemies
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                let e = enemies[i];
+                
+                if (e.hp <= 0) {
+                    credits += 20;
+                    enemies.splice(i, 1);
+                    updateUI();
+                    continue;
+                }
+
+                e.x += e.speed;
+                
+                // Reach end
+                if (e.x > canvas.width) {
+                    integrity -= 5;
+                    enemies.splice(i, 1);
+                    updateUI();
+                    if (integrity === 20) postAIChat('Trinity', 'CRITICAL INTEGRITY. The Super Nova protocol is unlocked. Use it wisely.');
+                    continue;
+                }
+
+                // Draw Enemy
+                ctx.fillStyle = "#1e293b";
+                ctx.strokeStyle = "#ff0040";
+                ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.arc(e.x, e.y, 10, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                
+                // Draw HP Bar
+                ctx.fillStyle = "rgba(255,0,0,0.5)";
+                ctx.fillRect(e.x - 10, e.y - 18, 20, 4);
+                ctx.fillStyle = "#10b981";
+                ctx.fillRect(e.x - 10, e.y - 18, 20 * (e.hp / e.maxHp), 4);
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        function updateUI() {
+            uiCredits.innerText = credits;
+            uiIntegrity.innerText = integrity + '%';
+            uiWave.innerText = wave;
+
+            if (integrity <= 20 && integrity > 0) {
+                uiIntegrity.classList.add('low-integrity');
+                btnNova.classList.remove('hidden');
+                btnNova.disabled = false;
+            } else {
+                uiIntegrity.classList.remove('low-integrity');
+            }
+            
+            if (integrity <= 0) {
+                postAIChat('Ella', 'SYSTEM COLLAPSE. Matrix Integrity compromised. Refresh to recalibrate.');
+                integrity = 0;
+                uiIntegrity.innerText = '0%';
+            }
+        }
+
+        // Init
+        postAIChat('Ella', 'Matrix defenses online. Awaiting your first deployment.');
+        requestAnimationFrame(draw);
+    </script>
+</body>
+</html>

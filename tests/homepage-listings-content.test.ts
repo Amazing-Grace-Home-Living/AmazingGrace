@@ -8,7 +8,7 @@ describe('homepage listings content', () => {
   it('mounts listing content from the canonical React listing entrypoint', () => {
     expect(home).toContain('Available Housing');
     expect(home).toContain('id="listing-search-root"');
-    expect(home).toContain('src="/src/listings-main.tsx"');
+    expect(home).toContain('src="./src/listings-main.tsx"');
     expect(home).not.toContain('class="property-grid" style="display:none"');
   });
 
