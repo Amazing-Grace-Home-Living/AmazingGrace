@@ -1466,6 +1466,24 @@
     }
   });
 
+  const googleLoginBtn = document.getElementById('google-login-btn');
+  googleLoginBtn.addEventListener('click', async () => {
+    synth.playClick();
+    loginError.textContent = '';
+    try {
+      const { loginWithGoogle } = await import('./js/firebase.js');
+      await loginWithGoogle();
+      loginModal.classList.remove('open');
+      synth.playSuccess();
+      refreshNav();
+      applyUnlocks();
+      renderAdminPanel();
+    } catch (err) {
+      synth.playFailure();
+      loginError.textContent = err.message;
+    }
+  });
+
   document.getElementById('login-password').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') modalSubmit.click();
   });

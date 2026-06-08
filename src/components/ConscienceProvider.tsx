@@ -1,220 +1,178 @@
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useReducer } from "react";
+import "./nexus-hud.css";
 
-// Shared default metrics
-export const M_CONSCIENCE_DEFAULT = {
-  integrity: 0.75,
-  community: 0.40,
-  karma: 0.60,
-  wisdom: 0.55
+const TELEMETRY_ENDPOINT =
+  "https://script.google.com/macros/s/AKfycbyq6jzCVGtoOTcid-LzD_njmuuOOSwJrhktU3ya1GKXLZI9jp6yCMJzlrdvyNb1fpkb/exec";
+
+const STORAGE_KEY = "nexus-hud-state-v2";
+
+const DEFAULT_METRICS = {
+  integrity: 0.85,
+  community: 0.72,
+  karma: 0.78,
+  wisdom: 0.9,
+  inventory: ["meta1"], // Meta: Resonance unlocked by default
+  nimbus: [],
 };
 
-export type FactionKey = 'aurion' | 'voidborn' | 'solari';
-export type Faction = {
-  name: string;
-  color: string;
-  aggression: number;
-  defense: number;
-  special: string;
+const DEFAULT_STATE = {
+  metrics: DEFAULT_METRICS,
+  stars: [],
 };
 
-export const FACTIONS: Record<FactionKey, Faction> = {
-  aurion: { name: "Aurion Ascendancy", color: "#38bdf8", aggression: 0.3, defense: 0.7, special: "Shield harmonics" },
-  voidborn: { name: "Voidborn Dominion", color: "#a855f7", aggression: 0.8, defense: 0.4, special: "Gravity distortion" },
-  solari: { name: "Solari Imperium", color: "#facc15", aggression: 0.6, defense: 0.6, special: "Solar flares" }
-};
+const STORE_ITEMS = [
+  { id: "ella", name: "Ella Assistant", cost: 1000, stars: 1, desc: "Guides you, protects you, teaches you. Baseline Vanguard shield.", icon: "🛡️" },
+  { id: "oracle", name: "The Oracle", cost: 2000, stars: 2, desc: "Earn points by sharing good ideas to improve the Matrix.", icon: "👁️" },
+  { id: "sandbox", name: "Creator Sandbox", cost: 3000, stars: 3, desc: "Test code + enter monthly contests for best game/app.", icon: "💻" },
+  { id: "mai", name: "MAI", cost: 4000, stars: 4, desc: "Self-aware combat AI. Attacks enemies for you in Vanguard.", icon: "⚔️" },
+  { id: "trinity", name: "Trinity", cost: 5000, stars: 5, desc: "Strength of Ella + MAI. Reveals hidden secrets the others miss.", icon: "✨" },
+  { id: "boat", name: "Boat to Nimbus Island", cost: 6000, stars: 6, desc: "Unlocks the Gemini Vanguard Tower Defense Simulation.", icon: "⛵" },
+];
 
-type ConscienceState = {
-  metrics: typeof M_CONSCIENCE_DEFAULT;
-  updateMetrics: (deltas: Partial<typeof M_CONSCIENCE_DEFAULT>) => void;
-  globalCollapseRisk: number;
-  increaseCollapseRisk: (delta: number) => void;
-  userLevel: number;
-  setUserLevel: React.Dispatch<React.SetStateAction<number>>;
-  unlockedSectors: number[];
-  sectorControl: Record<number, FactionKey>;
-  factions: Record<FactionKey, Faction>;
-  unlockSector: (id: number) => void;
-  triggerCosmicEvent: (msg: string) => void;
-  cosmicLogs: string[];
-};
+const ConscienceContext = createContext(null as any);
 
-export const ConscienceContext = createContext<ConscienceState>(null!);
+function clamp01(value: number) {
+  return Math.max(0, Math.min(1, value));
+}
 
-export function ConscienceProvider({ 
-  children, 
-  initialMetrics = M_CONSCIENCE_DEFAULT 
-}: { 
-  children: React.ReactNode, 
-  initialMetrics?: typeof M_CONSCIENCE_DEFAULT 
-}) {
-  const [metrics, setMetrics] = useState(initialMetrics);
-  const prevMetricsRef = useRef(initialMetrics);
+function uniquePush<T>(list: T[], value: T) {
+  if (!value || list.includes(value)) return list;
+  return [...list, value];
+}
 
-  // Sync metrics changes
-  useEffect(() => {
-    const changed = (Object.keys(initialMetrics) as Array<keyof typeof M_CONSCIENCE_DEFAULT>).some(
-      (key) => initialMetrics[key] !== prevMetricsRef.current[key]
-    );
-    if (changed) {
-      setMetrics(initialMetrics);
-      prevMetricsRef.current = initialMetrics;
-    }
-  }, [initialMetrics]);
+function calcPoints(metrics: typeof DEFAULT_METRICS) {
+  return Math.floor(
+    (metrics.integrity + metrics.community + metrics.karma + metrics.wisdom) * 2500
+  );
+}
 
-  const updateMetrics = useCallback((deltas: Partial<typeof M_CONSCIENCE_DEFAULT>) => {
-    setMetrics((prev) => {
-      const updated = { ...prev };
-      Object.keys(deltas).forEach((key) => {
-        const k = key as keyof typeof M_CONSCIENCE_DEFAULT;
-        updated[k] = Math.max(0, Math.min(1, prev[k] + (deltas[k] || 0)));
-      });
-      return updated;
-    });
-  }, []);
+function loadPersistedState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return DEFAULT_STATE;
 
-  // Collapse Risk logic with cross-window syncing
-  const [globalCollapseRisk, setGlobalCollapseRisk] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('aghl_collapseRisk');
-      if (stored) return parseFloat(stored);
-    }
-    return 0.15; // baseline
-  });
+    const parsed = JSON.parse(raw);
 
-  const increaseCollapseRisk = useCallback((delta: number) => {
-    setGlobalCollapseRisk(prev => {
-      const next = Math.min(0.99, prev + delta);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('aghl_collapseRisk', next.toString());
-      }
-      return next;
-    });
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'aghl_collapseRisk' && e.newValue) {
-        setGlobalCollapseRisk(parseFloat(e.newValue));
-      }
+    return {
+      metrics: {
+        ...DEFAULT_METRICS,
+        ...(parsed?.metrics || {}),
+        inventory: Array.isArray(parsed?.metrics?.inventory)
+          ? Array.from(new Set(parsed.metrics.inventory))
+          : ["meta1"],
+        nimbus: Array.isArray(parsed?.metrics?.nimbus)
+          ? Array.from(new Set(parsed.metrics.nimbus))
+          : [],
+      },
+      stars: Array.isArray(parsed?.stars) ? Array.from(new Set(parsed.stars)) : [],
     };
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
-  }, []);
+  } catch {
+    return DEFAULT_STATE;
+  }
+}
 
-  // --- Strategic Faction & Galactic map state ---
-  const [userLevel, setUserLevel] = useState(1);
-  const [unlockedSectors, setUnlockedSectors] = useState([1]);
-  const [sectorControl, setSectorControl] = useState<Record<number, FactionKey>>({
-    1: 'aurion', 2: 'voidborn', 3: 'solari', 4: 'aurion', 5: 'voidborn'
-  });
-  const [cosmicLogs, setCosmicLogs] = useState<string[]>([
-    "Cosmic network online. Tactical strategy layer engaged."
-  ]);
+function persistState(state: typeof DEFAULT_STATE) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    // Best-effort persistence; fail silently.
+  }
+}
 
-  const unlockSector = useCallback((id: number) => {
-    setUnlockedSectors(prev => prev.includes(id) ? prev : [...prev, id]);
-  }, []);
-
-  const triggerCosmicEvent = useCallback((msg: string) => {
-    // Add visual event effect on document
-    if (typeof document !== 'undefined') {
-      const e = document.createElement('div');
-      e.className = 'cosmic-event';
-      document.body.appendChild(e);
-      setTimeout(() => e.remove(), 1500);
-    }
-    console.log(`[COSMIC EVENT]: ${msg}`);
-    setCosmicLogs(prev => [
-      `[${new Date().toLocaleTimeString()}] ${msg}`,
-      ...prev
-    ].slice(0, 30));
-  }, []);
-
-  // Faction wars helper logic
-  const resolveBattle = useCallback((defender: FactionKey, attacker: FactionKey): boolean => {
-    const d = FACTIONS[defender];
-    const a = FACTIONS[attacker];
-    const time = typeof document !== 'undefined' ? document.body.dataset.time : 'day';
-    let aMod = a.aggression;
-    let dMod = d.defense;
-    if (time === 'dawn') dMod += 0.2;
-    if (time === 'midnight' && attacker === 'voidborn') aMod += 0.3;
-    if (time === 'day' && attacker === 'solari') aMod += 0.2;
-
-    const defenseScore = dMod * (0.5 + Math.random());
-    const attackScore = aMod * (0.5 + Math.random());
-    return attackScore > defenseScore;
-  }, []);
-
-  const pickChallenger = useCallback((owner: FactionKey): FactionKey | null => {
-    const rivals: FactionKey[] = (['aurion', 'voidborn', 'solari'] as FactionKey[]).filter(f => f !== owner);
-    return rivals[Math.floor(Math.random() * rivals.length)] || null;
-  }, []);
-
-  const simulateFactionWars = useCallback(() => {
-    setSectorControl(prev => {
+function conscienceReducer(state: typeof DEFAULT_STATE, action: any) {
+  switch (action.type) {
+    case "UPDATE_METRICS": {
+      const deltas = action.payload || {};
+      const prev = state.metrics as any;
       const next = { ...prev };
-      let changed = false;
-      const sectorsList = Object.keys(next).map(Number);
-      
-      // Select one random sector to battle each interval to avoid complete maps flipping at once
-      const targetSector = sectorsList[Math.floor(Math.random() * sectorsList.length)];
-      if (targetSector) {
-        const owner = next[targetSector];
-        const challenger = pickChallenger(owner);
-        if (challenger && resolveBattle(owner, challenger)) {
-          next[targetSector] = challenger;
-          changed = true;
-          
-          triggerCosmicEvent(`${FACTIONS[challenger].name} conquered Sector ${targetSector}!`);
-          if (typeof document !== 'undefined') {
-            document.body.style.setProperty('--theme-color', FACTIONS[challenger].color);
-          }
+
+      Object.keys(deltas).forEach((key) => {
+        if (typeof prev[key] === "number") {
+          next[key] = clamp01(prev[key] + Number(deltas[key] || 0));
         }
+      });
+
+      if (deltas.newItem) {
+        next.inventory = uniquePush(prev.inventory, deltas.newItem);
       }
-      return next;
-    });
-  }, [pickChallenger, resolveBattle, triggerCosmicEvent]);
 
-  // Background Faction War loop running every 60s
+      if (deltas.newBuilding) {
+        next.nimbus = uniquePush(prev.nimbus, deltas.newBuilding);
+      }
+
+      return { ...state, metrics: next };
+    }
+
+    case "AWARD_STAR": {
+      const starId = action.payload;
+      if (!starId || state.stars.includes(starId)) return state;
+      return { ...state, stars: [...state.stars, starId] };
+    }
+
+    case "BUY_ITEM": {
+      const item = action.payload;
+      if (!item) return state;
+
+      const points = calcPoints(state.metrics);
+      const alreadyOwned = state.metrics.inventory.includes(item.id);
+      const hasPoints = points >= item.cost;
+      const hasStars = state.stars.length >= item.stars;
+
+      if (alreadyOwned || !hasPoints || !hasStars) return state;
+
+      const drain = item.cost / 10000;
+      const nextMetrics = {
+        ...state.metrics,
+        integrity: clamp01(state.metrics.integrity - drain),
+        community: clamp01(state.metrics.community - drain),
+        karma: clamp01(state.metrics.karma - drain),
+        wisdom: clamp01(state.metrics.wisdom - drain),
+        inventory: uniquePush(state.metrics.inventory, item.id),
+      };
+
+      return { ...state, metrics: nextMetrics };
+    }
+
+    case "RESET_PROGRESS":
+      return DEFAULT_STATE;
+
+    default:
+      return state;
+  }
+}
+
+export function ConscienceProvider({ children }: { children: React.ReactNode }) {
+  const [state, dispatch] = useReducer(conscienceReducer, null, loadPersistedState);
+
   useEffect(() => {
-    const interval = setInterval(simulateFactionWars, 60000);
-    return () => clearInterval(interval);
-  }, [simulateFactionWars]);
+    persistState(state);
+  }, [state]);
 
-  const value = useMemo(() => ({ 
-    metrics, 
-    updateMetrics,
-    globalCollapseRisk,
-    increaseCollapseRisk,
-    userLevel,
-    setUserLevel,
-    unlockedSectors,
-    sectorControl,
-    factions: FACTIONS,
-    unlockSector,
-    triggerCosmicEvent,
-    cosmicLogs
-  }), [
-    metrics, 
-    updateMetrics, 
-    globalCollapseRisk, 
-    increaseCollapseRisk,
-    userLevel,
-    unlockedSectors,
-    sectorControl,
-    unlockSector,
-    triggerCosmicEvent,
-    cosmicLogs
-  ]);
+  const updateMetrics = (deltas: any) => dispatch({ type: "UPDATE_METRICS", payload: deltas });
+  const awardStar = (starId: string) => dispatch({ type: "AWARD_STAR", payload: starId });
+  const buyItem = (item: any) => dispatch({ type: "BUY_ITEM", payload: item });
+
+  const points = calcPoints(state.metrics);
+
+  const value = useMemo(
+    () => ({
+      metrics: state.metrics,
+      stars: state.stars,
+      points,
+      updateMetrics,
+      awardStar,
+      buyItem,
+    }),
+    [state, points]
+  );
 
   return <ConscienceContext.Provider value={value}>{children}</ConscienceContext.Provider>;
 }
 
-
 export function useConscience() {
   const ctx = useContext(ConscienceContext);
-  if (!ctx) throw new Error("useConscience must be used inside ConscienceProvider");
+  if (!ctx) {
+    throw new Error("useConscience must be used within a ConscienceProvider");
+  }
   return ctx;
 }
