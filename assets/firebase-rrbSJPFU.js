@@ -1,0 +1,1 @@
+import{s as e}from"./firebase-DVnHV0wU.js";export{e as loginWithGoogle};
