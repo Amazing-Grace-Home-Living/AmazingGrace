@@ -634,8 +634,8 @@ export default function Level1NexusDefense({ onBack, onVictory, sectorId }: Leve
 
             {screen === 'game' && (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', maxWidth: '800px', margin: '0 auto' }}>
-                    <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(15, 23, 42, 0.6)', padding: '1rem 1.5rem', borderRadius: '8px', border: '1px solid #1e293b' }}>
-                        <div style={{ display: 'flex', gap: '1.5rem' }}>
+                    <div style={{ width: '100%', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', background: 'rgba(15, 23, 42, 0.6)', padding: '1rem 1.5rem', borderRadius: '8px', border: '1px solid #1e293b' }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
                             <div>CORES: <span style={{ color: '#00f2ff', fontWeight: 700 }}>{money}</span></div>
                             <div>INTEGRITY: <span style={{ color: '#ef4444', fontWeight: 700 }}>{Math.max(0, health)}</span></div>
                             <div>WAVE: <span style={{ color: '#facc15', fontWeight: 700 }}>{wave}/5</span></div>
@@ -651,7 +651,7 @@ export default function Level1NexusDefense({ onBack, onVictory, sectorId }: Leve
 
                     <div style={{ position: 'relative', border: '2px solid #1e293b', borderRadius: '8px', overflow: 'hidden', width: '100%', maxWidth: '600px', aspectRatio: '600/400' }}>
                         <canvas ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} onClick={handleCanvasClick} style={{ background: '#0a0f1d', display: 'block', width: '100%', height: '100%' }} />
-                        {sectorId && (
+                        {sectorId && wave >= 5 && engineRef.current?.waveActive && (
                             <TowerDefenseBoss 
                                 sectorId={sectorId} 
                                 onBossAttack={(damage) => {
@@ -679,7 +679,7 @@ export default function Level1NexusDefense({ onBack, onVictory, sectorId }: Leve
                         )}
                     </div>
 
-                    <div style={{ width: '100%', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem', background: 'rgba(15, 23, 42, 0.4)', padding: '1rem', borderRadius: '8px', border: '1px solid #1e293b' }}>
+                    <div style={{ width: '100%', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '0.75rem', background: 'rgba(15, 23, 42, 0.4)', padding: '1rem', borderRadius: '8px', border: '1px solid #1e293b' }}>
                         {Object.keys(TOWER_DEFS).map(t => {
                             const def = TOWER_DEFS[t as keyof typeof TOWER_DEFS];
                             const cost = getTowerCost(t as keyof typeof TOWER_DEFS);

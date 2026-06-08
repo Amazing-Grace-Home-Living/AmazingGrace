@@ -8,6 +8,7 @@ export type SectorData = {
   y: number;
   requiredLevel: number;
   name: string;
+  isBoss?: boolean;
 };
 
 export const SECTORS: SectorData[] = [
@@ -15,7 +16,12 @@ export const SECTORS: SectorData[] = [
   { id: 2, x: 25, y: 30, requiredLevel: 2, name: "Aurion Gate" },
   { id: 3, x: 75, y: 30, requiredLevel: 3, name: "Voidborn Rift" },
   { id: 4, x: 30, y: 75, requiredLevel: 4, name: "Solari Forge" },
-  { id: 5, x: 70, y: 75, requiredLevel: 5, name: "Eclipse Reach" },
+  { id: 5, x: 70, y: 75, requiredLevel: 5, name: "Eclipse Reach", isBoss: true },
+  { id: 6, x: 10, y: 15, requiredLevel: 6, name: "Outer Rim Alpha" },
+  { id: 7, x: 90, y: 15, requiredLevel: 7, name: "Outer Rim Omega" },
+  { id: 8, x: 50, y: 10, requiredLevel: 8, name: "Core Worlds Gate", isBoss: true },
+  { id: 9, x: 10, y: 90, requiredLevel: 9, name: "Abyssal Trench" },
+  { id: 10, x: 90, y: 90, requiredLevel: 10, name: "Zenith Pinnacle", isBoss: true }
 ];
 
 interface UniverseMapProps {
@@ -59,6 +65,7 @@ export default function UniverseMap({ onSelectSector }: UniverseMapProps) {
         // Custom glow and theme colors
         const themeColor = faction ? faction.color : '#64748b';
         const glow = unlocked ? `0 0 25px ${themeColor}cc, inset 0 0 10px ${themeColor}` : 'none';
+        const bossStyle = sector.isBoss ? { borderStyle: 'dashed', borderWidth: '3px' } : {};
 
         return (
           <motion.div
@@ -69,6 +76,7 @@ export default function UniverseMap({ onSelectSector }: UniverseMapProps) {
               top: `${sector.y}%`,
               borderColor: themeColor,
               boxShadow: glow,
+              ...bossStyle,
               // Custom CSS property passed to stylesheet
               // @ts-ignore
               '--theme-color': themeColor,
@@ -126,6 +134,18 @@ export default function UniverseMap({ onSelectSector }: UniverseMapProps) {
                   margin: '4px 0 0 0'
                 }}>
                   Req Lv {sector.requiredLevel}
+                </p>
+              )}
+              {sector.isBoss && (
+                <p style={{
+                  fontFamily: 'monospace',
+                  fontSize: '9px',
+                  color: '#ef4444',
+                  margin: '4px 0 0 0',
+                  fontWeight: 800,
+                  textShadow: '0 0 5px #ef4444'
+                }}>
+                  BOSS
                 </p>
               )}
             </div>
