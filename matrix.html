@@ -573,16 +573,36 @@
     }
     .stat-progress-container {
       flex-grow: 1;
-      height: 6px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 3px;
+      height: 8px;
+      background: rgba(0, 242, 255, 0.05);
+      border: 1px solid rgba(0, 242, 255, 0.15);
+      border-radius: 10px;
       margin: 0 0.75rem;
       overflow: hidden;
+      position: relative;
     }
     .stat-progress-bar {
       height: 100%;
-      border-radius: 3px;
+      border-radius: 10px;
       transition: width 0.4s ease-out;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-progress-bar::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3) 50%,
+        transparent
+      );
+      animation: bar-shine 2.5s infinite linear;
+    }
+    @keyframes bar-shine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
     }
 
     .nation-policies {
@@ -930,8 +950,69 @@
       .admin-table { font-size: 0.7rem; }
       .admin-permission-grid { flex-direction: column; gap: 0.25rem; }
     }
+
+    /* Cyber grid overlay */
+    .grid-overlay {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(0, 242, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 242, 255, 0.02) 1px, transparent 1px);
+      background-size: 35px 35px;
+      background-position: center;
+      pointer-events: none;
+      z-index: -2;
+    }
+    .scanning-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(to right, transparent, rgba(0, 242, 255, 0.35), transparent);
+      box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+      pointer-events: none;
+      z-index: 998;
+      animation: scan 7s linear infinite;
+    }
+    @keyframes scan {
+      0% { transform: translateY(-10px); }
+      100% { transform: translateY(105vh); }
+    }
+
+    /* Vision Forge Laser targeting crosshairs & corners */
+    .vf-corner {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-color: rgba(0, 242, 255, 0.6);
+      border-style: solid;
+      pointer-events: none;
+      z-index: 5;
+      transition: all 0.3s ease;
+    }
+    .vf-top-left { top: 6px; left: 6px; border-width: 2px 0 0 2px; }
+    .vf-top-right { top: 6px; right: 6px; border-width: 2px 2px 0 0; }
+    .vf-bottom-left { bottom: 6px; left: 6px; border-width: 0 0 2px 2px; }
+    .vf-bottom-right { bottom: 6px; right: 6px; border-width: 0 2px 2px 0; }
+
+    .vf-canvas-container:hover .vf-top-left { top: 4px; left: 4px; border-color: var(--matrix-cyan); }
+    .vf-canvas-container:hover .vf-top-right { top: 4px; right: 4px; border-color: var(--matrix-cyan); }
+    .vf-canvas-container:hover .vf-bottom-left { bottom: 4px; left: 4px; border-color: var(--matrix-cyan); }
+    .vf-canvas-container:hover .vf-bottom-right { bottom: 4px; right: 4px; border-color: var(--matrix-cyan); }
+
+    .vf-blueprint-crosshairs::before, .vf-blueprint-crosshairs::after {
+      content: '';
+      position: absolute;
+      background: rgba(0, 242, 255, 0.45);
+      box-shadow: 0 0 6px var(--matrix-cyan);
+    }
+    .vf-blueprint-crosshairs::before {
+      top: 0; bottom: 0; left: var(--crosshair-x, 50%); width: 1px;
+    }
+    .vf-blueprint-crosshairs::after {
+      left: 0; right: 0; top: var(--crosshair-y, 50%); height: 1px;
+    }
   </style>
-  <script type="module" crossorigin src="./assets/matrix-D0Fe1N_x.js"></script>
+  <script type="module" crossorigin src="./assets/matrix-Xo1WrNDu.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-Dezn_h7o.js">
   <link rel="modulepreload" crossorigin href="./assets/rolldown-runtime-Cyuzqnbw.js">
   <link rel="modulepreload" crossorigin href="./assets/firebase-auth-CidYlx8O.js">
@@ -940,6 +1021,8 @@
 <body>
 
 <div class="scanlines"></div>
+<div class="grid-overlay"></div>
+<div class="scanning-bar"></div>
 <canvas id="matrix-rain-canvas"></canvas>
 
 <!-- ═══════════════════════ NAV ═══════════════════════════════ -->
@@ -1067,6 +1150,10 @@
       
       <!-- Interactive blueprint frame with hover crosshairs -->
       <div class="vf-canvas-container" id="vf-canvas-container">
+        <div class="vf-corner vf-top-left"></div>
+        <div class="vf-corner vf-top-right"></div>
+        <div class="vf-corner vf-bottom-left"></div>
+        <div class="vf-corner vf-bottom-right"></div>
         <div class="vf-blueprint-crosshairs"></div>
         <div class="vf-coordinate-readout" id="vf-coordinate-readout">X: 0px / Y: 0px</div>
         
@@ -1104,6 +1191,15 @@
       <button class="btn btn-secondary" id="diag-dns-btn">Probe Network DNS</button>
     </div>
     <div class="diag-layout">
+      <!-- Quantum resonance oscilloscope -->
+      <div class="oscilloscope-container" style="grid-column: 1 / -1; margin-bottom: 0.5rem;">
+        <h3 class="matrix-heading" style="font-size:1.1rem;margin-bottom:0.75rem">📡 Quantum Resonance Oscilloscope</h3>
+        <div style="position:relative; background: rgba(0, 5, 10, 0.8); border: 1px solid var(--matrix-border); border-radius: 8px; overflow: hidden; height: 140px;">
+          <canvas id="oscilloscope-canvas" style="display:block; width:100%; height:100%;"></canvas>
+          <div style="position:absolute; top: 0.5rem; left: 0.5rem; font-family:var(--font-mono); font-size:0.65rem; color:var(--matrix-cyan); pointer-events:none; opacity:0.75">FREQ: 432Hz | COHERENCE: SYNCED</div>
+        </div>
+      </div>
+
       <div>
         <h3 class="matrix-heading" style="font-size:1.1rem;margin-bottom:0.75rem">Browser Parameters</h3>
         <div id="cpu-panel" style="display:none">
