@@ -573,16 +573,36 @@
     }
     .stat-progress-container {
       flex-grow: 1;
-      height: 6px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 3px;
+      height: 8px;
+      background: rgba(0, 242, 255, 0.05);
+      border: 1px solid rgba(0, 242, 255, 0.15);
+      border-radius: 10px;
       margin: 0 0.75rem;
       overflow: hidden;
+      position: relative;
     }
     .stat-progress-bar {
       height: 100%;
-      border-radius: 3px;
+      border-radius: 10px;
       transition: width 0.4s ease-out;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-progress-bar::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3) 50%,
+        transparent
+      );
+      animation: bar-shine 2.5s infinite linear;
+    }
+    @keyframes bar-shine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
     }
 
     .nation-policies {
@@ -930,11 +950,74 @@
       .admin-table { font-size: 0.7rem; }
       .admin-permission-grid { flex-direction: column; gap: 0.25rem; }
     }
+
+    /* Cyber grid overlay */
+    .grid-overlay {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(0, 242, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 242, 255, 0.02) 1px, transparent 1px);
+      background-size: 35px 35px;
+      background-position: center;
+      pointer-events: none;
+      z-index: -2;
+    }
+    .scanning-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(to right, transparent, rgba(0, 242, 255, 0.35), transparent);
+      box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+      pointer-events: none;
+      z-index: 998;
+      animation: scan 7s linear infinite;
+    }
+    @keyframes scan {
+      0% { transform: translateY(-10px); }
+      100% { transform: translateY(105vh); }
+    }
+
+    /* Vision Forge Laser targeting crosshairs & corners */
+    .vf-corner {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-color: rgba(0, 242, 255, 0.6);
+      border-style: solid;
+      pointer-events: none;
+      z-index: 5;
+      transition: all 0.3s ease;
+    }
+    .vf-top-left { top: 6px; left: 6px; border-width: 2px 0 0 2px; }
+    .vf-top-right { top: 6px; right: 6px; border-width: 2px 2px 0 0; }
+    .vf-bottom-left { bottom: 6px; left: 6px; border-width: 0 0 2px 2px; }
+    .vf-bottom-right { bottom: 6px; right: 6px; border-width: 0 2px 2px 0; }
+
+    .vf-canvas-container:hover .vf-top-left { top: 4px; left: 4px; border-color: var(--matrix-cyan); }
+    .vf-canvas-container:hover .vf-top-right { top: 4px; right: 4px; border-color: var(--matrix-cyan); }
+    .vf-canvas-container:hover .vf-bottom-left { bottom: 4px; left: 4px; border-color: var(--matrix-cyan); }
+    .vf-canvas-container:hover .vf-bottom-right { bottom: 4px; right: 4px; border-color: var(--matrix-cyan); }
+
+    .vf-blueprint-crosshairs::before, .vf-blueprint-crosshairs::after {
+      content: '';
+      position: absolute;
+      background: rgba(0, 242, 255, 0.45);
+      box-shadow: 0 0 6px var(--matrix-cyan);
+    }
+    .vf-blueprint-crosshairs::before {
+      top: 0; bottom: 0; left: var(--crosshair-x, 50%); width: 1px;
+    }
+    .vf-blueprint-crosshairs::after {
+      left: 0; right: 0; top: var(--crosshair-y, 50%); height: 1px;
+    }
   </style>
 </head>
 <body>
 
 <div class="scanlines"></div>
+<div class="grid-overlay"></div>
+<div class="scanning-bar"></div>
 <canvas id="matrix-rain-canvas"></canvas>
 
 <!-- ═══════════════════════ NAV ═══════════════════════════════ -->
@@ -1062,6 +1145,10 @@
       
       <!-- Interactive blueprint frame with hover crosshairs -->
       <div class="vf-canvas-container" id="vf-canvas-container">
+        <div class="vf-corner vf-top-left"></div>
+        <div class="vf-corner vf-top-right"></div>
+        <div class="vf-corner vf-bottom-left"></div>
+        <div class="vf-corner vf-bottom-right"></div>
         <div class="vf-blueprint-crosshairs"></div>
         <div class="vf-coordinate-readout" id="vf-coordinate-readout">X: 0px / Y: 0px</div>
         
@@ -1099,6 +1186,15 @@
       <button class="btn btn-secondary" id="diag-dns-btn">Probe Network DNS</button>
     </div>
     <div class="diag-layout">
+      <!-- Quantum resonance oscilloscope -->
+      <div class="oscilloscope-container" style="grid-column: 1 / -1; margin-bottom: 0.5rem;">
+        <h3 class="matrix-heading" style="font-size:1.1rem;margin-bottom:0.75rem">📡 Quantum Resonance Oscilloscope</h3>
+        <div style="position:relative; background: rgba(0, 5, 10, 0.8); border: 1px solid var(--matrix-border); border-radius: 8px; overflow: hidden; height: 140px;">
+          <canvas id="oscilloscope-canvas" style="display:block; width:100%; height:100%;"></canvas>
+          <div style="position:absolute; top: 0.5rem; left: 0.5rem; font-family:var(--font-mono); font-size:0.65rem; color:var(--matrix-cyan); pointer-events:none; opacity:0.75">FREQ: 432Hz | COHERENCE: SYNCED</div>
+        </div>
+      </div>
+
       <div>
         <h3 class="matrix-heading" style="font-size:1.1rem;margin-bottom:0.75rem">Browser Parameters</h3>
         <div id="cpu-panel" style="display:none">
@@ -1239,7 +1335,7 @@
     proposeTrade, acceptTrade, POLICIES, getNationSummary,
   } from './js/nations.js';
 
-  /* ── Canvas Matrix Rain Overlay Engine ────────────────────────────────── */
+  /* ── Canvas Matrix Rain Overlay Engine (3D Parallax Upgrade) ──────────── */
   const canvas = document.getElementById('matrix-rain-canvas');
   const ctx = canvas.getContext('2d');
   let animationId = null;
@@ -1247,55 +1343,152 @@
   function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    initializeDrops();
   }
   window.addEventListener('resize', resizeCanvas);
-  resizeCanvas();
 
-  // Matrix characters including celestial and tech glyphs
   const chars = "010101⬡◈⚡👁☣⚛☄⚜ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-  const fontSize = 14;
-  let columns = Math.floor(canvas.width / fontSize) + 1;
-  let drops = Array(columns).fill(1);
+  let drops = [];
 
-  // Smooth color transitions based on lock state
+  function initializeDrops() {
+    const baseFontSize = 14;
+    const columns = Math.floor(canvas.width / 12) + 1;
+    drops = [];
+    for (let i = 0; i < columns; i++) {
+      const depth = 0.4 + Math.random() * 1.1; // 3D depth layer
+      drops.push({
+        x: i * 12,
+        y: Math.random() * -canvas.height, // stagger start positions
+        speed: depth * 1.5 + 0.5,
+        fontSize: Math.round(depth * baseFontSize),
+        opacity: depth * 0.45,
+        depth: depth
+      });
+    }
+  }
+
   let primaryHue = 160; // 160 = Emerald Green, 190 = Cyan, 280 = Purple
 
   function drawMatrixRain() {
-    ctx.fillStyle = 'rgba(3, 7, 12, 0.05)';
+    ctx.fillStyle = 'rgba(3, 7, 12, 0.06)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    columns = Math.floor(canvas.width / fontSize) + 1;
-    if (drops.length < columns) {
-      drops = [...drops, ...Array(columns - drops.length).fill(1)];
-    }
-
-    ctx.font = `${fontSize}px var(--font-mono)`;
-
     for (let i = 0; i < drops.length; i++) {
+      const drop = drops[i];
       const char = chars[Math.floor(Math.random() * chars.length)];
-      const x = i * fontSize;
-      const y = drops[i] * fontSize;
 
-      // Glow factor
-      if (Math.random() > 0.98) {
-        ctx.fillStyle = '#fff';
-        ctx.shadowColor = `hsl(${primaryHue}, 100%, 70%)`;
-        ctx.shadowBlur = 8;
+      ctx.font = `${drop.fontSize}px var(--font-mono)`;
+
+      // Dynamic color & glow factor depending on depth
+      if (Math.random() > 0.985 && drop.depth > 1.0) {
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowColor = `hsl(${primaryHue}, 100%, 75%)`;
+        ctx.shadowBlur = 10;
       } else {
-        ctx.fillStyle = `hsla(${primaryHue}, 100%, 55%, 0.35)`;
+        // More distant columns are dimmer (lower opacity)
+        ctx.fillStyle = `hsla(${primaryHue}, 100%, 55%, ${drop.opacity})`;
         ctx.shadowBlur = 0;
       }
 
-      ctx.fillText(char, x, y);
+      ctx.fillText(char, drop.x, drop.y);
 
-      if (y > canvas.height && Math.random() > 0.975) {
-        drops[i] = 0;
+      drop.y += drop.speed;
+
+      if (drop.y > canvas.height) {
+        drop.y = Math.random() * -100 - 20;
+        // randomize depth slightly on reset for perpetual variety
+        const depth = 0.4 + Math.random() * 1.1;
+        drop.speed = depth * 1.5 + 0.5;
+        drop.fontSize = Math.round(depth * 14);
+        drop.opacity = depth * 0.45;
+        drop.depth = depth;
       }
-      drops[i]++;
     }
     animationId = requestAnimationFrame(drawMatrixRain);
   }
+  resizeCanvas();
   drawMatrixRain();
+
+  /* ── Diagnostics Quantum Resonance Oscilloscope ──────────────────────── */
+  const oscCanvas = document.getElementById('oscilloscope-canvas');
+  if (oscCanvas) {
+    const oscCtx = oscCanvas.getContext('2d');
+    let oscWidth = oscCanvas.width = oscCanvas.parentElement.clientWidth;
+    let oscHeight = oscCanvas.height = oscCanvas.parentElement.clientHeight;
+
+    window.addEventListener('resize', () => {
+      if (oscCanvas.parentElement) {
+        oscWidth = oscCanvas.width = oscCanvas.parentElement.clientWidth;
+        oscHeight = oscCanvas.height = oscCanvas.parentElement.clientHeight;
+      }
+    });
+
+    let phase = 0;
+    function drawOscilloscope() {
+      const panel = document.getElementById('diagnostics-panel');
+      if (!oscCanvas || !panel || panel.style.display === 'none') {
+        // Skip rendering if Diagnostics Console is closed/hidden to save cpu resources
+        requestAnimationFrame(drawOscilloscope);
+        return;
+      }
+
+      oscCtx.fillStyle = 'rgba(0, 5, 10, 0.2)';
+      oscCtx.fillRect(0, 0, oscWidth, oscHeight);
+
+      // Draw radar grid lines
+      oscCtx.strokeStyle = 'rgba(0, 242, 255, 0.04)';
+      oscCtx.lineWidth = 1;
+      
+      // Vertical grid lines
+      for (let x = 0; x < oscWidth; x += 30) {
+        oscCtx.beginPath();
+        oscCtx.moveTo(x, 0);
+        oscCtx.lineTo(x, oscHeight);
+        oscCtx.stroke();
+      }
+      // Horizontal grid lines
+      for (let y = 0; y < oscHeight; y += 30) {
+        oscCtx.beginPath();
+        oscCtx.moveTo(0, y);
+        oscCtx.lineTo(oscWidth, y);
+        oscCtx.stroke();
+      }
+
+      // Draw horizontal center reference line
+      oscCtx.strokeStyle = 'rgba(0, 242, 255, 0.12)';
+      oscCtx.beginPath();
+      oscCtx.moveTo(0, oscHeight / 2);
+      oscCtx.lineTo(oscWidth, oscHeight / 2);
+      oscCtx.stroke();
+
+      // Plot the wave line
+      oscCtx.strokeStyle = `hsl(${primaryHue}, 100%, 55%)`;
+      oscCtx.shadowColor = `hsl(${primaryHue}, 100%, 55%)`;
+      oscCtx.shadowBlur = 6;
+      oscCtx.lineWidth = 2;
+      oscCtx.beginPath();
+
+      for (let x = 0; x < oscWidth; x++) {
+        // Multiple sine harmonics + tiny high-frequency noise
+        const amplitude = 28 * Math.sin(x * 0.005 + phase * 0.5);
+        const y = oscHeight / 2 + 
+                  amplitude * Math.sin(x * 0.025 + phase) + 
+                  4 * Math.sin(x * 0.12 - phase * 1.8) + 
+                  (Math.random() - 0.5) * 1.5;
+        if (x === 0) {
+          oscCtx.moveTo(x, y);
+        } else {
+          oscCtx.lineTo(x, y);
+        }
+      }
+      oscCtx.stroke();
+      oscCtx.shadowBlur = 0; // reset glow
+
+      phase += 0.04;
+      requestAnimationFrame(drawOscilloscope);
+    }
+    drawOscilloscope();
+  }
 
   /* ── Web Audio Synthesizer Cues ──────────────────────────────────────── */
   class SynthEngine {
@@ -1756,7 +1949,7 @@
           <div class="stat-row">
             <span class="stat-label">🍞 Food Cap</span>
             <div class="stat-progress-container">
-              <div class="stat-progress-bar" style="width: ${foodPct}%; background: var(--matrix-green);"></div>
+              <div class="stat-progress-bar" style="width: ${foodPct}%; background: linear-gradient(90deg, #10b981, #34d399); box-shadow: 0 0 8px rgba(16, 185, 129, 0.45); color: #10b981;"></div>
             </div>
             <span class="stat-val">${r.food}</span>
           </div>
@@ -1764,7 +1957,7 @@
           <div class="stat-row">
             <span class="stat-label">🪙 Gold Supply</span>
             <div class="stat-progress-container">
-              <div class="stat-progress-bar" style="width: ${goldPct}%; background: #eab308;"></div>
+              <div class="stat-progress-bar" style="width: ${goldPct}%; background: linear-gradient(90deg, #d97706, #fbbf24); box-shadow: 0 0 8px rgba(245, 158, 11, 0.45); color: #fbbf24;"></div>
             </div>
             <span class="stat-val">${r.gold}</span>
           </div>
@@ -1772,7 +1965,7 @@
           <div class="stat-row">
             <span class="stat-label">🛐 Faith Matrix</span>
             <div class="stat-progress-container">
-              <div class="stat-progress-bar" style="width: ${faithPct}%; background: var(--matrix-purple);"></div>
+              <div class="stat-progress-bar" style="width: ${faithPct}%; background: linear-gradient(90deg, #7c3aed, #a78bfa); box-shadow: 0 0 8px rgba(139, 92, 246, 0.45); color: #a78bfa;"></div>
             </div>
             <span class="stat-val">${r.faith}</span>
           </div>
@@ -1780,7 +1973,7 @@
           <div class="stat-row">
             <span class="stat-label">📚 Knowledge</span>
             <div class="stat-progress-container">
-              <div class="stat-progress-bar" style="width: ${knowledgePct}%; background: var(--matrix-cyan);"></div>
+              <div class="stat-progress-bar" style="width: ${knowledgePct}%; background: linear-gradient(90deg, #0284c7, #38bdf8); box-shadow: 0 0 8px rgba(14, 165, 233, 0.45); color: #38bdf8;"></div>
             </div>
             <span class="stat-val">${r.knowledge}</span>
           </div>
@@ -1879,6 +2072,10 @@
     const y = Math.round(e.clientY - rect.top);
     // Draw crosshair readout values
     coordinateReadout.textContent = `TARGET CELL X: ${x}px / Y: ${y}px`;
+    
+    // Position laser crosshairs using CSS Custom Properties
+    vfCanvasFrame.style.setProperty('--crosshair-x', `${x}px`);
+    vfCanvasFrame.style.setProperty('--crosshair-y', `${y}px`);
   });
 
   generateBtn.addEventListener('click', async () => {

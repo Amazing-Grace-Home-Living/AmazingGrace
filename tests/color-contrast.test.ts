@@ -12,12 +12,17 @@ function findHtmlFiles(dir: string, exclude: string[] = []): string[] {
     const relativePath = path.relative(process.cwd(), fullPath);
 
     if (exclude.some(ex => relativePath.includes(ex))) continue;
+    if (item.includes('└──')) continue;
 
-    const stat = fs.statSync(fullPath);
-    if (stat.isDirectory()) {
-      files.push(...findHtmlFiles(fullPath, exclude));
-    } else if (item.endsWith('.html')) {
-      files.push(relativePath);
+    try {
+      const stat = fs.lstatSync(fullPath);
+      if (stat.isDirectory() && !stat.isSymbolicLink()) {
+        files.push(...findHtmlFiles(fullPath, exclude));
+      } else if (item.endsWith('.html')) {
+        files.push(relativePath);
+      }
+    } catch (e) {
+      // Ignore files we can't access
     }
   }
 
