@@ -179,6 +179,9 @@ body {
     cursor: crosshair;
     display: block;
     margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+    touch-action: manipulation;
 }
 
 #build-panel {
@@ -211,4 +214,46 @@ body {
     align-items: center;
     z-index: 10;
 }
-#overlay h1 { color: var(--danger); margin-bottom: 16px; }
+#overlay h1 { color: var(--danger); margin-bottom: 16px; text-align: center; }
+
+/* Mobile Responsiveness */
+@media (max-width: 650px) {
+    .screen {
+        padding: 15px;
+        margin: 10px;
+        border-width: 1px;
+    }
+    #header {
+        flex-wrap: wrap;
+        font-size: 0.85em;
+        justify-content: center;
+        gap: 8px;
+    }
+    #build-panel {
+        flex-wrap: wrap;
+    }
+    .tower-option {
+        flex: 1 1 30%;
+        font-size: 0.7em;
+        padding: 8px 4px;
+    }
+    .faction-options {
+        flex-direction: column;
+        align-items: center;
+    }
+    .faction-btn {
+        width: 100%;
+        max-width: 250px;
+    }
+    .store-grid {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .store-item {
+        width: 100%;
+        max-width: 280px;
+    }
+    .title {
+        font-size: 1.8em;
+    }
+}

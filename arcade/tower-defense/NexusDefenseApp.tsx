@@ -495,8 +495,13 @@ export default function NexusDefenseApp() {
     const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
         if (!gameActive || !engineRef.current) return;
         const rect = canvasRef.current!.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        
+        // Account for CSS scaling on mobile
+        const scaleX = canvasRef.current!.width / rect.width;
+        const scaleY = canvasRef.current!.height / rect.height;
+        
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
         
         const col = Math.floor(x / CELL_SIZE);
         const row = Math.floor(y / CELL_SIZE);
