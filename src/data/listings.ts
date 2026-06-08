@@ -23,7 +23,9 @@ export const listings: Listing[] = [
       'Washer & dryer access, high-speed Wi-Fi, utilities included, and parking available',
       'Shared kitchen and common areas in a clean, maintained home'
     ],
-    gallery: []
+    gallery: [
+      './assets/images/926-poinsettia/1000002510.jpg'
+    ]
   },
   {
     id: '1142-7th-street',

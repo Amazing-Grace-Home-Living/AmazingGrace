@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo, useReducer, useState, useCallback } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useReducer, useState, useCallback, useRef } from "react";
 import "../hud/nexus-hud.css";
 
 const TELEMETRY_ENDPOINT =
@@ -164,13 +164,15 @@ function conscienceReducer(state: ConscienceState, action: any): ConscienceState
 }
 
 export function ConscienceProvider({ children, initialMetrics }: { children: React.ReactNode, initialMetrics?: any }) {
-  const [state, dispatch] = useReducer(conscienceReducer, null, () => {
+  const [state, dispatch] = useReducer(conscienceReducer, DEFAULT_STATE, () => {
     const loaded = loadPersistedState();
     if (initialMetrics) {
         loaded.metrics = { ...loaded.metrics, ...initialMetrics };
     }
     return loaded;
   });
+
+  const prevMetricsRef = useRef(initialMetrics);
 
   useEffect(() => {
     persistState(state);
@@ -240,8 +242,7 @@ export function ConscienceProvider({ children, initialMetrics }: { children: Rea
     ].slice(0, 30));
   }, []);
 
-  const value = useMemo(
-    () => ({
+  const value = useMemo(() => ({
       metrics: state.metrics,
       stars: state.stars,
       points,
