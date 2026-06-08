@@ -959,8 +959,8 @@ export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReput
   }, [viewMode, sovereigns, gameEntities, gameState, tdSelectedTower, hoverCell, hoverPlacementValid, selectedSovereignName, agentConversations, slowedSovereigns, threatFlashes, metrics]);
 
   return (
-    <div className="emergence-viewport" onClick={() => selectSovereign(null)} style={{ filter: globalCollapseRisk > 0.6 ? `hue-rotate(${globalCollapseRisk * 90}deg) contrast(${1 + globalCollapseRisk * 0.5})` : 'none' }}>
-      <div className={`telemetry-sidebar ${sidebarOpen ? 'open' : ''}`} onClick={(e) => e.stopPropagation()}>
+    <div className="emergence-viewport" onClick={() => selectSovereign(null)}>
+      <div className="telemetry-sidebar" onClick={(e) => e.stopPropagation()}>
         <button className="sidebar-close-btn" onClick={() => setSidebarOpen(false)} aria-label="Close telemetry sidebar">×</button>
         <div className="sidebar-header"><h1>Emergence 3D</h1><p>Local Simulation Telemetry Engine</p></div>
         <div className="panel-section">
