@@ -550,6 +550,18 @@ export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReput
           )}
         </div>
       </div>
+      
+      {gameState.bossWarning && (
+        <div className="boss-warning-overlay" style={{
+          position: 'absolute', top: '10%', left: '50%', transform: 'translateX(-50%)',
+          color: '#ff0000', fontSize: '3rem', fontWeight: 'bold', textShadow: '0 0 20px #ff0000',
+          animation: 'pulse 1s infinite', zIndex: 100, pointerEvents: 'none', textAlign: 'center'
+        }}>
+          ⚠️ BOSS ENCOUNTER DETECTED ⚠️<br/>
+          <span style={{ fontSize: '1.5rem', color: '#ffb3c6' }}>PREPARE FOR SWARM</span>
+        </div>
+      )}
+
       <div className="canvas-container">
         <Canvas shadows camera={{ position: [9, 8, 9], fov: 42 }} onCreated={({ gl }) => { gl.setClearColor(new THREE.Color('#030307')); }}>
           <Suspense fallback={null}>
@@ -563,7 +575,12 @@ export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReput
             <EnvironmentalSpikes instability={metrics.timelineInstability} />
             {gameState.active && PATH.map((p, i) => (
               <mesh key={`path_${i}`} position={[p.x, 0.05, p.z]} rotation={[-Math.PI/2, 0, 0]} raycast={() => null}>
-                <planeGeometry args={[1, 1]} /><meshBasicMaterial color="#00f0ff" transparent opacity={0.15} />
+                <planeGeometry args={[0.8, 0.8]} />
+                <meshBasicMaterial color="#0f172a" transparent opacity={0.8} />
+                <mesh position={[0, 0, 0.01]}>
+                  <planeGeometry args={[0.3, 0.3]} />
+                  <meshBasicMaterial color="#38bdf8" transparent opacity={0.3} />
+                </mesh>
               </mesh>
             ))}
             <CentralPortal instability={metrics.timelineInstability} />
@@ -571,17 +588,35 @@ export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReput
             <CentralTowers alignment={metrics.worldAlignment} instability={metrics.timelineInstability} />
             {gameEntities.towers.map(tower => (
               <group key={tower.id} position={[tower.x, 0, tower.z]} raycast={() => null}>
-                <mesh position={[0, 0.5, 0]}>
-                  <boxGeometry args={[0.6, 1, 0.6]} />
-                  <meshStandardMaterial color={tower.type === 'purify' ? '#00f0ff' : tower.type === 'contain' ? '#a855f7' : tower.type === 'sentinel' ? '#ff0055' : '#00ffb7'} />
+                {/* Base */}
+                <mesh position={[0, 0.25, 0]}>
+                  <cylinderGeometry args={[0.3, 0.4, 0.5, 16]} />
+                  <meshStandardMaterial color="#222" metalness={0.8} roughness={0.2} />
                 </mesh>
+                <mesh position={[0, 0.05, 0]} rotation={[-Math.PI/2, 0, 0]}>
+                  <torusGeometry args={[0.4, 0.05, 16, 32]} />
+                  <meshBasicMaterial color={tower.type === 'purify' ? '#00f0ff' : tower.type === 'contain' ? '#a855f7' : tower.type === 'sentinel' ? '#ff0055' : '#00ffb7'} />
+                </mesh>
+                {/* Turret */}
+                <group position={[0, 0.6, 0]} rotation={[0, tower.angle || 0, 0]}>
+                  <mesh>
+                    <boxGeometry args={[0.4, 0.3, 0.4]} />
+                    <meshStandardMaterial color={tower.type === 'purify' ? '#00f0ff' : tower.type === 'contain' ? '#a855f7' : tower.type === 'sentinel' ? '#ff0055' : '#00ffb7'} />
+                  </mesh>
+                  {/* Barrel */}
+                  <mesh position={[0, 0, 0.3]} rotation={[Math.PI/2, 0, 0]}>
+                    <cylinderGeometry args={[0.05, 0.05, 0.4]} />
+                    <meshStandardMaterial color="#fff" emissive={tower.type === 'purify' ? '#00f0ff' : tower.type === 'contain' ? '#a855f7' : tower.type === 'sentinel' ? '#ff0055' : '#00ffb7'} emissiveIntensity={2} />
+                  </mesh>
+                </group>
               </group>
             ))}
 
             {gameEntities.projectiles.map((p, idx) => (
-              <mesh key={`proj_${p.id}_${idx}`} position={[p.x, 0.5, p.z]} raycast={() => null}>
-                <sphereGeometry args={[0.1, 8, 8]} />
+              <mesh key={`proj_${p.id}_${idx}`} position={[p.x, 0.6, p.z]} raycast={() => null}>
+                <sphereGeometry args={[0.15, 8, 8]} />
                 <meshBasicMaterial color={p.color} />
+                <pointLight color={p.color} intensity={2} distance={2} />
               </mesh>
             ))}
 
@@ -601,11 +636,17 @@ export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReput
                   {e.type === 'swarm' && <coneGeometry args={[0.2, 0.4, 4]} />}
                   {(!e.type || e.type === 'normal') && <sphereGeometry args={[0.3, 16, 16]} />}
                   <meshStandardMaterial 
-                    color={e.color || "#ff0055"} 
-                    wireframe={e.type === 'shielded'} 
+                    color="#000"
+                    emissive={e.color || "#ff0055"}
+                    emissiveIntensity={e.type === 'boss' ? 3 : 1.5}
+                    wireframe={e.type === 'shielded' || e.type === 'swarm'} 
                     metalness={e.type === 'armored' ? 0.9 : 0.1}
                     roughness={e.type === 'armored' ? 0.2 : 0.8}
                   />
+                  <mesh>
+                    <sphereGeometry args={[0.15, 8, 8]} />
+                    <meshBasicMaterial color="#fff" />
+                  </mesh>
                 </mesh>
                 <mesh position={[0, e.type === 'boss' ? 1.0 : 0.5, 0]}>
                   <planeGeometry args={[0.5, 0.05]} />
@@ -616,6 +657,13 @@ export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReput
                   <meshBasicMaterial color="#00ff00" />
                 </mesh>
               </group>
+            ))}
+            {gameEntities.floatingTexts.map((ft, idx) => (
+              <Html key={`ft_${idx}`} position={[ft.x, ft.y, ft.z]} center distanceFactor={10}>
+                <div style={{ color: ft.color, fontWeight: 'bold', fontSize: '1.2rem', textShadow: '0 0 5px black', pointerEvents: 'none' }}>
+                  {ft.text}
+                </div>
+              </Html>
             ))}
             {sovereigns.map((sovereign: any, i: number) => (
               <SovereignAgent key={sovereign.name || i} sovereign={sovereign} index={i} isSelected={selectedSovereignName === sovereign.name} slowed={Boolean(slowedSovereigns[sovereign.name])} threatFlash={Boolean(threatFlashes[sovereign.name])} threatLevel={getThreatLevel(sovereign.corruption)} onSelect={() => selectSovereign(sovereign.name)} />

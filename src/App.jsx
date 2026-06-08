@@ -9,6 +9,7 @@ import StorybookHub from '@/modules/storybook/StorybookHub';
 import ReclaimMission from '@/modules/arcade/ReclaimMission';
 import AuthorsMandate from './components/AuthorsMandate';
 import MatrixOfConscience from './arcade/matrix-of-conscience/MatrixOfConscience';
+import UniverseMap from './modules/universe/UniverseMap';
 
 // Nexus HUD System
 import { HUDProvider, useHUD } from './hud/HUDContext';
@@ -18,6 +19,9 @@ import { useVirtueEngine } from './virtue/useVirtueEngine';
 import { useBookOfWorks } from './book/useBookOfWorks';
 // @ts-ignore
 import { useInnerCourtChoir } from './choir/useInnerCourtChoir';
+
+import { initAudioReactive } from './fx/AudioReactiveEngine';
+import { applyThemeByProgress } from './fx/ThemeEngine';
 
 
 
@@ -35,7 +39,7 @@ const OS_THEME = {
 };
 
 function StellaraOSInner() {
-  const [activeView, setActiveView] = useState('hub');
+  const [activeView, setActiveView] = useState('universe');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeMissionId, setActiveMissionId] = useState(null);
 
@@ -47,6 +51,11 @@ function StellaraOSInner() {
   const { hud } = useHUD();
   useInnerCourtChoir(hud);
 
+  const playerLevel = hud?.player?.level || 1;
+
+  useEffect(() => {
+    applyThemeByProgress(playerLevel);
+  }, [playerLevel]);
 
   // Pull global telemetry from the Context
   const { matrixMetrics, sisters, getUnlockedCount } = useSevenSisters();
@@ -81,6 +90,9 @@ function StellaraOSInner() {
 
           {/* Desktop Routing Nodes */}
           <div className="hidden md:flex items-center gap-8">
+            <button onClick={() => navigateTo('universe')} className={`text-sm font-bold uppercase tracking-widest transition-colors ${activeView === 'universe' ? 'text-[#00E5FF]' : 'text-gray-400 hover:text-white'}`}>
+              Universe
+            </button>
             <button onClick={() => navigateTo('hub')} className={`text-sm font-bold uppercase tracking-widest transition-colors ${activeView === 'hub' ? 'text-[#00E5FF]' : 'text-gray-400 hover:text-white'}`}>
               Telemetry
             </button>
@@ -98,6 +110,9 @@ function StellaraOSInner() {
             </button>
             <button onClick={() => navigateTo('nexus-hud')} className={`text-sm font-bold uppercase tracking-widest transition-colors ${activeView === 'nexus-hud' ? 'text-[#4fd1ff]' : 'text-gray-400 hover:text-white'}`}>
               Nexus HUD
+            </button>
+            <button onClick={() => initAudioReactive()} className={`text-sm font-bold uppercase tracking-widest transition-colors text-gray-400 hover:text-[#ff00ff]`}>
+              <Activity size={16} className="inline mr-1"/> Audio FX
             </button>
           </div>
 
@@ -130,6 +145,13 @@ function StellaraOSInner() {
   // ---------------------------------------------------------------------------
   const renderActiveView = () => {
     switch(activeView) {
+      
+      case 'universe':
+        return (
+          <div className="animate-in fade-in zoom-in duration-500">
+            <UniverseMap navigateTo={navigateTo} />
+          </div>
+        );
 
       // The Core Telemetry Dashboard
       case 'hub':
@@ -234,8 +256,15 @@ function StellaraOSInner() {
       className="min-h-screen text-white font-sans selection:bg-purple-500/30 selection:text-white pb-24"
       style={{ backgroundColor: OS_THEME.background }}
     >
-      {/* Background Cosmic Canvas (Assuming it mounts to body/root externally, or you can embed it here as a component) */}
+      {/* Background Cosmic Canvas */}
       <div className="fixed inset-0 pointer-events-none opacity-40 z-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/20 via-black to-black"></div>
+      
+      {/* Multi-Layer Cosmic Depth Parallax */}
+      <div className="cosmic-depth">
+        <div className="cosmic-layer" style={{ backgroundImage: 'radial-gradient(circle, #38bdf8 1px, transparent 2px)' }}></div>
+        <div className="cosmic-layer mid" style={{ backgroundImage: 'radial-gradient(circle, #a855f7 1px, transparent 3px)' }}></div>
+        <div className="cosmic-layer deep" style={{ backgroundImage: 'radial-gradient(circle, #facc15 1px, transparent 4px)' }}></div>
+      </div>
 
       {renderNavigation()}
 

@@ -1,0 +1,27 @@
+.universe-map-container {
+  padding: 2rem;
+}
+
+.map-viewport {
+  position: relative;
+}
+
+.neon-pulse-stroke {
+  animation: strokePulse 2s ease-in-out infinite;
+}
+
+@keyframes strokePulse {
+  0% {
+    stroke-opacity: 0.4;
+    stroke-width: 2px;
+  }
+  50% {
+    stroke-opacity: 1;
+    stroke-width: 4px;
+    filter: drop-shadow(0 0 8px #a855f7);
+  }
+  100% {
+    stroke-opacity: 0.4;
+    stroke-width: 2px;
+  }
+}

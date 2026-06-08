@@ -62,6 +62,7 @@ export default defineConfig({
         support:           resolve(__dirname, "support/index.html"),
         privacy:           resolve(__dirname, "privacy.html"),
         arcadeRedirect:    resolve(__dirname, "arcade.html"),
+        arcadeGeminiVanguard: resolve(__dirname, "arcade/gemini-vanguard/index.html"),
       },
       output: {
         manualChunks(id) {

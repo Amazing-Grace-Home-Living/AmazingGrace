@@ -13,6 +13,7 @@ export interface Enemy {
   slowTimer: number;
   type: 'normal' | 'armored' | 'shielded' | 'swarm' | 'boss';
   color: string;
+  abilityTimer?: number;
 }
 
 export interface Projectile {
@@ -35,6 +36,7 @@ export interface Tower {
   type: 'purify' | 'contain' | 'sentinel' | 'genesis';
   cooldownTimer: number;
   level: number;
+  angle: number;
 }
 
 // Map the old vanilla path (0-14, 1-8) into a 10x10 centered 3D grid (-4.5 to +4.5)
@@ -67,7 +69,8 @@ export const useTowerDefenseEngine = (
     wave: 1,
     score: 0,
     energyCap: 100,
-    lastMessage: ''
+    lastMessage: '',
+    bossWarning: false
   });
 
   const stateRef = useRef({
@@ -107,9 +110,10 @@ export const useTowerDefenseEngine = (
   const startWave = useCallback(() => {
     setGameState(prev => {
       if (!prev.active || prev.waveActive) return prev;
-      stateRef.current.enemiesToSpawn = 5 + prev.wave * 3;
+      const isBossWave = prev.wave % 5 === 0;
+      stateRef.current.enemiesToSpawn = isBossWave ? 1 : 5 + prev.wave * 3;
       stateRef.current.spawnTimer = 0;
-      return { ...prev, waveActive: true };
+      return { ...prev, waveActive: true, bossWarning: isBossWave };
     });
   }, []);
 
@@ -148,7 +152,8 @@ export const useTowerDefenseEngine = (
         x, z,
         type,
         cooldownTimer: 0,
-        level: 1
+        level: 1,
+        angle: 0
       });
 
       return { ...prev, money: prev.money - cost, lastMessage: evaluation.reasoning };
@@ -213,7 +218,7 @@ export const useTowerDefenseEngine = (
             let color = '#ff0040';
 
             const rand = Math.random();
-            if (gameState.wave % 10 === 0 && st.enemiesToSpawn === 1) {
+            if (gameState.wave % 5 === 0 && st.enemiesToSpawn === 1) {
               eType = 'boss';
               hp *= 10;
               speed *= 0.5;
@@ -243,7 +248,8 @@ export const useTowerDefenseEngine = (
               pathIndex: 0,
               slowTimer: 0,
               type: eType,
-              color
+              color,
+              abilityTimer: eType === 'boss' ? 300 : 0
             });
             st.enemiesToSpawn--;
             st.spawnTimer = 0;
@@ -267,6 +273,33 @@ export const useTowerDefenseEngine = (
             e.slowTimer--;
           }
 
+          if (e.type === 'boss' && e.abilityTimer !== undefined) {
+            e.abilityTimer--;
+            if (e.abilityTimer <= 0) {
+              e.abilityTimer = 300; // Reset
+              // Spawn swarm minions
+              for (let m = 0; m < 3; m++) {
+                st.enemies.push({
+                  id: `e_swarm_${Date.now()}_${Math.random()}`,
+                  x: e.x + (Math.random() - 0.5),
+                  z: e.z + (Math.random() - 0.5),
+                  hp: e.maxHp * 0.05,
+                  maxHp: e.maxHp * 0.05,
+                  speed: e.speed * 2,
+                  pathIndex: e.pathIndex,
+                  slowTimer: 0,
+                  type: 'swarm',
+                  color: '#facc15'
+                });
+              }
+              // Boss pauses for a moment
+              speed = 0;
+            } else if (e.abilityTimer > 250) {
+              // Paused after spawning
+              speed = 0;
+            }
+          }
+
           const dx = target.x - e.x;
           const dz = target.z - e.z;
           const dist = Math.hypot(dx, dz);
@@ -275,7 +308,7 @@ export const useTowerDefenseEngine = (
             e.x = target.x;
             e.z = target.z;
             e.pathIndex++;
-          } else {
+          } else if (speed > 0) {
             e.x += (dx / dist) * speed;
             e.z += (dz / dist) * speed;
           }
@@ -298,6 +331,7 @@ export const useTowerDefenseEngine = (
             });
 
             if (closest) {
+              tower.angle = -Math.atan2((closest as Enemy).z - tower.z, (closest as Enemy).x - tower.x);
               st.projectiles.push({
                 id: `p_${Date.now()}_${Math.random()}`,
                 x: tower.x,
@@ -356,6 +390,14 @@ export const useTowerDefenseEngine = (
             }
 
             target.hp -= actualDamage;
+
+            // Spawn floating text for damage
+            st.floatingTexts.push({
+              x: target.x, y: 0.8, z: target.z,
+              text: `-${Math.floor(actualDamage)}`,
+              color: p.color,
+              life: 1.0
+            });
             
             if (p.effect === 'slow') target.slowTimer = 120;
             
@@ -404,6 +446,7 @@ export const useTowerDefenseEngine = (
           setGameState(prev => ({
             ...prev,
             waveActive: false,
+            bossWarning: false,
             wave: prev.wave + 1,
             money: prev.money + 50 + prev.wave * 5
           }));

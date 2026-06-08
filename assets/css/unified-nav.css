@@ -1,4 +1,6 @@
 @import url('./rebellion-skin.css');
+@import url('./nexus-neon.css');
+@import url('./nexus-neon-fx.css');
 
 :root {
   --unified-nav-bg: rgba(2, 6, 23, 0.96);
