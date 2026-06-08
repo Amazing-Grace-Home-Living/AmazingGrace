@@ -467,6 +467,7 @@ export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReput
   const [hoverCell, setHoverCell] = useState<{ x: number; z: number } | null>(null);
   const [atariUnlocked, setAtariUnlocked] = useState(false);
   const [atariOverlayTrigger, setAtariOverlayTrigger] = useState(0);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => { setAtariUnlocked(sessionStorage.getItem('atari_attuned') === 'true'); }, []);
   const handleAtariUnlock = useCallback(() => { sessionStorage.setItem('atari_attuned', 'true'); setAtariUnlocked(true); setAtariOverlayTrigger((prev) => prev + 1); if (typeof addMultiplayerLog === 'function') { addMultiplayerLog('SYSTEM BREACH DETECTED: Atari Wing protocols activated.', 'System', 'event'); } }, [addMultiplayerLog]);
@@ -504,7 +505,8 @@ export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReput
 
   return (
     <div className="emergence-viewport" onClick={() => selectSovereign(null)} style={{ filter: globalCollapseRisk > 0.6 ? `hue-rotate(${globalCollapseRisk * 90}deg) contrast(${1 + globalCollapseRisk * 0.5})` : 'none' }}>
-      <div className="telemetry-sidebar" onClick={(e) => e.stopPropagation()}>
+      <div className={`telemetry-sidebar ${sidebarOpen ? 'open' : ''}`} onClick={(e) => e.stopPropagation()}>
+        <button className="sidebar-close-btn" onClick={() => setSidebarOpen(false)} aria-label="Close telemetry sidebar">×</button>
         <div className="sidebar-header"><h1>Emergence 3D</h1><p>Local Simulation Telemetry Engine</p></div>
         <div className="panel-section">
           <div className="section-title">System Metrics</div>
@@ -681,6 +683,9 @@ export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReput
           </Suspense>
         </Canvas>
       </div>
+      <button className="sidebar-toggle-btn" onClick={(e) => { e.stopPropagation(); setSidebarOpen(true); }} aria-label="Open telemetry sidebar">
+        📊 Telemetry
+      </button>
       <AtariWingOverlay key={atariOverlayTrigger} unlocked={atariUnlocked} />
       <ChatOverlay />
     </div>

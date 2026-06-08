@@ -1129,14 +1129,14 @@
 
 <!-- ═══════════════════════ SCRIPTS ════════════════════════════ -->
 <script type="module">
-  import { loginWithEmail, getCurrentUser, clearSession, IS_DEMO_HOST, db } from '/js/firebase.js';
-  import { computeUnlocks, unlockHint }                                  from '/js/unlocks.js';
-  import { runBrowserDiagnostics, runDnsTests }                          from '/js/diagnostics.js';
-  import { generateImage, getHistory, IS_VISION_AVAILABLE }             from '/js/visionforge.js';
+  import { loginWithEmail, getCurrentUser, clearSession, IS_DEMO_HOST, db } from './js/firebase.js';
+  import { computeUnlocks, unlockHint }                                  from './js/unlocks.js';
+  import { runBrowserDiagnostics, runDnsTests }                          from './js/diagnostics.js';
+  import { generateImage, getHistory, IS_VISION_AVAILABLE }             from './js/visionforge.js';
   import {
     createNation, processTurn, enactPolicy,
     proposeTrade, acceptTrade, POLICIES, getNationSummary,
-  } from '/js/nations.js';
+  } from './js/nations.js';
 
   /* ── Canvas Matrix Rain Overlay Engine ────────────────────────────────── */
   const canvas = document.getElementById('matrix-rain-canvas');

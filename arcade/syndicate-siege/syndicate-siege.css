@@ -425,7 +425,293 @@ body {
 }
 .low-integrity-flash { animation: pulse-red 0.5s infinite; color: var(--neon-red); }
 
+/* Hide mobile elements on desktop */
+.mobile-nav-bar {
+  display: none;
+}
+.mobile-upgrade-toggle-wrapper {
+  display: none;
+}
+
 @media (max-width: 1000px) {
-  .layout-body { grid-template-columns: 1fr; }
-  body { overflow-y: auto; }
+  body {
+    overflow: hidden; /* Prevent vertical scrolling */
+  }
+
+  .syndicate-app-container {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .game-wrapper {
+    overflow: hidden;
+  }
+
+  .layout-body {
+    display: flex !important;
+    flex-direction: column !important;
+    position: relative;
+    flex: 1 !important;
+    min-height: 0 !important;
+    overflow: hidden;
+  }
+
+  .center-grid {
+    flex: 1;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+  }
+
+  /* Drawers styling on mobile */
+  .mc-card.sidebar-left,
+  .mc-card.sidebar-right {
+    display: none !important;
+  }
+
+  .mc-card.sidebar-left.mobile-active,
+  .mc-card.sidebar-right.mobile-active {
+    display: flex !important;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    z-index: 100;
+    background: rgba(15, 23, 42, 0.95) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(0, 229, 255, 0.3);
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    border-radius: 16px 16px 0 0;
+    padding: 12px;
+    box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  /* Tabs/Views within drawers */
+  .ai-council-comms,
+  .mobile-upgrade-toggle-wrapper,
+  #upgrade-panel,
+  #btn-nova {
+    display: none !important;
+  }
+
+  .ai-council-comms.mobile-visible {
+    display: flex !important;
+    flex: 1;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .mobile-upgrade-toggle-wrapper.mobile-visible {
+    display: flex !important;
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .mobile-upgrade-btn {
+    width: 100%;
+    padding: 8px !important;
+    font-size: 0.75rem !important;
+    background: rgba(0, 229, 255, 0.1) !important;
+    border-color: rgba(0, 229, 255, 0.3) !important;
+  }
+
+  #upgrade-panel.mobile-visible {
+    display: block !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid rgba(255, 216, 107, 0.2) !important;
+    border-radius: 8px;
+    padding: 8px;
+    margin-top: 6px;
+  }
+
+  #btn-nova.mobile-visible {
+    display: flex !important;
+    margin-top: 6px;
+    padding: 8px !important;
+    font-size: 0.75rem !important;
+  }
+
+  .tower-selection-list {
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    gap: 8px;
+    padding-bottom: 4px;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+
+  .tower-btn {
+    flex: 0 0 130px;
+    padding: 6px 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    height: 65px;
+    gap: 2px;
+  }
+
+  .tower-name {
+    font-size: 0.7rem;
+  }
+  .tower-desc {
+    display: none; /* Hide descriptions to fit horizontal layout */
+  }
+  .tower-cost {
+    font-size: 0.65rem;
+  }
+
+  .sidebar-left .mt-auto {
+    margin-top: 8px !important;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+    width: 100%;
+  }
+
+  .sidebar-left .mt-auto > * {
+    margin: 0 !important;
+    flex: 1;
+  }
+
+  .action-btn {
+    padding: 8px !important;
+    font-size: 0.65rem !important;
+    height: 34px;
+  }
+
+  .elite-toggle {
+    height: 34px;
+    font-size: 0.65rem !important;
+    padding: 0 8px !important;
+  }
+
+  /* Navigation Dock Styling */
+  .mobile-nav-bar {
+    display: flex !important;
+    justify-content: space-around;
+    background: rgba(10, 12, 18, 0.95);
+    border-top: 1px solid rgba(51, 65, 85, 0.5);
+    padding: 6px 10px;
+    height: 52px;
+    z-index: 150;
+    backdrop-filter: blur(12px);
+  }
+
+  .mobile-nav-btn {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    gap: 2px;
+    flex: 1;
+  }
+
+  .mobile-nav-btn .btn-icon {
+    font-size: 1.1rem;
+  }
+
+  .mobile-nav-btn.active {
+    color: var(--neon-blue);
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+  }
+}
+
+@media (max-width: 600px) {
+  .syndicate-header {
+    padding: 0.5rem 1rem !important;
+  }
+  .syndicate-header .logo {
+    font-size: 0.7rem !important;
+  }
+  .nav-links {
+    gap: 0.75rem !important;
+  }
+  .nav-links a {
+    font-size: 0.65rem !important;
+  }
+
+  .game-wrapper {
+    padding: 0.5rem !important;
+    gap: 0.5rem !important;
+  }
+
+  /* Shrink grid for mobile screens */
+  #grid {
+    grid-template-columns: repeat(8, 38px) !important;
+    grid-template-rows: repeat(6, 38px) !important;
+    gap: 3px !important;
+    padding: 6px !important;
+    border-radius: 10px !important;
+  }
+
+  .cell {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 4px !important;
+  }
+
+  .tower-visual {
+    width: 60% !important;
+    height: 60% !important;
+  }
+
+  .enemy {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .enemy.elite {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .enemy.boss {
+    width: 26px !important;
+    height: 26px !important;
+  }
+
+  #hud {
+    gap: 0.75rem !important;
+    padding: 0.4rem 1rem !important;
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  .hud-value {
+    font-size: 0.9rem !important;
+  }
+
+  .integrity-container {
+    max-width: 120px !important;
+    gap: 0.5rem !important;
+  }
+
+  .integrity-bar {
+    display: none !important; /* Hide the bar to conserve horizontal space */
+  }
 }

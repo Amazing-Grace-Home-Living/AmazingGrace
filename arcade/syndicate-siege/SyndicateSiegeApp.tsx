@@ -86,6 +86,7 @@ export default function SyndicateSiegeApp() {
   const [selectedTower, setSelectedTower] = useState<Tower | null>(null);
   const [infoMsg, setInfoMsg] = useState("Command Center online. Establish a perimeter to protect the data core.");
   const [novaUnlocked, setNovaUnlocked] = useState(false);
+  const [mobileTab, setMobileTab] = useState<'defense' | 'comms' | 'upgrades'>('defense');
 
   const stateRef = useRef(state);
   useEffect(() => { stateRef.current = state; }, [state]);
@@ -322,7 +323,7 @@ export default function SyndicateSiegeApp() {
         </div>
 
         <div className="layout-body">
-          <section className="mc-card sidebar-left">
+          <section className={`mc-card sidebar-left ${mobileTab === 'defense' ? 'mobile-active' : ''}`}>
             <h2 className="section-title">DEFENSE ASSETS</h2>
             <div className="tower-selection-list">
               {(Object.entries(TOWER_STATS) as [TowerType, any][]).map(([type, stats]) => (
@@ -375,8 +376,8 @@ export default function SyndicateSiegeApp() {
             <div id="info-panel">{infoMsg}</div>
           </section>
 
-          <section className="mc-card sidebar-right">
-             <div className="ai-council-comms">
+          <section className={`mc-card sidebar-right ${mobileTab === 'comms' || mobileTab === 'upgrades' ? 'mobile-active' : ''}`}>
+             <div className={`ai-council-comms ${mobileTab === 'comms' ? 'mobile-visible' : ''}`}>
                 <h2 className="section-title">AI COUNCIL COMMS</h2>
                 <div id="ai-chat">
                   {state.chat.map(msg => (
@@ -387,8 +388,19 @@ export default function SyndicateSiegeApp() {
                 </div>
              </div>
 
+             {/* Mobile-only tactical operations header and toggle */}
+             <div className={`mobile-upgrade-toggle-wrapper ${mobileTab === 'upgrades' ? 'mobile-visible' : ''}`}>
+                <h2 className="section-title">TACTICAL OPERATIONS</h2>
+                <button 
+                  className={`action-btn mobile-upgrade-btn ${upgradingMode ? 'active' : ''}`} 
+                  onClick={() => { setUpgradingMode(!upgradingMode); setSelectedTower(null); setPlacingTower(null); }}
+                >
+                  {upgradingMode ? 'DISENGAGE UPGRADES' : 'ENGAGE UPGRADE MODE'}
+                </button>
+             </div>
+
              {upgradingMode && (
-                <div id="upgrade-panel">
+                <div id="upgrade-panel" className={mobileTab === 'upgrades' ? 'mobile-visible' : ''}>
                   <h3>ENHANCEMENT</h3>
                   {selectedTower ? (
                     <div className="upgrade-content">
@@ -396,16 +408,32 @@ export default function SyndicateSiegeApp() {
                        <button className="upgrade-confirm" onClick={handleUpgrade}>AUTHORIZE ({300 * selectedTower.level}C)</button>
                     </div>
                   ) : <p className="text-[10px] text-slate-500 italic">Select node on grid...</p>}
-                  <button className="close-btn" onClick={() => setUpgradingMode(false)}>CANCEL</button>
+                  <button className="close-btn" onClick={() => { setUpgradingMode(false); setSelectedTower(null); }}>CANCEL</button>
                 </div>
              )}
 
              {novaUnlocked && (
-                <button id="btn-nova" onClick={executeSuperNova}>
+                <button id="btn-nova" className={mobileTab === 'upgrades' ? 'mobile-visible' : ''} onClick={executeSuperNova}>
                    ⚠ SUPER NOVA
                 </button>
              )}
           </section>
+        </div>
+
+        {/* Mobile Navigation Dock */}
+        <div className="mobile-nav-bar">
+          <button className={`mobile-nav-btn ${mobileTab === 'defense' ? 'active' : ''}`} onClick={() => setMobileTab('defense')}>
+            <span className="btn-icon">🚀</span>
+            <span className="btn-text">Defense</span>
+          </button>
+          <button className={`mobile-nav-btn ${mobileTab === 'comms' ? 'active' : ''}`} onClick={() => setMobileTab('comms')}>
+            <span className="btn-icon">💬</span>
+            <span className="btn-text">Comms</span>
+          </button>
+          <button className={`mobile-nav-btn ${mobileTab === 'upgrades' ? 'active' : ''}`} onClick={() => setMobileTab('upgrades')}>
+            <span className="btn-icon">⚡</span>
+            <span className="btn-text">Ops</span>
+          </button>
         </div>
       </main>
     </div>
