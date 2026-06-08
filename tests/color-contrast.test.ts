@@ -26,7 +26,7 @@ function findHtmlFiles(dir: string, exclude: string[] = []): string[] {
 
 describe('Color Contrast Validation', () => {
   it('should not have invalid color values in CSS variables', () => {
-    const htmlFiles = findHtmlFiles(process.cwd(), ['node_modules', 'dist', '.git']);
+    const htmlFiles = findHtmlFiles(process.cwd(), ['node_modules', 'dist', '.git', '.firebase', '.idea', '.vscode']);
 
     const invalidPatterns = [
       /--text:\s*#0{3,6}(?:[^0-9a-f]|$)/i,  // --text should not be black (#000, #0000, #00000, #000000)
@@ -49,7 +49,7 @@ describe('Color Contrast Validation', () => {
   });
 
   it('should have light text colors on dark backgrounds', () => {
-    const htmlFiles = findHtmlFiles(process.cwd(), ['node_modules', 'dist', 'support', '.git']);  // Support page uses light theme
+    const htmlFiles = findHtmlFiles(process.cwd(), ['node_modules', 'dist', 'support', '.git', '.firebase', '.idea', '.vscode']);  // Support page uses light theme
 
     const issues: string[] = [];
 

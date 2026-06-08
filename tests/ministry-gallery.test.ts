@@ -6,7 +6,7 @@ import { dirname, resolve } from "node:path";
 const testsDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(testsDir, "..");
 const ministryPagePath = resolve(repoRoot, "ministry/index.html");
-const ministryAssetsDir = resolve(repoRoot, "assets/images/ministry");
+const ministryAssetsDir = resolve(repoRoot, "public/assets/images/ministry");
 
 const requiredFiles = [
   "f848d75b-7d0a-459d-9f8f-4023ac7b4f46.mp4",

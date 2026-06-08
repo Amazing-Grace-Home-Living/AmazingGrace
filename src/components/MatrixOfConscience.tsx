@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, createContext, useContext, useRef, useCallback } from "react";
-import { ConscienceProvider, useConscience, M_CONSCIENCE_DEFAULT } from "./ConscienceProvider";
+import { ConscienceProvider, useConscience, DEFAULT_METRICS } from "./ConscienceProvider";
 import "./matrix-of-conscience.css";
 // @ts-ignore
 import { useTowerDefenseHUD } from "../modules/tower-defense/useTowerDefenseHUD";
@@ -202,7 +202,7 @@ export default function MatrixOfConscience({ stats, chainLevel, activeUser }: Pr
         wisdom: stats.wisdom
       };
     }
-    return M_CONSCIENCE_DEFAULT;
+    return DEFAULT_METRICS;
   }, [stats]);
 
   return (
