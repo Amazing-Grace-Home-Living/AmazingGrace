@@ -24,7 +24,21 @@ export const listings: Listing[] = [
       'Shared kitchen and common areas in a clean, maintained home'
     ],
     gallery: [
-      './assets/images/926-poinsettia/1000002510.jpg'
+      './assets/images/926/20231202_203655.jpg',
+      './assets/images/926/20240113_202358.jpg',
+      './assets/images/926/20240113_202442.jpg',
+      './assets/images/926/IMG_20240507_211412.webp',
+      './assets/images/926/IMG_20241117_141545070.jpg',
+      './assets/images/926/IMG_20241117_141703161.jpg',
+      './assets/images/926/IMG_20241117_141752010.jpg',
+      './assets/images/926/IMG_20241117_142103912.jpg',
+      './assets/images/926/IMG_20241117_142230905.jpg',
+      './assets/images/926/IMG_20241117_142901604.jpg',
+      './assets/images/926/IMG_20241117_142914696.jpg',
+      './assets/images/926/IMG_20241117_143012057.jpg',
+      './assets/images/926/IMG_20241117_143333781.jpg',
+      './assets/images/926/IMG_20241117_143634072_HDR.jpg',
+      './assets/images/926/IMG_20241117_143648902.jpg'
     ]
   },
   {

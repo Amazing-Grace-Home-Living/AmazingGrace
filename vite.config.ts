@@ -103,6 +103,16 @@ export default defineConfig({
             resolve(__dirname, 'dist/arcade/js'),
             { recursive: true }
           );
+          try {
+            cpSync(
+              resolve(__dirname, 'assets'),
+              resolve(__dirname, 'dist/assets'),
+              { recursive: true }
+            );
+            console.log('? Copied untracked assets directory to dist/assets/');
+          } catch (e) {
+            console.log('No untracked assets directory to copy.');
+          }
           console.log('? Copied stories/library.json to dist/stories/');
           console.log('? Copied chapter-34-package and OST package files.');
           console.log('? Copied arcade runtime scripts to dist/arcade/js/');
