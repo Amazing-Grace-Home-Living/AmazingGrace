@@ -59,6 +59,12 @@ const FEATURES = [
     hint: 'Support the Voice of Jesus Ministry mission with a donation.',
     condition: (p) => !!p.donationUnlock,
   },
+  {
+    id: 'stellarPortal',
+    label: 'Stellar Portal Deployer',
+    hint: 'Deploy unified stellar portal redirect.',
+    condition: (p) => true, // Always unlocked
+  },
 ];
 
 /* ── Public API ──────────────────────────────────────────────────────────── */

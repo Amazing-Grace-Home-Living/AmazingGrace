@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Companion Settings</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #070913;
+      --panel: #0d1124;
+      --border: rgba(0, 217, 255, 0.15);
+      --accent: #00d9ff;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    h1 {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    h1 span {
+      color: var(--accent);
+      text-shadow: 0 0 8px var(--accent);
+    }
+    .form-group {
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--accent);
+    }
+    input {
+      background: rgba(7, 9, 19, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: #fff;
+      padding: 10px 14px;
+      font-size: 13px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 8px rgba(0, 217, 255, 0.1);
+    }
+    small {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    button {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
+      letter-spacing: 1px;
+    }
+    button:hover {
+      background: var(--accent);
+      color: #070913;
+      box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
+    }
+    #status {
+      margin-top: 15px;
+      text-align: center;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      min-height: 15px;
+    }
+    .success { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><span>▲</span> Antigravity Companion Settings</h1>
+    <div class="form-group">
+      <label for="apiKey">Gemini API Key</label>
+      <input type="password" id="apiKey" placeholder="AI Studio API Key (AI-...)">
+      <small>Enter your Gemini Developer API Key. This will be stored locally in browser storage.</small>
+    </div>
+    <div class="form-group">
+      <label for="hostUrl">Hosted Nexus URL</label>
+      <input type="url" id="hostUrl" placeholder="https://amazing-grace-hl-bbeaa.web.app">
+      <small>The URL of your hosted Firebase application.</small>
+    </div>
+    <button id="save">SAVE CONFIGURATION</button>
+    <div id="status"></div>
+  </div>
+  <script src="options.js"></script>
+</body>
+</html>

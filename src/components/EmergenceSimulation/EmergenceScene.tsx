@@ -1,6 +1,7 @@
 import React, { useRef, useMemo, useState, useEffect, useCallback, Suspense } from 'react';
 import { useConscience } from '../ConscienceProvider';
-import { useTowerDefenseEngine } from './useTowerDefenseEngine';
+import { useTowerDefenseEngine, TOWER_DEFS } from './useTowerDefenseEngine';
+import TowerDefenseBoss from './TowerDefenseBoss';
 import { SandboxRule } from '../DraftingBoard/DraftingBoard';
 import { Canvas, useFrame, ThreeEvent } from '@react-three/fiber';
 import { OrbitControls, Stars, Html, Trail, Float, Sphere, MeshDistortMaterial } from '@react-three/drei';
@@ -11,6 +12,18 @@ import { AtariWingOverlay, useKonamiCode } from './AtariWingUnlock';
 import { PlayerReputation } from './aiReputationEvaluator';
 import { ChatOverlay } from '../ChatOverlay';
 import './emergence.css';
+
+const isWebGLSupported = () => {
+  try {
+    const canvas = document.createElement('canvas');
+    return !!(
+      window.WebGLRenderingContext &&
+      (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
+    );
+  } catch (e) {
+    return false;
+  }
+};
 
 // ── 0. Moving Nebula Backdrop ──
 const MovingNebula = () => {
@@ -460,8 +473,8 @@ const SovereignAgent: React.FC<{ sovereign: Sovereign; index: number; isSelected
 };
 
 // ── 7. Main Emergence Scene View Component ──
-export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReputation?: PlayerReputation, adjustKarma?: (uid: string, delta: number, isBetrayal?: boolean) => void, uid?: string }> = ({ activeRules = [], playerReputation = { globalKarma: 10, historicalBetrayalsLogged: 0 }, adjustKarma, uid }) => {
-  const { metrics, veilState, sovereigns, selectedSovereignName, selectSovereign, multiplayerLogs, addMultiplayerLog, transmitAgentMessage, applyAgentOverride, toggleTowerPlacementMode, getThreatLevel, slowedSovereigns, threatFlashes } = useEmergenceData();
+export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReputation?: PlayerReputation, adjustKarma?: (uid: string, delta: number, isBetrayal?: boolean) => void, uid?: string, sectorId?: number }> = ({ activeRules = [], playerReputation = { globalKarma: 10, historicalBetrayalsLogged: 0 }, adjustKarma, uid, sectorId }) => {
+  const { metrics, veilState, sovereigns, selectedSovereignName, selectSovereign, multiplayerLogs, addMultiplayerLog, transmitAgentMessage, applyAgentOverride, toggleTowerPlacementMode, getThreatLevel, slowedSovereigns, threatFlashes, agentConversations } = useEmergenceData();
 
   const [chatMessage, setChatMessage] = useState('');
   const [hoverCell, setHoverCell] = useState<{ x: number; z: number } | null>(null);
@@ -469,13 +482,26 @@ export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReput
   const [atariOverlayTrigger, setAtariOverlayTrigger] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const [webglSupported, setWebglSupported] = useState(true);
+  const [viewMode, setViewMode] = useState<'3d' | '2d'>('3d');
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const supported = isWebGLSupported();
+    setWebglSupported(supported);
+    const isMobile = window.innerWidth <= 900;
+    if (!supported || isMobile) {
+      setViewMode('2d');
+    }
+  }, []);
+
   useEffect(() => { setAtariUnlocked(sessionStorage.getItem('atari_attuned') === 'true'); }, []);
   const handleAtariUnlock = useCallback(() => { sessionStorage.setItem('atari_attuned', 'true'); setAtariUnlocked(true); setAtariOverlayTrigger((prev) => prev + 1); if (typeof addMultiplayerLog === 'function') { addMultiplayerLog('SYSTEM BREACH DETECTED: Atari Wing protocols activated.', 'System', 'event'); } }, [addMultiplayerLog]);
   useKonamiCode(handleAtariUnlock);
 
   const { globalCollapseRisk } = useConscience();
   const tdEngine = useTowerDefenseEngine(activeRules, playerReputation, adjustKarma, uid);
-  const { gameState, gameEntities, startGame, startWave, placeTower: placeTDTower, getTowerCost, PATH } = tdEngine;
+  const { gameState, gameEntities, startGame, startWave, placeTower: placeTDTower, getTowerCost, damagePlayer, PATH } = tdEngine;
 
   const [tdSelectedTower, setTdSelectedTower] = useState<'purify' | 'contain' | 'sentinel' | 'genesis' | null>(null);
 
@@ -502,6 +528,435 @@ export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReput
     transmitAgentMessage(selectedSovereignName, chatMessage.trim());
     setChatMessage('');
   };
+
+  const getGridCoordsFromEvent = (e: React.MouseEvent<HTMLCanvasElement> | React.PointerEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return null;
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.clientX - rect.left;
+    const clientY = e.clientY - rect.top;
+    const pctX = clientX / rect.width;
+    const pctY = clientY / rect.height;
+    const gridX = Math.floor(pctX * 10) - 5 + 0.5;
+    const gridZ = Math.floor(pctY * 10) - 5 + 0.5;
+    return { x: gridX, z: gridZ };
+  };
+
+  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const coords = getGridCoordsFromEvent(e);
+    if (!coords) return;
+
+    if (tdSelectedTower) {
+      if (hoverPlacementValid) {
+        placeTDTower(coords.x, coords.z, tdSelectedTower);
+        setTdSelectedTower(null);
+      }
+    } else {
+      const time = performance.now() / 1000;
+      let clickedSov: any = null;
+      let minDistance = 1.0;
+      
+      sovereigns.forEach((sov: any, i: number) => {
+        const angle = (i * (2 * Math.PI)) / 5;
+        const radius = 3.2 + (i % 2) * 0.6;
+        const startX = Math.cos(angle) * radius;
+        const startZ = Math.sin(angle) * radius;
+        
+        const slowed = Boolean(slowedSovereigns[sov.name]);
+        const movementScale = slowed ? 0.45 : 1;
+        const driftX = Math.sin(time * 0.35 * movementScale + i * 1.5) * 1.2;
+        const driftZ = Math.cos(time * 0.45 * movementScale + i * 2.2) * 1.2;
+        
+        const curX = startX + driftX;
+        const curZ = startZ + driftZ;
+        
+        const distance = Math.hypot(coords.x - curX, coords.z - curZ);
+        if (distance < minDistance) {
+          minDistance = distance;
+          clickedSov = sov;
+        }
+      });
+      
+      if (clickedSov) {
+        selectSovereign(clickedSov.name);
+      } else {
+        selectSovereign(null);
+      }
+    }
+  };
+
+  const handleCanvasPointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!tdSelectedTower) {
+      setHoverCell(null);
+      return;
+    }
+    const coords = getGridCoordsFromEvent(e);
+    if (coords) {
+      if (!hoverCell || hoverCell.x !== coords.x || hoverCell.z !== coords.z) {
+        setHoverCell(coords);
+      }
+    }
+  };
+
+  const handleCanvasPointerLeave = () => {
+    setHoverCell(null);
+  };
+
+  useEffect(() => {
+    if (viewMode !== '2d') return;
+    let animFrameId: number;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const resizeCanvas = () => {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * window.devicePixelRatio;
+      canvas.height = rect.height * window.devicePixelRatio;
+    };
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    const getSovereignPos = (sovereignName: string, index: number, time: number) => {
+      const angle = (index * (2 * Math.PI)) / 5;
+      const radius = 3.2 + (index % 2) * 0.6;
+      const startX = Math.cos(angle) * radius;
+      const startZ = Math.sin(angle) * radius;
+      
+      const slowed = Boolean(slowedSovereigns[sovereignName]);
+      const movementScale = slowed ? 0.45 : 1;
+      const driftX = Math.sin(time * 0.35 * movementScale + index * 1.5) * 1.2;
+      const driftZ = Math.cos(time * 0.45 * movementScale + index * 2.2) * 1.2;
+      
+      return { x: startX + driftX, z: startZ + driftZ };
+    };
+
+    const loop = () => {
+      animFrameId = requestAnimationFrame(loop);
+      
+      const width = canvas.width;
+      const height = canvas.height;
+      
+      ctx.save();
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      const viewWidth = width / window.devicePixelRatio;
+      const viewHeight = height / window.devicePixelRatio;
+      const cs = viewWidth / 10;
+
+      // 1. Clear background
+      ctx.fillStyle = '#05050c';
+      ctx.fillRect(0, 0, viewWidth, viewHeight);
+
+      // 2. Draw Grid
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.08)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 10; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i * cs, 0);
+        ctx.lineTo(i * cs, viewHeight);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(0, i * cs);
+        ctx.lineTo(viewWidth, i * cs);
+        ctx.stroke();
+      }
+
+      // 3. Draw Path
+      if (gameState.active) {
+        PATH.forEach(p => {
+          const col = Math.floor(p.x + 5);
+          const row = Math.floor(p.z + 5);
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+          ctx.fillRect(col * cs + 1, row * cs + 1, cs - 2, cs - 2);
+          
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.15)';
+          ctx.fillRect(col * cs + cs/2 - cs/6, row * cs + cs/2 - cs/6, cs/3, cs/3);
+        });
+      }
+
+      // 4. Draw Central Portal
+      const time = performance.now() / 1000;
+      const portalX = 5 * cs;
+      const portalY = 5 * cs;
+      
+      ctx.strokeStyle = '#bd00ff';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      const r1 = cs * 1.5 * (1 + Math.sin(time * 2) * 0.05);
+      ctx.arc(portalX, portalY, r1, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.strokeStyle = '#00f0ff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      const r2 = cs * 1.0 * (0.7 + Math.cos(time * 2) * 0.04);
+      ctx.arc(portalX, portalY, r2, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = '#bd00ff';
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.arc(portalX, portalY, cs * 0.4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // 5. Draw Central Obelisks
+      const alignment = metrics.worldAlignment;
+      ctx.fillStyle = '#00ffb7';
+      ctx.shadowColor = '#00bfa5';
+      ctx.shadowBlur = 10;
+      ctx.fillRect(3 * cs + cs/2 - 6, 5 * cs + cs/2 - 6, 12, 12);
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#fff';
+      ctx.font = '8px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText("BEAST", 3 * cs + cs/2, 5 * cs + cs/2 - 10);
+
+      ctx.fillStyle = '#ff0055';
+      ctx.shadowColor = '#d50000';
+      ctx.shadowBlur = 10;
+      ctx.fillRect(7 * cs + cs/2 - 6, 5 * cs + cs/2 - 6, 12, 12);
+      ctx.shadowBlur = 0;
+      ctx.fillText("DEVOURER", 7 * cs + cs/2, 5 * cs + cs/2 - 10);
+
+      // 6. Draw Local Player Avatar
+      ctx.fillStyle = '#39ff14';
+      ctx.shadowColor = '#39ff14';
+      ctx.shadowBlur = 8;
+      ctx.beginPath();
+      const playerSize = 5 + Math.sin(time * 4) * 1.5;
+      ctx.arc(5 * cs + cs/2, 5 * cs + cs/2, playerSize, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // 7. Draw Placement Preview
+      if (tdSelectedTower && hoverCell) {
+        const col = Math.floor(hoverCell.x + 5);
+        const row = Math.floor(hoverCell.z + 5);
+        const def = TOWER_DEFS[tdSelectedTower];
+        const range = def.range * cs;
+        const valid = hoverPlacementValid;
+        
+        ctx.strokeStyle = valid ? 'rgba(57, 255, 20, 0.4)' : 'rgba(255, 0, 85, 0.4)';
+        ctx.fillStyle = valid ? 'rgba(57, 255, 20, 0.08)' : 'rgba(255, 0, 85, 0.08)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(col * cs + cs/2, row * cs + cs/2, range, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.strokeStyle = valid ? '#39ff14' : '#ff0055';
+        ctx.strokeRect(col * cs + 2, row * cs + 2, cs - 4, cs - 4);
+      }
+
+      // 8. Draw Defense Towers
+      gameEntities.towers.forEach(t => {
+        const col = Math.floor(t.x + 5);
+        const row = Math.floor(t.z + 5);
+        const color = t.type === 'purify' ? '#00f0ff' : t.type === 'contain' ? '#a855f7' : t.type === 'sentinel' ? '#ff0055' : '#00ffb7';
+        
+        ctx.fillStyle = '#222222';
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.fillRect(col * cs + 6, row * cs + 6, cs - 12, cs - 12);
+        ctx.strokeRect(col * cs + 6, row * cs + 6, cs - 12, cs - 12);
+
+        ctx.save();
+        ctx.translate(col * cs + cs/2, row * cs + cs/2);
+        ctx.rotate(-(t.angle || 0));
+
+        ctx.fillStyle = color;
+        ctx.fillRect(-6, -6, 12, 12);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(-2, 0, 4, 10);
+        ctx.restore();
+
+        if (t.level > 1) {
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 9px monospace';
+          ctx.textAlign = 'right';
+          ctx.fillText(`L${t.level}`, col * cs + cs - 4, row * cs + cs - 4);
+        }
+      });
+
+      // 9. Draw Projectiles
+      gameEntities.projectiles.forEach(p => {
+        const px = (p.x + 5) * cs;
+        const pz = (p.z + 5) * cs;
+        ctx.fillStyle = p.color;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 6;
+        ctx.beginPath();
+        ctx.arc(px, pz, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      });
+
+      // 10. Draw Particles
+      gameEntities.particles.forEach(p => {
+        const px = (p.x + 5) * cs;
+        const pz = (p.z + 5) * cs;
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.life;
+        ctx.fillRect(px - 2, pz - 2, 4, 4);
+      });
+      ctx.globalAlpha = 1.0;
+
+      // 11. Draw Enemies
+      gameEntities.enemies.forEach(e => {
+        const ex = (e.x + 5) * cs;
+        const ez = (e.z + 5) * cs;
+        ctx.fillStyle = e.color || '#ff0055';
+        ctx.shadowColor = e.color || '#ff0055';
+        ctx.shadowBlur = e.type === 'boss' ? 12 : 5;
+        
+        ctx.beginPath();
+        if (e.type === 'boss') {
+          ctx.arc(ex, ez, 14, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (e.type === 'armored') {
+          ctx.fillRect(ex - 8, ez - 8, 16, 16);
+        } else if (e.type === 'shielded') {
+          ctx.arc(ex, ez, 8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(ex, ez, 11, 0, Math.PI * 2);
+          ctx.stroke();
+        } else if (e.type === 'swarm') {
+          ctx.moveTo(ex, ez - 6);
+          ctx.lineTo(ex + 5, ez + 5);
+          ctx.lineTo(ex - 5, ez + 5);
+          ctx.closePath();
+          ctx.fill();
+        } else {
+          ctx.arc(ex, ez, 6, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.shadowBlur = 0;
+
+        const hpPct = Math.max(0, e.hp / e.maxHp);
+        ctx.fillStyle = '#333333';
+        ctx.fillRect(ex - 10, ez - 14, 20, 3);
+        ctx.fillStyle = '#00ff00';
+        ctx.fillRect(ex - 10, ez - 14, 20 * hpPct, 3);
+      });
+
+      // 12. Draw Floating Damage Text
+      gameEntities.floatingTexts.forEach(ft => {
+        const fx = (ft.x + 5) * cs;
+        const fz = (ft.z + 5) * cs;
+        ctx.fillStyle = ft.color;
+        ctx.globalAlpha = ft.life;
+        ctx.font = 'bold 11px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(ft.text, fx, fz - 15);
+      });
+      ctx.globalAlpha = 1.0;
+
+      // 13. Draw Sovereign Agents
+      sovereigns.forEach((sov: any, i: number) => {
+        const pos = getSovereignPos(sov.name, i, time);
+        const sx = (pos.x + 5) * cs;
+        const sz = (pos.z + 5) * cs;
+        const isSelected = selectedSovereignName === sov.name;
+        const threatLevel = getThreatLevel(sov.corruption);
+        const threatFlash = Boolean(threatFlashes[sov.name]);
+        
+        const colors = (() => {
+          if (sov.status === 'exiled') return { base: '#555558', glow: '#222222' };
+          if (sov.corruption > 60) return { base: '#ff0055', glow: '#aa0033' };
+          if (sov.instinct === 'hunt') return { base: '#bd00ff', glow: '#6b00aa' };
+          if (sov.instinct === 'genesis') return { base: '#00f0ff', glow: '#0099cc' };
+          return { base: '#39ff14', glow: '#22aa0b' };
+        })();
+
+        ctx.strokeStyle = threatFlash ? '#ff0000' : (threatLevel === 'safe' ? '#39ff14' : threatLevel === 'warning' ? '#facc15' : threatLevel === 'danger' ? '#fb923c' : '#ef4444');
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(sx, sz, 16, 0, Math.PI * 2);
+        ctx.stroke();
+
+        if (isSelected) {
+          ctx.strokeStyle = '#39ff14';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(sx, sz, 22, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        ctx.fillStyle = colors.base;
+        ctx.shadowColor = colors.base;
+        ctx.shadowBlur = isSelected ? 12 : 5;
+        ctx.beginPath();
+        ctx.moveTo(sx, sz - 8);
+        ctx.lineTo(sx + 8, sz);
+        ctx.lineTo(sx, sz + 8);
+        ctx.lineTo(sx - 8, sz);
+        ctx.closePath();
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        ctx.fillStyle = sov.corruption > 60 ? '#ff0055' : sov.status === 'exiled' ? '#888888' : '#ffffff';
+        ctx.font = isSelected ? 'bold 10px sans-serif' : '9px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(sov.name, sx, sz - 20);
+        
+        const activeDialogue = agentConversations.find(c => c.from === sov.name && (Date.now() - c.time) < 4000);
+        if (activeDialogue) {
+          ctx.save();
+          ctx.fillStyle = 'rgba(10, 15, 30, 0.9)';
+          ctx.strokeStyle = colors.base;
+          ctx.lineWidth = 1.5;
+          const boxWidth = 120;
+          const boxHeight = 40;
+          const bx = sx - boxWidth/2;
+          const by = sz - 65;
+          
+          ctx.fillRect(bx, by, boxWidth, boxHeight);
+          ctx.strokeRect(bx, by, boxWidth, boxHeight);
+          
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '8px sans-serif';
+          ctx.textAlign = 'center';
+          const words = activeDialogue.text.split(' ');
+          let line = '';
+          let lines = [];
+          for (let n = 0; n < words.length; n++) {
+            let testLine = line + words[n] + ' ';
+            if (testLine.length > 25 && n > 0) {
+              lines.push(line);
+              line = words[n] + ' ';
+            } else {
+              line = testLine;
+            }
+          }
+          lines.push(line);
+          
+          lines.slice(0, 3).forEach((l, idx) => {
+            ctx.fillText(l, sx, by + 12 + idx * 10);
+          });
+          ctx.restore();
+        }
+      });
+
+      ctx.restore();
+    };
+
+    loop();
+
+    return () => {
+      cancelAnimationFrame(animFrameId);
+      window.removeEventListener('resize', resizeCanvas);
+    };
+  }, [viewMode, sovereigns, gameEntities, gameState, tdSelectedTower, hoverCell, hoverPlacementValid, selectedSovereignName, agentConversations, slowedSovereigns, threatFlashes, metrics]);
 
   return (
     <div className="emergence-viewport" onClick={() => selectSovereign(null)} style={{ filter: globalCollapseRisk > 0.6 ? `hue-rotate(${globalCollapseRisk * 90}deg) contrast(${1 + globalCollapseRisk * 0.5})` : 'none' }}>
@@ -565,123 +1020,168 @@ export const EmergenceScene: React.FC<{ activeRules?: SandboxRule[], playerReput
       )}
 
       <div className="canvas-container">
-        <Canvas shadows camera={{ position: [9, 8, 9], fov: 42 }} onCreated={({ gl }) => { gl.setClearColor(new THREE.Color('#030307')); }}>
-          <Suspense fallback={null}>
-            <ambientLight intensity={0.5} />
-            <pointLight position={[8, 12, 8]} intensity={4.0} castShadow />
-            <Stars radius={150} depth={50} count={7000} factor={8} saturation={1.0} fade speed={2.5} />
-            <MovingNebula />
-            <AtmosphericParticles />
-            <LocalPlayer />
-            <TerrainGrid instability={metrics.timelineInstability} />
-            <EnvironmentalSpikes instability={metrics.timelineInstability} />
-            {gameState.active && PATH.map((p, i) => (
-              <mesh key={`path_${i}`} position={[p.x, 0.05, p.z]} rotation={[-Math.PI/2, 0, 0]} raycast={() => null}>
-                <planeGeometry args={[0.8, 0.8]} />
-                <meshBasicMaterial color="#0f172a" transparent opacity={0.8} />
-                <mesh position={[0, 0, 0.01]}>
-                  <planeGeometry args={[0.3, 0.3]} />
-                  <meshBasicMaterial color="#38bdf8" transparent opacity={0.3} />
-                </mesh>
-              </mesh>
-            ))}
-            <CentralPortal instability={metrics.timelineInstability} />
-            <DataFlows />
-            <CentralTowers alignment={metrics.worldAlignment} instability={metrics.timelineInstability} />
-            {gameEntities.towers.map(tower => (
-              <group key={tower.id} position={[tower.x, 0, tower.z]} raycast={() => null}>
-                {/* Base */}
-                <mesh position={[0, 0.25, 0]}>
-                  <cylinderGeometry args={[0.3, 0.4, 0.5, 16]} />
-                  <meshStandardMaterial color="#222" metalness={0.8} roughness={0.2} />
-                </mesh>
-                <mesh position={[0, 0.05, 0]} rotation={[-Math.PI/2, 0, 0]}>
-                  <torusGeometry args={[0.4, 0.05, 16, 32]} />
-                  <meshBasicMaterial color={tower.type === 'purify' ? '#00f0ff' : tower.type === 'contain' ? '#a855f7' : tower.type === 'sentinel' ? '#ff0055' : '#00ffb7'} />
-                </mesh>
-                {/* Turret */}
-                <group position={[0, 0.6, 0]} rotation={[0, tower.angle || 0, 0]}>
-                  <mesh>
-                    <boxGeometry args={[0.4, 0.3, 0.4]} />
-                    <meshStandardMaterial color={tower.type === 'purify' ? '#00f0ff' : tower.type === 'contain' ? '#a855f7' : tower.type === 'sentinel' ? '#ff0055' : '#00ffb7'} />
+        {sectorId && (
+          <TowerDefenseBoss 
+            sectorId={sectorId} 
+            onBossAttack={(damage) => {
+              damagePlayer(damage);
+            }}
+            onBossDefeated={() => {
+              gameEntities.enemies = gameEntities.enemies.filter(e => e.type !== 'boss');
+            }}
+          />
+        )}
+        <div className="view-mode-toggle">
+          <button
+            type="button"
+            className={`cyber-btn ${viewMode === '3d' ? 'active-mode' : ''}`}
+            onClick={() => setViewMode('3d')}
+            disabled={!webglSupported}
+          >
+            3D View {!webglSupported && '(N/A)'}
+          </button>
+          <button
+            type="button"
+            className={`cyber-btn ${viewMode === '2d' ? 'active-mode' : ''}`}
+            onClick={() => setViewMode('2d')}
+          >
+            2D View
+          </button>
+        </div>
+
+        {viewMode === '3d' ? (
+          <Canvas shadows camera={{ position: [9, 8, 9], fov: 42 }} onCreated={({ gl }) => { gl.setClearColor(new THREE.Color('#030307')); }}>
+            <Suspense fallback={null}>
+              <ambientLight intensity={0.5} />
+              <pointLight position={[8, 12, 8]} intensity={4.0} castShadow />
+              <Stars radius={150} depth={50} count={7000} factor={8} saturation={1.0} fade speed={2.5} />
+              <MovingNebula />
+              <AtmosphericParticles />
+              <LocalPlayer />
+              <TerrainGrid instability={metrics.timelineInstability} />
+              <EnvironmentalSpikes instability={metrics.timelineInstability} />
+              {gameState.active && PATH.map((p, i) => (
+                <mesh key={`path_${i}`} position={[p.x, 0.05, p.z]} rotation={[-Math.PI/2, 0, 0]} raycast={() => null}>
+                  <planeGeometry args={[0.8, 0.8]} />
+                  <meshBasicMaterial color="#0f172a" transparent opacity={0.8} />
+                  <mesh position={[0, 0, 0.01]}>
+                    <planeGeometry args={[0.3, 0.3]} />
+                    <meshBasicMaterial color="#38bdf8" transparent opacity={0.3} />
                   </mesh>
-                  {/* Barrel */}
-                  <mesh position={[0, 0, 0.3]} rotation={[Math.PI/2, 0, 0]}>
-                    <cylinderGeometry args={[0.05, 0.05, 0.4]} />
-                    <meshStandardMaterial color="#fff" emissive={tower.type === 'purify' ? '#00f0ff' : tower.type === 'contain' ? '#a855f7' : tower.type === 'sentinel' ? '#ff0055' : '#00ffb7'} emissiveIntensity={2} />
+                </mesh>
+              ))}
+              <CentralPortal instability={metrics.timelineInstability} />
+              <DataFlows />
+              <CentralTowers alignment={metrics.worldAlignment} instability={metrics.timelineInstability} />
+              {gameEntities.towers.map(tower => (
+                <group key={tower.id} position={[tower.x, 0, tower.z]} raycast={() => null}>
+                  {/* Base */}
+                  <mesh position={[0, 0.25, 0]}>
+                    <cylinderGeometry args={[0.3, 0.4, 0.5, 16]} />
+                    <meshStandardMaterial color="#222" metalness={0.8} roughness={0.2} />
+                  </mesh>
+                  <mesh position={[0, 0.05, 0]} rotation={[-Math.PI/2, 0, 0]}>
+                    <torusGeometry args={[0.4, 0.05, 16, 32]} />
+                    <meshBasicMaterial color={tower.type === 'purify' ? '#00f0ff' : tower.type === 'contain' ? '#a855f7' : tower.type === 'sentinel' ? '#ff0055' : '#00ffb7'} />
+                  </mesh>
+                  {/* Turret */}
+                  <group position={[0, 0.6, 0]} rotation={[0, tower.angle || 0, 0]}>
+                    <mesh>
+                      <boxGeometry args={[0.4, 0.3, 0.4]} />
+                      <meshStandardMaterial color={tower.type === 'purify' ? '#00f0ff' : tower.type === 'contain' ? '#a855f7' : tower.type === 'sentinel' ? '#ff0055' : '#00ffb7'} />
+                    </mesh>
+                    {/* Barrel */}
+                    <mesh position={[0, 0, 0.3]} rotation={[Math.PI/2, 0, 0]}>
+                      <cylinderGeometry args={[0.05, 0.05, 0.4]} />
+                      <meshStandardMaterial color="#fff" emissive={tower.type === 'purify' ? '#00f0ff' : tower.type === 'contain' ? '#a855f7' : tower.type === 'sentinel' ? '#ff0055' : '#00ffb7'} emissiveIntensity={2} />
+                    </mesh>
+                  </group>
+                </group>
+              ))}
+
+              {gameEntities.projectiles.map((p, idx) => (
+                <mesh key={`proj_${p.id}_${idx}`} position={[p.x, 0.6, p.z]} raycast={() => null}>
+                  <sphereGeometry args={[0.15, 8, 8]} />
+                  <meshBasicMaterial color={p.color} />
+                  <pointLight color={p.color} intensity={2} distance={2} />
+                </mesh>
+              ))}
+
+              {gameEntities.particles.map((p, idx) => (
+                <mesh key={`part_${idx}`} position={[p.x, p.y, p.z]} raycast={() => null}>
+                  <boxGeometry args={[0.05, 0.05, 0.05]} />
+                  <meshBasicMaterial color={p.color} transparent opacity={p.life} />
+                </mesh>
+              ))}
+
+              {gameEntities.enemies.map(e => (
+                <group key={e.id} position={[e.x, e.type === 'boss' ? 0.8 : 0.3, e.z]} raycast={() => null}>
+                  <mesh>
+                    {e.type === 'boss' && <sphereGeometry args={[0.8, 32, 32]} />}
+                    {e.type === 'armored' && <boxGeometry args={[0.5, 0.5, 0.5]} />}
+                    {e.type === 'shielded' && <sphereGeometry args={[0.4, 16, 16]} />}
+                    {e.type === 'swarm' && <coneGeometry args={[0.2, 0.4, 4]} />}
+                    {(!e.type || e.type === 'normal') && <sphereGeometry args={[0.3, 16, 16]} />}
+                    <meshStandardMaterial 
+                      color="#000"
+                      emissive={e.color || "#ff0055"}
+                      emissiveIntensity={e.type === 'boss' ? 3 : 1.5}
+                      wireframe={e.type === 'shielded' || e.type === 'swarm'} 
+                      metalness={e.type === 'armored' ? 0.9 : 0.1}
+                      roughness={e.type === 'armored' ? 0.2 : 0.8}
+                    />
+                    <mesh>
+                      <sphereGeometry args={[0.15, 8, 8]} />
+                      <meshBasicMaterial color="#fff" />
+                    </mesh>
+                  </mesh>
+                  <mesh position={[0, e.type === 'boss' ? 1.0 : 0.5, 0]}>
+                    <planeGeometry args={[0.5, 0.05]} />
+                    <meshBasicMaterial color="#333" />
+                  </mesh>
+                  <mesh position={[0, e.type === 'boss' ? 1.0 : 0.5, 0.01]}>
+                    <planeGeometry args={[0.5 * (e.hp / e.maxHp), 0.05]} />
+                    <meshBasicMaterial color="#00ff00" />
                   </mesh>
                 </group>
-              </group>
-            ))}
-
-            {gameEntities.projectiles.map((p, idx) => (
-              <mesh key={`proj_${p.id}_${idx}`} position={[p.x, 0.6, p.z]} raycast={() => null}>
-                <sphereGeometry args={[0.15, 8, 8]} />
-                <meshBasicMaterial color={p.color} />
-                <pointLight color={p.color} intensity={2} distance={2} />
+              ))}
+              {gameEntities.floatingTexts.map((ft, idx) => (
+                <Html key={`ft_${idx}`} position={[ft.x, ft.y, ft.z]} center distanceFactor={10}>
+                  <div style={{ color: ft.color, fontWeight: 'bold', fontSize: '1.2rem', textShadow: '0 0 5px black', pointerEvents: 'none' }}>
+                    {ft.text}
+                  </div>
+                </Html>
+              ))}
+              {sovereigns.map((sovereign: any, i: number) => (
+                <SovereignAgent key={sovereign.name || i} sovereign={sovereign} index={i} isSelected={selectedSovereignName === sovereign.name} slowed={Boolean(slowedSovereigns[sovereign.name])} threatFlash={Boolean(threatFlashes[sovereign.name])} threatLevel={getThreatLevel(sovereign.corruption)} onSelect={() => selectSovereign(sovereign.name)} />
+              ))}
+              <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.2, 0]} onPointerMove={handleTDGridPointerMove} onClick={handleTDGridClick}>
+                <planeGeometry args={[10, 10]} />
+                <meshBasicMaterial transparent opacity={0} />
               </mesh>
-            ))}
-
-            {gameEntities.particles.map((p, idx) => (
-              <mesh key={`part_${idx}`} position={[p.x, p.y, p.z]} raycast={() => null}>
-                <boxGeometry args={[0.05, 0.05, 0.05]} />
-                <meshBasicMaterial color={p.color} transparent opacity={p.life} />
-              </mesh>
-            ))}
-
-            {gameEntities.enemies.map(e => (
-              <group key={e.id} position={[e.x, e.type === 'boss' ? 0.8 : 0.3, e.z]} raycast={() => null}>
-                <mesh>
-                  {e.type === 'boss' && <sphereGeometry args={[0.8, 32, 32]} />}
-                  {e.type === 'armored' && <boxGeometry args={[0.5, 0.5, 0.5]} />}
-                  {e.type === 'shielded' && <sphereGeometry args={[0.4, 16, 16]} />}
-                  {e.type === 'swarm' && <coneGeometry args={[0.2, 0.4, 4]} />}
-                  {(!e.type || e.type === 'normal') && <sphereGeometry args={[0.3, 16, 16]} />}
-                  <meshStandardMaterial 
-                    color="#000"
-                    emissive={e.color || "#ff0055"}
-                    emissiveIntensity={e.type === 'boss' ? 3 : 1.5}
-                    wireframe={e.type === 'shielded' || e.type === 'swarm'} 
-                    metalness={e.type === 'armored' ? 0.9 : 0.1}
-                    roughness={e.type === 'armored' ? 0.2 : 0.8}
-                  />
-                  <mesh>
-                    <sphereGeometry args={[0.15, 8, 8]} />
-                    <meshBasicMaterial color="#fff" />
-                  </mesh>
-                </mesh>
-                <mesh position={[0, e.type === 'boss' ? 1.0 : 0.5, 0]}>
-                  <planeGeometry args={[0.5, 0.05]} />
-                  <meshBasicMaterial color="#333" />
-                </mesh>
-                <mesh position={[0, e.type === 'boss' ? 1.0 : 0.5, 0.01]}>
-                  <planeGeometry args={[0.5 * (e.hp / e.maxHp), 0.05]} />
-                  <meshBasicMaterial color="#00ff00" />
-                </mesh>
-              </group>
-            ))}
-            {gameEntities.floatingTexts.map((ft, idx) => (
-              <Html key={`ft_${idx}`} position={[ft.x, ft.y, ft.z]} center distanceFactor={10}>
-                <div style={{ color: ft.color, fontWeight: 'bold', fontSize: '1.2rem', textShadow: '0 0 5px black', pointerEvents: 'none' }}>
-                  {ft.text}
-                </div>
-              </Html>
-            ))}
-            {sovereigns.map((sovereign: any, i: number) => (
-              <SovereignAgent key={sovereign.name || i} sovereign={sovereign} index={i} isSelected={selectedSovereignName === sovereign.name} slowed={Boolean(slowedSovereigns[sovereign.name])} threatFlash={Boolean(threatFlashes[sovereign.name])} threatLevel={getThreatLevel(sovereign.corruption)} onSelect={() => selectSovereign(sovereign.name)} />
-            ))}
-            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.2, 0]} onPointerMove={handleTDGridPointerMove} onClick={handleTDGridClick}>
-              <planeGeometry args={[10, 10]} />
-              <meshBasicMaterial transparent opacity={0} />
-            </mesh>
-            <OrbitControls enableDamping minDistance={4} maxDistance={22} />
-            <EffectComposer>
-              <Bloom intensity={1.8} luminanceThreshold={0.15} mipmapBlur />
-              <Noise opacity={0.05} />
-              <Vignette darkness={1.1} />
-            </EffectComposer>
-          </Suspense>
-        </Canvas>
+              <OrbitControls enableDamping minDistance={4} maxDistance={22} />
+              <EffectComposer>
+                <Bloom intensity={1.8} luminanceThreshold={0.15} mipmapBlur />
+                <Noise opacity={0.05} />
+                <Vignette darkness={1.1} />
+              </EffectComposer>
+            </Suspense>
+          </Canvas>
+        ) : (
+          <div className="canvas-2d-wrapper">
+            <canvas
+              ref={canvasRef}
+              onClick={handleCanvasClick}
+              onPointerMove={handleCanvasPointerMove}
+              onPointerLeave={handleCanvasPointerLeave}
+            />
+            {tdSelectedTower && (
+              <div className="placement-hint">
+                📍 Click grid cell to place <strong>{tdSelectedTower.toUpperCase()}</strong> (Cost: {getTowerCost(tdSelectedTower)})
+              </div>
+            )}
+          </div>
+        )}
       </div>
       <button className="sidebar-toggle-btn" onClick={(e) => { e.stopPropagation(); setSidebarOpen(true); }} aria-label="Open telemetry sidebar">
         📊 Telemetry

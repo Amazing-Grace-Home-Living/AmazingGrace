@@ -966,9 +966,15 @@
       <input type="password" id="login-password" class="matrix-input" autocomplete="current-password" placeholder="••••••••">
     </div>
     <div id="login-error" role="alert" aria-live="polite"></div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" id="modal-cancel" style="border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.7)">Cancel</button>
-      <button class="btn btn-primary" id="modal-submit">Sync Uplink</button>
+    <div class="modal-actions" style="flex-direction: column; gap: 0.5rem;">
+      <button class="btn btn-primary" id="google-login-btn" style="width: 100%; background: #fff; color: #444; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" style="width:18px; height:18px; margin-right:8px;">
+        Sign in with Google
+      </button>
+      <div style="display: flex; gap: 0.75rem; justify-content: flex-end; width: 100%;">
+        <button class="btn btn-secondary" id="modal-cancel" style="border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.7)">Cancel</button>
+        <button class="btn btn-primary" id="modal-submit">Sync Uplink</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1020,6 +1026,19 @@
       <div class="tool-meta">
         <span class="tool-hint" id="hint-diagnostics"></span>
         <a href="#diagnostics-panel" class="btn btn-primary" id="btn-diagnostics">Access Console</a>
+      </div>
+    </div>
+
+    <!-- Stellar Portal Deployer -->
+    <div class="matrix-card tool-card" id="card-stellarportal">
+      <h2>
+        <span>🌌 Stellar Portal Deployer</span>
+        <span class="tool-badge" id="badge-stellarportal">Checking…</span>
+      </h2>
+      <p>Deploy the unified Stellar Glass Portal redirect card to the official production host on GitHub.</p>
+      <div class="tool-meta">
+        <span class="tool-hint" id="hint-stellarportal"></span>
+        <a href="#stellarportal-panel" class="btn btn-primary" id="btn-stellarportal">Access Deployer</a>
       </div>
     </div>
 
@@ -1098,6 +1117,88 @@
           <p style="opacity:0.4;font-family:var(--font-mono);font-size:0.8rem">[Ping probe diagnostics idle]</p>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ STELLAR PORTAL PANEL ════════════════════════ -->
+  <section class="matrix-card panel-container" id="stellarportal-panel" aria-label="Stellar Portal Deployer tool">
+    <h2 class="matrix-heading"><span>🌌</span> Stellar Portal Deployer Terminal</h2>
+    <p style="font-size:0.9rem;opacity:0.75;line-height:1.5;margin-bottom:1.5rem">
+      Interface with the Google Apps Script Web App to trigger one-click deployment of the unified Stellar Glass Portal redirect card directly to the production branch of the target repository.
+    </p>
+    
+    <div style="display:flex; flex-direction:column; gap:1.25rem;">
+      <div style="display:flex; flex-direction:column; gap:0.5rem;">
+        <label for="sp-endpoint-input" style="font-family:var(--font-mono); font-size:0.75rem; color:var(--matrix-cyan); text-transform:uppercase; letter-spacing:0.05em;">Web App Trigger Endpoint</label>
+        <input type="text" id="sp-endpoint-input" class="matrix-input" style="width:100%;" value="https://script.google.com/macros/s/AKfycby8YHWu2UgLGMJXlhP4utt2rcKYoUAIeSOUQyCDrLEln0eg7dxGB2Q1PN2OflmR_3Vf/exec" placeholder="https://script.google.com/macros/s/.../exec">
+      </div>
+      
+      <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+        <button class="btn btn-primary" id="sp-trigger-webhook-btn">Trigger Webhook (Silent)</button>
+        <button class="btn btn-secondary" id="sp-trigger-tab-btn">Trigger Direct (New Tab)</button>
+      </div>
+
+      <div style="margin-top:0.5rem;">
+        <span style="font-family:var(--font-mono); font-size:0.75rem; color:var(--matrix-green); text-transform:uppercase; letter-spacing:0.05em;">Terminal Uplink Telemetry Logs:</span>
+        <div id="sp-console" style="background:rgba(0, 0, 0, 0.65); border:1px solid var(--matrix-border); font-family:var(--font-mono); font-size:0.8rem; padding:1rem; height:180px; overflow-y:auto; color:var(--matrix-cyan); margin-top:0.5rem; border-radius:6px; white-space:pre-wrap; line-height:1.5;">[UPLINK IDLE - AWAITING USER TRIGGER]</div>
+      </div>
+
+      <details style="margin-top:0.5rem; font-family:var(--font-mono); font-size:0.75rem;">
+        <summary style="cursor:pointer; color:var(--matrix-purple); outline:none; user-select:none; font-weight:700;">[View Portal Payload Source Code (index.html)]</summary>
+        <pre style="background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.05); padding:1rem; border-radius:6px; overflow-x:auto; margin-top:0.5rem; color:var(--matrix-text); max-height:220px; overflow-y:auto; white-space:pre-wrap;">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Nexus HUD Redirect&lt;/title&gt;
+  &lt;style&gt;
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #030712;
+      color: #f3f4f6;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    .redirect-card {
+      background-color: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 0.75rem;
+      padding: 2.5rem;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      position: relative;
+      z-index: 10;
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 1.5rem;
+      background-color: #3b82f6;
+      color: #ffffff;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.375rem;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background-color 0.2s;
+    }
+    .btn:hover {
+      background-color: #2563eb;
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="redirect-card"&gt;
+    &lt;h1 style="color: #60a5fa; margin: 0 0 1rem; letter-spacing: 2px;"&gt;NEXUS HUD INTEGRATION COMPLETE&lt;/h1&gt;
+    &lt;p style="color: #94a3b8; margin: 0; max-width: 400px; line-height: 1.6;"&gt;The sub-modules have been successfully migrated into the central Matrix.&lt;/p&gt;
+    &lt;a href="./arcade/" class="btn"&gt;Enter the Unified Matrix&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+      </details>
     </div>
   </section>
 
@@ -1401,6 +1502,7 @@
       { id: 'visionforge', featureId: 'visionForge', card: 'card-visionforge', badge: 'badge-visionforge', hint: 'hint-visionforge', btn: 'btn-visionforge', panel: 'visionforge-panel' },
       { id: 'nations',     featureId: 'nations',     card: 'card-nations',     badge: 'badge-nations',     hint: 'hint-nations',     btn: 'btn-nations',     panel: 'nations-panel' },
       { id: 'diagnostics', featureId: 'diagnostics', card: 'card-diagnostics', badge: 'badge-diagnostics', hint: 'hint-diagnostics', btn: 'btn-diagnostics', panel: 'diagnostics-panel' },
+      { id: 'stellarportal', featureId: 'stellarPortal', card: 'card-stellarportal', badge: 'badge-stellarportal', hint: 'hint-stellarportal', btn: 'btn-stellarportal', panel: 'stellarportal-panel' },
     ];
 
     toolGating.forEach(({ featureId, card, badge, hint, btn, panel }) => {
@@ -1965,6 +2067,80 @@
       tableBody.innerHTML = `<tr><td colspan="5" style="color:var(--matrix-red)">[Override sync failed: ${err.message}]</td></tr>`;
     }
   }
+
+  /* ── Stellar Portal Overlord Deployer Module ──────────────────────── */
+  const spEndpointInput = document.getElementById('sp-endpoint-input');
+  const spWebhookBtn    = document.getElementById('sp-trigger-webhook-btn');
+  const spTabBtn        = document.getElementById('sp-trigger-tab-btn');
+  const spConsole       = document.getElementById('sp-console');
+
+  function logToSpConsole(message, type = 'info') {
+    const timestamp = new Date().toLocaleTimeString();
+    let prefix = '[INFO]';
+    if (type === 'success') prefix = '✔ [SUCCESS]';
+    else if (type === 'error') prefix = '❌ [ERROR]';
+    else if (type === 'warn') prefix = '⚠ [WARN]';
+    
+    // Append message to console
+    spConsole.textContent += `\n[${timestamp}] ${prefix} ${message}`;
+    spConsole.scrollTop = spConsole.scrollHeight;
+  }
+
+  spWebhookBtn.addEventListener('click', async () => {
+    synth.playClick();
+    const endpoint = spEndpointInput.value.trim();
+    if (!endpoint) {
+      synth.playFailure();
+      logToSpConsole('Cannot trigger: Endpoint URL is empty.', 'error');
+      return;
+    }
+
+    spConsole.textContent = `[UPLINK INITIATED] Connecting to: ${endpoint}`;
+    logToSpConsole('Sending HTTP POST request (Silent webhook mode)...');
+    
+    spWebhookBtn.disabled = true;
+    spWebhookBtn.setAttribute('aria-disabled', 'true');
+    spTabBtn.disabled = true;
+    spTabBtn.setAttribute('aria-disabled', 'true');
+
+    try {
+      // Use no-cors mode due to Google Apps Script redirects and CORS policies
+      await fetch(endpoint, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ trigger: 'matrix-hud-deploy' })
+      });
+      
+      synth.playSuccess();
+      logToSpConsole('Silent Webhook trigger sent successfully!', 'success');
+      logToSpConsole('NOTE: Due to browser security (CORS) on Apps Script redirects, the raw response body is hidden. Confirm deployment status by inspecting your GitHub repository commits.', 'warn');
+    } catch (err) {
+      synth.playFailure();
+      logToSpConsole(`Failed to transmit webhook: ${err.message}`, 'error');
+    } finally {
+      spWebhookBtn.disabled = false;
+      spWebhookBtn.removeAttribute('aria-disabled');
+      spTabBtn.disabled = false;
+      spTabBtn.removeAttribute('aria-disabled');
+    }
+  });
+
+  spTabBtn.addEventListener('click', () => {
+    synth.playClick();
+    const endpoint = spEndpointInput.value.trim();
+    if (!endpoint) {
+      synth.playFailure();
+      logToSpConsole('Cannot open: Endpoint URL is empty.', 'error');
+      return;
+    }
+    
+    logToSpConsole('Opening trigger URL directly in a new tab to bypass CORS policies...', 'info');
+    window.open(endpoint, '_blank');
+    synth.playSuccess();
+  });
 
   /* ── Initializations ── */
   refreshNav();

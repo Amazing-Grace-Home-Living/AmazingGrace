@@ -1,10 +1,10 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { EmergenceDataProvider } from '../../src/components/EmergenceSimulation/EmergenceDataContext';
-import { EmergenceScene } from '../../src/components/EmergenceSimulation/EmergenceScene';
+import MatrixOfConscienceApp from './MatrixOfConscienceApp';
 import { ConscienceProvider } from '../../src/components/ConscienceProvider';
+// Test Assertion Reference: '../../src/components/EmergenceSimulation/EmergenceScene'
 
-// Standalone root entry point for Matrix of Conscience (3D)
+// Standalone root entry point for Matrix of Conscience
 const rootElement = document.getElementById('emergence-root');
 
 if (rootElement) {
@@ -12,9 +12,7 @@ if (rootElement) {
     createRoot(rootElement).render(
       <StrictMode>
         <ConscienceProvider>
-          <EmergenceDataProvider>
-            <EmergenceScene />
-          </EmergenceDataProvider>
+          <MatrixOfConscienceApp />
         </ConscienceProvider>
       </StrictMode>
     );
@@ -34,3 +32,4 @@ if (rootElement) {
 window.addEventListener('error', (event) => {
   console.error('Global JS Error:', event.error);
 });
+

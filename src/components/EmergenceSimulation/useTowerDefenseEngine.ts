@@ -390,6 +390,13 @@ export const useTowerDefenseEngine = (
             }
 
             target.hp -= actualDamage;
+            if (target.type === 'boss') {
+              // @ts-ignore
+              if (typeof window.damageActiveBoss === 'function') {
+                // @ts-ignore
+                window.damageActiveBoss(actualDamage);
+              }
+            }
 
             // Spawn floating text for damage
             st.floatingTexts.push({
@@ -407,6 +414,13 @@ export const useTowerDefenseEngine = (
                   let sDmg = p.damage * 0.5;
                   if (e.type === 'shielded') sDmg = 1;
                   e.hp -= sDmg;
+                  if (e.type === 'boss') {
+                    // @ts-ignore
+                    if (typeof window.damageActiveBoss === 'function') {
+                      // @ts-ignore
+                      window.damageActiveBoss(sDmg);
+                    }
+                  }
                   checkDeath(e);
                 }
               });
@@ -483,6 +497,16 @@ export const useTowerDefenseEngine = (
     return () => cancelAnimationFrame(animFrame);
   }, [gameState.active, gameState.waveActive, gameState.wave]);
 
+  const damagePlayer = useCallback((amount: number) => {
+    setGameState(prev => {
+      const newHp = prev.health - amount;
+      if (newHp <= 0) {
+        return { ...prev, active: false, health: 0 };
+      }
+      return { ...prev, health: newHp };
+    });
+  }, []);
+
   return {
     gameState,
     startGame,
@@ -490,6 +514,7 @@ export const useTowerDefenseEngine = (
     placeTower,
     getTowerCost,
     poolResources,
+    damagePlayer,
     gameEntities: stateRef.current,
     PATH
   };

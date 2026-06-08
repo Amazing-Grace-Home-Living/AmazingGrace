@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Companion</title>
+  <link rel="stylesheet" href="popup.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <span class="logo-glow">▲</span>
+        <h1>NEXUS COMPANION</h1>
+      </div>
+      <div class="connection-status" id="connectionStatus">
+        <span class="pulse-dot"></span> Offline
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="chat-tab">💬 AI CHAT</button>
+      <button class="tab-btn" data-tab="cli-tab">🖥️ TRINITY CLI</button>
+      <button class="tab-btn" data-tab="settings-tab">⚙️ SETTINGS</button>
+    </nav>
+
+    <!-- Content Tabs -->
+    <main class="tab-content-area">
+      <!-- 1. AI Chat Tab -->
+      <section id="chat-tab" class="tab-pane active">
+        <div class="chat-wrapper">
+          <div class="chat-messages" id="chatMessages">
+            <div class="message system-msg">
+              <span class="msg-sender">SYSTEM</span>
+              <p>Antigravity core initialized. Enter a prompt to communicate with the coding assistant.</p>
+            </div>
+          </div>
+          <div class="chat-input-area">
+            <textarea id="chatInput" placeholder="Ask Antigravity..." rows="1"></textarea>
+            <button id="sendBtn">⏎</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. Trinity CLI Tab -->
+      <section id="cli-tab" class="tab-pane">
+        <div class="cli-wrapper">
+          <div class="cli-loading" id="cliLoading">
+            <div class="spinner"></div>
+            <p>Syncing Continuum Quantum Tunnel...</p>
+          </div>
+          <iframe id="cliFrame" src="" class="cli-iframe"></iframe>
+        </div>
+      </section>
+
+      <!-- 3. Settings Tab -->
+      <section id="settings-tab" class="tab-pane">
+        <form id="settingsForm" class="settings-form">
+          <div class="form-group">
+            <label for="apiKeyInput">Gemini API Key</label>
+            <div class="input-with-toggle">
+              <input type="password" id="apiKeyInput" placeholder="AI Studio API Key (AI-...)">
+              <button type="button" id="toggleKeyBtn" class="form-btn-small">👁️</button>
+            </div>
+            <small>Stored securely in your local browser sync storage.</small>
+          </div>
+          <div class="form-group">
+            <label for="hostUrlInput">Hosted Nexus URL</label>
+            <input type="url" id="hostUrlInput" placeholder="https://amazing-grace-hl-bbeaa.web.app">
+            <small>The address of your Firebase hosting site.</small>
+          </div>
+          <button type="submit" class="save-settings-btn">SAVE CONFIGURATION</button>
+          <div id="settingsFeedback" class="form-feedback"></div>
+        </form>
+      </section>
+    </main>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
