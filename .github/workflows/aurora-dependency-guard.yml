@@ -76,7 +76,7 @@ jobs:
           echo "| 🟢 Low | $LOW |" >> $GITHUB_STEP_SUMMARY
 
       - name: Upload audit results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: security-audit-${{ github.run_number }}
           path: audit-results.json
@@ -125,7 +125,7 @@ jobs:
 
       - name: Upload outdated report
         if: steps.outdated.outputs.has_updates == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: outdated-dependencies-${{ github.run_number }}
           path: outdated.json
@@ -243,7 +243,7 @@ jobs:
           fi
 
       - name: Upload license report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: license-report-${{ github.run_number }}
           path: licenses.json
