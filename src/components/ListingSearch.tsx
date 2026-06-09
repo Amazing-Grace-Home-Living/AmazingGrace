@@ -2,45 +2,10 @@ import React, { useState, useMemo } from 'react';
 import { listings } from '../data/listings';
 
 export default function ListingSearch() {
-  const [query, setQuery] = useState('');
-
-  const filteredListings = useMemo(() => {
-    const q = query.toLowerCase();
-    return listings.filter(
-      l =>
-        l.address.toLowerCase().includes(q) ||
-        l.city.toLowerCase().includes(q) ||
-        l.description.toLowerCase().includes(q)
-    );
-  }, [query]);
-
   return (
     <div className="listing-search-container">
-      <div className="search-bar" style={{ marginBottom: '2rem' }}>
-        <input
-          type="text"
-          placeholder="Search by address or city..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          style={{
-            width: '100%',
-            padding: '1rem',
-            borderRadius: '0.75rem',
-            border: '1px solid var(--border)',
-            background: 'var(--surface)',
-            color: 'var(--text)',
-            fontSize: '1rem',
-            outline: 'none',
-            transition: 'border-color 0.2s'
-          }}
-        />
-        <p style={{ color: 'var(--muted)', marginTop: '0.5rem', fontSize: '0.9rem' }}>
-          Found {filteredListings.length} matching locations
-        </p>
-      </div>
-
       <div className="property-grid">
-        {filteredListings.map((l) => (
+        {listings.map((l) => (
           <article key={l.id} className="property-card" style={{
             background: 'var(--surface)',
             border: '1px solid var(--border)',
