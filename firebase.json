@@ -43,19 +43,6 @@
     "cleanUrls": true,
     "trailingSlash": false
   },
-  "apphosting": [
-    {
-      "backendId": "limitlessnexus",
-      "rootDir": ".",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "functions"
-      ]
-    }
-  ],
   "emulators": {
     "auth": {
       "port": 9099
