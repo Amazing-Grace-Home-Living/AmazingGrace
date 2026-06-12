@@ -1,0 +1,17 @@
+steps:
+  # Install Dependencies
+  - name: 'node:18'
+    entrypoint: npm
+    args: ['install']
+  
+  # Build Project
+  - name: 'node:18'
+    entrypoint: npm
+    args: ['run', 'build']
+
+  # Deploy to Firebase Hosting
+  - name: 'gcr.io/$PROJECT_ID/firebase'
+    args: ['deploy', '--project=amazinggrace-ops', '--only=hosting']
+
+options:
+  logging: CLOUD_LOGGING_ONLY
