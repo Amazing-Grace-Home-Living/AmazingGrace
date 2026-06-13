@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus OS | Hybrid Terminal</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        :root {
+            --bg-color: #0d0d1a;
+            --text-color: #00ff41; /* Cyber-green */
+            --text-muted: #00aa2b;
+            --font-main: 'Courier New', Courier, monospace;
+            --border: rgba(0, 255, 65, 0.3);
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        /* ── HEADER ── */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+        
+        #auth-status {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border: 1px solid #aaa;
+            color: #aaa;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+        #auth-status.online {
+            border-color: #00f2ff;
+            color: #00f2ff;
+            text-shadow: 0 0 8px rgba(0, 242, 255, 0.6);
+        }
+
+        /* ── TERMINAL AREA ── */
+        #terminal-output {
+            flex-grow: 1;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-bottom: 10px;
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.4);
+            padding-right: 10px;
+        }
+
+        .input-line {
+            display: flex;
+            align-items: center;
+            padding-top: 10px;
+        }
+
+        .prompt { margin-right: 10px; font-weight: bold; }
+        
+        #cli-input {
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            font-family: var(--font-main);
+            font-size: 1rem;
+            flex-grow: 1;
+            outline: none;
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.4);
+        }
+
+        /* ── LOG STYLES ── */
+        .user-cmd { color: #fff; opacity: 0.8; }
+        .system-response { color: var(--text-color); margin-bottom: 10px; }
+        .system-muted { color: var(--text-muted); }
+        .error-response { color: #ff3333; margin-bottom: 10px; text-shadow: 0 0 5px rgba(255, 51, 51, 0.4); }
+        .highlight { color: #ffd700; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <span class="orbitron" style="font-size: 1.2rem; font-weight: bold;">NEXUS OS</span>
+            <span style="font-size: 0.8rem; margin-left: 10px;" class="system-muted">v3.0.Hybrid</span>
+        </div>
+        <div id="auth-status">Offline Local Mode</div>
+    </header>
+
+    <div id="terminal-output">
+        <div>Initializing Local Environment... OK</div>
+        <div>(c) 2026 Enterprise Architecture. All rights reserved.</div><br>
+        <div class="highlight">Type 'toolbox' to see available local modules.</div>
+        <div class="highlight">Type 'login' to authorize cloud connection for Gemini.</div><br>
+    </div>
+
+    <div class="input-line">
+        <span class="prompt" id="dynamic-prompt">guest@nexus:~$</span>
+        <input type="text" id="cli-input" autocomplete="off" autofocus>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // TODO: Replace with your Firebase Project config
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        const terminalOutput = document.getElementById('terminal-output');
+        const cliInput = document.getElementById('cli-input');
+        const dynamicPrompt = document.getElementById('dynamic-prompt');
+        const authStatus = document.getElementById('auth-status');
+        
+        // Backend URL for Gemini proxy
+        const BACKEND_ENDPOINT = "YOUR_BACKEND_URL_HERE"; 
+        let currentUser = null;
+
+        // AUTH LISTENER
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (user) {
+                const firstName = user.displayName ? user.displayName.split(' ')[0].toLowerCase() : 'admin';
+                dynamicPrompt.textContent = `${firstName}@nexus:~$`;
+                authStatus.textContent = "Cloud Secure";
+                authStatus.classList.add('online');
+                printLine(`> Secure cloud connection established for ${user.displayName}.`, 'highlight');
+            } else {
+                dynamicPrompt.textContent = `guest@nexus:~$`;
+                authStatus.textContent = "Offline Local Mode";
+                authStatus.classList.remove('online');
+            }
+        });
+
+        // MAIN INPUT HANDLER
+        cliInput.addEventListener('keydown', async function(e) {
+            if (e.key === 'Enter') {
+                const commandString = cliInput.value.trim();
+                if (!commandString) return;
+
+                const currentPrompt = dynamicPrompt.textContent;
+                printLine(`${currentPrompt} ${commandString}`, 'user-cmd');
+                cliInput.value = '';
+                
+                const args = commandString.split(' ');
+                const command = args[0].toLowerCase();
+
+                // ── LOCAL COMMANDS (No Login Required) ──
+                switch (command) {
+                    case 'clear':
+                        terminalOutput.innerHTML = '';
+                        break;
+                        
+                    case 'toolbox':
+                        runToolbox();
+                        break;
+
+                    case 'oracle':
+                        runOracle();
+                        break;
+
+                    case 'memcheck':
+                        runMemCheck();
+                        break;
+
+                    case 'scan':
+                        await runSpywareScan();
+                        break;
+
+                    case 'login':
+                        if (currentUser) {
+                            printLine("Already authenticated.", "system-muted");
+                        } else {
+                            printLine("Initiating secure OAuth handshake...", "system-muted");
+                            signInWithPopup(auth, provider).catch(err => {
+                                printLine(`Auth Error: ${err.message}`, 'error-response');
+                            });
+                        }
+                        break;
+
+                    case 'logout':
+                        if (currentUser) {
+                            printLine("Severing cloud connection...", "system-muted");
+                            signOut(auth);
+                        } else {
+                            printLine("You are already in local guest mode.", "system-muted");
+                        }
+                        break;
+
+                    // ── REMOTE COMMANDS (Requires Login) ──
+                    default:
+                        if (commandString.toLowerCase().startsWith('gemini ')) {
+                            await runGeminiCommand(commandString.replace(/gemini/i, '').trim());
+                        } else if (!currentUser) {
+                            // If it's not a local command, and they aren't logged in, remind them.
+                            printLine(`Command not recognized locally. To ask Gemini, type: gemini [your prompt]`, 'error-response');
+                            printLine(`Note: You must be logged in to use cloud features. Type 'login' to authenticate.`, 'system-muted');
+                        } else {
+                            // Fallback for authenticated users: Assume it's a Gemini prompt
+                            await runGeminiCommand(commandString);
+                        }
+                        break;
+                }
+                
+                scrollToBottom();
+            }
+        });
+
+        // ── LOCAL APP FUNCTIONS ──
+
+        function runToolbox() {
+            const helpText = `
+ADMIN TOOLBOX - LOCAL MODULES:
+  toolbox   - Displays this menu
+  oracle    - Consults the local matrix for wisdom
+  memcheck  - Diagnostic read of client memory parameters
+  scan      - Deep heuristic scan for unauthorized trackers
+  clear     - Wipes terminal screen
+
+CLOUD MODULES (Requires 'login'):
+  gemini [prompt] - Sends natural language query to Gemini AI
+  logout          - Disconnects cloud session
+`;
+            printLine(helpText.trim(), 'system-response');
+        }
+
+        function runOracle() {
+            const wisdoms = [
+                "The matrix relies on your vigilance. Trust your intuition.",
+                "Patience in the storm reveals the path through the waters.",
+                "A system is only as secure as the human operating it.",
+                "Seek the Seven Stars; they will guide you to the truth.",
+                "The server may be down, but the mission continues offline."
+            ];
+            const quote = wisdoms[Math.floor(Math.random() * wisdoms.length)];
+            printLine(`[ORACLE] ${quote}`, 'highlight');
+        }
+
+        function runMemCheck() {
+            const memory = navigator.deviceMemory ? `${navigator.deviceMemory} GB+` : "Unknown";
+            const cores = navigator.hardwareConcurrency || "Unknown";
+            const storageInfo = (localStorage.length * 2) + " bytes utilized in local matrix.";
+            
+            const diag = `
+DIAGNOSTIC COMPLETE:
+- Logical Processors: ${cores}
+- Est. Client RAM: ${memory}
+- Browser Engine: ${navigator.userAgent.split(' ')[0]}
+- Storage Cache: ${storageInfo}
+- Status: Optimal. Ready for edge computing.
+`;
+            printLine(diag.trim(), 'system-muted');
+        }
+
+        async function runSpywareScan() {
+            cliInput.disabled = true;
+            printLine("Initializing heuristic scan protocol...", "system-muted");
+            await delay(800);
+            printLine("Checking local storage registries...", "system-muted");
+            await delay(1000);
+            printLine("Scanning active session cookies...", "system-muted");
+            await delay(1200);
+            printLine("Analyzing DOM environment...", "system-muted");
+            await delay(900);
+            printLine(`[SUCCESS] 0 unauthorized agents detected. Environment secure.`, 'highlight');
+            cliInput.disabled = false;
+            cliInput.focus();
+        }
+
+        // ── CLOUD FUNCTIONS ──
+
+        async function runGeminiCommand(promptText) {
+            if (!currentUser) {
+                printLine(`[ACCESS DENIED] You must type 'login' to authenticate before using Gemini.`, 'error-response');
+                return;
+            }
+            if (!promptText) {
+                printLine("Usage: gemini [your prompt]", "system-muted");
+                return;
+            }
+
+            cliInput.disabled = true;
+            printLine("Transmitting to Gemini Proxy...", "system-muted");
+
+            try {
+                const idToken = await currentUser.getIdToken(true);
+                const response = await fetch(BACKEND_ENDPOINT, {
+                    method: 'POST',
+                    body: JSON.stringify({ prompt: promptText }),
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${idToken}` 
+                    }
+                });
+
+                if (!response.ok) throw new Error("Cloud Node unreachable.");
+                
+                const data = await response.text(); 
+                terminalOutput.lastElementChild.remove(); // remove loading text
+                printLine(data, 'system-response');
+
+            } catch (error) {
+                terminalOutput.lastElementChild.remove();
+                printLine(`Proxy Error: ${error.message}`, 'error-response');
+            }
+
+            cliInput.disabled = false;
+            cliInput.focus();
+        }
+
+        // UTILS
+        function printLine(text, className) {
+            const div = document.createElement('div');
+            div.className = className;
+            div.textContent = text;
+            terminalOutput.appendChild(div);
+            scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        }
+
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+
+        // Keep focus
+        document.addEventListener('click', () => {
+            if (!window.getSelection().toString()) cliInput.focus();
+        });
+    </script>
+</body>
+</html>
