@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Cloud Shell Terminal</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: #FFFFFF;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 20px;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Navigation Bar Styles */
+        .navbar {
+            display: flex;
+            background-color: #111111;
+            border-bottom: 2px solid #333333;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .navbar a {
+            color: #00FFFF; /* Neon Blue Nav Links */
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.95rem;
+            padding: 5px 10px;
+            border: 1px solid transparent;
+        }
+
+        .navbar a:hover {
+            border: 1px solid #00FFFF;
+            background-color: rgba(0, 255, 255, 0.1);
+            color: #00FFCC;
+        }
+
+        /* Desktop-only support button */
+        .nav-support {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .nav-support {
+                display: inline-block;
+            }
+        }
+
+        /* Terminal Body Styles */
+        .terminal-header {
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            color: #00FF00;
+        }
+
+        .prompt {
+            color: #0F9D58; /* Google Green */
+            font-weight: bold;
+        }
+
+        h2 {
+            color: #000000;
+            background-color: #FFD700; /* Yellow highlighted background */
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            margin-top: 20px;
+        }
+
+        p {
+            color: #FFFF00; /* Yellow text */
+            font-style: italic;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        li {
+            margin-bottom: 12px;
+            color: #FFFFFF; /* White description text */
+        }
+
+        li::before {
+            content: "$ ";
+            color: #4285F4; /* Google Blue prompt icon */
+        }
+
+        .tool-list a {
+            color: #00FFFF; /* Neon Blue links */
+            text-decoration: none;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .tool-list a:hover {
+            text-decoration: underline;
+            color: #00FFCC;
+        }
+
+        .comment {
+            color: #888888;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="/">Home</a>
+        <a href="/arcade">Arcade</a>
+        <a href="/Ministry">Ministry</a>
+        <a href="about.html">About</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="/ministries" class="nav-support">Support</a>
+    </nav>
+
+    <div class="terminal-header">
+        <span class="prompt">user@cloudshell:~ (amazinggracehl-admin)$</span> cat diagnostics_menu.sh
+    </div>
+
+    <p>Potential login issues detected. To ensure uninterrupted troubleshooting, all tools below are available without requiring login. These links are safe for all users.</p>
+
+    <h2>Diagnostic Tools (No Login Required)</h2>
+
+    <ul class="tool-list">
+        <li><a href="https://toolbox.googleapps.com/apps/browserinfo" target="_blank">Browserinfo</a> <span class="comment">— Captures browser details.</span></li>
+        <li><a href="https://toolbox.googleapps.com/apps/useragent" target="_blank">Useragent</a> <span class="comment">— Analyzes user-agent strings.</span></li>
+        <li><a href="https://toolbox.googleapps.com/apps/checkmx" target="_blank">Check MX</a> <span class="comment">— Validates MX records.</span></li>
+        <li><a href="https://toolbox.googleapps.com/apps/dig" target="_blank">Dig</a> <span class="comment">— Web-based DNS lookup tool.</span></li>
+        <li><a href="https://toolbox.googleapps.com/apps/har_analyzer" target="_blank">HAR Analyzer</a> <span class="comment">— Reviews HAR files.</span></li>
+        <li><a href="https://toolbox.googleapps.com/apps/loganalyzer" target="_blank">Log Analyzer</a> <span class="comment">— Processes Chrome/Workspace logs.</span></li>
+        <li><a href="https://toolbox.googleapps.com/apps/loganalyzer2" target="_blank">Log Analyzer 2</a> <span class="comment">— Handles large log files.</span></li>
+        <li><a href="https://toolbox.googleapps.com/apps/messageheader" target="_blank">Messageheader</a> <span class="comment">— Analyzes email headers.</span></li>
+        <li><a href="https://toolbox.googleapps.com/apps/encode_decode" target="_blank">Encode/Decode</a> <span class="comment">— Converts data formats.</span></li>
+        <li><a href="https://toolbox.googleapps.com/apps/screen_recorder" target="_blank">Screen Recorder</a> <span class="comment">— Captures screen and audio.</span></li>
+    </ul>
+
+</body>
+</html>
