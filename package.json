@@ -22,7 +22,7 @@
     "framer-motion": "^12.40.0",
     "lucide-react": "^1.18.0",
     "nodemailer": "^9.0.0",
-    "postprocessing": "^6.39.1",
+    "postprocessing": "^6.39.2",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "three": "^0.184.0"
