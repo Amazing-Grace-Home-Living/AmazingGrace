@@ -3,9 +3,12 @@ import {
     Sun, Moon, Hexagon, Gem, Flame, Palette, Shield,
     Hammer, Zap, Bomb, Play, RefreshCw, Trophy, Target, Clock,
 } from 'lucide-react';
+import {
+    BOARD_SIZE, Board,
+    generateBoard, findMatches, removeMatches, applyGravity, refillBoard, swapGems, isAdjacent,
+} from './engine';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-type Board = string[][];
 type GamePhase = 'menu' | 'playing' | 'levelup' | 'gameover' | 'victory';
 type PowerUpKey = 'hammer' | 'zap' | 'bomb';
 
@@ -27,8 +30,6 @@ const ICON_MAP: Record<GemIconKey, React.ComponentType<{size?: number; strokeWid
 };
 
 const GEM_MAP = Object.fromEntries(GEM_TYPES.map(g => [g.id, g]));
-
-const BOARD_SIZE = 8;
 
 const LEVELS = [
     { target:  400, time: 60 },
@@ -94,94 +95,6 @@ const playSound = (type: string) => {
     }
 };
 
-// ─── Game Logic ───────────────────────────────────────────────────────────────
-const randomGem = () => GEM_TYPES[Math.floor(Math.random() * GEM_TYPES.length)].id;
-
-const generateBoard = (): Board => {
-    const board: Board = [];
-    for (let r = 0; r < BOARD_SIZE; r++) {
-        board.push([]);
-        for (let c = 0; c < BOARD_SIZE; c++) {
-            let gem: string;
-            do {
-                gem = randomGem();
-            } while (
-                (c >= 2 && board[r][c - 1] === gem && board[r][c - 2] === gem) ||
-                (r >= 2 && board[r - 1][c] === gem && board[r - 2][c] === gem)
-            );
-            board[r].push(gem);
-        }
-    }
-    return board;
-};
-
-const findMatches = (board: Board): Set<string> => {
-    const matched = new Set<string>();
-    // Horizontal
-    for (let r = 0; r < BOARD_SIZE; r++) {
-        for (let c = 0; c < BOARD_SIZE - 2; c++) {
-            const g = board[r][c];
-            if (!g || g !== board[r][c + 1] || g !== board[r][c + 2]) continue;
-            let end = c + 2;
-            while (end + 1 < BOARD_SIZE && board[r][end + 1] === g) end++;
-            for (let i = c; i <= end; i++) matched.add(`${r},${i}`);
-            c = end;
-        }
-    }
-    // Vertical
-    for (let c = 0; c < BOARD_SIZE; c++) {
-        for (let r = 0; r < BOARD_SIZE - 2; r++) {
-            const g = board[r][c];
-            if (!g || g !== board[r + 1][c] || g !== board[r + 2][c]) continue;
-            let end = r + 2;
-            while (end + 1 < BOARD_SIZE && board[end + 1][c] === g) end++;
-            for (let i = r; i <= end; i++) matched.add(`${i},${c}`);
-            r = end;
-        }
-    }
-    return matched;
-};
-
-const removeMatches = (board: Board, matches: Set<string>): Board => {
-    const next = board.map(row => [...row]);
-    matches.forEach(key => {
-        const [r, c] = key.split(',').map(Number);
-        next[r][c] = '';
-    });
-    return next;
-};
-
-const applyGravity = (board: Board): Board => {
-    const next = board.map(row => [...row]);
-    for (let c = 0; c < BOARD_SIZE; c++) {
-        const gems = next.map(row => row[c]).filter(g => g !== '');
-        const empty = BOARD_SIZE - gems.length;
-        for (let r = 0; r < BOARD_SIZE; r++) {
-            next[r][c] = r < empty ? '' : gems[r - empty];
-        }
-    }
-    return next;
-};
-
-const refillBoard = (board: Board): Board => {
-    const next = board.map(row => [...row]);
-    for (let r = 0; r < BOARD_SIZE; r++) {
-        for (let c = 0; c < BOARD_SIZE; c++) {
-            if (!next[r][c]) next[r][c] = randomGem();
-        }
-    }
-    return next;
-};
-
-const swapGems = (board: Board, r1: number, c1: number, r2: number, c2: number): Board => {
-    const next = board.map(row => [...row]);
-    [next[r1][c1], next[r2][c2]] = [next[r2][c2], next[r1][c1]];
-    return next;
-};
-
-const isAdjacent = (r1: number, c1: number, r2: number, c2: number): boolean =>
-    (Math.abs(r1 - r2) === 1 && c1 === c2) || (Math.abs(c1 - c2) === 1 && r1 === r2);
-
 // ─── Styles ───────────────────────────────────────────────────────────────────
 const S = {
     page: {
@@ -192,7 +105,7 @@ const S = {
         flexDirection: 'column' as const,
         alignItems: 'center',
         justifyContent: 'center',
-        fontFamily: "'Inter', system-ui, sans-serif",
+        fontFamily: "system-ui, sans-serif",
         padding: '5rem 1rem 2rem',
     },
     navFixed: {
@@ -459,11 +372,15 @@ export default function VirtueMatchApp() {
 
     const activatePowerUp = useCallback((key: PowerUpKey) => {
         if (processing || phaseRef.current !== 'playing') return;
+        if (activePowerUp === key) {
+            setActivePowerUp(null);
+            return;
+        }
         if (powerUps[key] <= 0) return;
         setPowerUps(p => ({ ...p, [key]: p[key] - 1 }));
-        setActivePowerUp(prev => (prev === key ? null : key));
+        setActivePowerUp(key);
         setSelected(null);
-    }, [processing, powerUps]);
+    }, [processing, powerUps, activePowerUp]);
 
     // ── Derived ───────────────────────────────────────────────────────────────
     const levelCfg     = LEVELS[Math.min(level, LEVELS.length - 1)];
@@ -664,7 +581,6 @@ export default function VirtueMatchApp() {
                                             alignItems: 'center',
                                             justifyContent: 'center',
                                             padding: 0,
-                                            outline: 'none',
                                             transition: 'transform 80ms, border-color 80ms, box-shadow 80ms',
                                             transform: isSel ? 'scale(1.1) translateY(-1px)' : 'none',
                                             boxShadow: isSel && gemDef ? `0 0 10px ${gemDef.glow}` : 'none',
