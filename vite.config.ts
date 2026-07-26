@@ -64,6 +64,7 @@ export default defineConfig({
         arcadeRedirect:    resolve(__dirname, "arcade.html"),
         arcadeGeminiVanguard: resolve(__dirname, "arcade/gemini-vanguard/index.html"),
         arcadeNexusHud:    resolve(__dirname, "arcade/nexus-hud/index.html"),
+        arcadeVirtueMatch: resolve(__dirname, "arcade/virtue-match/index.html"),
       },
       output: {
         manualChunks(id) {
