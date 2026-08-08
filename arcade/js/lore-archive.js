@@ -20,6 +20,34 @@ function formatUnlockHint(requirements = {}) {
     hints.push(`Threat < ${requirements.threatBelow}`);
   }
 
+  if (requirements.bossMutation) {
+    hints.push(`Boss mutation: ${requirements.bossMutation}`);
+  }
+
+  if (requirements.bossMemoryActive) {
+    hints.push('Boss memory active');
+  }
+
+  if (requirements.emotionMilestone) {
+    hints.push(`Emotion: ${requirements.emotionMilestone}`);
+  }
+
+  if (requirements.emotionMax) {
+    hints.push('Emotion maxed');
+  }
+
+  if (requirements.redemptionPath) {
+    hints.push(`Path: ${requirements.redemptionPath}`);
+  }
+
+  if (requirements.reincarnationPath) {
+    hints.push(`Reincarnation: ${requirements.reincarnationPath}`);
+  }
+
+  if (requirements.phaseBreak) {
+    hints.push('Phase break recorded');
+  }
+
   return hints.join(' • ');
 }
 
@@ -48,6 +76,36 @@ function checkLoreUnlock(requirements = {}) {
     return false;
   }
 
+  if (requirements.bossMutation) {
+    const mutations = state.bossMutations || [];
+    if (!mutations.includes(requirements.bossMutation)) return false;
+  }
+
+  if (requirements.bossMemoryActive && !state.bossMemoryActive) {
+    return false;
+  }
+
+  if (requirements.emotionMilestone) {
+    const history = state.bossEmotionHistory || [];
+    if (!history.includes(requirements.emotionMilestone)) return false;
+  }
+
+  if (requirements.emotionMax && !state.emotionMax) {
+    return false;
+  }
+
+  if (requirements.redemptionPath) {
+    if (state.redemptionPath !== requirements.redemptionPath) return false;
+  }
+
+  if (requirements.reincarnationPath) {
+    if (state.reincarnationPath !== requirements.reincarnationPath) return false;
+  }
+
+  if (requirements.phaseBreak && !state.phaseBreak) {
+    return false;
+  }
+
   return true;
 }
 
@@ -72,6 +130,41 @@ function decryptFile(fileId, element, text) {
   }, 15);
 
   activeDecryptions.set(fileId, intervalId);
+}
+
+function unlockAllArchives() {
+  const state = window.rebellionState || {};
+  state.certifications = {
+    starMatrix: 3,
+    lookingGlass: 3,
+    quantumShift: 3,
+    syndicateSiege: 3
+  };
+  state.threat = 0;
+  state.inventory = {
+    quantumCore: 1,
+    rebellionKey: 1
+  };
+  state.bossMutations = ['dataOverload', 'spectralEcho', 'quantumFlux', 'armorRegen', 'hybrid', 'prime', 'cataclysmic'];
+  state.bossMemory = {
+    matchSpeed: 100,
+    perfectAlignments: 100,
+    hazardDodges: 100,
+    towerDamage: 1000,
+    weakpointsClearedQuickly: true,
+    preferredGame: 'starMatrix'
+  };
+  state.bossMemoryActive = true;
+  state.bossEmotion = { anger: 100, fear: 100, obsession: 100, despair: 100, respect: 100 };
+  state.emotionMilestone = 'obsession';
+  state.emotionMax = true;
+  state.bossRedemption = { light: 100, dark: 0 };
+  state.redemptionPath = 'REDEMPTION';
+  state.bossReincarnation = { level: 3, deaths: 2, lastDeath: Date.now(), path: 'ascended' };
+  state.reincarnationPath = 'ascended';
+  state.phaseBreak = true;
+  saveRebellionState();
+  renderLoreArchive();
 }
 
 function renderLoreArchive() {
@@ -134,6 +227,15 @@ function renderLoreArchive() {
     unlockedLine.textContent = `Unlocked files: ${unlockedCount}/${LORE_FILES.length}`;
     status.append(aiLine, unlockedLine);
   }
+}
+
+const unlockAllButton = document.getElementById('la-unlock-all');
+if (unlockAllButton) {
+  unlockAllButton.addEventListener('click', () => {
+    if (window.confirm('Override all security protocols and unlock every archive?')) {
+      unlockAllArchives();
+    }
+  });
 }
 
 renderLoreArchive();

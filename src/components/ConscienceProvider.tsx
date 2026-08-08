@@ -224,6 +224,21 @@ export function ConscienceProvider({ children, initialMetrics }: { children: Rea
     "Cosmic network online. Tactical strategy layer engaged."
   ]);
 
+  // Sync Matrix of Conscience level victories into legacy rebellion state so
+  // the standalone Lore Archive page can detect unlocks.
+  const syncRebellionCertification = useCallback((game: string, stars: number) => {
+    if (typeof window === 'undefined' || !(window as any).rebellionState) return;
+    const rebellionState = (window as any).rebellionState;
+    rebellionState.certifications = rebellionState.certifications || {};
+    rebellionState.certifications[game] = Math.max(
+      rebellionState.certifications[game] || 0,
+      stars
+    );
+    if (typeof (window as any).saveRebellionState === 'function') {
+      (window as any).saveRebellionState();
+    }
+  }, []);
+
   const unlockSector = useCallback((id: number) => {
     setUnlockedSectors(prev => prev.includes(id) ? prev : [...prev, id]);
   }, []);
@@ -258,7 +273,8 @@ export function ConscienceProvider({ children, initialMetrics }: { children: Rea
       factions: FACTIONS,
       unlockSector,
       triggerCosmicEvent,
-      cosmicLogs
+      cosmicLogs,
+      syncRebellionCertification
     }),
     [
       state.metrics, 
@@ -274,7 +290,8 @@ export function ConscienceProvider({ children, initialMetrics }: { children: Rea
       sectorControl,
       unlockSector,
       triggerCosmicEvent,
-      cosmicLogs
+      cosmicLogs,
+      syncRebellionCertification
     ]
   );
 

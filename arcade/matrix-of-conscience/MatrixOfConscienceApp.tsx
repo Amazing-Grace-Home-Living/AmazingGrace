@@ -7,8 +7,14 @@ import UniverseMap from './UniverseMap';
 import { useConscience } from '../../src/components/ConscienceProvider';
 import './cosmic-strategy.css';
 
+const LEVEL_STARS: Record<number, string> = {
+  1: 'moc-nexus-defense',
+  2: 'moc-syndicate-siege',
+  3: 'moc-emergence-core'
+};
+
 export default function MatrixOfConscienceApp() {
-  const { userLevel, setUserLevel, cosmicLogs, sectorControl, factions } = useConscience();
+  const { userLevel, setUserLevel, cosmicLogs, sectorControl, factions, awardStar, syncRebellionCertification } = useConscience();
   const [level, setLevel] = useState<number>(0);
   const [selectedSector, setSelectedSector] = useState<number>(1);
   const [unlockedLevel, setUnlockedLevel] = useState<number>(1);
@@ -27,7 +33,16 @@ export default function MatrixOfConscienceApp() {
     }
   }, []);
 
-  const saveProgress = (nextLevel: number) => {
+  const saveProgress = (completedLevel: number) => {
+    const nextLevel = completedLevel + 1;
+    if (completedLevel >= 1 && completedLevel <= 3) {
+      const starId = LEVEL_STARS[completedLevel];
+      if (starId) {
+        awardStar(starId);
+        syncRebellionCertification('syndicateSiege', completedLevel >= 2 ? 2 : 1);
+        syncRebellionCertification('quantumShift', completedLevel >= 3 ? 2 : 1);
+      }
+    }
     if (nextLevel > unlockedLevel && nextLevel <= 3) {
       setUnlockedLevel(nextLevel);
       try {
@@ -202,6 +217,23 @@ export default function MatrixOfConscienceApp() {
 
             {/* Bottom actions */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '1rem' }}>
+              <a
+                href="../lore-archive/"
+                style={{
+                  padding: '0.5rem',
+                  background: 'rgba(0, 242, 255, 0.08)',
+                  border: '1px solid rgba(0, 242, 255, 0.25)',
+                  color: '#00f2ff',
+                  borderRadius: '6px',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  textDecoration: 'none',
+                  textAlign: 'center'
+                }}
+              >
+                📁 Open Lore Archive
+              </a>
               <button
                 onClick={resetProgress}
                 style={{
@@ -248,7 +280,7 @@ export default function MatrixOfConscienceApp() {
       <Level1NexusDefense
         onBack={() => setLevel(0)}
         onVictory={() => {
-          saveProgress(2);
+          saveProgress(1);
           setUserLevel(prev => Math.max(prev, 2));
           setLevel(0);
         }}
@@ -262,7 +294,7 @@ export default function MatrixOfConscienceApp() {
       <Level2SyndicateSiege
         onBack={() => setLevel(0)}
         onVictory={() => {
-          saveProgress(3);
+          saveProgress(2);
           setUserLevel(prev => Math.max(prev, 3));
           setLevel(0);
         }}
