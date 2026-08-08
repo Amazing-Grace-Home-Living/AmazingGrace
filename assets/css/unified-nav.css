@@ -121,6 +121,10 @@
     margin-bottom: 0.5rem;
   }
 
+  .site-header .logo img {
+    height: 28px;
+  }
+
   .site-header nav#main-nav,
   .site-header .nav-links,
   .site-header .main-nav {
