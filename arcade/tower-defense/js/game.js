@@ -242,13 +242,17 @@ document.getElementById('btn-play').addEventListener('click', () => {
     startGame();
 });
 
-document.getElementById('btn-start').addEventListener('click', () => {
+function startNextWave() {
     if (!waveActive && gameActive) {
         waveActive = true;
         enemiesToSpawn = 5 + wave * 3;
         spawnTimer = 0;
     }
-});
+}
+
+document.getElementById('btn-start').addEventListener('click', startNextWave);
+const mobileStartBtn = document.getElementById('btn-start-mobile');
+if (mobileStartBtn) mobileStartBtn.addEventListener('click', startNextWave);
 
 document.getElementById('btn-restart').addEventListener('click', () => {
     showScreen('menu');
@@ -300,15 +304,22 @@ function startGame() {
     loop();
 }
 
-canvas.addEventListener('click', (e) => {
-    if (!gameActive) return;
+function getCanvasCoords(e) {
     const rect = canvas.getBoundingClientRect();
-    
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-    
-    const x = (e.clientX - rect.left) * scaleX;
-    const y = (e.clientY - rect.top) * scaleY;
+    return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+    };
+}
+
+function handleCanvasInput(e) {
+    if (!gameActive) return;
+    e.preventDefault();
+    const { x, y } = getCanvasCoords(e);
     
     const col = Math.floor(x / CELL_SIZE);
     const row = Math.floor(y / CELL_SIZE);
@@ -365,7 +376,10 @@ canvas.addEventListener('click', (e) => {
         spawnParticles(towers[towers.length-1].x, towers[towers.length-1].y, baseDef.color, 15);
         updateHUD();
     }
-});
+}
+
+canvas.addEventListener('click', handleCanvasInput);
+canvas.addEventListener('touchstart', handleCanvasInput, { passive: false });
 
 function spawnEnemy() {
     const hp = 20 + Math.pow(wave, 1.5) * 5;
